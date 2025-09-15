@@ -1,0 +1,12 @@
+{
+  "tag": "lvl3",
+  "drops": [
+    { "itemId": "remains:dna_fragment", "chance": 30, "quantity": 1 },
+    { "itemId": "parts:greater_gland", "chance": 20, "quantity": 1 }
+  ],
+  "minDrops": 1,
+  "maxDrops": 0,
+  "rarityGuarantees": [
+    { "rarity": "Rare", "min": 1 }
+  ]
+}

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7ecef8efe397c1469779821d5c9eea2, type: 3}
+  m_Name: GameBalanceConfig
+  m_EditorClassIdentifier: 
+  loot:
+    budget:
+      levelFactor: 0.08
+      budgetVariance: 0.2
+      beta: 3
+    floors:
+      rare: 0.2
+      epic: 0.1
+      legendary: 0.02
+      specials: 0
+    unlucky:
+      alphaRare: 0.2
+      alphaEpic: 0.15
+      alphaLegendary: 0.1
+      alphaSpecials: 0
+  enemies:
+    budgetPoints:
+      spawn: 1
+      normal: 5
+      magic: 20
+      elite: 30
+      boss: 50
+      champion: 100
+    scaling:
+      hpPerLevel: 10
+      dmgPerLevel: 2
+  economy:
+    currencies:
+      baseGoldReward: 10
+      baseXpReward: 10
+      goldPerLevel: 2
+      xpPerLevel: 2

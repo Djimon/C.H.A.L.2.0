@@ -1,0 +1,14 @@
+{
+  "tag": "insect",
+  "drops": [
+    { "itemId": "parts:gland", "chance": 40, "quantity": 1 },
+    { "itemId": "parts:chitin_armor", "chance": 30, "quantity": 1 },
+    { "itemId": "remains:ashes", "chances": [70, 50, 20], "quantity": 1 }
+  ],
+  "minDrops": 2,
+  "maxDrops": 0,
+  "rarityGuarantees": [
+    { "rarity": "Rare", "min": 0 },
+    { "rarity": "Epic", "min": 0 }
+  ]
+}
