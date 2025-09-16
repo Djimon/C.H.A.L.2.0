@@ -68,7 +68,8 @@ public static class DebugManager
 #endif
 
         isInitialized = true;
-        Debug.Log("[DebugManager] Initialized");
+        Info("DebugManager Initialized: see DebugConfig");
+
     }
 
     private static void EnsureDefault(string name, Color color)
@@ -123,11 +124,11 @@ public static class DebugManager
         if (ProductiveMode && level != EDebugLevel.Production) return;
         if (level > CurrentDebugLevel) return;
 
-        // Tag-Freigabe prüfen (nicht registrierte Tags dürfen loggen, werden aber nicht gefiltert/toggelbar)
+        // Tag-Freigabe prüfen (nicht registrierte Tags dürfen loggen)
         if (!(string.IsNullOrEmpty(tag) || ActiveTags.Contains(tag)))
         {
             ExcludedTags.Add(tag);
-            return;
+            //return; //nicht registrierte tags werden nciht angezeigt
         }
 
         // Farbe bestimmen
@@ -157,9 +158,22 @@ public static class DebugManager
             tagColor = customColor.Value;
         }
 
-        string timeStamp = Time.time.ToString("F3");
-        string coloredTag = $"<color=#{ColorUtility.ToHtmlStringRGB(tagColor)}>{tag} @ {timeStamp}s</color>";
-        string formatted = $"[{coloredTag}]: {message}";
+        bool wholeLine = _config != null && _config.colorWholeLine;
+        string timeStamp = Time.time.ToString("F3"); // Spielzeit seit Start
+        string levelName = level.ToString();
+        string formatted = $"[{timeStamp}][{levelName}][{tag}]: {message}";
+
+        if (wholeLine)
+        {
+            // Alles färben
+            formatted = $"<color=#{ColorUtility.ToHtmlStringRGB(tagColor)}>[{timeStamp}][{levelName}][{tag}]: {message}</color>";
+        }
+        else
+        {
+            // Nur Tag färben
+            string coloredTag = $"<color=#{ColorUtility.ToHtmlStringRGB(tagColor)}>{tag} @ {timeStamp}</color>";
+            formatted = $"[{timeStamp}][{levelName}][{coloredTag}]: {message}";
+        }
 
         switch (logType)
         {
@@ -168,6 +182,7 @@ public static class DebugManager
             default: Debug.Log(formatted); break;
         }
     }
+
 }
 
 

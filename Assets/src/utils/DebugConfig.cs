@@ -13,6 +13,9 @@ public class DebugConfig : ScriptableObject
     // automatisch ins Asset übernehmen (mit Standardfarbe weiß, active=true).
     public bool autoAddUnknownTagsToAsset = false;
 
+    [Header("Color Mode (tag only vs. whole line")]
+    public bool colorWholeLine = false;  
+
     [System.Serializable]
     public class TagEntry
     {
@@ -32,7 +35,7 @@ public class DebugConfig : ScriptableObject
         if (!_seeded || tags == null || tags.Count == 0)
         {
             EnsureTag("System", Color.yellow, true);
-            EnsureTag("Info", Color.green, true);
+            EnsureTag("Info", new Color(0.729f, 0.808f, 1.0f), true);
             EnsureTag("Debug", Color.white, true);
             EnsureTag("Warning", new Color(1f, 0.64f, 0f), true); // orange
             EnsureTag("Error", Color.red, true);
