@@ -1,4 +1,6 @@
+using CHAL.Systems.Items;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class LootRollerDebug : MonoBehaviour
@@ -7,20 +9,48 @@ public class LootRollerDebug : MonoBehaviour
 
     void Start()
     {
-        var rules = new CHAL.Systems.LootRulesService();
+        var rules = new CHAL.Systems.Loot.LootRulesService();
         rules.LoadAll();
 
         var unlucky = new CHAL.Systems.Loot.UnluckyProtection();
-        roller = new CHAL.Systems.Loot.LootRoller(rules, unlucky);
+        var roller = new CHAL.Systems.Loot.LootRoller(rules, unlucky);
 
-        var tags = new List<string> { "insect", "swarm", "lvl3" };
-
-        var loot = roller.RollLoot(tags, spawns: 12, normals: 4, magics: 2, elites: 0, bosses: 1, champions: 0, level: 3, difficulty: 1.0f);
-
-        Debug.Log("Final Loot:");
-        foreach (var item in loot)
+        // Wave definieren
+        var wave = new CHAL.Data.WaveComposition
         {
-            Debug.Log(" - " + item);
+            Level = 3,
+            Difficulty = 1.0f,
+            Monsters = new List<CHAL.Data.EnemyInstance>
+    {
+        new CHAL.Data.EnemyInstance
+        {
+            EnemyId = "Monster1",
+            Count = 10,
+            Tags = new List<string>{ "insect", "swarm" }
+        },
+        new CHAL.Data.EnemyInstance
+        {
+            EnemyId = "Monster2",
+            Count = 3,
+            Tags = new List<string>{ "beast", "tank" }
+        },
+        new CHAL.Data.EnemyInstance
+        {
+            EnemyId = "Monster3",
+            Count = 1,
+            Tags = new List<string>{ "insect", "boss" }
+        }
+    }
+        };
+
+        // Loot würfeln
+        var loot = roller.RollLoot(wave);
+
+        //var grouped = loot.GroupBy(id => id).OrderBy(g => g.Key); // alphabetisch sortieren für Übersicht
+
+        foreach (var entry in loot)
+        {
+            Debug.Log($" - {entry.ItemId} from {entry.EnemyId} via {entry.PickedTag}");
         }
     }
 }

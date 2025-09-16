@@ -1,8 +1,11 @@
+using CHAL.Data;
+using CHAL.Systems.Items;
+using CHAL.Systems.Loot.Models;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CHAL.Systems
+namespace CHAL.Systems.Loot
 {
     public sealed class LootRulesService
     {
@@ -97,14 +100,11 @@ namespace CHAL.Systems
 
         public bool TryGetRule(string tag, out LootRule rule) => _byTag.TryGetValue(tag, out rule);
 
-        //TODO: Refactor - statt string-Liste (mit vielen duplicate tags) lieber  ein Dictionary<Tag,Count>:
-        //  --> public MergedLoot GetMergedForTagCounts(Dictionary<string, int> tagCounts)
-
         // Merge-Policy: 
         // - drops: concat in Reihenfolge der Tags (stabil)
         // - minDrops/maxDrops: nehmen das MAX über alle beteiligten Tags (0 wird ignoriert)
         // - rarityGuarantees: pro Rarity das MAX über alle Tags
-        public MergedLoot GetMergedForTags(IReadOnlyList<string> tags)
+        public MergedLoot GetMergedForTags(IEnumerable<string> tags)
         {
             var merged = new MergedLoot();
 
@@ -115,16 +115,53 @@ namespace CHAL.Systems
                     Debug.LogWarning($"[LootRules] Keine Rule für tag '{tag}' gefunden");
                     continue;
                 }
+
                 merged.drops.AddRange(rule.drops);
 
-                if (rule.minDrops > 0) merged.minDrops = Mathf.Max(merged.minDrops, rule.minDrops);
-                if (rule.maxDrops > 0) merged.maxDrops = Mathf.Max(merged.maxDrops, rule.maxDrops);
+                if (rule.minDrops > 0)
+                    merged.minDrops = Mathf.Max(merged.minDrops, rule.minDrops);
+                if (rule.maxDrops > 0)
+                    merged.maxDrops = Mathf.Max(merged.maxDrops, rule.maxDrops);
 
                 foreach (var kv in rule.rarityGuarantees)
                 {
                     var r = kv.Key; var min = kv.Value;
                     if (!merged.rarityGuarantees.TryGetValue(r, out var cur)) cur = 0;
                     merged.rarityGuarantees[r] = Mathf.Max(cur, min);
+                }
+            }
+
+            return merged;
+        }
+
+        public MergedLoot GetMergedForWave(WaveComposition wave)
+        {
+            var merged = new MergedLoot();
+
+            foreach (var monster in wave.Monsters)
+            {
+                for (int i = 0; i < monster.Count; i++)
+                {
+                    foreach (var tag in monster.Tags)
+                    {
+                        if (!_byTag.TryGetValue(tag, out var rule))
+                            continue;
+
+                        merged.drops.AddRange(rule.drops);
+
+                        if (rule.minDrops > 0)
+                            merged.minDrops += rule.minDrops; // Summe
+                        if (rule.maxDrops > 0)
+                            merged.maxDrops += rule.maxDrops; // Summe
+
+                        foreach (var kv in rule.rarityGuarantees)
+                        {
+                            var rarity = kv.Key;
+                            int min = kv.Value;
+                            if (!merged.rarityGuarantees.TryGetValue(rarity, out var cur)) cur = 0;
+                            merged.rarityGuarantees[rarity] = cur + min; // Summierung
+                        }
+                    }
                 }
             }
 
@@ -151,22 +188,27 @@ namespace CHAL.Systems
             Debug.Log($"[SecretRules] Geladen: {_secretRules.Count} Regeln");
         }
 
-        public List<LootDropDto> GetSecretDrops(IReadOnlyList<string> enemyTags)
+        public List<LootDropDto> GetSecretDrops(IEnumerable<string> monsterTags)
         {
             var extras = new List<LootDropDto>();
+
             foreach (var rule in _secretRules)
             {
-                if (MatchesAll(enemyTags, rule.tags))
+                if (MatchesAll(monsterTags, rule.tags))
+                {
                     extras.AddRange(rule.drops);
+                }
             }
+
             return extras;
         }
 
-        private bool MatchesAll(IReadOnlyList<string> enemyTags, string[] requiredTags)
+        private bool MatchesAll(IEnumerable<string> presentTags, IEnumerable<string> requiredTags)
         {
             foreach (var tag in requiredTags)
             {
-                if (!enemyTags.Contains(tag)) return false;
+                if (!presentTags.Contains(tag))
+                    return false;
             }
             return true;
         }

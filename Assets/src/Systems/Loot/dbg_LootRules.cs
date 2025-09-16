@@ -1,4 +1,6 @@
-﻿using CHAL.Systems;
+﻿using CHAL.Data;
+using CHAL.Systems;
+using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
 using UnityEngine;
 

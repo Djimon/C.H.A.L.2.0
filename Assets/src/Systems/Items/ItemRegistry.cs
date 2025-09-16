@@ -1,7 +1,8 @@
+using CHAL.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CHAL.Systems
+namespace CHAL.Systems.Items
 {
     public sealed class ItemRegistry : ScriptableObject
     {

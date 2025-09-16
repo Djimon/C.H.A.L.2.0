@@ -1,3 +1,4 @@
+using CHAL.Data;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour

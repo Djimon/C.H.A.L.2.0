@@ -6,6 +6,6 @@
     { "itemId": "parts:antenna", "chance": 25, "quantity": 1 }
   ],
   "minDrops": 1,
-  "maxDrops": 0,
+  "maxDrops": 3,
   "rarityGuarantees": []
 }

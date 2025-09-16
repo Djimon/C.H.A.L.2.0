@@ -1,4 +1,5 @@
 using CHAL.Core;
+using CHAL.Data;
 using UnityEngine;
 
 namespace CHAL.Systems.Loot
