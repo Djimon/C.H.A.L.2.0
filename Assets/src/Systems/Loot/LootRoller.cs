@@ -1,11 +1,12 @@
 ﻿using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Items;
+using CHAL.Systems.Loot;
 using CHAL.Systems.Loot.Models;
+using CHAL.Systems.Wave;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 namespace CHAL.Systems.Loot
 {
@@ -14,197 +15,144 @@ namespace CHAL.Systems.Loot
         private readonly LootRulesService _rules;
         private readonly UnluckyProtection _unlucky;
 
-        public LootRoller(LootRulesService rules, UnluckyProtection unlucky)
+        public LootRoller(LootRulesService rules,UnluckyProtection unlucky)
         {
             _rules = rules;
             _unlucky = unlucky;
         }
 
         /// <summary>
-        /// Haupt-Einstieg: rollt Loot für eine komplette Welle.
+        /// Rollt Loot für einen einzelnen Gegner bei dessen Tod.
+        /// Nutzt Budget & Unlucky aus dem WaveContext.
         /// </summary>
-        public List<LootResultEntry> RollLoot(WaveComposition wave)
+        public List<LootResultEntry> RollLootForMonster(EnemyInstance monster, WaveLootContext ctx)
         {
-            var finalLoot = new List<LootResultEntry>();
+            var results = new List<LootResultEntry>();
 
-            // 1) Budget berechnen
-            int B = LootBudgetCalculator.CalculateBudget(
-                wave.TotalSpawns, wave.TotalNormals, wave.TotalMagics,
-                wave.TotalElites, wave.TotalBosses, wave.TotalChampions,
-                wave.Level, wave.Difficulty
-            );
-            int U = 0; // bisher verbrauchtes Budget
+            if (monster.Tags == null || monster.Tags.Count == 0)
+                return results;
 
-            // 2) Normale Drops für jede Monster-Instanz
-            foreach (var monster in wave.Monsters)
+            // 1. Multiplikator abhängig vom Rank bestimmen
+            int rolls = BalanceManager.Instance.Config.loot.rankMultipliers.GetMultiplier(monster.Rank);
+
+            for (int r = 0; r < rolls; r++)
             {
-                for (int i = 0; i < monster.Count; i++)
+                // 2. Zufälligen Tag picken
+                var tag = monster.Tags[Random.Range(0, monster.Tags.Count)];
+
+                // 3. Regel für diesen Tag laden
+                var merged = _rules.GetMergedForTags(new[] { tag });
+
+                // 4. RNG-Loop über alle Drops im Pool
+                foreach (var drop in merged.drops)
                 {
-                    if (monster.Tags == null || monster.Tags.Count == 0)
-                        continue;
+                    float pBase = drop.chance ?? 0f;
+                    if (drop.chancesArray != null && drop.chancesArray.Length > 0)
+                        pBase = drop.chancesArray[Random.Range(0, drop.chancesArray.Length)];
 
-                    // zufällig einen Tag picken
-                    var tag = monster.Tags[Random.Range(0, monster.Tags.Count)];
+                    // Unlucky / Budget
+                    float multUnlucky = _unlucky.GetMultiplier(drop.rarity);
+                    float pPre = pBase * multUnlucky;
 
-                    // Regel für diesen Tag laden
-                    var merged = _rules.GetMergedForTags(new[] { tag });
+                    float mBudget = LootBudgetModulator.GetModifier(ctx.SpentBudget, drop.lootValue, ctx.TotalBudget, drop.rarity);
+                    float pEff = Mathf.Clamp(pPre * mBudget, 0f, 100f);
 
-                    // Würfelprozess für jeden Drop-Kandidaten
-                    foreach (var drop in merged.drops)
+                    float roll = Random.Range(0f, 100f);
+                    if (roll < pEff)
                     {
-                        float pBase = drop.chance ?? 0f;
-                        if (drop.chancesArray != null && drop.chancesArray.Length > 0)
+                        var entry = new LootResultEntry
                         {
-                            pBase = drop.chancesArray[Random.Range(0, drop.chancesArray.Length)];
-                        }
+                            EnemyId = monster.EnemyId,
+                            PickedTag = tag,
+                            ItemId = drop.itemId
+                        };
+                        results.Add(entry);
+                        ctx.Drops.Add(entry);
 
-                        float multUnlucky = _unlucky.GetMultiplier(drop.rarity);
-                        float pPre = pBase * multUnlucky;
+                        ctx.SpentBudget += drop.lootValue;
+                        _unlucky.OnDrop(drop.rarity);
 
-                        float mBudget = LootBudgetModulator.GetModifier(U, drop.lootValue, B, drop.rarity);
-                        float pEff = Mathf.Clamp(pPre * mBudget, 0f, 100f);
-
-                        //DebugManager.Log($"{drop.itemId}: {pEff}% (base:{pBase}, unlucky:{multUnlucky}, budget:{mBudget})", DebugManager.EDebugLevel.Debug, "Loot");
-
-                        float roll = Random.Range(0f, 100f);
-                        if (roll < pEff)
-                        {
-                            finalLoot.Add(new LootResultEntry 
-                                {
-                                    EnemyId = monster.EnemyId,
-                                    PickedTag = tag,
-                                    ItemId = drop.itemId
-                                });
-                            U += drop.lootValue;
-                            DebugManager.Log($"Item: {drop.itemId}({drop.rarity}) dropped (chance: {pEff})", DebugManager.EDebugLevel.Dev, "Loot");
-                            _unlucky.OnDrop(drop.rarity);
-                        }
-                        else
-                        {
-                            _unlucky.OnFail(drop.rarity);
-                        }
+                        DebugManager.Log($"{drop.itemId} dropped from {monster.EnemyId} ({monster.Rank}) via tag:{tag}",DebugManager.EDebugLevel.Test,"Loot");
                     }
-
-                    // 3) Secret Rules prüfen – für dieses eine Monster
-                    var secretDrops = _rules.GetSecretDrops(monster.Tags);
-                    foreach (var sd in secretDrops)
+                    else
                     {
-                        float roll = Random.Range(0f, 100f);
-                        if (roll < sd.chance)
+                        _unlucky.OnFail(drop.rarity);
+                    }
+                }
+
+                // 5. SecretDrops pro Monster
+                var secretDrops = _rules.GetSecretDrops(monster.Tags);
+                foreach (var sd in secretDrops)
+                {
+                    float roll = Random.Range(0f, 100f);
+                    if (roll < sd.chance)
+                    {
+                        var entry = new LootResultEntry
                         {
-                            finalLoot.Add(new LootResultEntry
-                            {
-                                EnemyId = monster.EnemyId,
-                                PickedTag = string.Join(",", monster.Tags), // alle Tags für SecretRule
-                                ItemId = sd.itemId
-                            });
-                            DebugManager.Log($"Secret Drop:{sd.itemId}({ItemRegistry.Instance.GetRarity(sd.itemId)}) - chance was {sd.chance}%", DebugManager.EDebugLevel.Test, "Loot");
-                        }
+                            EnemyId = monster.EnemyId,
+                            PickedTag = "SecretCombo",
+                            ItemId = sd.itemId
+                        };
+                        results.Add(entry);
+                        ctx.Drops.Add(entry);
+
+                        DebugManager.Log($"Secret drop {sd.itemId} from {monster.EnemyId}",DebugManager.EDebugLevel.Test,"Loot");
                     }
                 }
             }
 
-            // 4) Post-Processing: minDrops, maxDrops, rarityGuarantees
-            //    (auf Basis der gesamten Welle, nicht einzelner Monster)
-            var mergedWave = _rules.GetMergedForWave(wave);
-            ApplyPostProcessing(mergedWave, finalLoot);
-
-            return finalLoot;
+            return results;
         }
 
-        private void ApplyPostProcessing(MergedLoot merged, List<LootResultEntry> loot)
+        /// <summary>
+        /// Wellenabschluss: erzwingt MinDrops, Rarity-Guarantees und globale SecretDrops.
+        /// </summary>
+        public void FinalizeWave(WaveLootContext ctx)
         {
-            // minDrops
-            while (loot.Count < merged.minDrops)
+            var allTags = ctx.Wave.Monsters.SelectMany(m => m.Tags).Distinct().ToArray();
+            var mergedWave = _rules.GetMergedForTags(allTags);
+
+            // MinDrops-Failsafe
+            while (ctx.Drops.Count < mergedWave.minDrops)
             {
-                var pick = merged.drops[Random.Range(0, merged.drops.Count)];
-                loot.Add(new LootResultEntry
-                {
-                    EnemyId = "PostProcess",
-                    PickedTag = "rule:minDrops",
-                    ItemId = pick.itemId
-                });
-                DebugManager.Log($"added {pick.itemId}({pick.rarity}) to reach minDrop", DebugManager.EDebugLevel.Dev, "Loot");
+                var pick = mergedWave.drops[Random.Range(0, mergedWave.drops.Count)];
+                var entry = new LootResultEntry { EnemyId = "WaveBonus", PickedTag = "Failsafe", ItemId = pick.itemId };
+                ctx.Drops.Add(entry);
+                DebugManager.Log($"Added {pick.itemId} to reach minDrops",DebugManager.EDebugLevel.Dev,"Loot");
             }
 
-            // maxDrops
-            SmartTrim(merged, loot, BalanceManager.Instance.Config);
-
-            // rarityGuarantees
-            foreach (var kv in merged.rarityGuarantees)
+            // RarityGuarantees
+            foreach (var kv in mergedWave.rarityGuarantees)
             {
                 var rarity = kv.Key;
                 int min = kv.Value;
-
-                int count = loot.Count(entry => ItemRegistry.Instance.GetRarity(entry.ItemId) == rarity);
+                int count = ctx.Drops.Count(d => ItemRegistry.Instance.GetRarity(d.ItemId) == rarity);
 
                 while (count < min)
                 {
-                    var candidates = merged.drops.FindAll(d => d.rarity == rarity);
+                    var candidates = mergedWave.drops.FindAll(d => d.rarity == rarity);
                     if (candidates.Count == 0) break;
 
                     var pick = candidates[Random.Range(0, candidates.Count)];
-                    loot.Add(new LootResultEntry
-                    {
-                        EnemyId = "PostProcess",
-                        PickedTag = "rule:guaranteeDrops",
-                        ItemId = pick.itemId
-                    });
-                    DebugManager.Log($"added {pick.itemId}({pick.rarity}) as guaranteed drop.", DebugManager.EDebugLevel.Dev, "Loot");
+                    var entry = new LootResultEntry { EnemyId = "WaveBonus", PickedTag = "Guarantee", ItemId = pick.itemId };
+                    ctx.Drops.Add(entry);
+                    DebugManager.Log($"Guaranteed {rarity} → {pick.itemId}",DebugManager.EDebugLevel.Dev,"Loot");
                     count++;
                 }
             }
+
+            // SecretRules (Wave-wide) // GameDesign-decision -> To easy to get the secrets with this implementation
+            //var secretDrops = _rules.GetSecretDrops(allTags);
+            //foreach (var sd in secretDrops)
+            //{
+            //    float roll = Random.Range(0f, 100f);
+            //    if (roll < sd.chance)
+            //    {
+            //        var entry = new LootResultEntry { EnemyId = "WaveBonus", PickedTag = "WaveSecret", ItemId = sd.itemId };
+            //        ctx.Drops.Add(entry);
+            //        DebugManager.Log($"Wave secret drop {sd.itemId}",DebugManager.EDebugLevel.Test,"Loot");
+            //    }
+            //}
         }
-
-        private void SmartTrim(MergedLoot merged, List<LootResultEntry> loot, GameBalanceConfig balance)
-        {
-            if (merged.maxDrops <= 0 || loot.Count <= merged.maxDrops)
-                return;
-
-            var trimWeights = balance.loot.trim;
-
-            // so lange wir zu viele Drops haben → zufällig Items entfernen
-            while (loot.Count > merged.maxDrops)
-            {
-                // Gewichte aufstellen
-                var weightedList = new List<LootResultEntry>();
-
-                foreach (var entry in loot)
-                {
-                    var rarity = ItemRegistry.Instance.GetRarity(entry.ItemId);
-                    float weight = rarity switch
-                    {
-                        Rarity.Common => trimWeights.common,
-                        Rarity.Uncommon => trimWeights.uncommon,
-                        Rarity.Rare => trimWeights.rare,
-                        Rarity.Epic => trimWeights.epic,
-                        Rarity.Legendary => trimWeights.legendary,
-                        _ => 1f
-                    };
-
-                    int slots = Mathf.CeilToInt(weight * 100);
-                    for (int i = 0; i < slots; i++)
-                        weightedList.Add(entry);
-                }
-
-                if (weightedList.Count > 0)
-{
-                    var removeEntry = weightedList[Random.Range(0, weightedList.Count)];
-                    loot.Remove(removeEntry);
-                    DebugManager.Log($"SmartTrim removed {removeEntry.ItemId}({ItemRegistry.Instance.GetRarity(removeEntry.ItemId)}) to reach configured maxDrop", DebugManager.EDebugLevel.Dev, "Loot");
-                }
-                else
-                {
-                    // Fallback: uniform random, falls alle Weights 0 sind
-                    int idx = Random.Range(0, loot.Count);
-                    var removeEntry = loot[idx];
-                    loot.RemoveAt(idx);
-                    DebugManager.Log($"SmartTrim removed {removeEntry.ItemId}({ItemRegistry.Instance.GetRarity(removeEntry.ItemId)}) to reach configured maxDrop", DebugManager.EDebugLevel.Dev, "Loot");
-                }
-
-            }
-        }
-    
-        
     }
 }

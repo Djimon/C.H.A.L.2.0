@@ -19,6 +19,22 @@ namespace CHAL.Data
         public int TotalElites => Monsters?.Where(m => m.Rank == EnemyRank.Elite).Sum(m => m.Count) ?? 0;
         public int TotalBosses => Monsters?.Where(m => m.Rank == EnemyRank.Boss).Sum(m => m.Count) ?? 0;
         public int TotalChampions => Monsters?.Where(m => m.Rank == EnemyRank.Champion).Sum(m => m.Count) ?? 0;
+
+        public WaveComposition Clone() =>
+        new WaveComposition
+        {
+            Level = this.Level,
+            Difficulty = this.Difficulty,
+            Monsters = this.Monsters
+                .Select(m => new EnemyInstance
+                {
+                    EnemyId = m.EnemyId,
+                    Rank = m.Rank,
+                    Count = m.Count,
+                    Tags = new List<string>(m.Tags)
+                })
+                .ToList()
+        };
     }
 
     [Serializable]

@@ -27,6 +27,19 @@ MonoBehaviour:
       alphaEpic: 0.15
       alphaLegendary: 0.1
       alphaSpecials: 0
+    trim:
+      common: 0
+      uncommon: 0
+      rare: 0
+      epic: 0
+      legendary: 0
+    rankMultipliers:
+      spawn: 1
+      normal: 1
+      magic: 2
+      elite: 4
+      boss: 6
+      champion: 10
   enemies:
     budgetPoints:
       spawn: 1

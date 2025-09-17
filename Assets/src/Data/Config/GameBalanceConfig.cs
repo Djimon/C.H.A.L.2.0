@@ -46,12 +46,37 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
+        public struct LootRankMultipliers
+        {
+            public int spawn;
+            public int normal;
+            public int magic;
+            public int elite;
+            public int boss;
+            public int champion;
+            public int GetMultiplier(EnemyRank rank)
+            {
+                return rank switch
+                {
+                    EnemyRank.Spawn => spawn,
+                    EnemyRank.Normal => normal,
+                    EnemyRank.Magic => magic,
+                    EnemyRank.Elite => elite,
+                    EnemyRank.Boss => boss,
+                    EnemyRank.Champion => champion,
+                    _ => 1
+                };
+            }
+        }
+
+        [System.Serializable]
         public struct LootSettings
         {
             public LootBudgetSettings budget;
             public LootFloorSettings floors;
             public LootUnluckySettings unlucky;
             public LootTrimSettings trim;
+            public LootRankMultipliers rankMultipliers;
         }
 
 

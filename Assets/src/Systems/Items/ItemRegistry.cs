@@ -32,17 +32,17 @@ namespace CHAL.Systems.Items
             {
                 if (string.IsNullOrWhiteSpace(def.itemId) || !ItemKey.TryParse(def.itemId, out _))
                 {
-                    Debug.LogWarning($"[ItemRegistry] Skip ungültige ID in {def.name}");
+                    DebugManager.Warning($"[ItemRegistry] Skip ungültige ID in {def.name}");
                     continue;
                 }
                 if (_byId.ContainsKey(def.itemId))
                 {
-                    Debug.LogWarning($"[ItemRegistry] Duplicate ItemId '{def.itemId}' in {def.name}");
+                    DebugManager.Warning($"[ItemRegistry] Duplicate ItemId '{def.itemId}' in {def.name}");
                     continue;
                 }
                 _byId.Add(def.itemId, def);
             }
-            Debug.Log($"[ItemRegistry] Geladen: {_byId.Count} Items");
+            DebugManager.Log($"[ItemRegistry] Geladen: {_byId.Count} Items",DebugManager.EDebugLevel.Production,"System");
         }
 
         public bool TryGet(string itemId, out ItemDef def) => _byId.TryGetValue(itemId, out def);

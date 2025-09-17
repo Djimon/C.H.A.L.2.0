@@ -25,16 +25,16 @@ namespace CHAL.Systems.Loot
                     var rule = ToRule(dto, ta.name);
                     if (_byTag.ContainsKey(rule.tag))
                     {
-                        Debug.LogWarning($"[LootRules] Duplicate tag '{rule.tag}' in {ta.name}, wird überschrieben.");
+                        DebugManager.Warning($"[LootRules] Duplicate tag '{rule.tag}' in {ta.name}, wird überschrieben.");
                     }
                     _byTag[rule.tag] = rule;
                 }
                 catch (System.Exception ex)
                 {
-                    Debug.LogError($"[LootRules] Fehler in {ta.name}: {ex.Message}");
+                    DebugManager.Error($"[LootRules] Fehler in {ta.name}: {ex.Message}");
                 }
             }
-            Debug.Log($"[LootRules] Geladen: {_byTag.Count} Tag-Rules");
+            DebugManager.Log($"[LootRules] Geladen: {_byTag.Count} Tag-Rules",DebugManager.EDebugLevel.Dev,"System");
 
             LoadSecretRules();
         }
@@ -112,7 +112,7 @@ namespace CHAL.Systems.Loot
             {
                 if (!_byTag.TryGetValue(tag, out var rule))
                 {
-                    Debug.LogWarning($"[LootRules] Keine Rule für tag '{tag}' gefunden");
+                    DebugManager.Warning($"[LootRules] Keine Rule für tag '{tag}' gefunden");
                     continue;
                 }
 
@@ -182,10 +182,10 @@ namespace CHAL.Systems.Loot
                 }
                 catch (System.Exception ex)
                 {
-                    Debug.LogError($"[SecretRules] Fehler in {ta.name}: {ex.Message}");
+                    DebugManager.Error($"[SecretRules] Fehler in {ta.name}: {ex.Message}");
                 }
             }
-            Debug.Log($"[SecretRules] Geladen: {_secretRules.Count} Regeln");
+            DebugManager.Log($"[SecretRules] Geladen: {_secretRules.Count} Regeln",DebugManager.EDebugLevel.Dev,"System");
         }
 
         public List<LootDropDto> GetSecretDrops(IEnumerable<string> monsterTags)

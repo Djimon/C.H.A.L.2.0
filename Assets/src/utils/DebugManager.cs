@@ -124,11 +124,20 @@ public static class DebugManager
         if (ProductiveMode && level != EDebugLevel.Production) return;
         if (level > CurrentDebugLevel) return;
 
-        // Tag-Freigabe prüfen (nicht registrierte Tags dürfen loggen)
-        if (!(string.IsNullOrEmpty(tag) || ActiveTags.Contains(tag)))
+        bool isKnown = TagColors.ContainsKey(tag) || ActiveTags.Contains(tag);
+
+        // Deaktivierte Tags blocken
+        if (isKnown && !ActiveTags.Contains(tag))
         {
             ExcludedTags.Add(tag);
-            //return; //nicht registrierte tags werden nciht angezeigt
+            return;
+        }
+
+        // Unbekannte dürfen loggen, landen aber in Excluded-Liste
+        if (!isKnown)
+        {
+            ExcludedTags.Add(tag);
+            // Optional: return hier, wenn unbekannte auch blockiert sein sollen
         }
 
         // Farbe bestimmen

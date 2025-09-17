@@ -1,0 +1,121 @@
+using CHAL.Data;
+using CHAL.Systems.Enemy;
+using CHAL.Systems.Loot;
+using CHAL.Systems.Loot.Models;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace CHAL.Systems.Wave
+{
+    public class WaveManager : MonoBehaviour
+    {
+        [Header("Setup")]
+        public WaveDef waveDef;
+        public Transform spawnPoint;
+        public GameObject enemyPrefab;
+        public GameObject lootPrefab;
+
+        [Header("Runtime Info")]
+        public int currentWaveLevel = 1;
+        public List<string> currentInventory = new();
+
+        private LootRulesService _rules;
+        private LootRoller _roller;
+        private UnluckyProtection _unlucky;
+        private List<EnemyController> _aliveEnemies = new();
+        private WaveLootContext _waveCtx;
+
+        private void Awake()
+        {
+            _rules = new LootRulesService();
+            _rules.LoadAll();
+
+            _unlucky = new UnluckyProtection();
+            _roller = new LootRoller(_rules, _unlucky);
+
+            EnemyController.OnEnemyKilled += HandleEnemyKilled;
+            LootCube.OnLootCollected += CollectLoot;
+        }
+
+        private void OnDestroy()
+        {
+            EnemyController.OnEnemyKilled -= HandleEnemyKilled;
+            LootCube.OnLootCollected -= CollectLoot;
+        }
+
+        [ContextMenu("Start Wave")]
+        public void StartWave()
+        {
+            DebugManager.Log($"Starting Wave {currentWaveLevel}", DebugManager.EDebugLevel.Test, "Wave");
+
+            var wave = waveDef != null ? waveDef.ToComposition() : GetFallbackWave();
+            _waveCtx = new WaveLootContext(wave);
+            _aliveEnemies.Clear();
+
+            StartCoroutine(SpawnEnemies(wave));
+        }
+
+        private IEnumerator SpawnEnemies(WaveComposition wave)
+        {
+            foreach (var monster in wave.Monsters)
+            {
+                for (int i = 0; i < monster.Count; i++)
+                {
+                    var go = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+                    var ec = go.GetComponent<EnemyController>();
+                    ec.Init(monster);
+                    _aliveEnemies.Add(ec);
+
+                    yield return new WaitForSeconds(0.2f);
+                }
+            }
+        }
+
+        private void HandleEnemyKilled(EnemyController ec, EnemyInstance instance, Vector3 pos)
+        {
+            _aliveEnemies.Remove(ec);
+
+            // Loot berechnen
+            var drops = _roller.RollLootForMonster(instance, _waveCtx);
+
+            foreach (var d in drops)
+            {
+                var lootObj = Instantiate(lootPrefab, pos + Vector3.up * 1f, Quaternion.identity);
+                var lc = lootObj.GetComponent<LootCube>();
+                lc.Init(d.ItemId);
+            }
+
+            if (_aliveEnemies.Count == 0)
+            {
+                _roller.FinalizeWave(_waveCtx);
+                DebugManager.Log("Wave Completed!", DebugManager.EDebugLevel.Test, "Wave");
+            }
+        }
+
+        public void CollectLoot(string itemId)
+        {
+            currentInventory.Add(itemId);
+            DebugManager.Log($"Collected {itemId}. Inventory now: {currentInventory.Count}", DebugManager.EDebugLevel.Debug, "Loot");
+        }
+
+        private WaveComposition GetFallbackWave()
+        {
+            return new WaveComposition
+            {
+                Level = currentWaveLevel,
+                Difficulty = 1f,
+                Monsters = new List<EnemyInstance>
+            {
+                new EnemyInstance
+                {
+                    EnemyId = "FallbackEnemy",
+                    Count = 5,
+                    Tags = new List<string> {"swarm"},
+                    Rank = EnemyRank.Normal
+                }
+            }
+            };
+        }
+    }
+}

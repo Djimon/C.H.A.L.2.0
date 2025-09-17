@@ -30,7 +30,11 @@ namespace CHAL.Systems.Loot
         /// </summary>
         public void OnDrop(Rarity rarity)
         {
-            _streaks[rarity] = 0;
+            if (IsTracked(rarity))
+            {
+                _streaks[rarity] = 0;
+                DebugManager.Log($"decreased unlucky protection for [{rarity}] to 0", DebugManager.EDebugLevel.Debug, "System");
+            }
         }
 
         /// <summary>
@@ -38,7 +42,11 @@ namespace CHAL.Systems.Loot
         /// </summary>
         public void OnFail(Rarity rarity)
         {
-            _streaks[rarity]++;
+            if (IsTracked(rarity))
+            {
+                _streaks[rarity]++;
+                DebugManager.Log($"increased unlucky protection for [{rarity}] to {_streaks[rarity]}", DebugManager.EDebugLevel.Debug, "System");
+            }
         }
 
         /// <summary>
@@ -66,5 +74,17 @@ namespace CHAL.Systems.Loot
         {
             return $"Rare={_streaks[Rarity.Rare]}, Epic={_streaks[Rarity.Epic]}, Legendary={_streaks[Rarity.Legendary]}";
         }
+
+        /// <summary>
+        /// Hilfsmethode: welche Rarities überhaupt berücksichtigt werden.
+        /// </summary>
+        private bool IsTracked(Rarity rarity) =>
+            rarity == Rarity.Rare ||
+            rarity == Rarity.Epic ||
+            rarity == Rarity.Legendary ||
+            rarity == Rarity.Daemonic ||
+            rarity == Rarity.Holy ||
+            rarity == Rarity.Mythic;
+
     }
 }

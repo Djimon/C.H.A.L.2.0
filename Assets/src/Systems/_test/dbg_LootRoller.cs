@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LootRollerDebug : MonoBehaviour
 {
-    private CHAL.Systems.Loot.LootRoller roller;
+    private CHAL.Systems.Loot.LootRoller_old roller;
 
     void Start()
     {
@@ -13,7 +13,7 @@ public class LootRollerDebug : MonoBehaviour
         rules.LoadAll();
 
         var unlucky = new CHAL.Systems.Loot.UnluckyProtection();
-        var roller = new CHAL.Systems.Loot.LootRoller(rules, unlucky);
+        var roller = new CHAL.Systems.Loot.LootRoller_old(rules, unlucky);
 
         // Wave definieren
         var wave = new CHAL.Data.WaveComposition
