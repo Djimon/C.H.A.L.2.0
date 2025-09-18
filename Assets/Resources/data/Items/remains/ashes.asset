@@ -13,8 +13,19 @@ MonoBehaviour:
   m_Name: ashes
   m_EditorClassIdentifier: 
   itemId: remains:ashes
-  displayName: Ashes
+  displayName: ashes
   description: 'Type: Remains'
   icon: {fileID: 0}
-  rarity: 1
+  rarity: 0
   lootValue: 15
+  remainData:
+    remainType: 
+  runeData:
+    effectType: 
+    power: 0
+  partData:
+    dnaType: 
+    moduleFuel: []
+  moduleData:
+    effect: 
+    modulePower: 0

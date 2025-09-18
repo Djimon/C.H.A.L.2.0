@@ -1,0 +1,17 @@
+{
+  "tag": "boss",
+  "drops": [
+	{ "itemId": "part:bone", "chance": 50, "quantity": 1 },
+    { "itemId": "part:claw", "chance": 50, "quantity": 1 },
+    { "itemId": "remains:blood", "chance": 70, "quantity": 1 },
+    { "itemId": "remains:ichor", "chance": 50, "quantity": 1 },
+    { "itemId": "remains:stardust", "chance": 50, "quantity": 1 },
+    { "itemId": "remains:void_essence", "chance": 50, "quantity": 1 }
+  ],
+  "minDrops": 3,
+  "maxDrops": 8,
+  "rarityGuarantees": [
+    { "rarity": "Epic", "min": 1 },
+    { "rarity": "rare", "min": 1 }
+  ]
+}

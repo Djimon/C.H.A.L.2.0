@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
   m_Name: gland
   m_EditorClassIdentifier: 
-  itemId: parts:gland
+  itemId: part:gland
   displayName: Gland
   description: 'Type: Remains'
   icon: {fileID: 0}
   rarity: 0
   lootValue: 10
+  dnaData:
+    dnaType: 
+  runeData:
+    effectType: 
+    power: 0
+  partData:
+    slotType: 

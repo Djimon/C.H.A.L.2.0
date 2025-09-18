@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
   m_Name: chitin_armor
   m_EditorClassIdentifier: 
-  itemId: parts:chitin_armor
+  itemId: part:chitin_armor
   displayName: Chitin Armor
   description: 'Type: Remains'
   icon: {fileID: 0}
   rarity: 2
   lootValue: 30
+  dnaData:
+    dnaType: 
+  runeData:
+    effectType: 
+    power: 0
+  partData:
+    slotType: 

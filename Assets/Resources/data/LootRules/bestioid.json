@@ -1,0 +1,15 @@
+{
+  "tag": "bestioid",
+  "drops": [
+    { "itemId": "part:fur", "chance": 40, "quantity": 1 },
+    { "itemId": "part:claw", "chance": 30, "quantity": 1 },
+    { "itemId": "part:leather", "chance": 20, "quantity": 1 },
+    { "itemId": "part:bone", "chance": 20, "quantity": 1 },
+    { "itemId": "part:antlers", "chance": 10, "quantity": 1 },
+    { "itemId": "remains:blood", "chance": 40, "quantity": 1 },
+	{ "itemId": "remains:bone_poweder", "chance": 80, "quantity": 1 }
+  ],
+  "minDrops": 2,
+  "maxDrops": 4,
+  "rarityGuarantees": []
+}

@@ -1,0 +1,11 @@
+{
+  "tag": "frozen",
+  "drops": [
+    { "itemId": "part:frost_crystal", "chance": 40, "quantity": 1 },
+    { "itemId": "part:ice_gland", "chance": 30, "quantity": 1 },
+    { "itemId": "remains:frost_core", "chance": 30, "quantity": 1 }
+  ],
+  "minDrops": 1,
+  "maxDrops": 2,
+  "rarityGuarantees": []
+}

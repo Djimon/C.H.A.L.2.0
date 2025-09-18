@@ -1,0 +1,13 @@
+{
+  "tag": "elite",
+  "drops": [
+    { "itemId": "part:essence_shard", "chance": 50, "quantity": 1 },
+    { "itemId": "remains:soul_dust", "chance": 30, "quantity": 1 },
+	{ "itemId": "remains:bone_powder", "chance": 50, "quantity": 1 }
+  ],
+  "minDrops": 3,
+  "maxDrops": 6,
+  "rarityGuarantees": [
+    { "rarity": "Rare", "min": 1 }
+  ]
+}

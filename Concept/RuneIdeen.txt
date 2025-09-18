@@ -1,0 +1,51 @@
+OFFENSIV:
+- frostbite (eisschaden)
+- inferno (feuerschaden)
+- storm (blitzschaden)
+- haste (attackspeed)
+- power (dmg)
+- piercing (Rüstungsdurchdringung)
+- rage (krit-Chance)
+- venom (chacne auf poison DOT)
+- Execution (kill under 5% life)
+- vampire (lifeleech)
+DEFENSIVE:
+- iron (armor+)
+- Guard (chance dmg to armor convert)
+- Absorb (absorbier alle 5 sek XX schaden)
+- vigor (+max Life)
+- barrier (first 5 S no damage)
+- glacier (eis widerstand)
+- static (blitz wiederstand)
+- magma (feuer widerstand)
+BUFF:
+- speed (bewegung)
+- Luck (drop chance)
+- wisdom (cooldown)
+- fortune (gold)
+- enlightment (XP)
+- synergy (nearby allies buff)
+- mending (1 hp every second)
+
+Überreste und ihr EInflus auf die Wahrschienlihckeit der RUne:
+
+Häufig / Baseline (chance auf maximal Stue 1 Rune)
+
+Ashes → Inferno, Magma, Absorb (Feuer / Verfall)
+Bone Powder → Piercing, Iron, Vigor (Grundsubstanz, leicht überall)
+Frost Shard → Frostbite, Glacier, Barrier (Eis)
+Charged Crystal → Storm, Static, Haste (Strom)
+
+Mittlere Seltenheit (chacne auf maximal Stufe 2 Rune)
+
+Soul Dust → Wisdom, Enlightment, Absorb (spirituell)
+Ethereal Thread → Mending, Synergy, Barrier (magisch, aber noch „machbar“)
+Blood → Vampire, Vigor, Rage (Lebenskraft)
+Void Essence → Venom, Barrier, Synergy (dunkel, giftig, verbindend)
+
+Selten / Exotisch (cahcne bis stufe 3 Rune)
+
+Stardust → Fortune, Enlightment, Synergy (kosmisch, selten)
+Obsidian Fragment → Absorb, Guard (physisch zäh, eher defensiv)
+Moon Shard → Luck, Wisdom, Cooldown (mystisch)
+Ichor → Rage (Crit), Power, Fortune (mythisch, göttlich)

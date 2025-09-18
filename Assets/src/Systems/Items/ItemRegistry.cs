@@ -49,5 +49,14 @@ namespace CHAL.Systems.Items
         public Rarity GetRarity(string itemId) => _byId.TryGetValue(itemId, out var d) ? d.rarity : Rarity.Common;
         public int GetLootValue(string itemId) => _byId.TryGetValue(itemId, out var d) ? d.lootValue : 0;
         public bool Exists(string itemId) => _byId.ContainsKey(itemId);
+
+        public IEnumerable<ItemDef> GetAllItemsByType(string typePrefix)
+        {
+            foreach (var kv in _byId)
+            {
+                if (kv.Key.StartsWith(typePrefix + ":", System.StringComparison.OrdinalIgnoreCase))
+                    yield return kv.Value;
+            }
+        }
     }
 }

@@ -1,0 +1,14 @@
+{
+  "tag": "basic",
+  "drops": [
+    { "itemId": "part:limb", "chance": 40, "quantity": 1 },
+    { "itemId": "part:claw", "chance": 30, "quantity": 1 },
+    { "itemId": "part:tongue", "chance": 20, "quantity": 1 },
+    { "itemId": "part:eye", "chance": 20, "quantity": 1 },
+    { "itemId": "part:tooth", "chance": 20, "quantity": 1 },
+    { "itemId": "remains:ashes", "chance": 60, "quantity": 1 }
+  ],
+  "minDrops": 1,
+  "maxDrops": 3,
+  "rarityGuarantees": []
+}

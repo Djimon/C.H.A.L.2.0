@@ -1,0 +1,21 @@
+Name,Effekt,Rarity,Farbe
+MEDELA,Regeneriert 2% HP pro Sekunde,Common,Gold
+VIPERA,Immunität gegen Gift,Uncommon,Grün
+GLACIES,Immunität gegen Freeze,Uncommon,Blau
+MAGMA,Immunität gegen Burn,Uncommon,Rot
+EXTENDERE,Höhere Reichweite (nah und Fernkampf),Rare,Violett
+SPECULUM,"Chance, dass eingehender Schaden reflektiert wird",Rare,Violett
+SANCTUS,"Hits haben Chance, Allies um 2% HP zu heilen",Rare,Gold
+MARTYRIS,Übernimmt 30% des Schadens von Allies (halbiert),Epic,Blau
+FUROR,"Je weniger HP, desto höher Attack Speed",Epic,Rot
+SANGUIS,Lifeleech,Epic,Grün
+TRAJECTIO,Projektile treffen 2–3 mal,Epic,Violett
+IGNIS,Brennen kann stacken und erhöht den Schaden,Epic,Rot
+GELIDUS,Freeze kann stacken und fügt DOT hinzu,Epic,Blau
+VENENUM,"Poison kann stacken, mehr DOT",Epic,Grün
+TEMERARIUS,+30% dmg inbound & outbound,Legendary,Rot
+ECSECUTIO,"Insta-Kill unter 20% Leben (10% Boss, 5% Champ)",Legendary,Violett
+IMMORTALIS,"Bei <5% Leben 50% Chance, dass nächster Schaden als Heal umgewandelt",Legendary,Blau
+FLUXUS,Für jeden Zustand auf Gegner: +10% erlittenen Schaden,Legendary/Mythic,Violett
+AURA,Alle Moduleffekte wirken auf Allies im Radius,Mythic,Gold
+ULTIO,On Death: Allies 5s Unverwundbarkeit & +20% AS,Mythic,Gold

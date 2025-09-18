@@ -1,0 +1,139 @@
+=============================
+GAMEPLAY LOOP CONCEPT DOCUMENT
+=============================
+
+Project: Autobattler with Crafting & Loot System
+Version: Prototype Design
+
+---------------------------------
+1. CORE GAME LOOP (Prototype Scope)
+---------------------------------
+
+The player alternates between:
+- Preparation Phase (Hideout: Crafting, Build Setup)
+- Arena Phase (Auto-Battle, Loot Collection)
+- Progression Phase (Passive Tree, Meta)
+
+Prototype Core Features:
+
+1. LABOR (Essence Extraction & Module Crafting)
+   - Enemies drop "Überreste" (body parts & neutral residues).
+   - Überreste can be processed in the LABOR:
+     * Extracted in bulk into MODULES (e.g., 100 Füße -> Bewegungsmodul).
+     * Modules can be equipped by characters for buffs (e.g., +speed).
+   - Processing also generates DNA fragments (byproduct with different DNAtypes). 
+     * DNA system for character unlocks comes later.
+
+2. LOOT & INVENTORY
+   - Enemies drop items (Überreste) when killed in Arena.
+   - Loot is picked up by player (active engagement during Auto-Battle).
+   - temporary Inventory: simple list of acquired Überreste & neutral residues.
+		-> after successful wave transfered in the persistant inventory
+
+3. CHARACTER SETUP
+   - Team: 3–6 characters (Prototype: 2–3 slots).
+   - Characters can equip Modules from LABOR.
+   - Basic slots: 2 weapon/shield/module, 2 armor/gadget/module (expand later).
+
+4. ARENA (Auto-Battle)
+   - Player chooses a map (linear unlock, increasing difficulty).
+		-> multiple wave swithin 1 map.
+		-> all wave scomplete unlock new map and new difficulty for old map
+   - Characters placed in fixed slots (front/backline).
+   - Battle is automatic: characters auto-attack.
+   - Player does not actively fight, but collects loot drops.
+		-> Can activate random spawning Adds (optional Bonus-Troups/ Elite-Packs)
+   - Bonus rewards after finishing a map ("Battlepaas" / Missions/ Tropäenpfad)
+		-> Clearspeed = Sterne pro Map
+		-> asugeteilter Damage/ DPS
+
+5. PASSIVE TREE (Prototype: 1 Branch)
+   - Account-wide progression.
+   - Prototype version: 1 branch with 5–10 nodes (small stacking buffs).
+		-> attack Speed
+		-> crit chance
+		-> phys dmg / magic dmg
+		-> health
+		-> movement Speed
+		-> Armor
+   - Future expansion: 4–5 branches (aggressive/defensive/magic/etc.).
+
+---------------------------------
+2. FUTURE EXPANSIONS
+---------------------------------
+
+1. DNA CHARACTER UNLOCKS
+   - DNA fragments (Insectoid, Reptiloid, Bestioid, Demonoid).
+   - Characters require DNA % combinations to unlock (e.g. 20% insect, 60% beast).
+   - Unlocks gated by successful wave completions.
+
+2. FORGE (Runen-Crafting)
+   - Neutral residues (Ashes, Glitterdust, Tränen, Blood, Void Essence, etc.) 
+     used in RNG Forge.
+   - Player feeds 3–4 residues, which bias RNG chances toward certain Runes.
+   - Output: Runen (offensive, defensive, buff).
+   - Rune slots unlock with character level.
+
+3. FULL PASSIVE TREE
+   - 4–5 branches, 10 nodes each.
+   - Themes: Aggressive, Defensive, Physical, Magical, Ranged.
+   - Respec possible (gold cost).
+
+4. ARENA INTERACTIONS
+   - Light-touch player influence (e.g. Ultimates, situational buffs).
+   - Map-specific mechanics (lava tiles, icy ground).
+
+5. ARMY CUSTOMIZING
+   - Visual customization: colors, patterns, banners.
+   - Personalize "My Army" identity.
+
+6. META-BONUSES
+   - Battlepass-like progression after completing maps.
+   - Rewards: Crafting mats, bonus gold, cosmetic currency.
+
+---------------------------------
+3. ENEMY TAG & LOOT SYSTEM
+---------------------------------
+
+Enemies are defined by multiple tags (2–4). 
+Tags determine which Überreste (loot) they can drop.
+
+- ARCHETYPE TAGS (define base drops + neutral residue):
+  * basic: Gliedmaßen, Kralle, Zunge, Auge, Zahn, Ashes
+  * insectoid: Chitinpanzer, Fühler, Stachel, Drüse, Kapsel, Glitterdust
+  * reptiloid: Schuppe, Hornhaut, Sekret, Schleim, Knochenfragment, Tränen
+  * bestioid: Fell, Klauen, Leder, Knochen, Gehörn, Blood
+  * demonoid: Seelenfragment, Knochenasche, Runenstein, Schattenhaut, Flammenrest, Void Essence
+
+- FEATURE TAGS (extra drops, situational):
+  * winged: Flügel, Flughaut, Feder, Moon Shard
+  * horned: Horn, Geweih, Stirnplatte
+  * poisoned: Giftdrüse, Giftbeutel, Giftzahn
+  * armored: Panzerplatte, Schuppe+, Hautplatten, Obsidian Fragment
+  * fiery: Glutrest, Branddrüse, Verkohlte Schuppe, Ashes+
+  * icy: Frostkristall, Eisdrüse, Hornhaut+, Frost Shard
+
+- ROLE / META TAGS (rare/special):
+  * elite: Essenzsplitter, Runenstein+, Soul Dust
+  * boss: guarantees rare residue (Ichor, Stardust, Void Essence)
+  * caster: Seelenstaub, Arkanes Fragment, Runenink, Ethereal Thread
+  * undead: Knochenasche, Schädelstück, Verfluchte Essenz, Soul Dust
+  * elemental: Elementarkristall (Feuer, Eis, Blitz), Runenkern, Charged Crystal
+  * construct: Metallsplitter, Mechanischer Kern, Zahnradfragment, Obsidian Fragment
+
+---------------------------------
+4. PLAYER PROGRESSION
+---------------------------------
+
+- Short term: stronger characters via modules, inventory, and small passive buffs.
+- Mid term: unlocking DNA characters, expanding team composition.
+- Long term: Runen system, full Passive Tree, Battlepass rewards, customization.
+
+---------------------------------
+5. DESIGN PRINCIPLES
+---------------------------------
+
+- Active Engagement = Loot Pickup (during otherwise Auto-Battle).
+- Player Focus = Preparation & Build Optimization, not twitch combat.
+- Progression Loop = Craft → Build → Battle → Meta → repeat.
+- Tags keep the system modular: easy to expand enemy types, drops, and crafting recipes.

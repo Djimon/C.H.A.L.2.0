@@ -1,0 +1,13 @@
+{
+  "tag": "undead",
+  "drops": [
+    { "itemId": "part:bone_fragments", "chance": 40, "quantity": 1 },
+    { "itemId": "part:skull_shard", "chance": 30, "quantity": 1 },
+    { "itemId": "part:cursed_essence", "chance": 20, "quantity": 1 },
+	{ "itemId": "remains:bone_powder", "chance": 40, "quantity": 1 }
+    { "itemId": "remains:soul_dust", "chance": 30, "quantity": 1 }
+  ],
+  "minDrops": 1,
+  "maxDrops": 2,
+  "rarityGuarantees": []
+}

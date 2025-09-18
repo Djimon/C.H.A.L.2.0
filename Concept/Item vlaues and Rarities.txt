@@ -1,0 +1,88 @@
+| type    | itemId                | rarity (Vorschlag) | lootValue (Range) |
+| ------- | --------------------- | ------------------ | ----------------- |
+| remains | ashes                 | Common             | 10–20             |
+| remains | glitterdust           | Common / Uncommon  | 20–40             |
+| remains | blood                 | Uncommon           | 40–60             |
+| remains | bone_powder          | Uncommon           | 60–80             |
+| remains | frost_core           | Rare               | 100–150           |
+| remains | ember_remnant      | Rare               | 120–180           |
+| remains | soul_dust            | Rare / Epic        | 150–250           |
+| remains | ethereal_thread      | Epic               | 200–300           |
+| remains | void_essence         | Epic               | 250–350           |
+| remains | stardust              | Legendary          | 400–500           |
+| remains | obsidian_fragment    | Legendary          | 450–500           |
+| remains | moon_shard           | Legendary          | 400–500           |
+| remains | ichor                 | Legendary / Mythic | 500–600           |
+| remains | tears               | Uncommon           | 40–60             |
+
+Modul to parts Matrix - rarity-mix of used parts define the power-range of the Module
+-> using low-rarity parts leeds to weaker Modules
+-> using high-rarity parts leeds to stronger modules
+
+| Modul               | Parts                                                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Power Core**      | part:claw, part:hard_core    
+| **Piercing Fang**   | part:tooth,  part:stinger                 
+| **Inferno Ember**   | part:fire_crystal    
+| **Frost Shard**     | part:frost_core,   
+| **Venom Sac**       | part:tongue, part:venom_tooth, part:venom_sac  
+| **Iron Plating**    | part:chitin, part:scale, part:hard_scale          
+| **Guardian Shell**  | part:capsule, part:horn_skin, part:leather, part:armor_plate, 
+| **Vital Organ**     | part:gland, part:bone_fragment, part:fur, part:bone, part:hide_plate  
+| **Barrier Crystal** | part:soul_fragment, part:shadow_skin  
+| **Element Shield**  | part:slime, part:charred_scale
+| **Haste Tendon**    | part:antenna, part:feather   
+| **Speed Limb**      | part:limb, part:wing       
+| **Lucky Charm**     | part:cursed_essence        
+| **Golden Horn**     | part:antlers, part:horn 
+| **Wise Eye**        | part:eye, part:arcane_fragment 
+| **XP Fragment**     | part:skull_shard 
+
+
+| itemId                  | rarity (Vorschlag)| lootValue (Range) |
+| ------------------------| ----------------- | ------------------ | ----------------- |
+| part:limb               | Common            | 10–15              |                   |
+| part:claw               | Common            | 15–25              |                   |
+| part:tongue             | Common            | 10–20              |                   |
+| part:eye                | Common            | 10–20              |                   |
+| part:tooth              | Common            | 15–25              |                   |
+| part:antenna            | Uncommon          | 30–40              |                   |
+| part:chitin             | Uncommon          | 40–50              |                   |
+| part:stinger            | Rare              | 60–80              |                   |
+| part:gland              | Rare              | 70–90              |                   |
+| part:capsule            | Rare              | 70–100             |                   |
+| part:scale              | Uncommon          | 40–60              |                   |
+| part:horn_skin         | Uncommon          | 40–60              |                   |
+| part:secretions         | Uncommon          | 40–60              |                   |
+| part:slime              | Uncommon          | 30–50              |                   |
+| part:bone_fragment     | Common / Uncommon | 20–40              |                   |
+| part:venom_tooth       | Rare              | 80–120             |                   |
+| part:venom_gland       | Rare              | 90–120             |                   |
+| part:venom_sac         | Rare              | 90–120             |                   |
+| part:fur                | Uncommon          | 40–60              |                   |
+| part:leather            | Uncommon          | 40–60              |                   |
+| part:antler / antlers   | Rare              | 70–100             |                   |
+| part:bone               | Common / Uncommon | 20–40              |                   |
+| part:horn               | Uncommon          | 30–50              |                   |
+| part:geweih             | Rare              | 70–100             |                   |
+| part:armor_plate       | Rare              | 100–150            |                   |
+| part:scale_plus        | Rare              | 100–150            |                   |
+| part:hide_plate        | Rare              | 100–150            |                   |
+| part:fire_gland        | Rare / Epic       | 150–200            |                   |
+| part:charred_scale     | Rare / Epic       | 150–200            |                   |
+| part:frost_crystal     | Rare              | 120–150            |                   |
+| part:ice_gland         | Rare              | 120–150            |                   |
+| part:horn_ice          | Rare              | 120–150            |                   |
+| part:soul_fragment     | Rare              | 150–200            |                   |
+| part:bone_ash          | Rare              | 150–200            |                   |
+| part:rune_stone        | Epic              | 200–300            |                   |
+| part:shadow_skin       | Rare              | 150–200            |                   |
+| part:flame_remnant     | Rare / Epic       | 180–250            |                   |
+| part:arcane_fragment   | Rare              | 150–200            |                   |
+| part:rune_ink          | Epic              | 200–300            |                   |
+| part:skull_shard       | Rare / Epic       | 180–250            |                   |
+| part:cursed_essence    | Rare / Epic       | 180–250            |                   |
+| part:fire_crystal      | Rare              | 150–200            |                   |
+| part:ice_crystal       | Rare              | 150–200            |                   |
+| part:hard_core         | Epic              | 200–300            |                   |
+

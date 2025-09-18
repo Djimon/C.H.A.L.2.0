@@ -1,0 +1,29 @@
+Tag-> Drop - Matrix
+Archetype-Tags:
+| Tag           | Mögliche Drops (3–6)                                                                  |
+| ------------- | ------------------------------------------------------------------------------------- |
+| **basic**     | Gliedmaßen, Kralle, Zunge, Auge, Zahn, **Ashes**                                      |
+| **insectoid** | Chitinpanzer, Fühler, Stachel, Drüse, Kapsel, Kieferzange, **Glitterdust**            |
+| **reptiloid** | Schuppe, Hornhaut, Sekret, Schleim, Knochenfragment, Giftzahn, Giftbeutel, **Tränen** |
+| **bestioid**  | Fell, Klauen, Leder, Knochen, Gehörn, **Blood**                                       |
+| **demonoid**  | Seelenfragment, Knochenasche, Runenstein, Schattenhaut, Flammenrest, **Void Essence** |
+
+Feature-Tags:
+| Tag          | Mögliche Drops (2–4)                                       |
+| ------------ | ---------------------------------------------------------- |
+| **winged**   | Flügel, Flughaut, Feder, **Moon Shard**                    |
+| **horned**   | Horn, Geweih, Stirnplatte                                  |
+| **poisoned** | Giftdrüse, Giftbeutel, Giftzahn, **Venom Sac**             |
+| **armored**  | Panzerplatte, Schuppe+, Hautplatten, **Obsidian Fragment** |
+| **fiery**    | Glutrest, Branddrüse, Verkohlte Schuppe, **Ashes+**        |
+| **icy**      | Frostkristall, Eisdrüse, Hornhaut+, **Frost Shard**        |
+
+Power-Tags:
+| Tag           | Mögliche Drops (seltene/bonus)                                                  |
+| ------------- | ------------------------------------------------------------------------------- |
+| **elite**     | Essenzsplitter, Runenstein+, **Soul Dust**                                      |
+| **boss**      | Garantiert 1 seltenes Material: **Ichor**, **Stardust**, Void Essence           |
+| **caster**    | Seelenstaub, Arkanes Fragment, Runenink, **Ethereal Thread**                    |
+| **undead**    | Knochenasche, Schädelstück, Verfluchte Essenz, **Soul Dust**                    |
+| **elemental** | Elementarkristall (Feuer, Eis, Blitz), Runenkern, **Charged Crystal**           |
+| **construct** | Metallsplitter, Mechanischer Kern, Runengeätztes Zahnrad, **Obsidian Fragment** |
