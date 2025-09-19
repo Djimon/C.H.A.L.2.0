@@ -80,8 +80,6 @@ namespace CHAL.Data
         }
 
 
-
-
         [Header("Loot Settings")]
         public LootSettings loot;
 

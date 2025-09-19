@@ -13,12 +13,12 @@ namespace CHAL.Systems.Wave
         public int SpentBudget { get; set; } // U
         public int RemainingBudget => TotalBudget - SpentBudget;
         public List<LootResultEntry> Drops { get; } = new List<LootResultEntry>();
-        public UnluckyProtection Unlucky { get; }
+        //public UnluckyProtection Unlucky { get; }
 
         public WaveLootContext(WaveComposition wave)
         {
             Wave = wave;
-            Unlucky = new UnluckyProtection();
+            //Unlucky = new UnluckyProtection();
 
             TotalBudget = LootBudgetCalculator.CalculateBudget(
                 wave.TotalSpawns, wave.TotalNormals, wave.TotalMagics,
@@ -26,5 +26,6 @@ namespace CHAL.Systems.Wave
                 wave.Level, wave.Difficulty
             );
         }
+
     }
 }

@@ -1,4 +1,4 @@
-using CHAL.Data;
+﻿using CHAL.Data;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Loot.Models;
@@ -18,7 +18,10 @@ namespace CHAL.Systems.Wave
 
         [Header("Runtime Info")]
         public int currentWaveLevel = 1;
-        public List<string> currentInventory = new();
+        public int Maplevel = 1;
+        public MapDifficulty difficulty = MapDifficulty.Easy;
+        public WaveRewards waveRewards;
+        //public List<string> currentInventory = new();
 
         private LootRulesService _rules;
         private LootRoller _roller;
@@ -76,6 +79,9 @@ namespace CHAL.Systems.Wave
         {
             _aliveEnemies.Remove(ec);
 
+            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, _waveCtx));
+            waveRewards.AddXP(_roller.RollXPForMonster(instance, Maplevel, difficulty, currentWaveLevel));
+
             // Loot berechnen
             var drops = _roller.RollLootForMonster(instance, _waveCtx);
 
@@ -95,8 +101,8 @@ namespace CHAL.Systems.Wave
 
         public void CollectLoot(string itemId)
         {
-            currentInventory.Add(itemId);
-            DebugManager.Log($"Collected {itemId}. Inventory now: {currentInventory.Count}", DebugManager.EDebugLevel.Debug, "Loot");
+            waveRewards.AddItem(itemId);
+            DebugManager.Log($"Collected {itemId}. Inventory now: {waveRewards.Items[itemId]}", DebugManager.EDebugLevel.Debug, "Loot");
         }
 
         private WaveComposition GetFallbackWave()
@@ -116,6 +122,32 @@ namespace CHAL.Systems.Wave
                 }
             }
             };
+        }
+    }
+
+    public class WaveRewards
+    {
+        public Dictionary<string, int> Items = new();          // itemId → count
+        public Dictionary<string, int> Currencies = new();     // "gold" → amount
+        public int XP;
+
+        public void AddItem(string itemId, int count = 1)
+        {
+            if (!Items.ContainsKey(itemId))
+                Items[itemId] = 0;
+            Items[itemId] += count;
+        }
+
+        public void AddCurrency(string currencyId, int amount)
+        {
+            if (!Currencies.ContainsKey(currencyId))
+                Currencies[currencyId] = 0;
+            Currencies[currencyId] += amount;
+        }
+
+        public void AddXP(int amount)
+        {
+            XP += amount;
         }
     }
 }

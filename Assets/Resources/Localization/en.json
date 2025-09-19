@@ -1,0 +1,8 @@
+{
+  "entries": [
+    { "key": "Enemy_InsectSwarm_Name", "value": "Insect Swarm" },
+    { "key": "Enemy_BeastTank_Name", "value": "Beast Tank" },
+    { "key": "Item_Ashes_Name", "value": "Ashes" },
+    { "key": "Item_Gland_Name", "value": "Gland" }
+  ]
+}

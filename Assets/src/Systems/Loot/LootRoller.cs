@@ -95,6 +95,7 @@ namespace CHAL.Systems.Loot
                         };
                         results.Add(entry);
                         ctx.Drops.Add(entry);
+                        //No Unlucky reset
 
                         DebugManager.Log($"Secret drop {sd.itemId} from {monster.EnemyId}",DebugManager.EDebugLevel.Test,"Loot");
                     }
@@ -118,6 +119,8 @@ namespace CHAL.Systems.Loot
                 var pick = mergedWave.drops[Random.Range(0, mergedWave.drops.Count)];
                 var entry = new LootResultEntry { EnemyId = "WaveBonus", PickedTag = "Failsafe", ItemId = pick.itemId };
                 ctx.Drops.Add(entry);
+                ctx.SpentBudget += pick.lootValue;
+                _unlucky.OnDrop(pick.rarity);
                 DebugManager.Log($"Added {pick.itemId} to reach minDrops",DebugManager.EDebugLevel.Dev,"Loot");
             }
 
@@ -136,6 +139,7 @@ namespace CHAL.Systems.Loot
                     var pick = candidates[Random.Range(0, candidates.Count)];
                     var entry = new LootResultEntry { EnemyId = "WaveBonus", PickedTag = "Guarantee", ItemId = pick.itemId };
                     ctx.Drops.Add(entry);
+                    //No Unlucky reset
                     DebugManager.Log($"Guaranteed {rarity} → {pick.itemId}",DebugManager.EDebugLevel.Dev,"Loot");
                     count++;
                 }
@@ -153,6 +157,54 @@ namespace CHAL.Systems.Loot
             //        DebugManager.Log($"Wave secret drop {sd.itemId}",DebugManager.EDebugLevel.Test,"Loot");
             //    }
             //}
+        }
+
+        public int RollGoldForMonster(EnemyInstance enemy, WaveLootContext waveCtx)
+        {
+            var rank = enemy.Rank;
+            var baseGold = BalanceManager.Instance.Config.economy.currencies.baseGoldReward;
+            var goldpLevel = BalanceManager.Instance.Config.economy.currencies.goldPerLevel;
+            int baseModifier = rank switch
+            {
+                EnemyRank.Spawn => 1,
+                EnemyRank.Normal => 2,
+                EnemyRank.Magic => 4,
+                EnemyRank.Elite => 8,
+                EnemyRank.Boss => 20,
+                EnemyRank.Champion => 50,
+                _ => 1
+            };
+
+            return Mathf.RoundToInt(baseGold * baseModifier  + waveCtx.Wave.Level* goldpLevel);
+
+        }
+
+        public int RollXPForMonster(EnemyInstance enemy, int mapLevel, MapDifficulty difficulty, int waveLevel)
+        {
+            var econ = BalanceManager.Instance.Config.economy.currencies;
+            var rank = enemy.Rank;
+
+            int baseXp = rank switch
+            {
+                EnemyRank.Spawn => 1,
+                EnemyRank.Normal => 3,
+                EnemyRank.Magic => 6,
+                EnemyRank.Elite => 12,
+                EnemyRank.Boss => 40,
+                EnemyRank.Champion => 100,
+                _ => 1
+            };
+
+            //TODO:
+            //difficulty
+            var diff = 1;
+
+            float scaled = baseXp
+                * diff
+                * (1f + waveLevel * 0.1f)   
+                * (1f + mapLevel * econ.xpPerLevel);
+              
+            return Mathf.RoundToInt(scaled);
         }
     }
 }
