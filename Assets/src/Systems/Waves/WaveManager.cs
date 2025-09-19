@@ -96,7 +96,62 @@ namespace CHAL.Systems.Wave
             {
                 _roller.FinalizeWave(_waveCtx);
                 DebugManager.Log("Wave Completed!", DebugManager.EDebugLevel.Test, "Wave");
+                EndWave(true);
             }
+        }
+
+        private void EndWave(bool success)
+        {
+            if (success)
+            {
+                TransferRewardsToProfile(waveRewards);
+                DebugManager.Log("Wave Rewards transferred to PlayerProfile",
+                    DebugManager.EDebugLevel.Test, "Wave");
+            }
+            else
+            {
+                DebugManager.Log("Wave lost – rewards discarded",
+                    DebugManager.EDebugLevel.Test, "Wave");
+            }
+
+            waveRewards = new WaveRewards(); // reset für nächste Wave
+        }
+
+        private void TransferRewardsToProfile(WaveRewards rewards)
+        {
+            var profile = GameManager.Instance.Profile;
+
+            // Items nach Typ sortieren und ins passende Inventar legen
+            foreach (var kv in rewards.Items)
+            {
+                string itemId = kv.Key;
+                int count = kv.Value;
+
+                if (itemId.StartsWith("remain"))
+                    profile.Remains.AddItem(itemId, count);
+                else if (itemId.StartsWith("part"))
+                    profile.Parts.AddItem(itemId, count);
+                else if (itemId.StartsWith("rune"))
+                    profile.Runes.AddItem(itemId, count);
+                else if (itemId.StartsWith("module"))
+                    profile.Modules.AddItem(itemId, count);
+                else
+                    DebugManager.Log($"Unknown item prefix: {itemId}",
+                        DebugManager.EDebugLevel.Test, "Inventory");
+            }
+
+            // Currencies
+            foreach (var kv in rewards.Currencies)
+            {
+                profile.AddCurrency(kv.Key, kv.Value);
+            }
+
+            // XP
+            if (rewards.XP > 0)
+                profile.AddXP(rewards.XP);
+
+            // Speichern
+            GameManager.Instance.SaveGame();
         }
 
         public void CollectLoot(string itemId)

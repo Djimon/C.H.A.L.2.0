@@ -159,6 +159,7 @@ namespace CHAL.Systems.Loot
             //}
         }
 
+
         public int RollGoldForMonster(EnemyInstance enemy, WaveLootContext waveCtx)
         {
             var rank = enemy.Rank;
