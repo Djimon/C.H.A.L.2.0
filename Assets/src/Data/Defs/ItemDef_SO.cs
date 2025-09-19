@@ -1,5 +1,7 @@
+
 using System.Collections.Generic;
 using UnityEngine;
+
 
 namespace CHAL.Data
 {
@@ -71,18 +73,40 @@ namespace CHAL.Data
         public string remainType;  // Insect, Beast, etc.
     }
 
+    public static class RuneColors
+    {
+        public static readonly Color runeColorSun = new Color(255 /255, 215 /255, 0 /255);
+        public static readonly Color runeColorVerdant = new Color(0 /255, 128 /255, 0 /255);
+        public static readonly Color runeColorSky = new Color(50 /255, 50 /255, 255 /255);
+        public static readonly Color runeColorIgnis = new Color(200 /255, 0 /255, 0 /255);
+        public static readonly Color runeColorVoid = new Color(135 /255, 0 /255, 120 /255);
+
+        public static Color Get(RuneColorType type) => type switch
+        {
+            RuneColorType.Sun => runeColorSun,
+            RuneColorType.Verdant => runeColorVerdant,
+            RuneColorType.Sky => runeColorSky,
+            RuneColorType.Ignis => runeColorIgnis,
+            RuneColorType.Void => runeColorVoid,
+            _ => Color.white
+        };
+    }
+
     [System.Serializable]
     public class RuneData
     {
         public string effectType; // e.g. "Armor+", "Lifesteal"
-        public string hexColor;
+        public RuneColorType runeColortType;
+
+        public Color runecolor => RuneColors.Get(runeColortType);
+
     }
 
     [System.Serializable]
     public class PartData
     {
         public string dnaType; // e.g. "Weapon", "Armor"
-        public List<string> moduleFuel;
+        public List<ItemDef> moduleFuel;
     }
 
     [System.Serializable]

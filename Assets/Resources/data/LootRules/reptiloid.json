@@ -1,12 +1,12 @@
 {
   "tag": "reptiloid",
   "drops": [
-    { "itemId": "part:scale", "chance": 40, "quantity": 1 },
+    { "itemId": "part:scale", "chance": 70, "quantity": 1 },
     { "itemId": "part:horn_skin", "chance": 30, "quantity": 1 },
     { "itemId": "part:secretions", "chance": 20, "quantity": 1 },
     { "itemId": "part:slime", "chance": 20, "quantity": 1 },
-    { "itemId": "part:bone_fragment", "chance": 30, "quantity": 1 },
-    { "itemId": "part:venom_tooth", "chance": 10, "quantity": 1 },
+    { "itemId": "part:tongue", "chance": 30, "quantity": 1 },
+    { "itemId": "part:venom_tooth", "chance": 20, "quantity": 1 },
     { "itemId": "remains:tears", "chance": 60, "quantity": 1 }
   ],
   "minDrops": 2,

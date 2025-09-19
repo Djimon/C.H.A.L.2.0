@@ -120,15 +120,15 @@ namespace CHAL.Systems.Loot
                 var pick = merged.drops[Random.Range(0, merged.drops.Count)];
                 loot.Add(new LootResultEntry
                 {
-                    EnemyId = "PostProcess",
-                    PickedTag = "rule:minDrops",
+                    EnemyId = "PostProcess:minDrops",
+                    PickedTag = pick.sourceTag,
                     ItemId = pick.itemId
                 });
                 DebugManager.Log($"added {pick.itemId}({pick.rarity}) to reach minDrop", DebugManager.EDebugLevel.Dev, "Loot");
             }
 
-            // maxDrops
-            SmartTrim(merged, loot, BalanceManager.Instance.Config);
+            // maxDrops only on Mosnter, not global
+            //SmartTrim(merged, loot, BalanceManager.Instance.Config);
 
             // rarityGuarantees
             foreach (var kv in merged.rarityGuarantees)
@@ -146,8 +146,8 @@ namespace CHAL.Systems.Loot
                     var pick = candidates[Random.Range(0, candidates.Count)];
                     loot.Add(new LootResultEntry
                     {
-                        EnemyId = "PostProcess",
-                        PickedTag = "rule:guaranteeDrops",
+                        EnemyId = "PostProcess:Guarantees",
+                        PickedTag = pick.sourceTag,
                         ItemId = pick.itemId
                     });
                     DebugManager.Log($"added {pick.itemId}({pick.rarity}) as guaranteed drop.", DebugManager.EDebugLevel.Dev, "Loot");

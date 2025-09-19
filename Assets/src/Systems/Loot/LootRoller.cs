@@ -90,7 +90,7 @@ namespace CHAL.Systems.Loot
                         var entry = new LootResultEntry
                         {
                             EnemyId = monster.EnemyId,
-                            PickedTag = "SecretCombo",
+                            PickedTag = sd.sourceTag,
                             ItemId = sd.itemId
                         };
                         results.Add(entry);

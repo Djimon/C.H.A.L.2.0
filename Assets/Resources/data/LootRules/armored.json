@@ -1,9 +1,9 @@
 {
   "tag": "armored",
   "drops": [
-    { "itemId": "part:armor_plate", "chance": 20, "quantity": 1 },
-    { "itemId": "part:hard_scale", "chance": 40, "quantity": 1 },
-    { "itemId": "part:hide_plate", "chance": 20, "quantity": 1 },
+    { "itemId": "part:armor_plate", "chance": 50, "quantity": 1 },
+    { "itemId": "part:hard_scale", "chance": 70, "quantity": 1 },
+    { "itemId": "part:hide_plate", "chance": 40, "quantity": 1 },
     { "itemId": "remains:obsidian_fragment", "chance": 5, "quantity": 1 }
   ],
   "minDrops": 1,

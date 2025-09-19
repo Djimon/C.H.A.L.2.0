@@ -2,6 +2,10 @@
   "tag": "elite",
   "drops": [
     { "itemId": "part:essence_shard", "chance": 50, "quantity": 1 },
+    { "itemId": "part:claw", "chance": 30, "quantity": 1 },
+    { "itemId": "part:hard_core", "chance": 30, "quantity": 1 },
+    { "itemId": "part:hard_scale", "chance": 30, "quantity": 1 },
+    { "itemId": "part:tooth", "chance": 30, "quantity": 1 },
     { "itemId": "remains:soul_dust", "chance": 30, "quantity": 1 },
 	{ "itemId": "remains:bone_powder", "chance": 50, "quantity": 1 }
   ],

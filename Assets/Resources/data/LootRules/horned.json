@@ -1,9 +1,9 @@
 {
   "tag": "horned",
   "drops": [
-    { "itemId": "part:horn", "chance": 30, "quantity": 1 },
+    { "itemId": "part:horn", "chance": 60, "quantity": 1 },
     { "itemId": "part:antler", "chance": 40, "quantity": 1 },
-    { "itemId": "part:forehead_plate", "chance": 10, "quantity": 1 }
+    { "itemId": "part:horn_skin", "chance": 20, "quantity": 1 }
   ],
   "minDrops": 1,
   "maxDrops": 2,

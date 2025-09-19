@@ -14,7 +14,9 @@ namespace CHAL.Data
         public float chance;       // optional wenn "chances" gesetzt
         public float[] chances;    // optional
         public int quantity = 1;
-        public string[] conditions; // optional (z.B. "time:night"), aktuell ungenutzt
+
+        public string sourceTag;
+
     }
 
     [System.Serializable]

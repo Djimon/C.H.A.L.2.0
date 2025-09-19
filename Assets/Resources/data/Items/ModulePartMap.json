@@ -1,0 +1,68 @@
+{
+  "entries": [
+    {
+      "moduleId": "module:power_core",
+      "parts": ["part:claw", "part:hard_core"]
+    },
+    {
+      "moduleId": "module:piercing_fang",
+      "parts": ["part:tooth", "part:stinger"]
+    },
+    {
+      "moduleId": "module:inferno",
+      "parts": ["part:fire_crystal"]
+    },
+    {
+      "moduleId": "module:frost_shard",
+      "parts": ["part:frost_core"]
+    },
+    {
+      "moduleId": "module:venom_sac",
+      "parts": ["part:tongue", "part:venom_tooth", "part:venom_sac"]
+    },
+    {
+      "moduleId": "module:hardened_plate",
+      "parts": ["part:chitin", "part:scale", "part:hard_scale"]
+    },
+    {
+      "moduleId": "module:guardian_shell",
+      "parts": ["part:capsule", "part:horn_skin", "part:leather", "part:armor_plate"]
+    },
+    {
+      "moduleId": "module:vital_organs",
+      "parts": ["part:gland", "part:bone_fragment", "part:fur", "part:bone", "part:hide_plate"]
+    },
+    {
+      "moduleId": "module:barrier_crystal",
+      "parts": ["part:soul_fragment", "part:shadow_skin"]
+    },
+    {
+      "moduleId": "module:elemental_shield",
+      "parts": ["part:slime", "part:charred_scale"]
+    },
+    {
+      "moduleId": "module:haste_tendon",
+      "parts": ["part:antenna", "part:feather"]
+    },
+    {
+      "moduleId": "module:speed_limb",
+      "parts": ["part:limb", "part:wing"]
+    },
+    {
+      "moduleId": "module:lucky_charm",
+      "parts": ["part:cursed_essence"]
+    },
+    {
+      "moduleId": "module:golden_horn",
+      "parts": ["part:antlers", "part:horn"]
+    },
+    {
+      "moduleId": "module:third_eye",
+      "parts": ["part:eye", "part:arcane_fragment"]
+    },
+    {
+      "moduleId": "module:x_perience_amulet",
+      "parts": ["part:skull_shard"]
+    }
+  ]
+}

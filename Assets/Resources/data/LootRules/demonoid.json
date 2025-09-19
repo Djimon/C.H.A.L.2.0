@@ -3,9 +3,8 @@
   "drops": [
     { "itemId": "part:soul_fragment", "chance": 30, "quantity": 1 },
     { "itemId": "part:bone_ash", "chance": 30, "quantity": 1 },
-    { "itemId": "part:rune_stone", "chance": 10, "quantity": 1 },
     { "itemId": "part:shadow_skin", "chance": 20, "quantity": 1 },
-    { "itemId": "part:flame_remnant", "chance": 15, "quantity": 1 },
+    { "itemId": "part:cursed_essence", "chance": 15, "quantity": 1 },
     { "itemId": "remains:void_essence", "chance": 40, "quantity": 1 },
 	{ "itemId": "remains:etheral_thread", "chance": 30, "quantity": 1 }
   ],

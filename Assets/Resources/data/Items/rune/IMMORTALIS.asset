@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
-  m_Name: GELIDUS
+  m_Name: IMMORTALIS
   m_EditorClassIdentifier: 
-  itemId: rune:GELIDUS
+  itemId: rune:IMMORTALIS
   description: 
   icon: {fileID: 0}
-  rarity: 3
+  rarity: 4
   lootValue: 10
   remainData:
     remainType: 
   runeData:
-    effectType: freeze_stackable
-    hexColor: '#42b6f5'
+    effectType: death_protection_recoup
+    runeColortType: 3
   partData:
     dnaType: 
     moduleFuel: []

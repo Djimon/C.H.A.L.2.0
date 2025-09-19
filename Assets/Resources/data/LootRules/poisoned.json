@@ -3,7 +3,7 @@
   "drops": [
     { "itemId": "part:venom_gland", "chance": 40, "quantity": 1 },
     { "itemId": "part:venom_sac", "chance": 30, "quantity": 1 },
-    { "itemId": "part:venom_tooth", "chance": 15, "quantity": 1 },
+    { "itemId": "part:venom_tooth", "chance": 15, "quantity": 1 }
   ],
   "minDrops": 1,
   "maxDrops": 2,

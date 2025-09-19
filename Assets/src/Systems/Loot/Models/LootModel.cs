@@ -14,6 +14,8 @@ namespace CHAL.Systems.Loot.Models
         // angereichert aus Registry:
         public Rarity rarity;
         public int lootValue;
+
+        public string sourceTag;
     }
 
     public sealed class LootRule
@@ -36,7 +38,7 @@ namespace CHAL.Systems.Loot.Models
     public sealed class LootResultEntry
     {
         public string EnemyId;   // optional: Referenz, welches Monster den Drop generiert hat
-        public string PickedTag; // der Tag, der für diesen Drop relevant war
+        public string PickedTag; // der Tag, der für diesen Drop relevant war -> benötigt für DNA-Resolver
         public string ItemId;    // das eigentliche Item
     }
 }

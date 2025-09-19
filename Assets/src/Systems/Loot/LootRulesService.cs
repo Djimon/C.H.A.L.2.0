@@ -2,7 +2,9 @@ using CHAL.Data;
 using CHAL.Systems.Items;
 using CHAL.Systems.Loot.Models;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace CHAL.Systems.Loot
@@ -51,7 +53,7 @@ namespace CHAL.Systems.Loot
             {
                 foreach (var kv in dto.rarityGuarantees)
                 {
-                    if (!System.Enum.TryParse<Rarity>(kv.rarity, out var r))
+                    if (!System.Enum.TryParse<Rarity>(kv.rarity, true, out var r))
                         throw new System.Exception($"rarityGuarantees: unbekannte Rarity '{kv.rarity}'");
                     rule.rarityGuarantees[r] = Mathf.Max(0, kv.min);
                 }
@@ -67,7 +69,11 @@ namespace CHAL.Systems.Loot
                     throw new System.Exception($"Ungültige itemId '{d.itemId}'");
 
                 if (!ItemRegistry.Instance.TryGet(d.itemId, out var def))
-                    throw new System.Exception($"Item '{d.itemId}' nicht in ItemRegistry gefunden");
+                {
+                    ItemRegistry.Instance.CreatePlaceholderitem(d.itemId);
+                    throw new System.Exception($"Item '{d.itemId}' nicht in ItemRegistry gefunden");  
+                }
+                    
 
                 var drop = new LootDrop
                 {
@@ -76,7 +82,8 @@ namespace CHAL.Systems.Loot
                     chance = (d.chances == null || d.chances.Length == 0) ? d.chance : (float?)null,
                     chancesArray = (d.chances != null && d.chances.Length > 0) ? d.chances : null,
                     rarity = def.rarity,
-                    lootValue = def.lootValue
+                    lootValue = def.lootValue,
+                    sourceTag = dto.tag
                 };
 
                 // Validierung: chance ODER chancesArray
@@ -97,6 +104,7 @@ namespace CHAL.Systems.Loot
 
             return rule;
         }
+
 
         public bool TryGetRule(string tag, out LootRule rule) => _byTag.TryGetValue(tag, out rule);
 

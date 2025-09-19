@@ -10,18 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
-  m_Name: chitin_armor
+  m_Name: AURAM
   m_EditorClassIdentifier: 
-  itemId: part:chitin_armor
-  displayName: Chitin Armor
-  description: 'Type: Remains'
+  itemId: rune:AURAM
+  description: 
   icon: {fileID: 0}
-  rarity: 2
-  lootValue: 30
-  dnaData:
-    dnaType: 
+  rarity: 5
+  lootValue: 10
+  remainData:
+    remainType: 
   runeData:
-    effectType: 
-    power: 0
+    effectType: spread_buff_aura
+    runeColortType: 1
   partData:
-    slotType: 
+    dnaType: 
+    moduleFuel: []
+  moduleData:
+    effect: 
+    modulePower: 0

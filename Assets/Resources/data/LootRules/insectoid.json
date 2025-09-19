@@ -1,10 +1,10 @@
 {
   "tag": "insectoid",
   "drops": [
-    { "itemId": "part:chitin", "chance": 40, "quantity": 1 },
-    { "itemId": "part:antenna", "chance": 25, "quantity": 1 },
+    { "itemId": "part:chitin", "chance": 60, "quantity": 1 },
+    { "itemId": "part:antenna", "chance": 40, "quantity": 1 },
     { "itemId": "part:stinger", "chance": 20, "quantity": 1 },
-    { "itemId": "part:gland", "chance": 15, "quantity": 1 },
+    { "itemId": "part:venom_sac", "chance": 30, "quantity": 1 },
     { "itemId": "part:capsule", "chance": 15, "quantity": 1 },
     { "itemId": "remains:glitterdust", "chance": 70, "quantity": 1 }
   ],

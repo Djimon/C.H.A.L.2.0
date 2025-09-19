@@ -27,7 +27,7 @@ public class ItemDefEditor : Editor
         else if (item.itemId.StartsWith("rune:"))
         {
             item.runeData.effectType = EditorGUILayout.TextField("Effect Type", item.runeData?.effectType);
-            item.runeData.hexColor = EditorGUILayout.TextField("Rune Color (HEX)",item.runeData.hexColor);
+            item.runeData.runeColortType = (RuneColorType)EditorGUILayout.EnumPopup("Rune Color", item.runeData.runeColortType);
         }
         else if (item.itemId.StartsWith("part:"))
         {

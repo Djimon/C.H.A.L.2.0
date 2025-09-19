@@ -1,8 +1,11 @@
 {
   "tag": "champion",
   "drops": [
-    { "itemId": "part:bone", "chance": 90, "quantity": 1 },
+    { "itemId": "part:bone_fragment", "chance": 90, "quantity": 1 },
 	{ "itemId": "part:claw", "chance": 90, "quantity": 1 },
+	{ "itemId": "part:hard_scale", "chance": 90, "quantity": 1 },
+	{ "itemId": "part:armor_plate", "chance": 90, "quantity": 1 },
+	{ "itemId": "part:tooth", "chance": 90, "quantity": 1 },
 	{ "itemId": "remains:blood", "chance": 70, "quantity": 1 },
 	{ "itemId": "remains:ichor", "chance": 50, "quantity": 1 },
     { "itemId": "remains:stardust", "chance": 50, "quantity": 1 },

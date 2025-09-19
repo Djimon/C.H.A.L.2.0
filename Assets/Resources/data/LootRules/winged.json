@@ -1,8 +1,8 @@
 {
   "tag": "winged",
   "drops": [
-    { "itemId": "part:wing", "chance": 20, "quantity": 1 },
-    { "itemId": "part:feather", "chance": 50, "quantity": 1 },
+    { "itemId": "part:wing", "chance": 40, "quantity": 1 },
+    { "itemId": "part:feather", "chance": 70, "quantity": 1 },
     { "itemId": "remains:moon_shard", "chance": 5, "quantity": 1 }
   ],
   "minDrops": 1,
