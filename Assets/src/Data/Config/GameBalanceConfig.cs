@@ -121,15 +121,25 @@ namespace CHAL.Data
         public struct CurrencySettings
         {
             public int baseGoldReward;    // z. B. 100 pro Kampf
-            public int baseXpReward;      // z. B. 50 pro Kampf
             public float goldPerLevel;    // z. B. +20 % Gold je Level
+
+        }
+
+        [System.Serializable]
+        public struct XpSettings
+        {
+            public int baseXpReward;      // z. B. 50 pro Kampf
             public float xpPerLevel;      // z. B. +15 % XP je Level
+            public int baseLevelUpXp;
+            [Range(1,10)]
+            public int xpScale;
         }
 
         [System.Serializable]
         public struct EconomySettings
         {
             public CurrencySettings currencies;
+            public XpSettings xp;
         }
 
         [Header("Economy Settings")]

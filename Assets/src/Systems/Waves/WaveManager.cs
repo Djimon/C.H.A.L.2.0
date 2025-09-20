@@ -3,6 +3,7 @@ using CHAL.Data;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Loot.Models;
+using CHAL.Systems.Map;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,12 +19,12 @@ namespace CHAL.Systems.Wave
         public GameObject lootPrefab;
 
         [Header("Runtime Info")]
-        public int currentWaveLevel = 1;
-        public int Maplevel = 1;
-        public MapDifficulty difficulty = MapDifficulty.Easy;
-        public WaveRewards waveRewards;
+        //public int currentWaveLevel = 1;
+        //public int Maplevel = 1;
+        //public MapDifficulty difficulty = MapDifficulty.Easy;
         //public List<string> currentInventory = new();
 
+        public WaveRewards waveRewards; //??
         private LootRulesService _rules;
         private LootRoller _roller;
         private UnluckyProtection _unlucky;
@@ -51,7 +52,7 @@ namespace CHAL.Systems.Wave
         [ContextMenu("Start Wave")]
         public void StartWave()
         {
-            DebugManager.Log($"Starting Wave {currentWaveLevel}", DebugManager.EDebugLevel.Test, "Wave");
+            DebugManager.Log($"Starting Wave", DebugManager.EDebugLevel.Test, "Wave");
 
             waveRewards = new WaveRewards();
 
@@ -81,9 +82,10 @@ namespace CHAL.Systems.Wave
         private void HandleEnemyKilled(EnemyController ec, EnemyInstance instance, Vector3 pos)
         {
             _aliveEnemies.Remove(ec);
+            var mapMgr = MapManager.Instance;
 
-            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, Maplevel));
-            waveRewards.AddXP(_roller.RollXPForMonster(instance, Maplevel, difficulty, currentWaveLevel));
+            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, mapMgr.CurrentMapId));
+            waveRewards.AddXP(_roller.RollXPForMonster(instance, mapMgr.CurrentMapId, mapMgr.Difficulty, mapMgr.CurrentWave));
 
             // Loot berechnen
             var drops = _roller.RollLootForMonster(instance, _waveCtx);
@@ -117,6 +119,7 @@ namespace CHAL.Systems.Wave
                     DebugManager.EDebugLevel.Test, "Wave");
             }
 
+            MapManager.Instance.OnWaveCompleted(success);
             waveRewards = new WaveRewards(); // reset für nächste Wave
         }
 
@@ -167,8 +170,8 @@ namespace CHAL.Systems.Wave
         {
             return new WaveComposition
             {
-                Level = currentWaveLevel,
-                Difficulty = 1f,
+                Level = 3,
+                Difficulty = 2f,
                 Monsters = new List<EnemyInstance>
             {
                 new EnemyInstance
@@ -187,8 +190,9 @@ namespace CHAL.Systems.Wave
         {
             var wave = waveDef != null ? waveDef.ToComposition() : GetFallbackWave();
             var roller = new LootRoller(_rules, new UnluckyProtection());
+            var mapMgr = MapManager.Instance;
 
-            WaveSimRunner.RunStats(roller, wave, Maplevel, difficulty, runs: 1000);
+            WaveSimRunner.RunStats(roller, wave, mapMgr.CurrentMapId, mapMgr.Difficulty, runs: 100);
         }
     }
 

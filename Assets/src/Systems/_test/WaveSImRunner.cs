@@ -15,7 +15,7 @@ public class WaveSimRunner
         WaveComposition wave,
         int mapLevel,
         MapDifficulty difficulty,
-        int runs = 1000)
+        int runs = 100)
     {
         var totalGold = 0;
         var totalXp = 0;

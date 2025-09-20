@@ -48,6 +48,36 @@ namespace CHAL.Core
                 Debug.LogError("[BalanceManager] Config ist null. Balancing-Werte nicht verfügbar!");
             }
         }
+
+        public static int GetXpForLevel(int level)
+        {
+            var xpConfig = Instance.config.economy.xp;
+            float scale = xpConfig.xpScale * 0.005f;
+            return Mathf.RoundToInt(
+                xpConfig.baseLevelUpXp * Mathf.Pow(1 + scale * (level - 1), 2)
+            );
+        }
+
+        [ContextMenu("Debug XP Progression")]
+        public void DebugXpProgression()
+        {
+            int[] checkpoints = {1, 10, 50, 100 };
+
+            int total = 0;
+            foreach (int lvl in checkpoints)
+            {
+                // kumulierte XP bis zu diesem Level
+                total = 0;
+                for (int i = 1; i <= lvl; i++)
+                {
+                    total += GetXpForLevel(i);
+                }
+
+                int levelXp = GetXpForLevel(lvl);
+                DebugManager.Log($"Level {lvl}: {total:N0} total XP | XP for level: {levelXp:N0}",DebugManager.EDebugLevel.Debug);
+            }
+        }
+
     }
 }
 

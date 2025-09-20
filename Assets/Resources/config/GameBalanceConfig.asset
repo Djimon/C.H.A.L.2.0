@@ -54,6 +54,9 @@ MonoBehaviour:
   economy:
     currencies:
       baseGoldReward: 100
-      baseXpReward: 100
       goldPerLevel: 2
+    xp:
+      baseXpReward: 10
       xpPerLevel: 2
+      baseLevelUpXp: 1000
+      xpScale: 6

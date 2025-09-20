@@ -1,8 +1,16 @@
-using CHAL.Data;
+﻿using CHAL.Data;
 using UnityEngine;
 
 namespace CHAL.Core
 {
+    public enum GameState
+    {
+        MainMenu,
+        MapPhase,     // Spieler kämpft auf einer Map
+        WaveReward,   // kleiner Reward-Screen
+        MapReward,    // großer Reward-Screen
+        Hideout
+    }
     public class GameManager : MonoBehaviour
     {
 
@@ -23,6 +31,9 @@ namespace CHAL.Core
             }
         }
 
+        // Aktueller Spielzustand
+        public GameState CurrentState { get; private set; } = GameState.MainMenu;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -34,17 +45,17 @@ namespace CHAL.Core
             DontDestroyOnLoad(gameObject);
 
             // Save laden oder neuen Spielstand erstellen
-            //Profile = SaveSystem.Load();
+            Profile = SaveSystem.Load();
             if (Profile == null)
             {
-                Debug.Log("Kein Save gefunden � neues Profil erstellt.");
+                Debug.Log("Kein Save gefunden – neues Profil erstellt.");
                 Profile = new PlayerProfile();
             }
         }
 
         public void SaveGame()
         {
-            //SaveSystem.Save(Profile);
+            SaveSystem.Save(Profile);
         }
 
         public void ResetProfile()
@@ -53,16 +64,28 @@ namespace CHAL.Core
             SaveGame();
         }
 
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        // ---------------------------
+        // State Machine Logik
+        // ---------------------------
+        public void SetState(GameState newState)
         {
+            CurrentState = newState;
+            Debug.Log($"GameState → {newState}");
 
+            // Optional: Events triggern oder UI umschalten
+            // EventBus.Publish(new GameStateChanged(newState));
         }
 
-        // Update is called once per frame
-        void Update()
+        public void GoToMainMenu()
         {
-
+            SetState(GameState.MainMenu);
         }
+
+        public void ExitToHideout()
+        {
+            SetState(GameState.Hideout);
+            // Hier Crafting/Hideout laden
+        }
+
     }
 }

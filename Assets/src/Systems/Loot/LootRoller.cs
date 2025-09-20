@@ -209,7 +209,7 @@ namespace CHAL.Systems.Loot
 
         public int RollXPForMonster(EnemyInstance enemy, int mapLevel, MapDifficulty difficulty, int waveLevel)
         {
-            var econ = BalanceManager.Instance.Config.economy.currencies;
+            var econ = BalanceManager.Instance.Config.economy;
             var rank = enemy.Rank;
 
             int baseXp = rank switch
@@ -232,8 +232,8 @@ namespace CHAL.Systems.Loot
             };
 
 
-            float scaled = econ.baseXpReward * baseXp * diffBonus * (1f + waveLevel * 0.1f) 
-                    + (1f + (mapLevel-1) * econ.xpPerLevel);
+            float scaled = econ.xp.baseXpReward * baseXp * diffBonus * (1f + waveLevel * 0.1f) 
+                    + (1f + (mapLevel-1) * econ.xp.xpPerLevel);
               
             return Mathf.RoundToInt(scaled);
         }
