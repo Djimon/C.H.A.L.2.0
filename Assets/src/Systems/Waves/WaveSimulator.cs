@@ -1,55 +1,64 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using CHAL.Data;
 using CHAL.Systems.Loot;
-using System.Linq;
 using CHAL.Systems.Wave;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace CHAL.Core
 {
     public class WaveSimulator
     {
-        private readonly LootRoller _lootRoller;
+        private readonly LootRoller _roller;
         private readonly WaveLootContext _context;
+        private readonly WaveComposition _wave;
 
         public WaveSimulator(LootRoller lootRoller, WaveComposition wave)
         {
-            _lootRoller = lootRoller;
+            _roller = lootRoller;
             _context = new WaveLootContext(wave);
+            _wave = wave;
         }
 
-        public void RunWave()
+        public WaveRewards Simulate(int mapLevel, MapDifficulty difficulty)
         {
-            DebugManager.Info("=== Wave started ===");
+            var rewards = new WaveRewards();
 
-            // Gehe alle Monster der Wave durch
-            foreach (var monster in _context.Wave.Monsters)
+            foreach (var monster in _wave.Monsters)
             {
                 for (int i = 0; i < monster.Count; i++)
                 {
-                    SimulateKill(monster);
+                    // Loot
+                    var drops = _roller.RollLootForMonster(monster, _context);
+                    DebugManager.Log($"Kill: {monster.EnemyId} ({monster.Rank})", DebugManager.EDebugLevel.Test, "Fight");
+                    foreach (var d in drops)
+                    {
+                        DebugManager.Log($"Dropped: {d.ItemId} (from {d.PickedTag})", DebugManager.EDebugLevel.Test, "Fight");
+                        rewards.AddItem(d.ItemId, d.quantity);
+                    }
+
+                    // Gold & XP
+                    int gg = _roller.RollGoldForMonster(monster, mapLevel);
+                    rewards.AddCurrency("gold",gg);
+                    DebugManager.Log($"Dropped: {gg} Gold", DebugManager.EDebugLevel.Test, "Fight");
+                    int xp = _roller.RollXPForMonster(monster, mapLevel, difficulty, _wave.Level);
+                    rewards.AddXP(xp);
+                    DebugManager.Log($"Dropped: {xp} Gold", DebugManager.EDebugLevel.Test, "Fight");
                 }
             }
 
-            _lootRoller.FinalizeWave(_context);
+            // Abschluss-Processing (Garantien etc.)
+            _roller.FinalizeWave(_context);
 
-            // Debug: Ausgabe aller Drops
-            foreach (var g in _context.Drops.GroupBy(d => d.ItemId))
-            {
-                DebugManager.Log($" - {g.Count()}x {g.Key}",DebugManager.EDebugLevel.Test,"Loot");
-            }
+            // Nach Finalize auch garantierte Drops einsammeln
+            foreach (var d in _context.Drops)
+                rewards.AddItem(d.ItemId, d.quantity);
+
+            return rewards;
         }
 
-        private void SimulateKill(EnemyInstance monster)
-        {
-            DebugManager.Log($"Kill: {monster.EnemyId} ({monster.Rank})",DebugManager.EDebugLevel.Test,"Fight");
-            var drops = _lootRoller.RollLootForMonster(monster, _context);
-
-            foreach (var d in drops)
-            {
-                DebugManager.Log($"Dropped: {d.ItemId} (from {d.PickedTag})",DebugManager.EDebugLevel.Test,"Fight");
-            }
-        }
     }
 }

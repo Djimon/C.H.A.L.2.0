@@ -34,7 +34,7 @@ namespace CHAL.Core
             DontDestroyOnLoad(gameObject);
 
             // Save laden oder neuen Spielstand erstellen
-            Profile = SaveSystem.Load();
+            //Profile = SaveSystem.Load();
             if (Profile == null)
             {
                 Debug.Log("Kein Save gefunden – neues Profil erstellt.");
@@ -44,7 +44,7 @@ namespace CHAL.Core
 
         public void SaveGame()
         {
-            SaveSystem.Save(Profile);
+            //SaveSystem.Save(Profile);
         }
 
         public void ResetProfile()

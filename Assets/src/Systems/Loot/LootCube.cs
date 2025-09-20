@@ -5,12 +5,13 @@ using UnityEngine;
 
 public class LootCube : MonoBehaviour
 {
-    private string _itemId;
+    public string _itemId { get; private set; }
+    public int _qunatity { get; private set; } = 1;
 
-    public void Init(string itemId)
+    public void Init(string itemId, int quantity=1)
     {
         _itemId = itemId;
-
+        _qunatity = quantity;
 
         var rarity = ItemRegistry.Instance.GetRarity(itemId);
         var renderer = GetComponent<Renderer>();
@@ -30,13 +31,13 @@ public class LootCube : MonoBehaviour
             var lc = hit.GetComponent<LootCube>();
             if (lc != null)
             {
-                OnLootCollected?.Invoke(lc._itemId);
+                OnLootCollected?.Invoke(lc._itemId, _qunatity);
                 Destroy(lc.gameObject);
             }
         }
     }
 
-    public static event System.Action<string> OnLootCollected;
+    public static event System.Action<string,int> OnLootCollected;
 
     //after loot dropped physically freeze it in place
     private void OnCollisionEnter(Collision collision)

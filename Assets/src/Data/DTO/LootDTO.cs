@@ -3,7 +3,7 @@ namespace CHAL.Data
     [System.Serializable]
     public class RarityGuaranteeKV
     {
-        public string rarity; // "Common", "Rare", "Epic", "Legendary"
+        public Rarity rarity; // "Common", "Rare", "Epic", "Legendary"
         public int min;
     }
 

@@ -1,4 +1,5 @@
-﻿using CHAL.Data;
+﻿using CHAL.Core;
+using CHAL.Data;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Loot.Models;
@@ -52,6 +53,8 @@ namespace CHAL.Systems.Wave
         {
             DebugManager.Log($"Starting Wave {currentWaveLevel}", DebugManager.EDebugLevel.Test, "Wave");
 
+            waveRewards = new WaveRewards();
+
             var wave = waveDef != null ? waveDef.ToComposition() : GetFallbackWave();
             _waveCtx = new WaveLootContext(wave);
             _aliveEnemies.Clear();
@@ -79,7 +82,7 @@ namespace CHAL.Systems.Wave
         {
             _aliveEnemies.Remove(ec);
 
-            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, _waveCtx));
+            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, Maplevel));
             waveRewards.AddXP(_roller.RollXPForMonster(instance, Maplevel, difficulty, currentWaveLevel));
 
             // Loot berechnen
@@ -89,7 +92,7 @@ namespace CHAL.Systems.Wave
             {
                 var lootObj = Instantiate(lootPrefab, pos + Vector3.up * 1f, Quaternion.identity);
                 var lc = lootObj.GetComponent<LootCube>();
-                lc.Init(d.ItemId);
+                lc.Init(d.ItemId,d.quantity);
             }
 
             if (_aliveEnemies.Count == 0)
@@ -154,10 +157,10 @@ namespace CHAL.Systems.Wave
             GameManager.Instance.SaveGame();
         }
 
-        public void CollectLoot(string itemId)
+        public void CollectLoot(string itemId, int quantity)
         {
-            waveRewards.AddItem(itemId);
-            DebugManager.Log($"Collected {itemId}. Inventory now: {waveRewards.Items[itemId]}", DebugManager.EDebugLevel.Debug, "Loot");
+            waveRewards.AddItem(itemId,quantity);
+            DebugManager.Log($"Collected {itemId} ({quantity}x). Inventory now: {waveRewards.Items[itemId]}", DebugManager.EDebugLevel.Debug, "Loot");
         }
 
         private WaveComposition GetFallbackWave()
@@ -177,6 +180,15 @@ namespace CHAL.Systems.Wave
                 }
             }
             };
+        }
+
+        [ContextMenu("Simulate Wave Stats")]
+        public void SimulateWaveStats()
+        {
+            var wave = waveDef != null ? waveDef.ToComposition() : GetFallbackWave();
+            var roller = new LootRoller(_rules, new UnluckyProtection());
+
+            WaveSimRunner.RunStats(roller, wave, Maplevel, difficulty, runs: 1000);
         }
     }
 

@@ -53,8 +53,7 @@ namespace CHAL.Systems.Loot
             {
                 foreach (var kv in dto.rarityGuarantees)
                 {
-                    if (!System.Enum.TryParse<Rarity>(kv.rarity, true, out var r))
-                        throw new System.Exception($"rarityGuarantees: unbekannte Rarity '{kv.rarity}'");
+                    Rarity r = kv.rarity;
                     rule.rarityGuarantees[r] = Mathf.Max(0, kv.min);
                 }
             }

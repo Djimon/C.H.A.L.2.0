@@ -53,7 +53,7 @@ MonoBehaviour:
       dmgPerLevel: 2
   economy:
     currencies:
-      baseGoldReward: 10
-      baseXpReward: 10
+      baseGoldReward: 100
+      baseXpReward: 100
       goldPerLevel: 2
       xpPerLevel: 2

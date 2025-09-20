@@ -40,5 +40,6 @@ namespace CHAL.Systems.Loot.Models
         public string EnemyId;   // optional: Referenz, welches Monster den Drop generiert hat
         public string PickedTag; // der Tag, der für diesen Drop relevant war -> benötigt für DNA-Resolver
         public string ItemId;    // das eigentliche Item
+        public int quantity = 1;
     }
 }

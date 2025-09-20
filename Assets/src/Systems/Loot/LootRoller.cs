@@ -45,39 +45,22 @@ namespace CHAL.Systems.Loot
 
                 // 4. RNG-Loop über alle Drops im Pool
                 foreach (var drop in merged.drops)
-                {
-                    float pBase = drop.chance ?? 0f;
+                { 
+
+                    
                     if (drop.chancesArray != null && drop.chancesArray.Length > 0)
-                        pBase = drop.chancesArray[Random.Range(0, drop.chancesArray.Length)];
-
-                    // Unlucky / Budget
-                    float multUnlucky = _unlucky.GetMultiplier(drop.rarity);
-                    float pPre = pBase * multUnlucky;
-
-                    float mBudget = LootBudgetModulator.GetModifier(ctx.SpentBudget, drop.lootValue, ctx.TotalBudget, drop.rarity);
-                    float pEff = Mathf.Clamp(pPre * mBudget, 0f, 100f);
-
-                    float roll = Random.Range(0f, 100f);
-                    if (roll < pEff)
                     {
-                        var entry = new LootResultEntry
+                        for (int i = 0; i < drop.chancesArray.Length; i++)
                         {
-                            EnemyId = monster.EnemyId,
-                            PickedTag = tag,
-                            ItemId = drop.itemId
-                        };
-                        results.Add(entry);
-                        ctx.Drops.Add(entry);
-
-                        ctx.SpentBudget += drop.lootValue;
-                        _unlucky.OnDrop(drop.rarity);
-
-                        DebugManager.Log($"{drop.itemId} dropped from {monster.EnemyId} ({monster.Rank}) via tag:{tag}",DebugManager.EDebugLevel.Test,"Loot");
+                            float pBase = drop.chancesArray[i];
+                            ExecuteDrop(monster, ctx, results, tag, drop, pBase);
+                        }
                     }
-                    else
-                    {
-                        _unlucky.OnFail(drop.rarity);
+                    else {
+                        float pBase = drop.chance ?? 0f;
+                        ExecuteDrop(monster, ctx, results, tag, drop, pBase);
                     }
+                        
                 }
 
                 // 5. SecretDrops pro Monster
@@ -91,7 +74,8 @@ namespace CHAL.Systems.Loot
                         {
                             EnemyId = monster.EnemyId,
                             PickedTag = sd.sourceTag,
-                            ItemId = sd.itemId
+                            ItemId = sd.itemId,
+                            quantity = sd.quantity
                         };
                         results.Add(entry);
                         ctx.Drops.Add(entry);
@@ -103,6 +87,39 @@ namespace CHAL.Systems.Loot
             }
 
             return results;
+        }
+
+        private void ExecuteDrop(EnemyInstance monster, WaveLootContext ctx, List<LootResultEntry> results, string tag, LootDrop drop, float pBase)
+        {
+            // Unlucky / Budget
+            float multUnlucky = _unlucky.GetMultiplier(drop.rarity);
+            float pPre = pBase * multUnlucky;
+
+            float mBudget = LootBudgetModulator.GetModifier(ctx.SpentBudget, drop.lootValue, ctx.TotalBudget, drop.rarity);
+            float pEff = Mathf.Clamp(pPre * mBudget, 0f, 100f);
+
+            float roll = Random.Range(0f, 100f);
+            if (roll < pEff)
+            {
+                var entry = new LootResultEntry
+                {
+                    EnemyId = monster.EnemyId,
+                    PickedTag = tag,
+                    ItemId = drop.itemId,
+                    quantity = drop.quantity,
+                };
+                results.Add(entry);
+                ctx.Drops.Add(entry);
+
+                ctx.SpentBudget += drop.lootValue;
+                _unlucky.OnDrop(drop.rarity);
+
+                DebugManager.Log($"{drop.itemId} ({drop.quantity}x) dropped from {monster.EnemyId} ({monster.Rank}) via tag:{tag}", DebugManager.EDebugLevel.Test, "Loot");
+            }
+            else
+            {
+                _unlucky.OnFail(drop.rarity);
+            }
         }
 
         /// <summary>
@@ -117,7 +134,12 @@ namespace CHAL.Systems.Loot
             while (ctx.Drops.Count < mergedWave.minDrops)
             {
                 var pick = mergedWave.drops[Random.Range(0, mergedWave.drops.Count)];
-                var entry = new LootResultEntry { EnemyId = "WaveBonus", PickedTag = "Failsafe", ItemId = pick.itemId };
+                var entry = new LootResultEntry { 
+                        EnemyId = "WaveBonus",
+                        PickedTag = "Failsafe",
+                        ItemId = pick.itemId,
+                        quantity = pick.quantity};
+
                 ctx.Drops.Add(entry);
                 ctx.SpentBudget += pick.lootValue;
                 _unlucky.OnDrop(pick.rarity);
@@ -137,7 +159,12 @@ namespace CHAL.Systems.Loot
                     if (candidates.Count == 0) break;
 
                     var pick = candidates[Random.Range(0, candidates.Count)];
-                    var entry = new LootResultEntry { EnemyId = "WaveBonus", PickedTag = "Guarantee", ItemId = pick.itemId };
+                    var entry = new LootResultEntry {
+                            EnemyId = "WaveBonus",
+                            PickedTag = "Guarantee",
+                            ItemId = pick.itemId,
+                            quantity = pick.quantity};
+
                     ctx.Drops.Add(entry);
                     //No Unlucky reset
                     DebugManager.Log($"Guaranteed {rarity} → {pick.itemId}",DebugManager.EDebugLevel.Dev,"Loot");
@@ -160,11 +187,11 @@ namespace CHAL.Systems.Loot
         }
 
 
-        public int RollGoldForMonster(EnemyInstance enemy, WaveLootContext waveCtx)
+        public int RollGoldForMonster(EnemyInstance enemy, int maplvl)
         {
             var rank = enemy.Rank;
-            var baseGold = BalanceManager.Instance.Config.economy.currencies.baseGoldReward;
-            var goldpLevel = BalanceManager.Instance.Config.economy.currencies.goldPerLevel;
+            var curr = BalanceManager.Instance.Config.economy.currencies;
+
             int baseModifier = rank switch
             {
                 EnemyRank.Spawn => 1,
@@ -176,7 +203,7 @@ namespace CHAL.Systems.Loot
                 _ => 1
             };
 
-            return Mathf.RoundToInt(baseGold * baseModifier  + waveCtx.Wave.Level* goldpLevel);
+            return Mathf.RoundToInt(curr.baseGoldReward * baseModifier  + (maplvl-1) * curr.goldPerLevel);
 
         }
 
@@ -196,14 +223,17 @@ namespace CHAL.Systems.Loot
                 _ => 1
             };
 
-            //TODO:
-            //difficulty
-            var diff = 1;
+            int diffBonus = difficulty switch
+            { 
+                MapDifficulty.Easy => 1,
+                MapDifficulty.Medium => 5,
+                MapDifficulty.Hard => 10,
+                _=> 1
+            };
 
-            float scaled = baseXp
-                * diff
-                * (1f + waveLevel * 0.1f)   
-                * (1f + mapLevel * econ.xpPerLevel);
+
+            float scaled = econ.baseXpReward * baseXp * diffBonus * (1f + waveLevel * 0.1f) 
+                    + (1f + (mapLevel-1) * econ.xpPerLevel);
               
             return Mathf.RoundToInt(scaled);
         }

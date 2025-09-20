@@ -1,0 +1,166 @@
+⚔️ Aura-Skill-Module-System (Draft)
+=====================================
+1. Grundidee
+
+Jeder Charakter hat vier Sockel (Torso, rechte Hand, linke Hand, Kopf).
+
+Jeder Sockel repräsentiert ein ausgerüstetes Skill-Modul (z. B. Feuerball, Schildstoß, Totem).
+
+Ab einem bestimmten Level wird ein Sockel freigeschaltet → natürliche Progression:
+
+Torso → Lvl 1
+
+Rechte Hand → Lvl 5
+
+Linke Hand → Lvl 10
+
+Kopf → Lvl 20
+
+2. Umlaufbahnen (Orbit-System)
+
+Um jeden Sockel kreisen mehrere Umlaufbahnen.
+
+Jeder Orbit besteht aus kleinen Punkten (= Skillpunkte für generische Werte wie Attack Speed, Crit, Area, DoT, Cooldown).
+
+Nach 5 investierten Punkten pro Umlaufbahn wird ein großer Modifikator-Knoten sichtbar.
+
+Wird ein Modifikator gewählt, verschwinden die alternativen → Build-Entscheidungen sind spürbar und exklusiv.
+
+👉 Beispiel:
+
+Orbit 1 (Basis): +1% Crit, +2% Attack Speed, +3% Area pro Punkt.
+
+Nach 5 Punkten: „Tier I Mod“ → Projectile → AoE oder Self → Target.
+
+Orbit 2 (freigeschaltet durch Tier I): neue Stats, Tier II Mods (größer, tiefgreifender).
+
+3. Modifikatoren (Tier-System)
+
+Tier I: Basis-Transformationen (z. B. „Projectile → AoE“).
+
+Tier II: Fortgeschrittene Verzweigungen (z. B. „splitten, spiegeln, stapeln“).
+
+Tier III: Exotische/Build-definierende Mechaniken (z. B. „Skill erzeugt Orbit-Projektil, das zurückkehrt“).
+
+👉 Balancing-Hebel:
+
+Höhere Tiers brauchen mehr Skillpunkte in den Umlaufbahnen.
+
+Optional: höhere Tiers erlauben mehrere Mods gleichzeitig (z. B. 2x Tier II vs. 1x Tier III).
+
+4. Krönung (Crown-Sockets)
+
+Ab Endgame-Level (ab 160 Skillpunkten ~ ca Level 100) erscheinen Crown-Sockets, die visuell über dem Kopf des Charakters schweben.
+
+Crown-Sockets können mit neuen Skills ausgerüstet werden:
+
+und haben spezielle orbit-points:
+
+„Wenn Crit → löse sekundären Effekt von Hand-Sockel aus“
+
+„Aura-Resonanz: Torso & Kopf-Skill beeinflussen sich gegenseitig“
+
+→ Meta-Progression: Der Charakter wird zu einer Einheit, nicht nur Summe seiner Skills.
+
+5. Gameplay-Philosophie
+
+Jeder Skill wächst organisch: von Basis-Effekten → Transformationen → Build-definierende Mods.
+
+Kein Verskillen: Punkte in Orbits sind immer nützlich (Stats), Mods sind exklusiv, aber alle viable.
+
+Experiment ermutigt: Respec über Gold + Crafting (Modul geht kaputt, muss neu gebaut werden).
+
+6. Visualisierung & UI
+
+Der Charakter steht im Zentrum.
+
+Sockel sind am Körper sichtbar (Torso, Hände, Kopf).
+
+Umlaufbahnen sind Kreise um die Sockel, wachsende Orbits = Fortschritt.
+
+Crown-Sockets schweben über dem Kopf → Endgame wird visuell episch.
+
+
+📈 Progression-Design: Orbit-Skill-System
+==========================================
+1. Level-Kurve
+
+XP-basiert (Monster-Kills), aber gebremst durch Map-Design:
+
+Early: ~1–2 Level pro Map (schnelles Hochziehen, Spieler testet früh Mods).
+
+Midgame: ~1 Level pro Map (solider Progress, wie „Snack pro Run“).
+
+Lategame: mehrere Maps ohne Level (Spannung: „Wann kommt endlich der nächste Unlock?“).
+
+👉 Formel: XP = BaseXP × MapDifficulty × MonsterFactor
+
+Jede Map-Welle = klarer XP-Pool → XP-Verteilung ist planbar.
+
+Zufällige Glückstreffer möglich, aber die „Durchschnitt 1 Level pro Map“-Philosophie bleibt.
+
+2. Orbit-Aufbau
+
+Jeder Sockel (Torso, Kopf, linke/rechte Hand) hat denselben Orbit-Aufbau → Lernkurve konsistent.
+
+Unterschied: Jeder Slot hat eigene Themenrichtung → Spieler entscheidet, wo er seinen Skill platziert.
+
+👉 Beispiel:
+
+Torso: Sustain, Defensiv-Mechaniken, Buffs.
+
+Rechte Hand: Crit, Attack Speed, Single-Target.
+
+Linke Hand: AoE, Control, Crowd.
+
+Kopf: Elemente, Debuffs, Status-Effekte.
+
+Das macht den Slot-Entscheid taktisch wichtig → „mein Feuerball im Kopf-Sockel = AoE/Element, im Hand-Sockel = Crit-Sniper“.
+
+3. Frequenz der Mods
+
+Tier I: nach 5 Punkten → kleine Transformationen.
+
+Tier II: nach 7 Punkten → größere Veränderungen (Skillspaltung, Spiegelung).
+
+Tier III: nach 10 Punkten → Build-definierende Mechaniken.
+
+👉 Progression pro Orbit = 5 + 7 + 10 = 22 Punkte bis zum Maximum.
+→ Bei 4 Sockeln = 88 Punkte für einen komplett „ausgebauten“ Char.
+→ Bei 1 Level ≈ 1 Punkt pro Map: Spieler hat ~100 Maps „Carrot on a Stick“ Progression.
+→ Passt 1:1 zu deinem Wellen-/Map-Loop.
+
+Idee: 4. Crown-Sockets (als Meta-skills)
+
+Fixe Level-Schwellen: 50 / 70 / 100
+
+Crown-Sockets geben globale Resonanz-Buffs, die mehrere Skills verbinden.
+
+👉 Beispiele:
+
+„Wenn rechter Hand-Skill crittet, löst der Torso-Skill ein Echo aus.“
+
+„+1 Tier-I-Mod pro Orbit (stackt mit vorhandenen).“
+
+📊 Szenario-Rechnung Skillpunkte
+=====================================
+
+Basis = 1 Punkt pro Level (Variante A) oder 2 Punkte pro Level (Variante B).
+
+Alle 10 Maps = +5 Bonuspunkte.
+
+Extra-Boni für „Komplette Sockel-Sets“:
+
+4× Tier I Mods → +5 Punkte
+
+4× Tier II Mods → +5 Punkte
+
+4× Tier III Mods → +5 Punkte
+
+Reiner Build soll bei Level 100 abgeschlossen sein.
+Ab Level 100 gibt’s nur noch Crown-Slots & Meta.
+
+Level 1–100 = 100 Punkte
+Map-Boni (alle 10 Maps, also bis 100 Maps) = +40 Punkte
+Sockel-Boni (7×T1, 7×T2, 7×T3) = +21 Punkte
+Gesamt = 161 Skillpunkte bis Level 100.

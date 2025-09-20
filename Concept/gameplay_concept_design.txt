@@ -41,13 +41,13 @@ Prototype Core Features:
 		-> all wave scomplete unlock new map and new difficulty for old map
    - Characters placed in fixed slots (front/backline).
    - Battle is automatic: characters auto-attack.
-   - Player does not actively fight, but collects loot drops.
+   - Player does not actively fight, but collects loot drops (later: Autocollect)
 		-> Can activate random spawning Adds (optional Bonus-Troups/ Elite-Packs)
    - Bonus rewards after finishing a map ("Battlepaas" / Missions/ Tropäenpfad)
 		-> Clearspeed = Sterne pro Map
 		-> asugeteilter Damage/ DPS
 
-5. PASSIVE TREE (Prototype: 1 Branch)
+5. Battle-Pass(Prototype: 1 Branch)
    - Account-wide progression.
    - Prototype version: 1 branch with 5–10 nodes (small stacking buffs).
 		-> attack Speed
@@ -74,14 +74,14 @@ Prototype Core Features:
    - Output: Runen (offensive, defensive, buff).
    - Rune slots unlock with character level.
 
-3. FULL PASSIVE TREE
-   - 4–5 branches, 10 nodes each.
-   - Themes: Aggressive, Defensive, Physical, Magical, Ranged.
-   - Respec possible (gold cost).
+3. FULL "Active" TREE
+   - multi-layered Orbits on skill-sockets with smaller and greater adds
+   - build-defining changes on the skill
 
 4. ARENA INTERACTIONS
    - Light-touch player influence (e.g. Ultimates, situational buffs).
-   - Map-specific mechanics (lava tiles, icy ground).
+   - Map-specific mechanics (Corruption nexus, VoidBubble -> Spawn extra mobs, if plasyer think wave is too easy).
+		- Live-difficulty enhanvement
 
 5. ARMY CUSTOMIZING
    - Visual customization: colors, patterns, banners.

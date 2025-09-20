@@ -1,0 +1,60 @@
+📑 Neutraler Mod-Pool nach Slot & Tier
+🟢 Torso (Allrounder, Sustain & Flexibilität)
+Tier	Mögliche Mods (Auswahl)
+I (3)	- Skill gewährt dir bei Treffer 1% Heilung vom Schaden
+- Skill reduziert bei Ausführung die Abklingzeiten deiner anderen Skills um 0,5s
+- Skill verleiht dir +X Rüstung für 5s nach Einsatz
+II (4)	- Skill erzeugt bei Einsatz eine kleine Barriere (absorbiert X Schaden)
+- Skill erhöht 5s lang deinen Schaden um X%
+- Skill reduziert kurzzeitig eingehenden Schaden um X%
+- Skill gewährt +X% Bewegungsgeschwindigkeit für 3s
+III (5)	- Skill wird zu einer passiven Aura, die Verbündete leicht stärkt
+- Skill erzeugt bei Einsatz ein Heil-/Buff-Feld für X Sekunden
+- Skill gewährt dir einen temporären „Unverwundbarkeitsschub“ (z. B. 1s Immunität)
+- Skill ruft beim Einsatz einen Schutzgeist herbei, der kurzzeitig Schaden absorbiert
+- Skill kann als Alternative defensiv auf dich selbst gecastet werden
+
+🟡 Linke Hand (AoE, Kontrolle & Utility)
+Tier	Mögliche Mods (Auswahl)
+I (3)	- Skill trifft in einem kleinen Bereich zusätzlich
+- Skill erhöht seine Reichweite / Größe um X%
+- Skill hat X% Chance, einen Debuff (Slow, Weakness o.ä.) zu verursachen
+II (4)	- Skill hinterlässt ein DoT-Feld für X Sekunden
+- Skill zieht Gegner leicht zum Zentrum
+- Skill verlängert die Dauer von Status-Effekten um X%
+- Skill kann Gegner zurückstoßen
+III (5)	- Skill wird zu einer großflächigen Nova um dich herum
+- Skill explodiert mehrfach in Ketten-Effekten
+- Skill hinterlässt eine Zone, die Gegner periodisch trifft
+- Skill bündelt getroffene Gegner für kurze Zeit (Vortex-Effekt)
+- Skill erzeugt ein zusätzliches Projektil/Instanz
+
+🔴 Rechte Hand (Crit & Burst-Schaden)
+Tier	Mögliche Mods (Auswahl)
+I (3)	- Skill erhält +X% Crit-Chance
+- Skill-Crits verursachen +Y% mehr Schaden
+- Skill-Crits stellen X Mana/Energie wieder her
+II (4)	- Skill-Crits lösen eine kleine Zusatz-Explosion aus
+- Skill-Crits verlängern vorhandene Debuffs um Xs
+- Skill-Crits können Skill sofort erneut auslösen (Chance)
+- Skill-Crits reduzieren den CD des Skills um 1s
+III (5)	- Skill-Crits springen auf bis zu X weitere Gegner über
+- Skill-Crits erzeugen ein sekundäres Abbild des Skills (Echo)
+- Skill-Crits verstärken die AoE um +X%
+- Skill-Crits lösen automatisch einen anderen aktiven Skill aus (Trigger-Synergie)
+- Skill-Crits erzeugen temporäre „Seelenfragmente“, die gesammelt Boni gewähren
+
+🔵 Kopf (Mutationen & Build-Definer)
+Tier	Mögliche Mods (Auswahl)
+I (3)	- Skill verursacht zusätzlich einen zufälligen Statuseffekt
+- Skill-Kosten werden um X% reduziert
+- Skill hat Chance, beim Einsatz eine kleine Kopie zu erzeugen
+II (4)	- Skill erhält einen sekundären Effekt (z. B. DoT, Debuff, Buff)
+- Skill beschwört temporär ein beschützendes oder unterstützendes Objekt
+- Skill kann Verbündete leicht buffen statt nur Gegner zu treffen
+- Skill erzeugt eine „Resonanz“ → bufft deine anderen Skills für kurze Zeit
+III (5)	- Skill verwandelt sich in eine Channel-Version (kontinuierlich statt einzelner Casts)
+- Skill springt automatisch zwischen mehreren Zielen
+- Skill wird zu einem permanenten Orbit-/Begleiter-Effekt
+- Skill kann optional auf dich selbst wirken (Selbstbuff statt Angriff)
+- Skill mutiert zu einer ultimativen Version (riesiger Burst, langer CD)

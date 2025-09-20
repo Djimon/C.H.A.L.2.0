@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CHAL.Data
 {
+    [Serializable]
     public class PlayerProfile
     {
         // --- Meta ---
@@ -25,7 +26,9 @@ namespace CHAL.Data
         public Inventory Modules = new("module");
 
         // Map Progress
-        public Dictionary<int, Dictionary<MapDifficulty, int>> MapProgress = new();
+        //first int is MapNo, 
+        //second int is highest difficulty succeded
+        public Dictionary<int,int> MapProgress = new();
         // Setzen: SetMapProgress(1,MapDifficulty.easy,9)
         // Abfragen:  GetMapProgress(1, MapDifficulty.medium)
 
@@ -59,21 +62,14 @@ namespace CHAL.Data
         }
 
 
-        public void SetMapProgress(int map, MapDifficulty difficulty, int wave)
+        public void SetMapProgress(int map, MapDifficulty difficulty)
         {
-            if (!MapProgress.ContainsKey(map))
-                MapProgress[map] = new Dictionary<MapDifficulty, int>();
-
-            MapProgress[map][difficulty] = wave;
+                MapProgress[map] = (int)difficulty;
         }
 
-        public int GetMapProgress(int map, MapDifficulty difficulty)
+        public int GetMapProgress(int map)
         {
-            if (MapProgress.TryGetValue(map, out var diffDict) &&
-                diffDict.TryGetValue(difficulty, out var wave))
-                return wave;
-
-            return 0; // Default = noch nicht gespielt
+            return MapProgress.TryGetValue(map, out var highest) ? highest : 0;
         }
 
         private void RecalculateLevel()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CHAL.Systems.Inventory
 {
@@ -67,6 +68,20 @@ namespace CHAL.Systems.Inventory
         }
 
         public List<InventoryItem> GetAllItems() => _items;
+
+        public Dictionary<string, int> ToDictionary()
+        {
+            return _items.ToDictionary(i => i.ItemId, i => i.Count);
+        }
+
+        public void FromDictionary(Dictionary<string, int> dict)
+        {
+            _items = dict.Select(kv => new InventoryItem
+            {
+                ItemId = kv.Key,
+                Count = kv.Value
+            }).ToList();
+        }
     }
 
     [Serializable]

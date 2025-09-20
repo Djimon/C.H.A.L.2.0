@@ -1,0 +1,97 @@
+⚙️ Best-Practice für modulare Skill-Mods
+1. Datengetrieben statt Hardcode
+
+Jeder Skill hat ein SkillData-Objekt (JSON/ScriptableObject).
+
+Darin stehen Basiswerte: Damage, Cooldown, Range, Cost, Tags (Projectile, AoE, Melee, Elemental:Fire, Buff).
+
+Mods sind separat definierte Modifier (ebenfalls Datenobjekte), die sagen:
+
+Was sie verändern (CritChance, Cooldown, DamageMultiplier, ProjectileCount).
+
+Wie stark (+0.1f, ×2, Add +1).
+
+Bedingungen (if HasTag(Projectile) oder if Crit).
+
+👉 Vorteil: Du kannst einen Mod mehrfach benutzen (z. B. +1 Projectile für alle Skills mit Projectile).
+Kein Copy/Paste in den Code pro Skill.
+
+2. Modifier-System (Additive / Multiplikative Layer)
+
+Ein sauberer Ansatz ist ein Modifier-Stack:
+
+Skill castet nicht direkt Damage = 100.
+
+Stattdessen:
+
+Base Value (Damage = 100).
+
+Additive Mods (+20% von hier, +10 Flat von dort).
+
+Multiplicative Mods (Crit ×2, AoE ×1.5).
+
+Replacement Mods (Projectile → AoE Nova).
+
+→ Jeder Mod ist ein kleiner „Layer“, der durch die Tags entscheidet, ob er greift.
+
+3. Tags als Schlüsselfaktor
+
+Jeder Skill trägt Tags:
+
+Beispiel: Fireball → [Projectile, Fire, AoE]
+
+Beispiel: Healing Aura → [Aura, Buff, Holy]
+
+Jeder Mod prüft: AppliesTo = [Projectile] oder AppliesTo = [Fire].
+
+So kannst du Mods neutral formulieren:
+
+„+1 Projectile“ greift automatisch bei allen Projectile-Skills.
+
+„+20% Burn Duration“ greift nur bei Fire-Skills mit DoT.
+
+👉 Damit brauchst du keine Hardcode-Verzweigungen pro Skill.
+
+4. Event-/Hook-System für Spezialeffekte
+
+Nicht alles sind Zahlenwerte – manche Mods sind „On Crit → tue X“.
+Lösung:
+
+Skills feuern Events (OnCast, OnHit, OnCrit, OnKill).
+
+Mods können sich an diese Events hängen:
+
+„OnCrit → Spawn Echo Projectile“
+
+„OnKill → Restore 10 Mana“
+
+„OnCast → Trigger Shield Buff“
+
+👉 Event-System macht „Trigger-Synergien“ sehr flexibel.
+
+5. Mutations als eigene Skill-Variante
+
+Die ganz wilden Mods (Tier III) sind meist Mutation-Mods → Skill wird zu etwas Neuem.
+Hier zwei Patterns:
+
+Soft Mutation (Param-Switch)
+
+Fireball → Fire Nova (gleicher Skill, IsAoE = true, ProjectileCount = 0).
+
+Hard Mutation (SkillData-Swap)
+
+Fireball → „FlamethrowerSkillData“ (neue ScriptableObject mit anderen Tags).
+
+Mod speichert Referenz zum alternativen Skill.
+
+👉 Vorteil: Du musst nur 1× neuen Skill definieren, Mods referenzieren ihn einfach.
+
+6. Respec & Crafting-Integration
+
+Mods liegen als Dateninstanzen in einem Inventory/Tree-System.
+
+Entfernen = löschen/droppen der Referenz.
+
+Respec = Kosten → „remove + reapply“.
+
+Kein Code-Special-Case nötig → einfach Modifier-Listen anpassen.

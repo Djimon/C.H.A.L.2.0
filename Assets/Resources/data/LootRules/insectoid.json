@@ -6,7 +6,7 @@
     { "itemId": "part:stinger", "chance": 20, "quantity": 1 },
     { "itemId": "part:venom_sac", "chance": 30, "quantity": 1 },
     { "itemId": "part:capsule", "chance": 15, "quantity": 1 },
-    { "itemId": "remains:glitterdust", "chance": 70, "quantity": 1 }
+    { "itemId": "remains:glitter_dust", "chance": 70, "quantity": 1 }
   ],
   "minDrops": 2,
   "maxDrops": 3,
