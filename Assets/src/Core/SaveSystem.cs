@@ -1,6 +1,7 @@
 using CHAL.Data;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -15,6 +16,16 @@ namespace CHAL.Core
         {
             var sb = new StringBuilder();
             sb.AppendLine("{");
+
+            //Basic profiel data
+            sb.AppendLine($"  \"name\": \"{profile.playerName}\",");
+            //TODO: Colors
+            //Use InvariantCulture to prevent the stringbuilder zo use local decimal seperators
+            sb.AppendLine(
+            $"  \"color01\": \"{profile.playerColors[0].r.ToString(CultureInfo.InvariantCulture)}," + 
+                   $"{profile.playerColors[0].g.ToString(CultureInfo.InvariantCulture)}," +
+                   $"{profile.playerColors[0].b.ToString(CultureInfo.InvariantCulture)}\","
+);
 
             // XP, Gold, DNA
             sb.AppendLine($"  \"xp\": {profile.XP},");
@@ -88,6 +99,10 @@ namespace CHAL.Core
                 profile.LastSaveTime = dt;
             }
 
+            profile.playerName = ExtractString(json, "\"name\"");
+            Color c1 = GetColorFromString(ExtractString(json, "\"color01\""));
+            profile.playerColors = new Color[] {c1};
+
             profile.XP = ExtractInt(json, "\"xp\"");
             profile.AddCurrency("gold", ExtractInt(json, "\"gold\""));
             profile.AddCurrency("crystal", ExtractInt(json, "\"crystal\""));
@@ -100,6 +115,29 @@ namespace CHAL.Core
 
             Debug.Log($"Save loaded: {SavePath}");
             return profile;
+        }
+
+        private static Color GetColorFromString(string v)
+        {
+            if (string.IsNullOrWhiteSpace(v))
+                return Color.blue;
+
+            try
+            {
+                var parts = v.Split(',');
+                if (parts.Length != 3)
+                    return Color.blue;
+
+                float r = float.Parse(parts[0], CultureInfo.InvariantCulture);
+                float g = float.Parse(parts[1], CultureInfo.InvariantCulture);
+                float b = float.Parse(parts[2], CultureInfo.InvariantCulture);
+
+                return new Color(r, g, b);
+            }
+            catch
+            {
+                return Color.blue;
+            }
         }
 
         private static int ExtractInt(string json, string key)

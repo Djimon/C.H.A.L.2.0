@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/src/UI/uss/mainmenue_style.uss?fileID=7433441132597879392&amp;guid=7cdca454dedc5224bacce2cb7bc195ab&amp;type=3#mainmenue_style" />
+    <ui:VisualElement name="panel" style="flex-grow: 1; flex-direction: row; background-color: rgba(0, 0, 0, 0.86); -unity-background-scale-mode: scale-to-fit; flex-basis: auto;">
+        <ui:VisualElement name="leftbox" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); flex-basis: 15%;" />
+        <ui:VisualElement name="mainframe" style="flex-grow: 1;">
+            <ui:VisualElement name="Header" style="flex-grow: 0; flex-basis: 10%;" />
+            <ui:VisualElement name="Logo" style="flex-grow: 0; flex-basis: 20%; justify-content: center;">
+                <ui:Label text="C.H.A.L. 2" name="Titel" style="flex-grow: 1; flex-shrink: 1; -unity-text-align: middle-center; color: rgb(0, 255, 140); font-size: 128px; -unity-text-outline-width: 0; -unity-text-outline-color: rgb(0, 0, 0);" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Select" style="flex-grow: 0; flex-basis: 60%; flex-direction: column; align-items: center; justify-content: flex-start; align-self: auto;">
+                <ui:Button text="New Game" name="NewGame" class="menueBtn" style="width: 50%; font-size: 50px; margin-top: 20px; margin-right: 20px; margin-bottom: 20px; margin-left: 20px; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px;" />
+                <ui:Button text="Continue" name="Continue" class="menueBtn" style="width: 50%;" />
+                <ui:Button text="Options" name="Options" class="menueBtn" style="width: 50%;" />
+                <ui:Button text="Exit" name="Exit" class="menueBtn" style="width: 50%;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Footer" style="flex-grow: 1;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="rightbox" style="flex-grow: 0; flex-basis: 15%;" />
+    </ui:VisualElement>
+</ui:UXML>

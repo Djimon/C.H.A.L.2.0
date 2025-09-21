@@ -48,9 +48,13 @@ namespace CHAL.Core
             Profile = SaveSystem.Load();
             if (Profile == null)
             {
-                Debug.Log("Kein Save gefunden – neues Profil erstellt.");
-                Profile = new PlayerProfile();
+                Debug.Log("Kein Save gefunden ");
+                //Profile = new PlayerProfile(); //erst im Character Creator
             }
+
+            var xpplvl = Config.economy.xp.xpPerLevel;
+            DebugManager.Log($"Xp per level: {xpplvl}");
+
         }
 
         public void SaveGame()

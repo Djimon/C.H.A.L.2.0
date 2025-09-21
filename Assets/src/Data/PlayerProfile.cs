@@ -1,3 +1,4 @@
+using CHAL.Core;
 using CHAL.Systems.Inventory;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,10 @@ namespace CHAL.Data
     {
         // --- Meta ---
         public DateTime LastSaveTime;            // Für Autosave / Debug
+
+        // --- Charakter Customization ---
+        public string playerName;
+        public Color[] playerColors;
 
         // --- Charakter-Fortschritt ---
         public int XP;                           // Gesamt-XP
@@ -31,6 +36,14 @@ namespace CHAL.Data
         public Dictionary<int,int> MapProgress = new();
         // Setzen: SetMapProgress(1,MapDifficulty.easy,9)
         // Abfragen:  GetMapProgress(1, MapDifficulty.medium)
+
+        public void InitializePlayer(string name, Color[] colors)
+        { 
+            playerName = name;
+            playerColors = colors;
+
+            SaveSystem.Save(this);
+        }
 
         public int GetXP() => XP;
         public void AddXP(int amount)

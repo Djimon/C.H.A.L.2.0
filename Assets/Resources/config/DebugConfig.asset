@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c06b79f4eaee1146b4f43377a9c442c, type: 3}
   m_Name: DebugConfig
   m_EditorClassIdentifier: 
-  level: 1
+  level: 4
   productiveMode: 0
   autoAddUnknownTagsToAsset: 1
   colorWholeLine: 1
