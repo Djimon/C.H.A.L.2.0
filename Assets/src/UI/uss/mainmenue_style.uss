@@ -31,7 +31,7 @@
     align-items: stretch;
 }
 
-.menueBtn:hover{
+.menueBtn:hover {
     scale: 1.1 1.2;
     transition-duration: 0.3s;
     transition-property: all;
@@ -65,4 +65,21 @@
     align-self: auto;
     flex-wrap: nowrap;
     -unity-text-outline-color: rgb(0, 0, 0);
+}
+
+.txtInput #unity-text-input {
+    background-color: rgba(0, 0, 0, 0);
+    padding: 0;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.txtInput #unity-text-input:hover {
+    border-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.txtInput #unity-text-input > .unity-text-element--inner-input-field-component {
 }

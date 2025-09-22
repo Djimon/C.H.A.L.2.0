@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - clickableObject
   layers:
   - Default
   - TransparentFX

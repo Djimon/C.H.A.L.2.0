@@ -1,0 +1,64 @@
+🔑 Grundidee
+
+Du hast zwei Konzepte, die sich im UI begegnen:
+
+Socket (Slot) → kann leer oder belegt sein.
+
+Skill-Module (Item) → existiert im Inventar und kann in einen Socket gezogen werden.
+
+Beim Drag & Drop „verheiratest“ du die beiden – aber wichtig: logisch bleiben sie zwei Entitäten.
+
+🧩 Varianten für die Umsetzung
+Variante A: Socket bleibt Parent, Module wird Child (empfohlen)
+
+Dein Socket-Prefab ist der Container (hat die Layers: Base, Frame, Glow, Symbol).
+
+Ein Skill-Module (aus dem Inventar) wird beim Drop in dieses Socket geparented und fügt seine Ebene (skill_module_base + symbol) hinzu.
+
+Vorteil:
+
+Nur ein GameObject pro belegtem Slot sichtbar.
+
+Socket steuert Glow/Highlight.
+
+Module bleibt trotzdem ein eigenes Objekt (im Code), du verlierst keine Daten.
+
+
+⚙️ Empfehlung für dich
+
+Socket ist der Container.
+Drag & Drop setzt das Modul als Child in den Socket → das Prefab updated sich.
+
+Entfernen = Kind wieder ins Inventar verschieben.
+
+🖼️ Unity-Hierarchy (belegt)
+Socket (Prefab)
+ ├── socket_base
+ ├── socket_frame
+ ├── socket_frame_glow
+ └── ModuleInstance (Child, zur Laufzeit gespawnt)
+      ├── skill_module_base
+      └── symbol
+
+Code-Snippet Drag&Drop
+public class SocketUI : MonoBehaviour
+{
+    public bool IsEmpty => currentModule == null;
+    private SkillModuleUI currentModule;
+
+    public void PlaceModule(SkillModuleUI module)
+    {
+        if (!IsEmpty) return;
+
+        currentModule = module;
+        module.transform.SetParent(transform, false); // snap as child
+        module.transform.SetAsLastSibling(); // ensure on top
+    }
+
+    public SkillModuleUI RemoveModule()
+    {
+        var temp = currentModule;
+        currentModule = null;
+        return temp;
+    }
+}

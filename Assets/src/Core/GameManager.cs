@@ -14,10 +14,16 @@ namespace CHAL.Core
     public class GameManager : MonoBehaviour
     {
 
-        [SerializeField] private GameBalanceConfig config; // optional: Inspector-Zuweisung
+        [SerializeField]
+        private GameBalanceConfig config; 
+
+        [SerializeField]
+        private InputManager inputManager;
 
         public static GameManager Instance { get; private set; }
         public PlayerProfile Profile { get; private set; }
+
+        
 
         public GameBalanceConfig Config
         {
@@ -55,6 +61,15 @@ namespace CHAL.Core
             var xpplvl = Config.economy.xp.xpPerLevel;
             DebugManager.Log($"Xp per level: {xpplvl}");
 
+            inputManager = FindFirstObjectByType<InputManager>();
+
+            // Falls keiner in der Szene existiert → automatisch erstellen
+            if (inputManager == null)
+            {
+                GameObject go = new GameObject("InputManager");
+                inputManager = go.AddComponent<InputManager>();
+                go.transform.SetParent(gameObject.transform);
+            }
         }
 
         public void SaveGame()
