@@ -29,7 +29,11 @@ namespace CHAL.Systems.Inventory
             {
                 int spaceLeft = maxStack - entry.Count;
                 if (spaceLeft <= 0)
-                    return false;
+                {
+                    DebugManager.Debugging($"max stacks ({maxStack}) reached");
+                    return false;              
+                }
+                    
 
                 int toAdd = Math.Min(amount, spaceLeft);
                 entry.Count += toAdd;
@@ -43,6 +47,9 @@ namespace CHAL.Systems.Inventory
                 _items.Add(new InventoryItem { ItemId = itemId, Count = toAdd });
                 amount -= toAdd;
             }
+
+            if(amount>0)
+                DebugManager.Debugging($"max Slots ({maxSlots}) reached");
 
             // falls nicht alles reinpasst
             return amount == 0;

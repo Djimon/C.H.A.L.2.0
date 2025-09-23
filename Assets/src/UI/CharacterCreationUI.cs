@@ -42,12 +42,10 @@ public class CharacterCreationUI : MonoBehaviour
     private void OnNewGameBtnClicked()
     {
         PlayerProfile profile = new PlayerProfile();
-
-
         profile.InitializePlayer(name_input.text, colors);
-        SceneManager.LoadScene(_startSceneName);
 
-        DebugManager.Log($"New Profile: {profile.playerName} - main Color: {profile.playerColors[0]}");
+        GameManager.Instance.StartNewGame(profile);
+
     }
 
     private void OnBackBtnClicked()

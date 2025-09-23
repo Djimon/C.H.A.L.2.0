@@ -223,16 +223,17 @@ namespace CHAL.Systems.Loot
                 _ => 1
             };
 
-            int diffBonus = difficulty switch
+            int difficultyBonus = difficulty switch
             { 
-                MapDifficulty.Easy => 1,
-                MapDifficulty.Medium => 5,
-                MapDifficulty.Hard => 10,
-                _=> 1
+                MapDifficulty.Stable => 1,
+                MapDifficulty.Strained => 3,
+                MapDifficulty.Volatile => 10,
+                MapDifficulty.Chaos => 50,
+                _ => 1
             };
 
 
-            float scaled = econ.xp.baseXpReward * baseXp * diffBonus * (1f + waveLevel * 0.1f) 
+            float scaled = econ.xp.baseXpReward * baseXp * difficultyBonus * (1f + waveLevel * 0.1f) 
                     + (1f + (mapLevel-1) * econ.xp.xpPerLevel);
               
             return Mathf.RoundToInt(scaled);

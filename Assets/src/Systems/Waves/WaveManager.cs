@@ -14,15 +14,13 @@ namespace CHAL.Systems.Wave
     {
         [Header("Setup")]
         public WaveDef waveDef;
-        public Transform spawnPoint;
+        public List<Transform> spawnPoints;
+
+        [Header("Debug Input")]
+        [SerializeField] private MapDef debugMap;
+        [SerializeField] private int debugWaveIndex = 1;
         public GameObject enemyPrefab;
         public GameObject lootPrefab;
-
-        [Header("Runtime Info")]
-        //public int currentWaveLevel = 1;
-        //public int Maplevel = 1;
-        //public MapDifficulty difficulty = MapDifficulty.Easy;
-        //public List<string> currentInventory = new();
 
         public WaveRewards waveRewards; //??
         private LootRulesService _rules;
@@ -30,6 +28,8 @@ namespace CHAL.Systems.Wave
         private UnluckyProtection _unlucky;
         private List<EnemyController> _aliveEnemies = new();
         private WaveLootContext _waveCtx;
+
+        private MapManager mapMgr;
 
         private void Awake()
         {
@@ -49,14 +49,24 @@ namespace CHAL.Systems.Wave
             LootCube.OnLootCollected -= CollectLoot;
         }
 
-        [ContextMenu("Start Wave")]
-        public void StartWave()
+        public void StartWave(MapDef mapDef, int waveIndex)
         {
-            DebugManager.Log($"Starting Wave", DebugManager.EDebugLevel.Test, "Wave");
+            DebugManager.Log($"Starting Wave {waveIndex}/{mapDef.maxWaves}", DebugManager.EDebugLevel.Test, "Wave");
 
             waveRewards = new WaveRewards();
 
-            var wave = waveDef != null ? waveDef.ToComposition() : GetFallbackWave();
+            // Hole WaveDef aus MapDef
+            if (mapDef == null || waveIndex < 1 || waveIndex > mapDef.waveDefs.Count)
+            {
+                DebugManager.Error("Invalid wave index!", "Wave");
+                return;
+            }
+
+            var waveDef = mapDef.waveDefs[waveIndex - 1];
+
+            // Zusammensetzen (später constraint-basiert, aktuell noch fest)
+            var wave = waveDef.ToComposition(mapDef.baseLevel, mapDef.difficulty);
+
             _waveCtx = new WaveLootContext(wave);
             _aliveEnemies.Clear();
 
@@ -69,7 +79,7 @@ namespace CHAL.Systems.Wave
             {
                 for (int i = 0; i < monster.Count; i++)
                 {
-                    var go = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+                    var go = Instantiate(enemyPrefab, SelectSpawnpoint(spawnPoints), Quaternion.identity);
                     var ec = go.GetComponent<EnemyController>();
                     ec.Init(monster);
                     _aliveEnemies.Add(ec);
@@ -79,20 +89,34 @@ namespace CHAL.Systems.Wave
             }
         }
 
+        public static Vector3 SelectSpawnpoint(List<Transform> spawnPoints)
+        {
+            if (spawnPoints == null || spawnPoints.Count == 0)
+            {
+                Debug.LogWarning("Keine Spawnpunkte vorhanden!");
+                return Vector3.zero; // Fallback
+            }
+
+            int index = Random.Range(0, spawnPoints.Count);
+            return spawnPoints[index].position;
+        }
+
         private void HandleEnemyKilled(EnemyController ec, EnemyInstance instance, Vector3 pos)
         {
             _aliveEnemies.Remove(ec);
-            var mapMgr = MapManager.Instance;
+            mapMgr = MapManager.Instance;
 
-            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, mapMgr.CurrentMapId));
-            waveRewards.AddXP(_roller.RollXPForMonster(instance, mapMgr.CurrentMapId, mapMgr.Difficulty, mapMgr.CurrentWave));
+            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, mapMgr.CurrentMap.baseLevel));
+            waveRewards.AddXP(_roller.RollXPForMonster(instance, mapMgr.CurrentMap.baseLevel, mapMgr.CurrentMap.difficulty, mapMgr.CurrentWave));
 
             // Loot berechnen
             var drops = _roller.RollLootForMonster(instance, _waveCtx);
 
             foreach (var d in drops)
             {
-                var lootObj = Instantiate(lootPrefab, pos + Vector3.up * 1f, Quaternion.identity);
+                Vector3 spawnPos = pos + Vector3.up * 1f 
+                       + new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
+                var lootObj = Instantiate(lootPrefab, spawnPos, Quaternion.identity);
                 var lc = lootObj.GetComponent<LootCube>();
                 lc.Init(d.ItemId,d.quantity);
             }
@@ -109,6 +133,7 @@ namespace CHAL.Systems.Wave
         {
             if (success)
             {
+                CollectRemainingLoot(); //TODO: later on Clik /Player Interaction
                 TransferRewardsToProfile(waveRewards);
                 DebugManager.Log("Wave Rewards transferred to PlayerProfile",
                     DebugManager.EDebugLevel.Test, "Wave");
@@ -122,6 +147,34 @@ namespace CHAL.Systems.Wave
             MapManager.Instance.OnWaveCompleted(success);
             waveRewards = new WaveRewards(); // reset für nächste Wave
         }
+
+        public void CollectRemainingLoot()
+        {
+            int lootLayer = LayerMask.NameToLayer("Loot");
+            if (lootLayer < 0)
+            {
+                DebugManager.Warning("Loot layer not found!", "Loot");
+                return;
+            }
+
+            // Alle Objekte im Loot-Layer suchen
+            var lootObjects = FindObjectsByType<LootCube>(FindObjectsSortMode.None);// GameObject.FindObjectsOfType<LootCube>();
+
+            foreach (var loot in lootObjects)
+            {
+                if (loot.gameObject.layer != lootLayer) continue;
+
+                DebugManager.Log($"Auto-collecting remaining loot: {loot._itemId} x{loot._quantity}",
+                    DebugManager.EDebugLevel.Test, "Loot");
+
+                // Event feuern (wie beim Klick)
+                CollectLoot(loot._itemId, loot._quantity);
+
+                // Loot-Objekt zerstören
+                GameObject.Destroy(loot.gameObject);
+            }
+        }
+
 
         private void TransferRewardsToProfile(WaveRewards rewards)
         {
@@ -156,6 +209,25 @@ namespace CHAL.Systems.Wave
             if (rewards.XP > 0)
                 profile.AddXP(rewards.XP);
 
+
+            //Map-Progress
+            if (mapMgr?.CurrentMap != null && mapMgr.CurrentWave == mapMgr.MaxWaves)
+            {
+                int mapId = mapMgr.CurrentMap.mapId; 
+                int difficulty = (int)mapMgr.CurrentMap.difficulty;
+
+                if (!profile.MapProgress.ContainsKey(mapId))
+                {
+                    profile.MapProgress[mapId] = difficulty;
+                }
+                else if (profile.MapProgress[mapId] < difficulty)
+                {
+                    profile.MapProgress[mapId] = difficulty;
+                }
+                DebugManager.Log($"Map {mapId} progress updated to Difficulty {difficulty}",
+                        DebugManager.EDebugLevel.Test, "System");
+            }
+
             // Speichern
             GameManager.Instance.SaveGame();
         }
@@ -185,15 +257,42 @@ namespace CHAL.Systems.Wave
             };
         }
 
-        [ContextMenu("Simulate Wave Stats")]
-        public void SimulateWaveStats()
+        public void SimulateWaveStats(MapDef mapDef, int waveIndex)
         {
-            var wave = waveDef != null ? waveDef.ToComposition() : GetFallbackWave();
+            var wave = waveDef != null ? waveDef.ToComposition(mapDef.baseLevel, mapDef.difficulty) : GetFallbackWave();
             var roller = new LootRoller(_rules, new UnluckyProtection());
             var mapMgr = MapManager.Instance;
 
-            WaveSimRunner.RunStats(roller, wave, mapMgr.CurrentMapId, mapMgr.Difficulty, runs: 100);
+            WaveSimRunner.RunStats(roller, wave, mapMgr.CurrentMap.baseLevel, mapMgr.CurrentMap.difficulty, runs: 100);
         }
+
+        [ContextMenu("Debug/Start Wave (from Inspector)")]
+        private void DebugStartWave()
+        {
+            if (debugMap != null)
+            {
+                StartWave(debugMap, debugWaveIndex);
+            }
+            else
+            {
+                DebugManager.Warning("No debug map assigned!", "Wave");
+            }
+        }
+
+        [ContextMenu("Debug/Simulate Wave Stats (from Inspector)")]
+        private void DebugSimulateWaveStats()
+        {
+            if (debugMap != null)
+            {
+                SimulateWaveStats(debugMap, debugWaveIndex);
+            }
+            else
+            {
+                DebugManager.Warning("No debug map assigned!", "Wave");
+            }
+        }
+
+
     }
 
     public class WaveRewards

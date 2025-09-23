@@ -1,4 +1,5 @@
-using CHAL.Core;
+﻿using CHAL.Core;
+using CHAL.Data;
 using CHAL.Systems.Wave;
 using UnityEngine;
 
@@ -8,12 +9,14 @@ namespace CHAL.Systems.Map
     {
         public static MapManager Instance { get; private set; }
 
-        public int CurrentMapId { get; private set; }
-        public int CurrentWave { get; private set; }
-        public int MaxWaves { get; private set; }
-        public MapDifficulty Difficulty { get; private set; }
+        [Header("Runtime")]
+        public MapDef CurrentMap { get; private set; }
+        private GameObject _mapInstancedPrefab;
+
 
         private WaveManager _waveManager;
+        public int CurrentWave { get; private set; } = 1;
+        public int MaxWaves => CurrentMap != null ? CurrentMap.maxWaves : 0;
 
         private void Awake()
         {
@@ -23,28 +26,44 @@ namespace CHAL.Systems.Map
                 return;
             }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+
         }
 
-        public void Init(WaveManager waveManager)
-        {
-            _waveManager = waveManager;
-        }
 
-        public void StartMap(int mapId, MapDifficulty difficulty, int maxWaves)
+        public void StartMap(MapDef mapDef)
         {
-            CurrentMapId = mapId;
-            Difficulty = difficulty;
-            MaxWaves = maxWaves;
+            CurrentMap = mapDef;
             CurrentWave = 1;
 
-            GameManager.Instance.SetState(GameState.MapPhase);
+            DebugManager.Log($"Starting Map {mapDef.mapId} (Level {mapDef.baseLevel}, Waves {mapDef.maxWaves})",
+                             DebugManager.EDebugLevel.Test, "Map");
+
+            // Szene "04_Map" muss geladen sein → dann Prefab instanzieren
+            if (_mapInstancedPrefab != null)
+                Destroy(_mapInstancedPrefab);
+
+            if (mapDef.mapPrefab != null)
+                _mapInstancedPrefab = Instantiate(mapDef.mapPrefab);
+
             StartWave();
         }
 
+
         public void StartWave()
         {
-            DebugManager.Log($"Starte Wave {CurrentWave}/{MaxWaves}",DebugManager.EDebugLevel.Test);
-            _waveManager.StartWave();
+            _waveManager = _mapInstancedPrefab.GetComponentInChildren<WaveManager>();
+
+            if (_waveManager == null)
+            {
+                DebugManager.Error("WaveManager not set!", "Map");
+                GameManager.Instance.ExitToHideout();
+                return;
+            }
+
+            DebugManager.Log($"Starte Wave {CurrentWave}/{MaxWaves}", DebugManager.EDebugLevel.Test, "Map");
+
+            _waveManager.StartWave(CurrentMap, CurrentWave);
         }
 
         public void OnWaveCompleted(bool success)
@@ -65,6 +84,7 @@ namespace CHAL.Systems.Map
             }
         }
 
+        [ContextMenu("Debug/Start Next Wave")]
         public void NextWave()
         {
             CurrentWave++;

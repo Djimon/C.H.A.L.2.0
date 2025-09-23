@@ -114,7 +114,7 @@ namespace CHAL.Systems.Items
             if (errors.Count > 0)
             {
                 foreach (var e in errors)
-                    DebugManager.Error(e, "Validation");
+                    DebugManager.Warning(e, "Validation");
 
                 string path = Path.Combine(Application.dataPath, "../ModulePartValidation.csv");
                 File.WriteAllLines(path, errors);
@@ -162,6 +162,11 @@ namespace CHAL.Systems.Items
             AssetDatabase.Refresh();
 
             DebugManager.Log($"[ItemRegistry] Placeholder für '{itemId}' angelegt unter {assetPath}");
+        }
+
+        public void TriggerInstance()
+        {
+            DebugManager.Log("trigger Instance form Itemregistry");
         }
     }
 }

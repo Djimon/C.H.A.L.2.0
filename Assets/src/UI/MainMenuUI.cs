@@ -60,35 +60,13 @@ public class MainMenuUI : MonoBehaviour
 
     private void OnContinueBtnClicked()
     {
-        DebugManager.Log("Continue: optionen");
-        SaveSystem.Load();
-
-        SceneManager.LoadScene(_startSceneName);
+        DebugManager.Log("Continue game", DebugManager.EDebugLevel.Test, "UI");
+        GameManager.Instance.ContinueGame();
     }
 
     private void OnExitBtnClicked()
     {
-        Quit();
-    }
-
-
-    public static void Quit()
-    {
-        // Vor dem Beenden: persistente Saves / PlayerPrefs sichern
-        try { SaveSystem.Save(GameManager.Instance.Profile); } catch { /* ignore */ }
-        // Wenn du ein eigenes SaveSystem hast: SaveSystem.Flush(); etc.
-
-        #if UNITY_EDITOR
-                // Im Editor: Play Mode stoppen
-                UnityEditor.EditorApplication.isPlaying = false;
-        #elif UNITY_WEBGL
-                // WebGL: kein echtes Quit möglich – zeig einen „Goodbye“-Screen oder navigier zur Startseite
-                // Z.B.: ShowGoodbyeOverlay();  // Deine eigene Methode
-        #else
-                // Standalone (Win/Mac/Linux) & Android
-                Application.Quit();
-        #endif
-         
+        GameManager.Quit();
     }
 
     private void OnOptoinsBtnClicked()

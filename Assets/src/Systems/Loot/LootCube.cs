@@ -5,13 +5,15 @@ using UnityEngine;
 
 public class LootCube : MonoBehaviour
 {
+    [SerializeField]
     public string _itemId { get; private set; }
-    public int _qunatity { get; private set; } = 1;
+    [SerializeField]
+    public int _quantity { get; private set; } = 1;
 
     public void Init(string itemId, int quantity=1)
     {
         _itemId = itemId;
-        _qunatity = quantity;
+        _quantity = quantity;
 
         var rarity = ItemRegistry.Instance.GetRarity(itemId);
         var renderer = GetComponent<Renderer>();
@@ -31,7 +33,7 @@ public class LootCube : MonoBehaviour
             var lc = hit.GetComponent<LootCube>();
             if (lc != null)
             {
-                OnLootCollected?.Invoke(lc._itemId, _qunatity);
+                OnLootCollected?.Invoke(lc._itemId, _quantity);
                 Destroy(lc.gameObject);
             }
         }

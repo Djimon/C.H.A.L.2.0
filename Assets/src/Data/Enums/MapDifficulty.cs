@@ -1,7 +1,12 @@
-
-public enum MapDifficulty
+namespace CHAL.Data
 {
-    Easy = 1,
-    Medium = 2,
-    Hard = 3
+    public enum MapDifficulty
+    {
+        Stable,
+        //Reactive,
+        Strained,
+        Volatile,
+        Chaos,
+        //Oblivion
+    }
 }

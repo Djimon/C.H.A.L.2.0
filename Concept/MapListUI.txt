@@ -1,0 +1,5 @@
+user ScrollView for manual items
+
+https://discussions.unity.com/t/struggling-to-understand-ui-toolkits-list-system-how-do-i-actually-populate-a-list/1654612
+
+https://docs.unity3d.com/Manual/UIE-uxml-element-ListView.html 

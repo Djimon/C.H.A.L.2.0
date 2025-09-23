@@ -32,16 +32,25 @@ MonoBehaviour:
   - name: Error
     active: 1
     color: {r: 1, g: 0, b: 0, a: 1}
+  - name: Validation
+    active: 0
+    color: {r: 1, g: 1, b: 1, a: 1}
   - name: Loot
-    active: 1
+    active: 0
     color: {r: 0.1745283, g: 0.6981132, b: 0.26369032, a: 1}
   - name: Fight
     active: 0
     color: {r: 0.9528302, g: 0.36405307, b: 0.7731104, a: 1}
   - name: Wave
     active: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
-  - name: Validation
+    color: {r: 0.52997464, g: 0.19517621, b: 0.8113208, a: 1}
+  - name: Map
     active: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    color: {r: 0.53333336, g: 0.19607843, b: 0.8117647, a: 1}
+  - name: UI
+    active: 1
+    color: {r: 0.7935584, g: 1, b: 0.25, a: 1}
+  - name: Input
+    active: 1
+    color: {r: 0.79607844, g: 1, b: 0.2509804, a: 1}
   _seeded: 1

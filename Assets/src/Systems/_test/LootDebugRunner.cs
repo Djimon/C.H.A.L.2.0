@@ -7,6 +7,7 @@ using CHAL.Systems.Loot.Models;
 using CHAL.Systems.Items;
 using CHAL.Systems.Wave;
 
+//OUTDATED
 public class LootDebugRunner : MonoBehaviour
 {
     [Header("Test Setup")]
@@ -47,8 +48,8 @@ public class LootDebugRunner : MonoBehaviour
             return;
         }
 
-        var wave = waveDef.ToComposition();
-        RunInternal(wave, runs);
+        //var wave = waveDef.ToComposition(mapDef, int );
+        //RunInternal(wave, runs);
     }
 
     private void RunInternal(int times)

@@ -1,10 +1,24 @@
+using CHAL.Core;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
     private ClickableObject lastHovered;
 
+
     void Update()
+    {
+        HandleClickableObjects();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        { 
+            //Make small Pause-Menue to decide to Continue or go bakc ot main-menu
+            GameManager.Instance.GoToMainMenu();
+        }
+
+    }
+
+    private void HandleClickableObjects()
     {
         ClickableObject clickable = null;
 
@@ -13,7 +27,7 @@ public class InputManager : MonoBehaviour
         {
             if (hit.collider.CompareTag("clickableObject"))
             {
-                clickable = hit.collider.GetComponent<ClickableObject>() 
+                clickable = hit.collider.GetComponent<ClickableObject>()
                     ?? hit.collider.GetComponentInChildren<ClickableObject>();
             }
 
@@ -29,18 +43,17 @@ public class InputManager : MonoBehaviour
             if (clickable != null)
             {
                 clickable.OnHoverEnter();
-                DebugManager.Info("Hover Clickable");
+                DebugManager.Log("Hover Clickable", DebugManager.EDebugLevel.Debug, "Input");
             }
-            
+
             lastHovered = clickable;
         }
 
         // Klick
-        if (clickable!= null && Input.GetMouseButtonDown(0))
+        if (clickable != null && Input.GetMouseButtonDown(0))
         {
             clickable.OnClick();
-            DebugManager.Info("Clicked Clickable");
+            DebugManager.Log("Clicked Clickable", DebugManager.EDebugLevel.Debug,"Input");
         }
     }
-    
 }

@@ -1,5 +1,9 @@
 ﻿using CHAL.Data;
+using CHAL.Systems.Items;
+using CHAL.Systems.Map;
+using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CHAL.Core
 {
@@ -72,6 +76,12 @@ namespace CHAL.Core
             }
         }
 
+        private void Start()
+        {
+            //Preload all registries
+            ItemRegistry.Instance.TriggerInstance();
+        }
+
         public void SaveGame()
         {
             SaveSystem.Save(Profile);
@@ -88,16 +98,30 @@ namespace CHAL.Core
         // ---------------------------
         public void SetState(GameState newState)
         {
+            DebugManager.Log($"GameState {CurrentState} → {newState}");
             CurrentState = newState;
-            Debug.Log($"GameState → {newState}");
-
             // Optional: Events triggern oder UI umschalten
             // EventBus.Publish(new GameStateChanged(newState));
         }
 
+        // ---------------------------
+        // Centralized Scene - Management
+        // ---------------------------
+
+        internal void StartNewGame(PlayerProfile profile)
+        {
+            Profile = profile;
+            SaveGame();
+            SetState(GameState.Hideout);
+            SceneManager.LoadScene("03_Hideout"); // zentral!
+        }
+
+
         public void GoToMainMenu()
         {
+            SaveGame();
             SetState(GameState.MainMenu);
+            SceneManager.LoadScene("01_MainMenu");
         }
 
         public void ExitToHideout()
@@ -106,5 +130,44 @@ namespace CHAL.Core
             // Hier Crafting/Hideout laden
         }
 
+        internal void ContinueGame()
+        {
+            if (Profile == null)
+            {
+                DebugManager.Warning("Kein Save zum Fortsetzen gefunden", "System");
+                return;
+            }
+
+            SetState(GameState.Hideout); 
+            SceneManager.LoadScene("03_Hideout");
+        }
+
+        internal static void Quit()
+        {
+            // Vor dem Beenden: persistente Saves / PlayerPrefs sichern
+            try { SaveSystem.Save(Instance?.Profile); } catch { /* ignore */ }
+
+#if UNITY_EDITOR
+            // Im Editor: Play Mode stoppen
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+
+        }
+
+        internal void StartMap(string sceneName, MapDef selectedMap)
+        {
+            SetState(GameState.MapPhase);
+            SceneManager.LoadScene(sceneName);
+
+            SceneManager.sceneLoaded += (scene, mode) =>
+            {
+                if (scene.name == sceneName && MapManager.Instance != null)
+                {
+                    MapManager.Instance.StartMap(selectedMap);
+                }
+            };
+        }
     }
 }

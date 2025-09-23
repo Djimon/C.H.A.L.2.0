@@ -13,7 +13,6 @@ namespace CHAL.Systems.Wave
         public int SpentBudget { get; set; } // U
         public int RemainingBudget => TotalBudget - SpentBudget;
         public List<LootResultEntry> Drops { get; } = new List<LootResultEntry>();
-        //public UnluckyProtection Unlucky { get; }
 
         public WaveLootContext(WaveComposition wave)
         {
