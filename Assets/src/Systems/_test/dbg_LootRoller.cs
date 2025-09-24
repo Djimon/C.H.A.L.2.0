@@ -1,3 +1,4 @@
+using CHAL.Data;
 using CHAL.Systems.Items;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ public class LootRollerDebug : MonoBehaviour
         var wave = new CHAL.Data.WaveComposition
         {
             Level = 3,
-            Difficulty = 1.0f,
+            Difficulty = MapDifficulty.Stable,
             Monsters = new List<CHAL.Data.EnemyInstance>
     {
         new CHAL.Data.EnemyInstance

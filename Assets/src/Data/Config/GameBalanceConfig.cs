@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CHAL.Data
@@ -84,7 +85,7 @@ namespace CHAL.Data
         public LootSettings loot;
 
         // ==========================
-        // ENEMIES
+        // Waves
         // ==========================
         [System.Serializable]
         public struct EnemyBudget
@@ -105,10 +106,62 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
+        public struct WaveSettings
+        {
+            public EnemyBudget budgetPoints;
+            public EnemyScaling scaling;
+        }
+
+
+        // ==========================
+        // ENEMIES
+        // ==========================
+
+        [System.Serializable]
+        public struct RankScaling
+        {
+            public float hpMultiplier;
+            public float dmgMultiplier;
+            public float xpMultiplier;
+        }
+
+        [System.Serializable]
+        public struct EnemyRankSettings
+        {
+            public RankScaling spawn;
+            public RankScaling normal;
+            public RankScaling magic;
+            public RankScaling elite;
+            public RankScaling boss;
+            public RankScaling champion;
+
+            public RankScaling GetScaling(EnemyRank rank)
+            {
+                return rank switch
+                {
+                    EnemyRank.Spawn => spawn,
+                    EnemyRank.Normal => normal,
+                    EnemyRank.Magic => magic,
+                    EnemyRank.Elite => elite,
+                    EnemyRank.Boss => boss,
+                    EnemyRank.Champion => champion,
+                    _ => normal
+                };
+            }
+        }
+
+        [System.Serializable]
         public struct EnemySettings
         {
             public EnemyBudget budgetPoints;
             public EnemyScaling scaling;
+
+            [Header("Rank Scaling")]
+            public EnemyRankSettings rankScaling;
+
+            [Header("Magic Tag Pool")]
+            public List<string> magicTagPool;   // Globale Magic-Tags (z. B. "caster", "spirit", "mage")
+            public int minEliteTags;
         }
 
         [Header("Enemy Settings")]
@@ -132,7 +185,7 @@ namespace CHAL.Data
             public float xpPerLevel;      // z. B. +15 % XP je Level
             public int baseLevelUpXp;
             [Range(1,10)]
-            public int xpScale;
+            public int levelCurveFactor;
         }
 
         [System.Serializable]

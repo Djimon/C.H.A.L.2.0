@@ -11,7 +11,7 @@ public class LootRulesDebug : MonoBehaviour
 
     //LootBudgetCalc
     public int level = 3;
-    public float difficulty = 1.0f; // easy=0.9, normal=1.0, hard=1.2
+    public MapDifficulty difficulty = MapDifficulty.Stable; // easy=0.9, normal=1.0, hard=1.2
     [Header("Enemy Composition")]
     public int spawns = 12;
     public int normals = 4;

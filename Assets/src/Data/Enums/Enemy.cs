@@ -9,4 +9,13 @@ namespace CHAL.Data
         Boss,
         Champion
     }
+
+    public enum EnemyAIType
+    {
+        AttackFirst,
+        AttackLowestHP,
+        AttackHighestHP,
+        AttackRandom
+    }
+   
 }

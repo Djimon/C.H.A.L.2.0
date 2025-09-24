@@ -11,7 +11,7 @@ namespace CHAL.Data
     public struct WaveComposition
     {
         public int Level;
-        public float Difficulty;
+        public MapDifficulty Difficulty;
 
         public List<EnemyInstance> Monsters;
 

@@ -2,6 +2,7 @@ using CHAL.Core;
 using CHAL.Systems.Inventory;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace CHAL.Data
@@ -19,6 +20,10 @@ namespace CHAL.Data
         // --- Charakter-Fortschritt ---
         public int XP;                           // Gesamt-XP
         public int Level;                        // optional: aus XP berechnet
+        public int XPInCurrentLevel;    // XP innerhalb des aktuellen Levels
+        public int XPToNextLevel;       // Gesamtmenge, die für das nächste Level nötig ist
+        public int missingXP;           // Noch fehlende XP bis LevelUp
+        public float levelProgress;     // 0..1 für UI-Balken
 
         // --- Currencies ---
         public Dictionary<string, int> Currencies = new();
@@ -87,8 +92,29 @@ namespace CHAL.Data
 
         private void RecalculateLevel()
         {
-            // Beispiel: 100 XP pro Level
-            Level = XP / 100;
+            int xp = XP;
+            int level = 1;
+            int totalXpRequired = 0;
+            int xpForNext = 0;
+
+            while (true)
+            {
+                xpForNext = BalanceManager.GetXpForLevel(level);
+                if (xp < totalXpRequired + xpForNext)
+                    break;
+
+                totalXpRequired += xpForNext;
+                level++;
+            }
+
+            Level = level;
+
+            XPInCurrentLevel = XP - totalXpRequired; // nicht XP überschreiben!
+            XPToNextLevel = xpForNext;
+            missingXP = xpForNext - XPInCurrentLevel;
+            levelProgress = (float)XPInCurrentLevel / xpForNext;
+            DebugManager.Log($"Player XP={XP}, Level={Level}", DebugManager.EDebugLevel.Debug, "Player");
+            DebugManager.Log($"Player next Level {levelProgress:P2} - missing:{missingXP} ", DebugManager.EDebugLevel.Debug, "Player");
         }
 
     }

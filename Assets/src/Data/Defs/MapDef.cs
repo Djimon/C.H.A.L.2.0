@@ -17,6 +17,10 @@ namespace CHAL.Data
         public int maxWaves = 5;           // Anzahl Waves pro Map
         public MapDifficulty difficulty;   // Basis-Schwierigkeit dieser Map
 
+        [Header("Enemy Pools")]
+        public List<EnemyDef> allowedEnemies;
+        public List<string> allowedModifiers;
+
         [Header("Wave Templates")]
         public List<WaveDef> waveDefs;     // aktuell noch konkret, später Constraints
     }

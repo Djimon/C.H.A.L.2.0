@@ -51,6 +51,36 @@ MonoBehaviour:
     scaling:
       hpPerLevel: 10
       dmgPerLevel: 2
+    rankScaling:
+      spawn:
+        hpMultiplier: 0.25
+        dmgMultiplier: 0.5
+        xpMultiplier: 0.5
+      normal:
+        hpMultiplier: 1
+        dmgMultiplier: 1
+        xpMultiplier: 1
+      magic:
+        hpMultiplier: 1.5
+        dmgMultiplier: 1.25
+        xpMultiplier: 1.25
+      elite:
+        hpMultiplier: 2
+        dmgMultiplier: 1.5
+        xpMultiplier: 2
+      boss:
+        hpMultiplier: 5
+        dmgMultiplier: 2.5
+        xpMultiplier: 5
+      champion:
+        hpMultiplier: 10
+        dmgMultiplier: 5
+        xpMultiplier: 10
+    magicTagPool:
+    - frozen
+    - molten
+    - elemental
+    - caster
   economy:
     currencies:
       baseGoldReward: 100
@@ -59,4 +89,4 @@ MonoBehaviour:
       baseXpReward: 10
       xpPerLevel: 2
       baseLevelUpXp: 1000
-      xpScale: 6
+      levelCurveFactor: 6

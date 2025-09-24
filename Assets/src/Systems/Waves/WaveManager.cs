@@ -65,7 +65,8 @@ namespace CHAL.Systems.Wave
             var waveDef = mapDef.waveDefs[waveIndex - 1];
 
             // Zusammensetzen (später constraint-basiert, aktuell noch fest)
-            var wave = waveDef.ToComposition(mapDef.baseLevel, mapDef.difficulty);
+            //var wave = waveDef.ToComposition(mapDef.baseLevel, mapDef.difficulty);
+            var wave = BuildWaveComposition(mapDef, waveDef);
 
             _waveCtx = new WaveLootContext(wave);
             _aliveEnemies.Clear();
@@ -243,7 +244,7 @@ namespace CHAL.Systems.Wave
             return new WaveComposition
             {
                 Level = 3,
-                Difficulty = 2f,
+                Difficulty = MapDifficulty.Stable,
                 Monsters = new List<EnemyInstance>
             {
                 new EnemyInstance
@@ -255,6 +256,69 @@ namespace CHAL.Systems.Wave
                 }
             }
             };
+        }
+
+        private WaveComposition BuildWaveComposition(MapDef mapDef, WaveDef waveDef)
+        {
+            var wave = new WaveComposition
+            {
+                Level = mapDef.baseLevel,
+                Difficulty = mapDef.difficulty,
+                Monsters = new List<EnemyInstance>()
+            };
+
+            // Reihenfolge: Spawns → Normals → Magics → Elites → Bosses → Champions
+            AddEnemies(wave, mapDef, waveDef.spawnCount, EnemyRank.Spawn);
+            AddEnemies(wave, mapDef, waveDef.normalCount, EnemyRank.Normal);
+            AddEnemies(wave, mapDef, waveDef.magicCount, EnemyRank.Magic);
+            AddEnemies(wave, mapDef, waveDef.eliteCount, EnemyRank.Elite);
+            AddEnemies(wave, mapDef, waveDef.bossCount, EnemyRank.Boss);
+            AddEnemies(wave, mapDef, waveDef.championCount, EnemyRank.Champion);
+
+            return wave;
+        }
+
+        private EnemyInstance UpgradeRank(EnemyDef def, EnemyRank rank, MapDef mapDef)
+        {
+            var inst = new EnemyInstance
+            {
+                EnemyId = def.enemyId,
+                Rank = rank,
+                Count = 1,
+                Tags = new List<string>(def.baseTags)
+            };
+
+            // Magic-Rank: garantierter Magic-Tag
+            if (rank == EnemyRank.Magic)
+            {
+                var magicPool = BalanceManager.Instance.Config.enemies.magicTagPool;
+                if (magicPool.Count > 0)
+                    inst.Tags.Add(magicPool[Random.Range(0, magicPool.Count)]);
+            }
+
+            // Elite-Rank: mindestens ein Modifier aus MapDef
+            if (rank == EnemyRank.Elite && mapDef.allowedModifiers.Count > 0)
+            {
+                inst.Tags.Add(mapDef.allowedModifiers[Random.Range(0, mapDef.allowedModifiers.Count)]);
+                while (inst.Tags.Count < BalanceManager.Instance.Config.enemies.minEliteTags)
+                {
+                    inst.Tags.Add(mapDef.allowedModifiers[Random.Range(0, mapDef.allowedModifiers.Count)]);
+                }
+            }
+
+            // Boss/Champion: eigene Defs oder zusätzliche Regeln später
+
+            return inst;
+        }
+
+        private void AddEnemies(WaveComposition wave, MapDef mapDef, int count, EnemyRank rank)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var baseDef = mapDef.allowedEnemies[Random.Range(0, mapDef.allowedEnemies.Count)];
+                var instance = UpgradeRank(baseDef, rank, mapDef);
+                wave.Monsters.Add(instance);
+            }
         }
 
         public void SimulateWaveStats(MapDef mapDef, int waveIndex)
@@ -319,5 +383,6 @@ namespace CHAL.Systems.Wave
         {
             XP += amount;
         }
+        
     }
 }

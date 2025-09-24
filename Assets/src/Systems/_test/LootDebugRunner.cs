@@ -64,7 +64,7 @@ public class LootDebugRunner : MonoBehaviour
         var wave = new WaveComposition
         {
             Level = level,
-            Difficulty = difficulty,
+            Difficulty = MapDifficulty.Stable,
             Monsters = new List<EnemyInstance>
             {
                 new EnemyInstance {

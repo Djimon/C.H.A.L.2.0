@@ -1,0 +1,70 @@
+🎮 Monster-Skill-/Attack-Konzept (für C.H.A.L.)
+1. AttackDef (Skill-Asset)
+
+Identity
+- attackId (z. B. "melee_basic", "projectile_poison")
+- displayNameKey (für UI/Logs, Lokalisierung)
+
+Mechanics
+- damageTypes (Liste: z. B. Physical + Poison)
+- damageMultiplier (float → multipliziert BaseDamage des Enemys)
+- cooldown (float, 0 = Autoattack)
+- tags (z. B. "aoe", "projectile", "buff")
+
+Presentation
+- animationType (MeleeSwing | Shoot | Cast)
+- vfxPrefab (optional, für Projektil/Explosion/Aura)
+
+👉 Das ist ein ScriptableObject, so wie Items/Enemies.
+
+2. EnemyDef
+
+- Basiswerte (HP, Damage, Speed, XP, LootValue …)
+- BaseTags (z. B. "insectoid", "poison")
+- BaseAttacks (1–2 AttackDefs, meist Autoattack + Spezial)
+- DefaultAI (Strategie: AttackFirst, AttackLowestHP, AttackRandom, etc.)
+
+3. ModifierTags
+
+Typ A – Elementar-Mods
+
+- "mod_fire" → ersetzt DamageType: Physical → Fire
+- "mod_poison" → fügt Poison zu bestehendem Skill hinzu
+
+Typ B – Skill-Mods
+
+- "buff_aura_leech" → gibt neue AttackDef „Aura: Life Leech“
+- "attack_aoe_poison_cloud" → fügt AoE-Skill hinzu
+
+Typ C – Role-Mods
+
+- "elite", "champion", "boss" → Skalierung (HP ×, DMG ×), evtl. Extra-Skills
+- "armored" (more armor), "undead" (resisitant to physk. dmg)
+
+4. EnemyInstance (Runtime)
+
+- Wird im WaveManager erstellt:
+- Nimmt EnemyDef.BaseAttacks
+- Fügt Modifierskills hinzu
+- Passt DamageTypes an (falls Modifier überschreiben/erweitern)
+- Enthält finalen SkillPool, inkl. Cooldowns.
+- AI greift auf diesen Pool zu.
+
+5. AI / Cooldown-Logik
+
+- Jeder Enemy hat Autoattack (Cooldown 0 → immer nutzbar).
+- Spezialskills haben individuelle Cooldowns (z. B. 5s AoE, 10s Buff).
+
+Auswahlstrategie (EnemyAIType):
+- AttackFirst → fokussiert erstes Ziel in Range
+- AttackLowestHP → fokussiert schwächste Einheit
+- AttackHighestHP → tank-fokus
+- AttackRandom → Chaos
+
+Später ausbaubar: z. B. Priorisierung von Skills (erst Buff, dann Attack).
+
+6. UI & Feedback
+
+- Normale Gegner: nur Autoattack sichtbar (keine Tags nötig).
+- Elites/Bosse: unter der HP-Leiste werden ModifierTags angezeigt (wie in PoE2).
+- Spieler kann lernen: „Feuer-Elite → macht FireNova“.

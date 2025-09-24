@@ -52,7 +52,7 @@ namespace CHAL.Core
         public static int GetXpForLevel(int level)
         {
             var xpConfig = Instance.config.economy.xp;
-            float scale = xpConfig.xpScale * 0.005f;
+            float scale = xpConfig.levelCurveFactor * 0.005f;
             return Mathf.RoundToInt(
                 xpConfig.baseLevelUpXp * Mathf.Pow(1 + scale * (level - 1), 2)
             );
