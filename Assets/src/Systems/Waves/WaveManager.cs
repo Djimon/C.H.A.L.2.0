@@ -382,6 +382,7 @@ namespace CHAL.Systems.Wave
         public void AddXP(int amount)
         {
             XP += amount;
+            DebugManager.Log($"gained {amount} XP", DebugManager.EDebugLevel.Dev, "Fight");
         }
         
     }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -54,6 +55,7 @@ namespace CHAL.Core
             WriteInventory(sb, "runes", profile.Runes.ToDictionary());
             sb.AppendLine(",");
             WriteInventory(sb, "modules", profile.Modules.ToDictionary());
+            sb.AppendLine(",");
 
 
             //last entry 
@@ -206,14 +208,23 @@ namespace CHAL.Core
                 if (line.StartsWith("\""))
                 {
                     var parts = line.Replace("\"", "").Split(':');
-                    if (parts.Length == 2)
+                    if (parts.Length == 3)
+                    {
+                        string id = parts[0].Trim()+':'+ parts[1].Trim();
+                        int.TryParse(parts[2], out int count);
+                        result[id] = count;
+                    }
+                    else if (parts.Length == 2)
                     {
                         string id = parts[0].Trim();
                         int.TryParse(parts[1], out int count);
-                        result[id.Replace("\"", "").Trim()] = count;
+                        result[id] = count;
                     }
                 }
             }
+
+            DebugManager.Log($"savefile-> read inventory:");
+            DebugManager.Log(string.Join(", ", result.Select(kv => $"{kv.Key}: {kv.Value}")));
             return result;
         }
     }

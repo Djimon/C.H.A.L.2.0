@@ -7,11 +7,11 @@ namespace CHAL.Systems.Enemy
 {
     public class EnemyController : MonoBehaviour
     {
-        public EnemyInstance Instance { get; private set; }
+        public EnemyInstance EnemyData { get; private set; }
 
         public void Init(EnemyInstance instance)
         {
-            Instance = instance;
+            EnemyData = instance;
         }
 
         private void Attack()
@@ -26,10 +26,10 @@ namespace CHAL.Systems.Enemy
 
         private void Die()
         {
-            DebugManager.Log($"Enemy {Instance.EnemyId} killed!", DebugManager.EDebugLevel.Dev, "Fight");
+            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) - [{EnemyData.Tags}] killed!", DebugManager.EDebugLevel.Dev, "Fight");
 
             // Event feuern: sagt nur „ich bin tot“, inkl. Position
-            OnEnemyKilled?.Invoke(this, Instance, transform.position);
+            OnEnemyKilled?.Invoke(this, EnemyData, transform.position);
 
             Destroy(gameObject);
         }

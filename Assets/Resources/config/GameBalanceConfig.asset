@@ -35,11 +35,11 @@ MonoBehaviour:
       legendary: 0
     rankMultipliers:
       spawn: 1
-      normal: 1
-      magic: 2
-      elite: 4
-      boss: 6
-      champion: 10
+      normal: 2
+      magic: 3
+      elite: 7
+      boss: 25
+      champion: 100
   enemies:
     budgetPoints:
       spawn: 1
@@ -81,12 +81,13 @@ MonoBehaviour:
     - molten
     - elemental
     - caster
+    minEliteTags: 0
   economy:
     currencies:
-      baseGoldReward: 100
-      goldPerLevel: 2
+      baseGoldReward: 10
+      goldPerLevel: 3
     xp:
       baseXpReward: 10
-      xpPerLevel: 2
+      xpPerLevel: 1
       baseLevelUpXp: 1000
       levelCurveFactor: 6

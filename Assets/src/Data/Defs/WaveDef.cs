@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CHAL.Data
 {
-    [CreateAssetMenu(fileName = "WaveDef", menuName = "CHAL/Wave Definition")]
+    [CreateAssetMenu(fileName = "WaveDef", menuName = "Data/Wave Definition")]
     public class WaveDef : ScriptableObject
     {
         [Header("Structure")]

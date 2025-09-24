@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30f4d950c32a9f34ab4420d2a7c968aa, type: 3}
   m_Name: Test_wafe
   m_EditorClassIdentifier: 
-  spawnCount: 8
-  normalCount: 3
-  magicCount: 3
+  spawnCount: 10
+  normalCount: 5
+  magicCount: 5
   eliteCount: 2
-  bossCount: 2
-  championCount: 1
+  bossCount: 1
+  championCount: 0
   maxTagsPerEnemy: 3
+  maxElites: 2
   maxBosses: 1
+  maxChampions: 0

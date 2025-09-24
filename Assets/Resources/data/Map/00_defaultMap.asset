@@ -12,13 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ace6dbf0929a124daf21cf35b8316ae, type: 3}
   m_Name: 00_defaultMap
   m_EditorClassIdentifier: 
-  mapId: 00
+  mapId: 0
   displayNameKey: Debug_Map
   previewImage: {fileID: 0}
   mapPrefab: {fileID: 3970026676157617697, guid: 37aaa2908917f88448d9a059ba4fc004, type: 3}
   baseLevel: 5
   maxWaves: 5
-  difficulty: 1
+  difficulty: 0
+  allowedEnemies:
+  - {fileID: 11400000, guid: f1846d707583dd640a447f05eff0d54d, type: 2}
+  allowedModifiers:
+  - poison
+  - insectoid
+  - swarm
   waveDefs:
   - {fileID: 11400000, guid: b9a403313554f3349ad27ee01088d8ca, type: 2}
   - {fileID: 11400000, guid: b9a403313554f3349ad27ee01088d8ca, type: 2}

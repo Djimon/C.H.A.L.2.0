@@ -30,29 +30,41 @@ namespace CHAL.Systems.Inventory
                 int spaceLeft = maxStack - entry.Count;
                 if (spaceLeft <= 0)
                 {
-                    DebugManager.Debugging($"max stacks ({maxStack}) reached");
-                    return false;              
+                    DebugManager.Debugging($"max stacks ({maxStack}) reached for {itemId}");
+                    return false;
                 }
-                    
 
                 int toAdd = Math.Min(amount, spaceLeft);
                 entry.Count += toAdd;
                 amount -= toAdd;
+
+                if (amount > 0)
+                {
+                    DebugManager.Debugging($"not all items could be added ({amount} left over)");
+                    return false;
+                }
+
+                return true;
             }
 
-            // neue Slots anlegen, falls noch Platz
-            while (amount > 0 && _items.Count < maxSlots)
+            // nur neuer Slot, wenn ItemId noch nicht existiert
+            if (_items.Count < maxSlots)
             {
                 int toAdd = Math.Min(amount, maxStack);
                 _items.Add(new InventoryItem { ItemId = itemId, Count = toAdd });
                 amount -= toAdd;
+
+                if (amount > 0)
+                {
+                    DebugManager.Debugging($"max stack size reached, {amount} left over");
+                    return false;
+                }
+
+                return true;
             }
 
-            if(amount>0)
-                DebugManager.Debugging($"max Slots ({maxSlots}) reached");
-
-            // falls nicht alles reinpasst
-            return amount == 0;
+            DebugManager.Debugging($"max Slots ({maxSlots}) reached");
+            return false;
         }
 
         public bool RemoveItem(string itemId, int amount = 1)

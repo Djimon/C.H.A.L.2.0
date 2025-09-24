@@ -39,7 +39,7 @@ MonoBehaviour:
     active: 0
     color: {r: 0.1745283, g: 0.6981132, b: 0.26369032, a: 1}
   - name: Fight
-    active: 0
+    active: 1
     color: {r: 0.9528302, g: 0.36405307, b: 0.7731104, a: 1}
   - name: Wave
     active: 1
@@ -53,4 +53,7 @@ MonoBehaviour:
   - name: Input
     active: 1
     color: {r: 0.79607844, g: 1, b: 0.2509804, a: 1}
+  - name: Player
+    active: 1
+    color: {r: 0.9716981, g: 0.8619886, b: 0.09625311, a: 1}
   _seeded: 1

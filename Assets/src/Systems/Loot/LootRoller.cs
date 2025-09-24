@@ -191,15 +191,16 @@ namespace CHAL.Systems.Loot
         {
             var rank = enemy.Rank;
             var curr = BalanceManager.Instance.Config.economy.currencies;
+            var loot = BalanceManager.Instance.Config.loot;
 
             int baseModifier = rank switch
             {
-                EnemyRank.Spawn => 1,
-                EnemyRank.Normal => 2,
-                EnemyRank.Magic => 4,
-                EnemyRank.Elite => 8,
-                EnemyRank.Boss => 20,
-                EnemyRank.Champion => 50,
+                EnemyRank.Spawn => loot.rankMultipliers.spawn,
+                EnemyRank.Normal => loot.rankMultipliers.normal,
+                EnemyRank.Magic => loot.rankMultipliers.magic,
+                EnemyRank.Elite => loot.rankMultipliers.elite,
+                EnemyRank.Boss => loot.rankMultipliers.boss,
+                EnemyRank.Champion => loot.rankMultipliers.champion,
                 _ => 1
             };
 
@@ -210,16 +211,17 @@ namespace CHAL.Systems.Loot
         public int RollXPForMonster(EnemyInstance enemy, int mapLevel, MapDifficulty difficulty, int waveLevel)
         {
             var econ = BalanceManager.Instance.Config.economy;
+            var loot = BalanceManager.Instance.Config.loot;
             var rank = enemy.Rank;
 
             int baseXp = rank switch
             {
-                EnemyRank.Spawn => 1,
-                EnemyRank.Normal => 3,
-                EnemyRank.Magic => 6,
-                EnemyRank.Elite => 12,
-                EnemyRank.Boss => 40,
-                EnemyRank.Champion => 100,
+                EnemyRank.Spawn => loot.rankMultipliers.spawn,
+                EnemyRank.Normal => loot.rankMultipliers.normal,
+                EnemyRank.Magic => loot.rankMultipliers.magic,
+                EnemyRank.Elite => loot.rankMultipliers.elite,
+                EnemyRank.Boss => loot.rankMultipliers.boss,
+                EnemyRank.Champion => loot.rankMultipliers.champion,
                 _ => 1
             };
 
@@ -233,7 +235,7 @@ namespace CHAL.Systems.Loot
             };
 
 
-            float scaled = econ.xp.baseXpReward * baseXp * difficultyBonus * (1f + waveLevel * 0.1f) 
+            float scaled = econ.xp.baseXpReward * baseXp * difficultyBonus * (waveLevel -1f) * 0.1f 
                     + (1f + (mapLevel-1) * econ.xp.xpPerLevel);
               
             return Mathf.RoundToInt(scaled);

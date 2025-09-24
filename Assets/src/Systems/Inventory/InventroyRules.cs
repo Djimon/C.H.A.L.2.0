@@ -8,7 +8,7 @@ namespace CHAL.Systems.Inventory
             return prefix switch
             {
                 "rune" => 1,
-                "remain" => 10000,
+                "remains" => 10000,
                 "part" => 1000,
                 "module" => 10,
                 _ => 100
