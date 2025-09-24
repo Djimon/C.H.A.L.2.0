@@ -8,7 +8,7 @@
                 <ui:ScrollView name="MapList" style="flex-grow: 1;" />
                 <ui:VisualElement name="Detailframe" style="flex-grow: 0; flex-basis: 60%; flex-direction: column; width: 535px;">
                     <ui:VisualElement name="info" style="flex-grow: 1;">
-                        <ui:Label text="Label" name="Details" />
+                        <ui:Label text="Choose a Map.." name="Details" style="align-items: center; align-self: center; color: rgb(255, 255, 255); font-size: 39px;" />
                     </ui:VisualElement>
                     <ui:Button text="Start selected Map" name="StartMap" class="menueBtn" style="flex-basis: 10%; align-items: center; align-self: center; width: auto; height: 10%; font-size: 34px; padding-top: 30px; padding-right: 30px; padding-bottom: 30px; padding-left: 30px;" />
                 </ui:VisualElement>

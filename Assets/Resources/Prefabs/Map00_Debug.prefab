@@ -304,7 +304,7 @@ MonoBehaviour:
   - {fileID: 2900225282673114545}
   debugMap: {fileID: 11400000, guid: 8c20f9afed99d6a4aadeaf71a7b301ce, type: 2}
   debugWaveIndex: 1
-  enemyPrefab: {fileID: 5978236976270566860, guid: 76fc1fdbb73a08a44878915ecb041f4f, type: 3}
+  enemyFallbackPrefab: {fileID: 5978236976270566860, guid: 76fc1fdbb73a08a44878915ecb041f4f, type: 3}
   lootPrefab: {fileID: 399046683423139114, guid: 8f1b4d327f38fff418a0ae42122edaaf, type: 3}
 --- !u!1 &6908589857630110645
 GameObject:

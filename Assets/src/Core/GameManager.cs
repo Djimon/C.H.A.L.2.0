@@ -1,5 +1,6 @@
 ﻿using CHAL.Data;
 using CHAL.Systems.Items;
+using CHAL.Systems.Loot;
 using CHAL.Systems.Map;
 using System;
 using UnityEngine;
@@ -27,7 +28,9 @@ namespace CHAL.Core
         public static GameManager Instance { get; private set; }
         public PlayerProfile Profile { get; private set; }
 
-        
+        public UnluckyProtection Unlucky { get; private set; }
+
+
 
         public GameBalanceConfig Config
         {
@@ -74,6 +77,8 @@ namespace CHAL.Core
                 inputManager = go.AddComponent<InputManager>();
                 go.transform.SetParent(gameObject.transform);
             }
+
+            Unlucky ??= new UnluckyProtection();
         }
 
         private void Start()

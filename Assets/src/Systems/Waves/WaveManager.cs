@@ -19,7 +19,7 @@ namespace CHAL.Systems.Wave
         [Header("Debug Input")]
         [SerializeField] private MapDef debugMap;
         [SerializeField] private int debugWaveIndex = 1;
-        public GameObject enemyPrefab;
+        public GameObject enemyFallbackPrefab;
         public GameObject lootPrefab;
 
         public WaveRewards waveRewards; //??
@@ -29,14 +29,13 @@ namespace CHAL.Systems.Wave
         private List<EnemyController> _aliveEnemies = new();
         private WaveLootContext _waveCtx;
 
-        private MapManager mapMgr;
 
         private void Awake()
         {
             _rules = new LootRulesService();
             _rules.LoadAll();
 
-            _unlucky = new UnluckyProtection();
+            _unlucky = GameManager.Instance.Unlucky;
             _roller = new LootRoller(_rules, _unlucky);
 
             EnemyController.OnEnemyKilled += HandleEnemyKilled;
@@ -80,7 +79,11 @@ namespace CHAL.Systems.Wave
             {
                 for (int i = 0; i < monster.Count; i++)
                 {
-                    var go = Instantiate(enemyPrefab, SelectSpawnpoint(spawnPoints), Quaternion.identity);
+                    // optional: Prefab aus EnemyDef (Registry/Lookup) ziehen
+                    var prefab = enemyFallbackPrefab; // fallback
+                    // prefab = EnemyRegistry.Get(monster.EnemyId)?.prefab ?? enemyPrefab;
+
+                    var go = Instantiate(prefab, SelectSpawnpoint(spawnPoints), Quaternion.identity);
                     var ec = go.GetComponent<EnemyController>();
                     ec.Init(monster);
                     _aliveEnemies.Add(ec);
@@ -105,10 +108,9 @@ namespace CHAL.Systems.Wave
         private void HandleEnemyKilled(EnemyController ec, EnemyInstance instance, Vector3 pos)
         {
             _aliveEnemies.Remove(ec);
-            mapMgr = MapManager.Instance;
 
-            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, mapMgr.CurrentMap.baseLevel));
-            waveRewards.AddXP(_roller.RollXPForMonster(instance, mapMgr.CurrentMap.baseLevel, mapMgr.CurrentMap.difficulty, mapMgr.CurrentWave));
+            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, MapManager.Instance.CurrentMap.baseLevel));
+            waveRewards.AddXP(_roller.RollXPForMonster(instance, MapManager.Instance.CurrentMap.baseLevel, MapManager.Instance.CurrentMap.difficulty, MapManager.Instance.CurrentWave));
 
             // Loot berechnen
             var drops = _roller.RollLootForMonster(instance, _waveCtx);
@@ -212,10 +214,10 @@ namespace CHAL.Systems.Wave
 
 
             //Map-Progress
-            if (mapMgr?.CurrentMap != null && mapMgr.CurrentWave == mapMgr.MaxWaves)
+            if (MapManager.Instance?.CurrentMap != null && MapManager.Instance.CurrentWave == MapManager.Instance.MaxWaves)
             {
-                int mapId = mapMgr.CurrentMap.mapId; 
-                int difficulty = (int)mapMgr.CurrentMap.difficulty;
+                int mapId = MapManager.Instance.CurrentMap.mapId; 
+                int difficulty = (int)MapManager.Instance.CurrentMap.difficulty;
 
                 if (!profile.MapProgress.ContainsKey(mapId))
                 {
@@ -288,34 +290,80 @@ namespace CHAL.Systems.Wave
                 Tags = new List<string>(def.baseTags)
             };
 
-            // Magic-Rank: garantierter Magic-Tag
+            // --- Rank-bedingte Tags ---
             if (rank == EnemyRank.Magic)
             {
                 var magicPool = BalanceManager.Instance.Config.enemies.magicTagPool;
-                if (magicPool.Count > 0)
+                if (magicPool != null && magicPool.Count > 0)
                     inst.Tags.Add(magicPool[Random.Range(0, magicPool.Count)]);
             }
-
-            // Elite-Rank: mindestens ein Modifier aus MapDef
-            if (rank == EnemyRank.Elite && mapDef.allowedModifiers.Count > 0)
+            else if (rank == EnemyRank.Elite)
             {
-                inst.Tags.Add(mapDef.allowedModifiers[Random.Range(0, mapDef.allowedModifiers.Count)]);
-                while (inst.Tags.Count < BalanceManager.Instance.Config.enemies.minEliteTags)
+                var minEliteTags = Mathf.Max( // Fallback 4, falls nicht konfiguriert
+                    BalanceManager.Instance.Config.enemies.minEliteTags, 4);
+
+                var mods = mapDef.allowedModifiers ?? new List<string>();
+                if (mods.Count > 0)
                 {
-                    inst.Tags.Add(mapDef.allowedModifiers[Random.Range(0, mapDef.allowedModifiers.Count)]);
+                    // mind. einen Modifier
+                    inst.Tags.Add(mods[Random.Range(0, mods.Count)]);
+                    // auffüllen bis Mindestzahl Tags
+                    while (inst.Tags.Count < minEliteTags)
+                        inst.Tags.Add(mods[Random.Range(0, mods.Count)]);
+                }
+                else
+                {
+                    DebugManager.Warning("No allowedModifiers on map for Elite promotion.", "Wave");
                 }
             }
 
-            // Boss/Champion: eigene Defs oder zusätzliche Regeln später
+            // --- (optional) Scaling hier oder im EnemyController.Init() ---
+            // Empfehlung: in EnemyController.Init(instance) mit
+            // BalanceManager.Instance.Config.enemies.rankScaling arbeiten,
+            // damit EnemyInstance schlank bleibt.
 
             return inst;
         }
 
+        private List<EnemyDef> GetCandidatesForRank(MapDef map, EnemyRank rank)
+        {
+            var pool = map.allowedEnemies ?? new List<EnemyDef>();
+            if (pool.Count == 0) return pool;
+
+            switch (rank)
+            {
+                case EnemyRank.Spawn:
+                case EnemyRank.Boss:
+                case EnemyRank.Champion:
+                    // diese Ränge sind eigene Assets
+                    return pool.FindAll(e => e != null && e.defaultRank == rank);
+
+                case EnemyRank.Normal:
+                case EnemyRank.Magic:
+                case EnemyRank.Elite:
+                    // Promotions stammen aus Normal-Archetypen
+                    return pool.FindAll(e => e != null && e.defaultRank == EnemyRank.Normal);
+
+                default:
+                    return pool;
+            }
+        }
+
         private void AddEnemies(WaveComposition wave, MapDef mapDef, int count, EnemyRank rank)
         {
+            if (count <= 0) return;
+
+            var candidates = GetCandidatesForRank(mapDef, rank);
+            if (candidates == null || candidates.Count == 0)
+            {
+                DebugManager.Warning($"No candidates for rank {rank} on map {mapDef.name}. Skipping {count} spawns.",
+                    "Wave");
+                return;
+            }
+
             for (int i = 0; i < count; i++)
             {
-                var baseDef = mapDef.allowedEnemies[Random.Range(0, mapDef.allowedEnemies.Count)];
+                var baseDef = candidates[Random.Range(0, candidates.Count)];
                 var instance = UpgradeRank(baseDef, rank, mapDef);
                 wave.Monsters.Add(instance);
             }
@@ -323,11 +371,18 @@ namespace CHAL.Systems.Wave
 
         public void SimulateWaveStats(MapDef mapDef, int waveIndex)
         {
-            var wave = waveDef != null ? waveDef.ToComposition(mapDef.baseLevel, mapDef.difficulty) : GetFallbackWave();
-            var roller = new LootRoller(_rules, new UnluckyProtection());
-            var mapMgr = MapManager.Instance;
+            if (mapDef == null || waveIndex < 1 || waveIndex > mapDef.waveDefs.Count)
+            {
+                DebugManager.Warning("SimulateWaveStats: invalid map/wave index.", "Wave");
+                return;
+            }
 
-            WaveSimRunner.RunStats(roller, wave, mapMgr.CurrentMap.baseLevel, mapMgr.CurrentMap.difficulty, runs: 100);
+            var wDef = mapDef.waveDefs[waveIndex - 1];
+            var wave = BuildWaveComposition(mapDef, wDef); // <- statt ToComposition()
+
+            // UnluckyProtection hier absichtlich frisch, damit Runs unabhängig sind
+            var roller = new LootRoller(_rules, new UnluckyProtection());
+            WaveSimRunner.RunStats(roller, wave, mapDef.baseLevel, mapDef.difficulty, runs: 100);
         }
 
         [ContextMenu("Debug/Start Wave (from Inspector)")]
