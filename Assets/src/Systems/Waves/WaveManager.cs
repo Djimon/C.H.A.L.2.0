@@ -29,6 +29,8 @@ namespace CHAL.Systems.Wave
         private List<EnemyController> _aliveEnemies = new();
         private WaveLootContext _waveCtx;
 
+        private MapManager _MapMangerRef;
+
 
         private void Awake()
         {
@@ -48,8 +50,9 @@ namespace CHAL.Systems.Wave
             LootCube.OnLootCollected -= CollectLoot;
         }
 
-        public void StartWave(MapDef mapDef, int waveIndex)
+        public void StartWave(MapDef mapDef, int waveIndex, MapManager _ref)
         {
+            _MapMangerRef = _ref;
             DebugManager.Log($"Starting Wave {waveIndex}/{mapDef.maxWaves}", DebugManager.EDebugLevel.Test, "Wave");
 
             waveRewards = new WaveRewards();
@@ -109,8 +112,8 @@ namespace CHAL.Systems.Wave
         {
             _aliveEnemies.Remove(ec);
 
-            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, MapManager.Instance.CurrentMap.baseLevel));
-            waveRewards.AddXP(_roller.RollXPForMonster(instance, MapManager.Instance.CurrentMap.baseLevel, MapManager.Instance.CurrentMap.difficulty, MapManager.Instance.CurrentWave));
+            waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, _MapMangerRef.CurrentMap.baseLevel));
+            waveRewards.AddXP(_roller.RollXPForMonster(instance, _MapMangerRef.CurrentMap.baseLevel, _MapMangerRef.CurrentMap.difficulty, _MapMangerRef .CurrentWave));
 
             // Loot berechnen
             var drops = _roller.RollLootForMonster(instance, _waveCtx);
@@ -147,7 +150,7 @@ namespace CHAL.Systems.Wave
                     DebugManager.EDebugLevel.Test, "Wave");
             }
 
-            MapManager.Instance.OnWaveCompleted(success);
+            _MapMangerRef.OnWaveCompleted(success, waveRewards);
             waveRewards = new WaveRewards(); // reset für nächste Wave
         }
 
@@ -214,10 +217,10 @@ namespace CHAL.Systems.Wave
 
 
             //Map-Progress
-            if (MapManager.Instance?.CurrentMap != null && MapManager.Instance.CurrentWave == MapManager.Instance.MaxWaves)
+            if (_MapMangerRef.CurrentMap != null && _MapMangerRef.CurrentWave == _MapMangerRef.MaxWaves)
             {
-                int mapId = MapManager.Instance.CurrentMap.mapId; 
-                int difficulty = (int)MapManager.Instance.CurrentMap.difficulty;
+                int mapId = _MapMangerRef.CurrentMap.mapId; 
+                int difficulty = (int)_MapMangerRef.CurrentMap.difficulty;
 
                 if (!profile.MapProgress.ContainsKey(mapId))
                 {
@@ -239,25 +242,6 @@ namespace CHAL.Systems.Wave
         {
             waveRewards.AddItem(itemId,quantity);
             DebugManager.Log($"Collected {itemId} ({quantity}x). Inventory now: {waveRewards.Items[itemId]}", DebugManager.EDebugLevel.Debug, "Loot");
-        }
-
-        private WaveComposition GetFallbackWave()
-        {
-            return new WaveComposition
-            {
-                Level = 3,
-                Difficulty = MapDifficulty.Stable,
-                Monsters = new List<EnemyInstance>
-            {
-                new EnemyInstance
-                {
-                    EnemyId = "FallbackEnemy",
-                    Count = 5,
-                    Tags = new List<string> {"swarm"},
-                    Rank = EnemyRank.Normal
-                }
-            }
-            };
         }
 
         private WaveComposition BuildWaveComposition(MapDef mapDef, WaveDef waveDef)
@@ -390,7 +374,7 @@ namespace CHAL.Systems.Wave
         {
             if (debugMap != null)
             {
-                StartWave(debugMap, debugWaveIndex);
+                StartWave(debugMap, debugWaveIndex,_MapMangerRef);
             }
             else
             {

@@ -63,19 +63,19 @@ MonoBehaviour:
       magic:
         hpMultiplier: 1.5
         dmgMultiplier: 1.25
-        xpMultiplier: 1.25
+        xpMultiplier: 3
       elite:
         hpMultiplier: 2
         dmgMultiplier: 1.5
-        xpMultiplier: 2
+        xpMultiplier: 7
       boss:
         hpMultiplier: 5
         dmgMultiplier: 2.5
-        xpMultiplier: 5
+        xpMultiplier: 20
       champion:
         hpMultiplier: 10
         dmgMultiplier: 5
-        xpMultiplier: 10
+        xpMultiplier: 100
     magicTagPool:
     - frozen
     - molten
@@ -87,7 +87,7 @@ MonoBehaviour:
       baseGoldReward: 10
       goldPerLevel: 3
     xp:
-      baseXpReward: 10
-      xpPerLevel: 1
+      baseXpReward: 15
+      xpPerLevel: 10
       baseLevelUpXp: 1000
       levelCurveFactor: 6

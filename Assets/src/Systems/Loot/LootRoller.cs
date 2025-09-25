@@ -7,6 +7,7 @@ using CHAL.Systems.Wave;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static CHAL.Data.GameBalanceConfig;
 
 namespace CHAL.Systems.Loot
 {
@@ -204,24 +205,24 @@ namespace CHAL.Systems.Loot
                 _ => 1
             };
 
-            return Mathf.RoundToInt(curr.baseGoldReward * baseModifier  + (maplvl-1) * curr.goldPerLevel);
+            return Mathf.RoundToInt(curr.baseGoldReward * baseModifier  + (maplvl) * curr.goldPerLevel);
 
         }
 
         public int RollXPForMonster(EnemyInstance enemy, int mapLevel, MapDifficulty difficulty, int waveLevel)
         {
             var econ = BalanceManager.Instance.Config.economy;
-            var loot = BalanceManager.Instance.Config.loot;
+            var enemyscaling = BalanceManager.Instance.Config.enemies.rankScaling;
             var rank = enemy.Rank;
 
-            int baseXp = rank switch
+            float baseXp = rank switch
             {
-                EnemyRank.Spawn => loot.rankMultipliers.spawn,
-                EnemyRank.Normal => loot.rankMultipliers.normal,
-                EnemyRank.Magic => loot.rankMultipliers.magic,
-                EnemyRank.Elite => loot.rankMultipliers.elite,
-                EnemyRank.Boss => loot.rankMultipliers.boss,
-                EnemyRank.Champion => loot.rankMultipliers.champion,
+                EnemyRank.Spawn => enemyscaling.spawn.xpMultiplier,
+                EnemyRank.Normal => enemyscaling.normal.xpMultiplier,
+                EnemyRank.Magic => enemyscaling.magic.xpMultiplier,
+                EnemyRank.Elite => enemyscaling.elite.xpMultiplier,
+                EnemyRank.Boss => enemyscaling.boss.xpMultiplier,
+                EnemyRank.Champion => enemyscaling.champion.xpMultiplier,
                 _ => 1
             };
 
@@ -235,8 +236,8 @@ namespace CHAL.Systems.Loot
             };
 
 
-            float scaled = econ.xp.baseXpReward * baseXp * difficultyBonus * (waveLevel -1f) * 0.1f 
-                    + (1f + (mapLevel-1) * econ.xp.xpPerLevel);
+            float scaled = econ.xp.baseXpReward * baseXp * difficultyBonus
+                    + (1f + (mapLevel-1) * econ.xp.xpPerLevel *(waveLevel * 0.1f));
               
             return Mathf.RoundToInt(scaled);
         }

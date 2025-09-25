@@ -30,6 +30,8 @@ namespace CHAL.Core
 
         public UnluckyProtection Unlucky { get; private set; }
 
+        public MapDef pendingMap { get; private set; }
+
 
 
         public GameBalanceConfig Config
@@ -132,7 +134,7 @@ namespace CHAL.Core
         public void ExitToHideout()
         {
             SetState(GameState.Hideout);
-            // Hier Crafting/Hideout laden
+            SceneManager.LoadScene("03_Hideout");
         }
 
         internal void ContinueGame()
@@ -163,16 +165,10 @@ namespace CHAL.Core
 
         internal void StartMap(string sceneName, MapDef selectedMap)
         {
+            pendingMap = selectedMap;
             SetState(GameState.MapPhase);
             SceneManager.LoadScene(sceneName);
 
-            SceneManager.sceneLoaded += (scene, mode) =>
-            {
-                if (scene.name == sceneName && MapManager.Instance != null)
-                {
-                    MapManager.Instance.StartMap(selectedMap);
-                }
-            };
         }
     }
 }

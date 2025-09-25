@@ -136,7 +136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &278484942
 Transform:
   m_ObjectHideFlags: 0
@@ -186,6 +186,7 @@ MonoBehaviour:
   mapSceneName: 04_Map
   availableMaps:
   - {fileID: 11400000, guid: 8c20f9afed99d6a4aadeaf71a7b301ce, type: 2}
+  - {fileID: 11400000, guid: 877bfcb231ee58c4a956365de31f7d16, type: 2}
 --- !u!1 &293919565
 GameObject:
   m_ObjectHideFlags: 0
@@ -894,7 +895,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuUI: {fileID: 278484941}
-  hoverMatieral: {fileID: 2100000, guid: c33f5404777cfff4f972ae2a2afac4c1, type: 2}
 --- !u!1 &1266014325
 GameObject:
   m_ObjectHideFlags: 0

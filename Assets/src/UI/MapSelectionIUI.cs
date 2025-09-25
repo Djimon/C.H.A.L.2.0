@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
-public class MapSelectionUI : MonoBehaviour
+public class MapSelectionUI : IngameUI
 {
     [SerializeField]
     private string mapSceneName = "04_Map";
@@ -19,17 +19,15 @@ public class MapSelectionUI : MonoBehaviour
 
     private MapDef _selectedMap;
 
-    private VisualElement root;
     private Button btnStartMap;
+    private Button btnExitMenu;
     private TextElement detailsText;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();   
         root = GetComponent<UIDocument>().rootVisualElement;
-    }
 
-    private void OnEnable()
-    {
         // Beispiel: baue Buttons für jede Map
         var container = root.Q<VisualElement>("MapList");
         container.Clear();
@@ -44,9 +42,17 @@ public class MapSelectionUI : MonoBehaviour
         btnStartMap = root.Q<Button>("StartMap");
         btnStartMap.clicked += OnStartMapBtnClicked;
 
+        btnExitMenu = root.Q<Button>("Exit");
+        btnExitMenu.clicked += OnExitMenuBtnClicked;
+
         detailsText = root.Q<Label>("Details");
 
         //später: Buttons um schwierigkeit zu ändern, sobald diese freiheschaltet wurden
+    }
+
+    private void OnExitMenuBtnClicked()
+    {
+        Show(false);
     }
 
     private void OnMapSelected(MapDef map)

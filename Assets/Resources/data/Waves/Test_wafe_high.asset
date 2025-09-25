@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30f4d950c32a9f34ab4420d2a7c968aa, type: 3}
+  m_Name: Test_wafe_high
+  m_EditorClassIdentifier: 
+  spawnCount: 0
+  normalCount: 5
+  magicCount: 10
+  eliteCount: 5
+  bossCount: 2
+  championCount: 1
+  maxTagsPerEnemy: 4
+  maxElites: 5
+  maxBosses: 2
+  maxChampions: 1
