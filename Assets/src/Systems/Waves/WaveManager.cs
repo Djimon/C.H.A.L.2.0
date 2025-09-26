@@ -108,7 +108,7 @@ namespace CHAL.Systems.Wave
             return spawnPoints[index].position;
         }
 
-        private void HandleEnemyKilled(EnemyController ec, EnemyInstance instance, Vector3 pos)
+        private void HandleEnemyKilled(EnemyController ec, EnemyStruct instance, Vector3 pos)
         {
             _aliveEnemies.Remove(ec);
 
@@ -250,7 +250,7 @@ namespace CHAL.Systems.Wave
             {
                 Level = mapDef.baseLevel,
                 Difficulty = mapDef.difficulty,
-                Monsters = new List<EnemyInstance>()
+                Monsters = new List<EnemyStruct>()
             };
 
             // Reihenfolge: Spawns → Normals → Magics → Elites → Bosses → Champions
@@ -264,9 +264,9 @@ namespace CHAL.Systems.Wave
             return wave;
         }
 
-        private EnemyInstance UpgradeRank(EnemyDef def, EnemyRank rank, MapDef mapDef)
+        private EnemyStruct UpgradeRank(EnemyDef def, EnemyRank rank, MapDef mapDef)
         {
-            var inst = new EnemyInstance
+            var inst = new EnemyStruct
             {
                 EnemyId = def.enemyId,
                 Rank = rank,

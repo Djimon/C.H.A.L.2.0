@@ -13,7 +13,7 @@ namespace CHAL.Data
         public int Level;
         public MapDifficulty Difficulty;
 
-        public List<EnemyInstance> Monsters;
+        public List<EnemyStruct> Monsters;
 
         // Dynamische Properties (keine Redundanz mehr)
         public int TotalSpawns => Monsters?.Where(m => m.Rank == EnemyRank.Spawn).Sum(m => m.Count) ?? 0;
@@ -29,7 +29,7 @@ namespace CHAL.Data
             Level = this.Level,
             Difficulty = this.Difficulty,
             Monsters = this.Monsters
-                .Select(m => new EnemyInstance
+                .Select(m => new EnemyStruct
                 {
                     EnemyId = m.EnemyId,
                     Rank = m.Rank,

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 472142c64d3a433439fec3132bed5bc2, type: 3}
   m_Name: debug_Enemy
   m_EditorClassIdentifier: 
-  enemyId: 0
+  enemyId: debug_rat
   displayNameKey: debug_rat
   baseHP: 10
   baseDamage: 2

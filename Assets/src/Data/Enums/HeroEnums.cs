@@ -10,7 +10,7 @@ namespace CHAL.Data
         LeftHand
     }
 
-    public enum HeroStat
+    public enum HeroAttribs
     {
         STR,
         DEX,

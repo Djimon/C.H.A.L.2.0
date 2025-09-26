@@ -17,14 +17,18 @@ namespace CHAL.Data
         public List<HeroAIPrio> DefaultAIPrio; // ["AttackHighestHP", "BuffAllies", "AA"]
 
         // Stat-Zuordnung
-        public HeroStat Core;
-        public HeroStat Secondary1;
-        public HeroStat Secondary2;
-        public HeroStat Tertiary;
-        public HeroStat Edge;
+        public HeroAttribs Core;
+        public HeroAttribs Secondary1;
+        public HeroAttribs Secondary2;
+        public HeroAttribs Tertiary;
+        public HeroAttribs Edge;
 
         // Referenz auf GrowthConfig
         public ArchetypeGrowthConfig GrowthConfig;
+
+        [Header("Signature Passive")]
+        public ModifierDef SignaturePassive;   // ScriptableObject mit ModifierData
+
     }
 
     [Serializable]
@@ -41,7 +45,7 @@ namespace CHAL.Data
     public class GrowthPattern
     {
         [Tooltip("Pattern aus genau 5 Rollen, z.B. Core, Sec, Sec, Ter, Edge")]
-        public GrowthRole[] Roles = new GrowthRole[5]
+        public GrowthRole[] growthPriority = new GrowthRole[5]
         {
         GrowthRole.Core,
         GrowthRole.Secondary,

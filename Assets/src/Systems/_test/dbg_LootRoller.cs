@@ -21,21 +21,21 @@ public class LootRollerDebug : MonoBehaviour
         {
             Level = 3,
             Difficulty = MapDifficulty.Stable,
-            Monsters = new List<CHAL.Data.EnemyInstance>
+            Monsters = new List<CHAL.Data.EnemyStruct>
     {
-        new CHAL.Data.EnemyInstance
+        new CHAL.Data.EnemyStruct
         {
             EnemyId = "Monster1",
             Count = 10,
             Tags = new List<string>{ "insect", "swarm" }
         },
-        new CHAL.Data.EnemyInstance
+        new CHAL.Data.EnemyStruct
         {
             EnemyId = "Monster2",
             Count = 3,
             Tags = new List<string>{ "beast", "tank" }
         },
-        new CHAL.Data.EnemyInstance
+        new CHAL.Data.EnemyStruct
         {
             EnemyId = "Monster3",
             Count = 1,

@@ -65,27 +65,27 @@ public class LootDebugRunner : MonoBehaviour
         {
             Level = level,
             Difficulty = MapDifficulty.Stable,
-            Monsters = new List<EnemyInstance>
+            Monsters = new List<EnemyStruct>
             {
-                new EnemyInstance {
+                new EnemyStruct {
                     EnemyId = "Monster0",
                     Count = spawnCount,
                     Tags = new List<string>{"swarm"},
                     Rank = EnemyRank.Spawn
                 },
-                new EnemyInstance {
+                new EnemyStruct {
                     EnemyId = "Monster1",
                     Count = normalCount,
                     Tags = new List<string>{"insect","swarm"},
                     Rank = EnemyRank.Normal
                 },
-                new EnemyInstance {
+                new EnemyStruct {
                     EnemyId = "Monster2",
                     Count = magicCount,
                     Tags = new List<string>{"beast","tank"},
                     Rank = EnemyRank.Magic
                 },
-                new EnemyInstance {
+                new EnemyStruct {
                     EnemyId = "Monster3",
                     Count = bossCount,
                     Tags = new List<string>{"insect","boss"},

@@ -7,11 +7,18 @@ namespace CHAL.Systems.Enemy
 {
     public class EnemyController : MonoBehaviour
     {
-        public EnemyInstance EnemyData { get; private set; }
+        public EnemyStruct EnemyData { get; private set; }
+        public EnemyInstance EnemyInstance { get; private set; }
 
-        public void Init(EnemyInstance instance)
+        public void Init(EnemyStruct enemstruct)
         {
-            EnemyData = instance;
+            var def = UnitRegistry.Instance.GetEnemyByID(enemstruct.EnemyId);
+            EnemyInstance = new EnemyInstance(def, enemstruct);
+        }
+
+        private void Update()
+        {
+            EnemyInstance.UpdateEffects(Time.deltaTime);
         }
 
         private void Attack()
@@ -21,7 +28,7 @@ namespace CHAL.Systems.Enemy
 
         private void OnMouseDown()
         {
-            Die();
+            EnemyInstance.TakeDamage(999, DamageType.Physical);
         }
 
         private void Die()
@@ -35,7 +42,7 @@ namespace CHAL.Systems.Enemy
         }
 
         // Static Event für alle EnemyController
-        public static event System.Action<EnemyController, EnemyInstance, Vector3> OnEnemyKilled;
+        public static event System.Action<EnemyController, EnemyStruct, Vector3> OnEnemyKilled;
     }
 }
 

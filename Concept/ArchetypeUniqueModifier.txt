@@ -1,0 +1,45 @@
+Archetyp	Passives (Vorschläge)
+Vanguard (Tank, CON Core)	
+	1) Bulwark: +20% Armor.
+	2) Stand Your Ground: kann weniger gelslowt/gestunnt oder so werden /kann sich durhc gegner bewegen wird nicht gen´blockt?
+	3) First Hit Guard: Der erste erlittene Treffer pro GEGNER? wird um 50% reduziert (wie eifnach ist da szu implementieren).
+Piercer (STR Core, Execute)	
+	1) Deadly Precision: +50% CritDMGMultiplier.
+	2) Hemorrhage: schaltet stackable Bleed (DoT) frei
+	3) Mercyless: Gegner unter 40% HP erleiden +15% Damage.
+Arcanist (INT Core, DoT/Control)	
+	1) Arcane Echo: +25% DebuffDuration.
+	2) Overchannel: +20% Spell Damage.
+	3) Flow of Mana: Skills haben -15% Cooldown.
+Ranger (DEX Core, Projektil/Kiting)	
+	1) Volley: +1 ProjectileCount.
+	2) Through the Line: +25% PierceChance (Gegner nacheinander treffen).
+	3) Hunter’s Focus: +15% Range.
+Marksman (DEX Core, Präzision)	
+	1) Headshot: +20% CritChance.
+	2) Longshot: +20% Damage, wenn Ziel >8m entfernt.
+	3) Sniper Discipline: +10% AttackSpeed, wenn stationär (länger als 5 sek nicht bewegt).
+Alchemist (INT Core, DoTs/Zonen)	
+	1) Virulent Concoction: DoTs können +10 stacken haben.
+	2) Toxic Spread: OnKill → DoTs springen auf ein benachbartes Ziel.
+	3) Lingering Poison: +25% DoTDuration.
+Summoner (WIL Core, Minions)
+	1) Broodmaster: +2 SummonCount.(base SummonCount = 3)
+	2) Empowered Minions: Minions haben +20% HP. und +15% Dmg
+	3) Hive Mind: +5% Damage je lebenden Minion.
+Hierophant (WIL Core, Support/Nature)
+	1) Blessing Aura: Allies im 4m-Radius regenerieren 1% HP/sec.
+	2) Sanctuary: Nächste Attacke gegen Allies wird negiert (alle 10s).
+	3) Spirit Bond: Buffs, die er verteilt, halten +25% länger.
+Bruiser (STR Core, Sustain-Melee)	
+	1) Brawler’s Might: +20% AttackDamage.
+	2) Blood for Strength: +10% LeechFactor.
+	3) Thick Skin: +15% MaxHP.
+Saboteur (INT Core, Traps/Procs)
+	1) Tinker’s Reserve: Traps haben +1 Charge.
+	2) Suspicious Gear: +5 Dots-Stacks Chance.
+	3) epxertise: Area of effect ist größer (Fallen-Effekt).
+Oracle (WIL Core, Buff/Debuff)	
+	1) Prophetic Weakness: Debuffs dauern +25% länger.
+	2) Battle Clairvoyance: Allies im 6m-Radius haben +10% CritChance.
+	3) Foretold Resilience: Allies im 6m-Radius erhalten +10% ElemResist.

@@ -31,7 +31,7 @@ namespace CHAL.Data
             {
                 Level = baseLevel,
                 Difficulty = difficulty,
-                Monsters = new List<EnemyInstance>() //wird von WaveManager befüllt
+                Monsters = new List<EnemyStruct>() //wird von WaveManager befüllt
             };         
         }
     }

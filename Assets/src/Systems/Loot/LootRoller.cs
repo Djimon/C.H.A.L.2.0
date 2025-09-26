@@ -26,7 +26,7 @@ namespace CHAL.Systems.Loot
         /// Rollt Loot für einen einzelnen Gegner bei dessen Tod.
         /// Nutzt Budget & Unlucky aus dem WaveContext.
         /// </summary>
-        public List<LootResultEntry> RollLootForMonster(EnemyInstance monster, WaveLootContext ctx)
+        public List<LootResultEntry> RollLootForMonster(EnemyStruct monster, WaveLootContext ctx)
         {
             var results = new List<LootResultEntry>();
 
@@ -90,7 +90,7 @@ namespace CHAL.Systems.Loot
             return results;
         }
 
-        private void ExecuteDrop(EnemyInstance monster, WaveLootContext ctx, List<LootResultEntry> results, string tag, LootDrop drop, float pBase)
+        private void ExecuteDrop(EnemyStruct monster, WaveLootContext ctx, List<LootResultEntry> results, string tag, LootDrop drop, float pBase)
         {
             // Unlucky / Budget
             float multUnlucky = _unlucky.GetMultiplier(drop.rarity);
@@ -188,7 +188,7 @@ namespace CHAL.Systems.Loot
         }
 
 
-        public int RollGoldForMonster(EnemyInstance enemy, int maplvl)
+        public int RollGoldForMonster(EnemyStruct enemy, int maplvl)
         {
             var rank = enemy.Rank;
             var curr = BalanceManager.Instance.Config.economy.currencies;
@@ -209,7 +209,7 @@ namespace CHAL.Systems.Loot
 
         }
 
-        public int RollXPForMonster(EnemyInstance enemy, int mapLevel, MapDifficulty difficulty, int waveLevel)
+        public int RollXPForMonster(EnemyStruct enemy, int mapLevel, MapDifficulty difficulty, int waveLevel)
         {
             var econ = BalanceManager.Instance.Config.economy;
             var enemyscaling = BalanceManager.Instance.Config.enemies.rankScaling;

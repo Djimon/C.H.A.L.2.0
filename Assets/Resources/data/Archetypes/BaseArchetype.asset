@@ -15,16 +15,17 @@ MonoBehaviour:
   ArchetypeId: base
   DisplayName: Debug Type
   RoleDescription: some text..
-  PreferredSlots: 
-  DefaultAIPrio: 
+  PreferredSlots: 0200000000000000
+  DefaultAIPrio: 03000000
   Core: 0
-  Secondary1: 0
-  Secondary2: 0
-  Tertiary: 0
-  Edge: 0
+  Secondary1: 2
+  Secondary2: 1
+  Tertiary: 4
+  Edge: 3
   GrowthConfig:
     CoreTarget: 120
     SecondaryTarget: 100
     TertiaryTarget: 80
     EdgeTarget: 65
-    PatternId: Core-Sec-Sec-Ter-Edge
+    GrowthPattern:
+      growthPriority: 0000000001000000010000000200000003000000
