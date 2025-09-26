@@ -16,6 +16,7 @@ namespace CHAL.Data
         public int baseLevel = 1;          // Start-Level der Gegner
         public int maxWaves = 5;           // Anzahl Waves pro Map
         public MapDifficulty difficulty;   // Basis-Schwierigkeit dieser Map
+        public int heroSlots = 1;
 
         [Header("Enemy Pools")]
         public List<EnemyDef> allowedEnemies;

@@ -14,6 +14,7 @@ namespace CHAL.Systems.Map
         private GameObject _mapInstancedPrefab;
         public GameObject waveRewardUI;
         public GameObject mapRewardUI;
+        public GameObject selectHeroUI;
 
 
         private WaveManager _waveManager;
@@ -69,6 +70,9 @@ namespace CHAL.Systems.Map
             else
                 DebugManager.Warning("Missing MapPrefab");
 
+            var selectUI = selectHeroUI.GetComponent<HeroSelectionUI>();
+            selectUI.Init(this);
+            selectUI.Show(true);   
         }
 
         public void ResetWave() 

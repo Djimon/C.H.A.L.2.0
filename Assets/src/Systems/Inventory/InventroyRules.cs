@@ -9,7 +9,7 @@ namespace CHAL.Systems.Inventory
             {
                 "rune" => 1,
                 "remains" => 10000,
-                "part" => 1000,
+                "part" => 250,
                 "module" => 10,
                 _ => 100
             };
@@ -21,8 +21,8 @@ namespace CHAL.Systems.Inventory
             {
                 "rune" => 20,
                 "remain" => 12,
-                "part" => 50,
-                "module" => 20,
+                "part" => 100,
+                "module" => 30,
                 _ => 30
             };
         }
