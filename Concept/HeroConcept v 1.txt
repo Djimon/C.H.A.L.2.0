@@ -1,0 +1,304 @@
+C.H.A.L. – Helden/WILraktere v1 (Blueprint)
+0) Ziel & Scope
+
+Wenige, starke Archetypen (≈12–15) mit klar unterscheidbarem Spielgefühl.
+
+Tiefe Individualisierung (Skill-Sockets + Orbits + Runen).
+
+Klassisches Stat-Set + neutrale Modifier-Pipeline (wie bei Enemies wiederverwendet).
+
+Einzeln level- & ausrüstbar; Team besteht aus 2–3 (später 3–6) Helden.
+
+1) High-Level Architektur (Daten & Runtime)
+
+Designprinzip: Trennung von Definition (ScriptableObject) und Instanz (Runtime/Speicher).
+
+HeroDef (SO): Archetyp, Basiswerte, Wachstum pro Level, Socket-Unlocks, Archetypen-Trait, Start-Modul.
+
+HeroInstance (Runtime): Referenz auf HeroDef, Level/Xp, pro Socket: ausgerüstetes Modul + Orbit-Fortschritt, gewählte Runen, berechnete Final-Stats.
+
+ModifierSystem (wiederverwendet): Additiv → Multiplikativ → Replacement + Event-Hooks (OnCast/OnHit/OnCrit/OnKill).
+
+Module/Skills: wie bei Enemies: SkillData + Tags; Mods filtern per Tags.
+
+Runen: neutrale Modifier-Objekte (Offense/Defense/Buff); später 1–3 Slots/WILr.
+
+3) Rechenpipeline & Caps (Balancing-Leitplanken)
+
+Pipeline (deterministisch):
+
+Base (HeroDef) + Growth (Level)
+
+Flat-Additionen (Module, Orbits, Runen, Traits)
+
+Additive Prozente (sum-of-bonus)
+
+Multiplikative Layer („More“/CritMult/unique multipliers)
+
+Caps/Clamp (z. B. Resists ≤ 75%, CritWILnce ≤ 60%, CritMult ≤ 2.5×)
+
+Replacements/Mutations (Tier III, SkillSwap)
+
+SkillPool Build + Cooldowns → AI nutzt Prioritäten
+
+Armor → DR Beispiel:
+DR = Armor / (Armor + K), K anfangs 100 (später pro Tier/Diff tunen).
+
+4) Progression (Sockets, Orbits, Level)
+
+Socket-Unlocks per HeroDef.socketUnlocks (Default: Torso 1, Right 5, Left 10, Head 20).
+
+Pro Socket 22 Punkte: Tier I @5, Tier II @12, Tier III @22 (aus deinen Docs).
+
+Punktevergabe: 1 Punkt/Level (+ Map-Bonus alle X Maps).
+
+Mods via Tags: Projectile/AoE/Fire/… → neutral wiederverwendbar.
+
+5) Runen (früh 1 Slot, später 2–3)
+
+Rune = ModifierData (Offense/Defense/Buff).
+
+Crafting/Forge nutzt Residuen → Bias wie spezifiziert.
+
+Slots bei Held auf Level-Schwellen freisWILlten (z. B. L15/L35/L60).
+
+6) Team, AI & Synergien
+
+Teamgröße: Prototyp 2–3; Ziel 3–6.
+
+Archetypen-Trait klein aber prägend (z. B. Vanguard: +Effektivität von Schilden/Barrieren).
+
+Synergie-Hooks (leichtgewichtig):
+
+„Wenn Support castet → Team +X% AS 3s.“
+
+„Wenn Slayer crittet → Head-Socket-Skill des Rangers Echo (CD-Gate).“
+
+AI-Prio (Default): Buffs/Heals → Control/DoT → Burst → Auto-Attack; Archetyp überschreibt (z. B. Slayer: lowest HP Fokus).
+
+7) UI-Verträge (für Implementation)
+
+HeroSelectionUI erwartet Liste HeroInstance (statt Strings).
+
+Slots-UI: zeigt freigesWILltete Sockets (per socketUnlocks/Level).
+
+Orbit-UI: 22-Punkte-Leiste + Auswahl der Tier-Mods (exklusiv pro Tier).
+
+Runen-UI: 1–3 Slot-Buttons, einfacher Drag&Drop aus Forge/Inventar.
+
+HeroCard: Portrait, Archetyp-Badge, Level, kompakte Kennzahlen (DPS, EHP).
+
+8) Save/Load – minimaler Vertrag
+
+HeroInstance Save DTO:
+
+heroId, level, xp
+
+je Socket: socket, equippedModuleId, orbit.pointsSpent, orbit.chosenMods[]
+
+equippedRunes[] (Rune-Ids)
+
+Recompute on load: Nach Load RecomputeFinalStats() + BuildSkillPool() aufrufen.
+
+IDs statt direkte SO-Refs speichern (robust gegen Build).
+
+10) Technische To-Dos (sinnvolle Reihenfolge)
+
+Daten: HeroDef + HeroInstance + SocketUnlock + OrbitProgress anlegen.
+
+Resolver: IModifierResolver (ApplyAll/MutateSkillPool + Hook-Registrierung).
+
+Module/Skill-Tags: bestehendes Enemy-System wiederverwenden; gemeinsame ModifierData.
+
+Orbit-Runtime: 22-Punkte-Logik + Tier-Gates + exklusive Mod-Choices.
+
+Runen v1: 1 Slot; 3–5 einfache Runen (Haste/Power/Iron/Barrier/Venom).
+
+HeroSelection: Prototyp von Strings → HeroInstance migrieren; Slots/Visibility aus CurrentMap.heroSlots.
+
+Save/Load: DTOs + Recompute-Step nach Load.
+
+UI: Orbit-Auswahl (Tier-Unlocks), Runen-Slot; klare Tooltips (Tags, Wirkungen).
+
+11) Naming & IDs (Konsistenz)
+
+Hero: hero_<arch>_<nn> → hero_vanguard_01
+
+Trait: trait_<arch>_<name> → trait_vanguard_guard
+
+Module/Skill: mod_<family>_<variant> → mod_fireball_basic
+
+Orbit-Mod: mod_tier1_<socket>_<effect> → mod_tier1_right_crit_WILnce
+
+Rune: rune_<type> → rune_vampire, rune_haste
+
+12) Offene Punkte (bewusst geparkt)
+
+Genaues Armor-K & Resist-Skalierung per Diff (Tuning).
+
+AI-Priorisierung je Archetyp als konfigurierbare Policy (SO oder JSON).
+
+Mutations (Tier III): Soft vs. Hard Swap – Katalog definieren.
+
+Crown-Sockets (Meta): erst nach Kernsystem stabil.
+
+Ökonomische Progression (Punktquellen/Map-Boni) feinabstimmen.
+
+Archetypen v1 (Roster-Start, 8 Beispiele)
+Archetyp	Kernrolle & Spielgefühl	Signatur-Passiv	Bevorzugte Slots	Default-AI/Prio
+Vanguard (Tank)	Frontline, Bindung, SWILdensglättung	+Armor → DR-Cap, tauntartige Präsenz	Torso/Kopf	AttackHighestHP → Buffs → AA
+Slayer (Burst)	Crit/Burst, Ziel löschen	+CritMulti, „Execute <x%“	Rechte Hand	AttackLowestHP → AA
+Arcanist (Caster)	Elementar, DoT/Control	+Status-Effekte Dauer, Mana-Regen	Kopf/Linke Hand	Debuff → Nuke
+Ranger (Projectile)	Kiten/Mehrfachtreffer	+Proj-Count, Pierce WILnce	Rechte/Linke Hand	Focus FirstInRange
+Warden (Support)	Schilde/Heals/Auren	Erste Treffer absorbieren	Torso/Kopf	Buff Allies → Heal → AA
+Alchemist (DoT)	Giftschichten/Zonen	Stackbare DoTs → Bonus	Linke Hand/Kopf	Spread DoTs
+Tactician (Summons)	Minions/Automata	+1 Companion Slot	Kopf/Linke Hand	Maintain Minions
+Zealot (Leech)	Aggressives Sustain	OnHit Leech + Mitigation	Torso/Rechte Hand	Dive FirstThreat
+
+
+🔧 Optionen für „Module = Skills“ + Archetyp-Bindung
+1. Statistische Verstärkung (klassisch)
+
+Alle Helden können jedes Modul nutzen → aber Archetyp verleiht BonussWILden/Effekte bei passenden Skills.
+
+Beispiel: „Fireball“
+
+Arcanist: +50% SWILden, WILnce auf Burn
+
+Vanguard: -30% SWILden, stattdessen AoE-Taunt durch Hit
+
+Slayer: +Crit-WILnce gegen Low-HP Targets
+
+🔹 Pro: Einfach zu balancen, jeder darf alles probieren, Archetyp bleibt relevant.
+🔹 Con: Gefahr, dass „falsche“ Skills sich immer schwach anfühlen.
+
+2. Skill-Skinning / Archetyp-Ausprägungen (dein Vorschlag, sehr stark!)
+
+Jedes Modul ist eine Abstrakte Skill-Hülle → Archetyp prägt die konkrete Ausprägung.
+
+Beispiel: „Fire_Storm“
+
+Tank: Aura → brennende Gegner verlieren -X% Damage
+
+Archer: Buff → Pfeile machen extra FireDamage
+
+Caster: Aktiver Zauber → Flammenkegel
+
+Umsetzung: 3–4 Archetyp-Kategorien, jede gibt eigenen Skill-Pool.
+
+🔹 Pro: Gleicher Modul-Pool für alle, trotzdem klar unterschiedliche Ausführungen.
+🔹 Con: Mehr Content-Design (jeder Skill = 3–4 Varianten).
+
+3. Archetyp-Exklusivität
+
+Bestimmte Module sind locked für Archetypen (z. B. Summon-Skills nur Tactician, starke Nukes nur Caster).
+
+Jeder Archetyp hat „seine“ Skillfamilien.
+
+Spieler lernt: Tank = Tank-Skills, Caster = Caster-Skills.
+
+🔹 Pro: Klare Rollentrennung, einfacher zu balancen.
+🔹 Con: Weniger Experimentier-Freiheit → Build-Vielfalt schrumpft.
+
+4. Scaling-Weichen (Diablo-like)
+
+Alle können alle Skills, aber Archetyp-Stats bestimmen Output.
+
+Beispiel: Fireball → skaliert zu 70% mit MagicPower.
+
+Arcanist = hoher MP → riesiger Fireball
+
+Tank = fast kein MP → kleiner Funke
+
+Gleichzeitig: Tank kann Fireball trotzdem nutzen, aber nur als Nebeneffekt.
+
+🔹 Pro: Sehr intuitiv, belohnt Archetyp-Stats.
+🔹 Con: „Off-Builds“ fühlen sich oft wie Trash an.
+
+5. Synergie-System (Slay the Spire-artig)
+
+Module wirken stärker, wenn sie in Archetyp-Kernelemente greifen.
+
+Beispiel:
+
+Tank hat Passive „+Armor bei AoE“. → FireStorm gibt zusätzlich Armor.
+
+Slayer hat „+CritMulti bei Execute“. → FireStorm tickt härter auf <30% Targets.
+
+🔹 Pro: Kleinere Anpassungen reichen, keine 4 Skillvarianten nötig.
+🔹 Con: Erfordert sauberes System aus Archetyp-Passiven + Skilltags.
+
+6. Hybrid-Ansatz (empfehlenswert)
+
+👉 Kombiniert 2 + 5 (Skill-Skinning + Synergien):
+
+Module = Skillhüllen → archetypische Ausprägung (Aura, Buff, Spell …).
+
+Dazu wirken Signatur-Passives als Verstärker.
+
+Beispiel „Fire_Storm“:
+
+Vanguard: Aura mit -EnemyDMG, zusätzlich +Armor wegen Passiv
+
+Ranger: Buff mit OnHit FireDamage, skaliert mit CritMulti
+
+Arcanist: Nuke mit Burn, +DoTDuration aus Passiv
+
+So bleibt:
+
+Freiheit: Jeder kann alles sockeln.
+
+Rolle: Archetyp bestimmt Variante + Verstärkung.
+
+Vielfalt: Gleicher Pool, aber 3–4x Value.
+
+Level-100 Zielmatrix (5 Stats, 15 Archetypen)
+
+Stats: STR, DEX, CON, INT, WIL
+Startwerte (Level 1): je Stat 10
+Zielkategorien je Archetyp:
+
+Level 100:
+CORE: 120
+SEC: 100
+SEC: 100
+TER: 80
+EDGE: 65
+
+Stat-Verteilung je level durch RUnder-Robin-Akkumulator:
+- Baseline: Pro Level X (4?) Punkte verteilen (integer).
+- Zuordnung pro Level: „Weighted round-robin“ mit Akkumulatoren:
+	- Initialisiere fünf Akkus mit 0.
+	- Addiere pro Level auf jeden Akku Gewicht / 415 × PunkteDiesesLevel.
+	- Solange ein Akku ≥ 1: vergib 1 Punkt an diesen Stat und −1 vom Akku.
+	- Reihenfolge bei Gleichstand rotieren, damit es sich natürlich anfühlt.
+	
+benefits:
+Feines Tuning möglich: Wenn ein Archetyp zu stark/schwach ist, verschiebst du nur eine Kategorie (z. B. TER→SEC) oder passt die Kategorien-Zielwerte global an (z. B. EDGE +55 statt +50).
+
+Einheitliches Balancing: Skills skalieren nur gegen Stats, nicht gegen Klassen – weniger Sonderfälle.
+Archetyp-Matrix
+| Archetyp                         | Kernrolle & Spielgefühl             | Signatur-Passiv                       | Bevorzugte Slots    | Default AI / Prio             | Core (120)  | Sec (100) | Sec (100) | Ter (80) | Edge (65) |
+| -------------------------------- | ----------------------------------- | ------------------------------------- | ------------------- | ----------------------------- | ----------- | --------- | --------- | -------- | --------- |
+| **Vanguard**                     | Tank, Frontline, Schadensglättung   | +Armor → DR-Cap, Taunt-Präsenz        | Torso / Kopf        | AttackHighestHP → Buffs → AA  | **CON**     | STR       | CHA       | WIS      | DEX       |
+| **Piercer** (ex Slayer/Reaper)   | Nahkampf-DPS, Crit oder Bleed-Pfade | +CritMulti, Execute-Threshold ↑       | Rechte Hand         | AttackLowestHP → AA           | **STR**     | DEX       | CON       | WIS      | CHA       |
+| **Arcanist**                     | Caster, DoT/Control                 | +Status-Effekte Dauer, Mana-Regen     | Kopf / Linke Hand   | Debuff → Nuke                 | **WIS**     | DEX       | CON       | STR      | CHA       |
+| **Ranger**                       | Projectile, Kiting, Mehrfachtreffer | +Proj-Count, Pierce Chance            | Rechte / Linke Hand | Focus FirstInRange            | **DEX**     | STR       | WIS       | CON      | CHA       |
+| **Marksman**                     | Präzisionsschütze, Crit/Range       | +HeadshotChance, RangeScaling         | Rechte Hand / Kopf  | FocusLowestHP → KeepDistance  | **DEX**     | STR       | CON       | WIS      | CHA       |
+| **Alchemist**                    | DoTs, Giftschichten/Zonen           | Stackbare DoTs → Bonus                | Linke Hand / Kopf   | Spread DoTs                   | **WIS**     | DEX       | CHA       | CON      | STR       |
+| **Summoner**                     | Minions/Automata, Schwarmgefühl     | +1 Companion Slot                     | Kopf / Linke Hand   | Maintain Minions              | **CHA**     | CON       | WIS       | STR      | DEX       |
+| **Hierophant** (ex Druid+Warden) | Support, Heals/Shields, Natur-Auren | Erste Treffer absorbieren / Aura-Heal | Torso / Kopf        | Buff Allies → Heal → AA       | **CHA**     | CON       | WIS       | STR      | DEX       |
+| **Bruiser**                      | Sustain-Melee, Selfheal             | LifeOnHit + DR im Nahkampf            | Torso / Rechte Hand | AttackNearest → StickToTarget | **STR**     | CON       | DEX       | WIS      | CHA       |
+| **Saboteur**                     | Fallen, Procs, Tricks               | +TrapCharges, +ProcChance             | Linke Hand / Kopf   | PlaceTrap → Kite              | **WIS**     | DEX       | CHA       | STR      | CON       |
+| **Oracle**                       | Debuff/Buffer, Support              | +DebuffDuration, AllyCritBuff         | Kopf / Linke Hand   | DebuffFirstThreat → BuffAlly  | **CHA**     | DEX       | WIS       | STR      | CON       |
+| **??? (Reserve-Slot)**           | Platz für zukünftigen Archetyp      | –                                     | –                   | –                             | (Core frei) | –         | –         | –        | –         |
+
+
+🧘 Module-Slot ↔ Stat Mapping (Chakra-Style)
+| Slot                | Zugeordneter Stat      | Typisches Playstyle-Feeling     | Farbcode (Beispiel) |
+| ------------------- | ---------------------- | ------------------------------- | ------------------- |
+| **Kopf**            | **INT** (Intelligence) | Denken, Zauber, Kontrolle       | 🟪 Lila             |
+| **Will/Chest**      | **WIL** (Willpower)    | Atem, Fokus, Auren, Summons     | 🟨 Gelb             |
+| **Torso**           | **CON** (Constitution) | Herz, Vitalität, Tankiness      | 🟩 Grün             |
+| **Rechte Hand**     | **STR** (Strength)     | Kraft, Waffe, brutaler Nahkampf | 🔴 Rot              |
+| **Linke Hand**      | **DEX** (Dexterity)    | Agilität, Präzision, Crit       | 🔵 Blau             |

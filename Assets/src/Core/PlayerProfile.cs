@@ -51,6 +51,7 @@ namespace CHAL.Data
         }
 
         public int GetXP() => XP;
+
         public void AddXP(int amount)
         {
             XP += amount;
