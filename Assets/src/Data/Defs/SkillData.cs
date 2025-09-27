@@ -15,6 +15,7 @@ public class SkillData : ScriptableObject
     public int ProjectileCount;
     public float AoERadius;
     public List<SkillTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
-    public DamageType DamageType;  // Physical, Fire, Poison ...
+    //public DamageType DamageType;  // Physical, Fire, Poison ...
+    public List<DamageEntry> DamageTypes;
     //TODO: kan have multible dmtypes?
 }

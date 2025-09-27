@@ -15,10 +15,13 @@ MonoBehaviour:
   SkillId: base_attack
   DisplayName: Base Attack
   BaseDamage: 10
-  Cooldown: 0
-  Range: 10
+  Cooldown: 1
+  Range: 5
   Duration: 0
   ProjectileSpeed: 0
+  ProjectileCount: 0
   AoERadius: 0
   Tags: 000000000d000000
-  DamageType: 0
+  DamageTypes:
+  - type: 0
+    baseMultilpier: 1
