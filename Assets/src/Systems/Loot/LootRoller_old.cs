@@ -40,11 +40,11 @@ namespace CHAL.Systems.Loot
             {
                 for (int i = 0; i < monster.Count; i++)
                 {
-                    if (monster.Tags == null || monster.Tags.Count == 0)
+                    if (monster.bonusTags == null || monster.bonusTags.Count == 0)
                         continue;
 
                     // zufällig einen Tag picken
-                    var tag = monster.Tags[Random.Range(0, monster.Tags.Count)];
+                    var tag = monster.bonusTags[Random.Range(0, monster.bonusTags.Count)];
 
                     // Regel für diesen Tag laden
                     var merged = _rules.GetMergedForTags(new[] { tag });
@@ -86,7 +86,7 @@ namespace CHAL.Systems.Loot
                     }
 
                     // 3) Secret Rules prüfen – für dieses eine Monster
-                    var secretDrops = _rules.GetSecretDrops(monster.Tags);
+                    var secretDrops = _rules.GetSecretDrops(monster.bonusTags);
                     foreach (var sd in secretDrops)
                     {
                         float roll = Random.Range(0f, 100f);
@@ -95,7 +95,7 @@ namespace CHAL.Systems.Loot
                             finalLoot.Add(new LootResultEntry
                             {
                                 EnemyId = monster.EnemyId,
-                                PickedTag = string.Join(",", monster.Tags), // alle Tags für SecretRule
+                                PickedTag = string.Join(",", monster.bonusTags), // alle Tags für SecretRule
                                 ItemId = sd.itemId
                             });
                             DebugManager.Log($"Secret Drop:{sd.itemId}({ItemRegistry.Instance.GetRarity(sd.itemId)}) - chance was {sd.chance}%", DebugManager.EDebugLevel.Test, "Loot");

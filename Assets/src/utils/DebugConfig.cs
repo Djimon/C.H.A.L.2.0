@@ -11,7 +11,9 @@ public class DebugConfig : ScriptableObject
 
     // Wenn true: unbekannte Tags, die erstmalig geloggt werden,
     // automatisch ins Asset übernehmen (mit Standardfarbe weiß, active=true).
-    public bool autoAddUnknownTagsToAsset = false;
+    public bool autoAddUnknownTagsToAsset = true;
+
+    public bool includeGameTimestamps = false;
 
     [Header("Color Mode (tag only vs. whole line")]
     public bool colorWholeLine = false;  

@@ -30,7 +30,7 @@ namespace CHAL.Systems.Inventory
                 int spaceLeft = maxStack - entry.Count;
                 if (spaceLeft <= 0)
                 {
-                    DebugManager.Debugging($"max stacks ({maxStack}) reached for {itemId}");
+                    DebugManager.DebugLog($"max stacks ({maxStack}) reached for {itemId}");
                     return false;
                 }
 
@@ -40,7 +40,7 @@ namespace CHAL.Systems.Inventory
 
                 if (amount > 0)
                 {
-                    DebugManager.Debugging($"not all items could be added ({amount} left over)");
+                    DebugManager.DebugLog($"not all items could be added ({amount} left over)");
                     return false;
                 }
 
@@ -56,14 +56,14 @@ namespace CHAL.Systems.Inventory
 
                 if (amount > 0)
                 {
-                    DebugManager.Debugging($"max stack size reached, {amount} left over");
+                    DebugManager.DebugLog($"max stack size reached, {amount} left over");
                     return false;
                 }
 
                 return true;
             }
 
-            DebugManager.Debugging($"max Slots ({maxSlots}) reached");
+            DebugManager.DebugLog($"max Slots ({maxSlots}) reached");
             return false;
         }
 

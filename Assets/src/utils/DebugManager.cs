@@ -99,11 +99,14 @@ public static class DebugManager
     public static void Info(string msg, string tag = "Info") =>
         LogInternal(msg, EDebugLevel.Test, tag, LogType.Log);
 
-    public static void Debugging(string msg, string tag = "Debug") =>
+    public static void DebugLog(string msg, string tag = "Debug") =>
         LogInternal(msg, EDebugLevel.Debug, tag, LogType.Log);
 
+    public static void DevLog(string msg, string tag = "Dev") =>
+        LogInternal(msg, EDebugLevel.Dev, tag, LogType.Log);
+
     public static void Warning(string msg, string tag = "Warning") =>
-        LogInternal(msg, EDebugLevel.Dev, tag, LogType.Warning);
+        LogInternal(msg, EDebugLevel.Test, tag, LogType.Warning);
 
     public static void Error(string msg, string tag = "Error") =>
         LogInternal(msg, EDebugLevel.Production, tag, LogType.Error);
@@ -168,20 +171,21 @@ public static class DebugManager
         }
 
         bool wholeLine = _config != null && _config.colorWholeLine;
-        string timeStamp = Time.time.ToString("F3"); // Spielzeit seit Start
+        bool addTime = _config != null && _config.includeGameTimestamps;
+        string timeStamp = addTime ? "["+Time.time.ToString("F3")+"]" : ""; // Spielzeit seit Start
         string levelName = level.ToString();
-        string formatted = $"[{timeStamp}][{levelName}][{tag}]: {message}";
+        string formatted = $"{timeStamp}[{levelName}][{tag}]: {message}";
 
         if (wholeLine)
         {
             // Alles färben
-            formatted = $"<color=#{ColorUtility.ToHtmlStringRGB(tagColor)}>[{timeStamp}][{levelName}][{tag}]: {message}</color>";
+            formatted = $"<color=#{ColorUtility.ToHtmlStringRGB(tagColor)}>{timeStamp}[{levelName}][{tag}]: {message}</color>";
         }
         else
         {
             // Nur Tag färben
             string coloredTag = $"<color=#{ColorUtility.ToHtmlStringRGB(tagColor)}>{tag} @ {timeStamp}</color>";
-            formatted = $"[{timeStamp}][{levelName}][{coloredTag}]: {message}";
+            formatted = $"{timeStamp}[{levelName}][{coloredTag}]: {message}";
         }
 
         switch (logType)

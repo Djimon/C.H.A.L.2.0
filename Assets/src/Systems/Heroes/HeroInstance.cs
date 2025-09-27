@@ -29,12 +29,20 @@ namespace CHAL.Systems.Hero
         {
             this.heroDef = def;
 
+            ActiveModifiers = new ModifierStack();
+
+            if (Archetype == null)
+                DebugManager.Error($"No Archetype! for Hero {heroDef.name}");
+
             if (Archetype.SignaturePassive != null)
             {
                 ActiveModifiers.AddModifier(Archetype.SignaturePassive.ToModifierData());
             }
 
             InitStats();
+
+            MaxHP = 100;
+            CurrentHP = MaxHP;
         }
 
         public override void TakeDamage(float amount, DamageType type)

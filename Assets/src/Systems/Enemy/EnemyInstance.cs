@@ -1,5 +1,6 @@
 using CHAL.Data;
 using CHAL.Systems.Skill;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace CHAL.Systems.Enemy
     {
         public EnemyDef Definition { get; private set; }
         public EnemyStruct StructData { get; private set; }
+
+        public event Action<EnemyInstance> OnDied;
 
         public EnemyInstance(EnemyDef def, EnemyStruct data)
         {
@@ -34,6 +37,7 @@ namespace CHAL.Systems.Enemy
         protected override void OnDeath()
         {
             DebugManager.Log($"Enemy {StructData.EnemyId} died!", DebugManager.EDebugLevel.Dev, "Fight");
+            OnDied?.Invoke(this);
             // Loot/XP Events feuern etc.
         }
     }

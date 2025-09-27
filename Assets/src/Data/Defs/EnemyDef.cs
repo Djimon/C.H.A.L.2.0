@@ -18,7 +18,7 @@ namespace CHAL.Data
         public int xpReward = 1;
 
         [Header("Classification")]
-        public EnemyRank defaultRank = EnemyRank.Normal;  // Rank = Spawn, Normal, Magic, Elite, Boss …
+        public EnemyRank BaseRank = EnemyRank.Normal;  // Rank = Spawn, Normal, Magic, Elite, Boss …
         public List<string> baseTags = new();             // z. B. "insectoid", "poison"
 
         [Header("Combat")]

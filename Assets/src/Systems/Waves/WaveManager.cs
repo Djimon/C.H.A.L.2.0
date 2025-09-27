@@ -271,7 +271,7 @@ namespace CHAL.Systems.Wave
                 EnemyId = def.enemyId,
                 Rank = rank,
                 Count = 1,
-                Tags = new List<string>(def.baseTags)
+                bonusTags = new List<string>(def.baseTags)
             };
 
             // --- Rank-bedingte Tags ---
@@ -279,7 +279,7 @@ namespace CHAL.Systems.Wave
             {
                 var magicPool = BalanceManager.Instance.Config.enemies.magicTagPool;
                 if (magicPool != null && magicPool.Count > 0)
-                    inst.Tags.Add(magicPool[Random.Range(0, magicPool.Count)]);
+                    inst.bonusTags.Add(magicPool[Random.Range(0, magicPool.Count)]);
             }
             else if (rank == EnemyRank.Elite)
             {
@@ -290,10 +290,10 @@ namespace CHAL.Systems.Wave
                 if (mods.Count > 0)
                 {
                     // mind. einen Modifier
-                    inst.Tags.Add(mods[Random.Range(0, mods.Count)]);
+                    inst.bonusTags.Add(mods[Random.Range(0, mods.Count)]);
                     // auffüllen bis Mindestzahl Tags
-                    while (inst.Tags.Count < minEliteTags)
-                        inst.Tags.Add(mods[Random.Range(0, mods.Count)]);
+                    while (inst.bonusTags.Count < minEliteTags)
+                        inst.bonusTags.Add(mods[Random.Range(0, mods.Count)]);
                 }
                 else
                 {
@@ -320,13 +320,13 @@ namespace CHAL.Systems.Wave
                 case EnemyRank.Boss:
                 case EnemyRank.Champion:
                     // diese Ränge sind eigene Assets
-                    return pool.FindAll(e => e != null && e.defaultRank == rank);
+                    return pool.FindAll(e => e != null && e.BaseRank == rank);
 
                 case EnemyRank.Normal:
                 case EnemyRank.Magic:
                 case EnemyRank.Elite:
                     // Promotions stammen aus Normal-Archetypen
-                    return pool.FindAll(e => e != null && e.defaultRank == EnemyRank.Normal);
+                    return pool.FindAll(e => e != null && e.BaseRank == EnemyRank.Normal);
 
                 default:
                     return pool;

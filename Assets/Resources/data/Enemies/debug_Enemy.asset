@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyId: debug_rat
   displayNameKey: debug_rat
-  baseHP: 10
+  baseHP: 100
   baseDamage: 2
   moveSpeed: 2
   lootValue: 1
   xpReward: 1
-  defaultRank: 1
+  BaseRank: 1
   baseTags:
   - insectoid
   baseAttacks: []

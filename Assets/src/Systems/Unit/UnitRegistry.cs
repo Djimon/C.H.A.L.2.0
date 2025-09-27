@@ -42,13 +42,20 @@ public sealed class UnitRegistry : ScriptableObject
                 DebugManager.Warning($"[UnitRegistry] Duplicate HeroID '{def.HeroId}' in {def.name}");
                 continue;
             }
-            _HeroById.Add(def.HeroId, def);
-        }
-        DebugManager.Log($"[UtemRegistry] Geladen: {_HeroById.Count} Heroes", DebugManager.EDebugLevel.Production, "System");
 
+            DebugManager.Log($"[UnitRegistry] Hero Geladen: {def.HeroId}", DebugManager.EDebugLevel.Debug, "System");
+            _HeroById.Add(def.HeroId, def);
+            
+        }
+        DebugManager.Log($"[UnitRegistry] Geladen: {_HeroById.Count} Heroes", DebugManager.EDebugLevel.Production, "System");
+
+
+        //Alle degs aus Enemies laden
         var enemydefs = Resources.LoadAll<EnemyDef>("data/Enemies");
+        DebugManager.DebugLog($"enemys?:{enemydefs.Length}");
         foreach (var def in enemydefs)
         {
+            Debug.Log($"?{def.displayNameKey}");
             if (string.IsNullOrWhiteSpace(def.enemyId))
             {
                 DebugManager.Warning($"[UnitRegistry] Skip ungültige ID in {def.name}");
@@ -59,6 +66,7 @@ public sealed class UnitRegistry : ScriptableObject
                 DebugManager.Warning($"[UnitRegistry] Duplicate Enemy '{def.enemyId}' in {def.name}");
                 continue;
             }
+            DebugManager.Log($"[UnitRegistry] Enemy Geladen: {def.enemyId}", DebugManager.EDebugLevel.Debug, "System");
             _EnemyById.Add(def.enemyId, def);
         }
 

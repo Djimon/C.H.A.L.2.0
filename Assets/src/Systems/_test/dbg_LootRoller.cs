@@ -27,19 +27,19 @@ public class LootRollerDebug : MonoBehaviour
         {
             EnemyId = "Monster1",
             Count = 10,
-            Tags = new List<string>{ "insect", "swarm" }
+            bonusTags = new List<string>{ "insect", "swarm" }
         },
         new CHAL.Data.EnemyStruct
         {
             EnemyId = "Monster2",
             Count = 3,
-            Tags = new List<string>{ "beast", "tank" }
+            bonusTags = new List<string>{ "beast", "tank" }
         },
         new CHAL.Data.EnemyStruct
         {
             EnemyId = "Monster3",
             Count = 1,
-            Tags = new List<string>{ "insect", "boss" }
+            bonusTags = new List<string>{ "insect", "boss" }
         }
     }
         };

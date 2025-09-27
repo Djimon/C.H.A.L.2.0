@@ -1,6 +1,8 @@
 using CHAL.Data;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Wave;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CHAL.Systems.Enemy
@@ -10,10 +12,26 @@ namespace CHAL.Systems.Enemy
         public EnemyStruct EnemyData { get; private set; }
         public EnemyInstance EnemyInstance { get; private set; }
 
+
         public void Init(EnemyStruct enemstruct)
         {
             var def = UnitRegistry.Instance.GetEnemyByID(enemstruct.EnemyId);
+            if (def == null)
+            {
+                DebugManager.Error($"EnemyDef '{enemstruct.EnemyId}' not found!");
+                return;
+            }
+
             EnemyInstance = new EnemyInstance(def, enemstruct);
+            EnemyData = enemstruct;
+
+            EnemyInstance.OnDied += OnEnemyInstanceDied;
+        }
+
+
+        private void OnEnemyInstanceDied(EnemyInstance instance)
+        {
+            Die();
         }
 
         private void Update()
@@ -33,7 +51,7 @@ namespace CHAL.Systems.Enemy
 
         private void Die()
         {
-            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) - [{EnemyData.Tags}] killed!", DebugManager.EDebugLevel.Dev, "Fight");
+            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) - [{EnemyData.bonusTags}] killed!", DebugManager.EDebugLevel.Dev, "Fight");
 
             // Event feuern: sagt nur „ich bin tot“, inkl. Position
             OnEnemyKilled?.Invoke(this, EnemyData, transform.position);

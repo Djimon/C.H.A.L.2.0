@@ -149,7 +149,7 @@ namespace CHAL.Systems.Loot
             {
                 for (int i = 0; i < monster.Count; i++)
                 {
-                    foreach (var tag in monster.Tags)
+                    foreach (var tag in monster.bonusTags)
                     {
                         if (!_byTag.TryGetValue(tag, out var rule))
                             continue;

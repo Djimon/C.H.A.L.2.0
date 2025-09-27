@@ -29,3 +29,4 @@ MonoBehaviour:
     EdgeTarget: 65
     GrowthPattern:
       growthPriority: 0000000001000000010000000200000003000000
+  SignaturePassive: {fileID: 11400000, guid: a80c02f32fe50a14db7e34f03b310504, type: 2}

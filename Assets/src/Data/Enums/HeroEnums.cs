@@ -4,7 +4,7 @@ namespace CHAL.Data
     public enum HeroSlot
     {
         Head,
-        Will,
+        Charm,
         Torso,
         RightHand,
         LeftHand

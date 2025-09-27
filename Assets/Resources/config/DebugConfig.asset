@@ -15,6 +15,7 @@ MonoBehaviour:
   level: 4
   productiveMode: 0
   autoAddUnknownTagsToAsset: 1
+  includeGameTimestamps: 1
   colorWholeLine: 1
   tags:
   - name: System
@@ -56,4 +57,7 @@ MonoBehaviour:
   - name: Player
     active: 1
     color: {r: 0.9716981, g: 0.8619886, b: 0.09625311, a: 1}
+  - name: Hero
+    active: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
   _seeded: 1

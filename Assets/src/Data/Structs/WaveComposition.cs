@@ -34,7 +34,7 @@ namespace CHAL.Data
                     EnemyId = m.EnemyId,
                     Rank = m.Rank,
                     Count = m.Count,
-                    Tags = new List<string>(m.Tags)
+                    bonusTags = new List<string>(m.bonusTags)
                 })
                 .ToList()
         };

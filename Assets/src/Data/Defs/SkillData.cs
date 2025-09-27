@@ -2,7 +2,7 @@ using CHAL.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SkilData", menuName = "Data/SkilLData")]
+[CreateAssetMenu(fileName = "SkilData", menuName = "Data/SkillData")]
 public class SkillData : ScriptableObject
 {
     public string SkillId;

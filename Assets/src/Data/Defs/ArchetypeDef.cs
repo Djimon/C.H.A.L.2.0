@@ -29,6 +29,20 @@ namespace CHAL.Data
         [Header("Signature Passive")]
         public ModifierDef SignaturePassive;   // ScriptableObject mit ModifierData
 
+        private void OnValidate()
+        {
+            if (GrowthConfig?.GrowthPattern?.growthPriority == null)
+            {
+                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern muss genau 5 Einträge haben.","Edtior");
+                return;
+            }
+
+            int len = GrowthConfig.GrowthPattern.growthPriority.Length;
+            if (len != 5)
+            {
+                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern muss genau 5 Einträge haben. Aktuelle: {len}", "Edtior");
+            }
+        }
     }
 
     [Serializable]

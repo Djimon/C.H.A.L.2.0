@@ -30,7 +30,7 @@ namespace CHAL.Systems.Loot
         {
             var results = new List<LootResultEntry>();
 
-            if (monster.Tags == null || monster.Tags.Count == 0)
+            if (monster.bonusTags == null || monster.bonusTags.Count == 0)
                 return results;
 
             // 1. Multiplikator abhängig vom Rank bestimmen
@@ -39,7 +39,7 @@ namespace CHAL.Systems.Loot
             for (int r = 0; r < rolls; r++)
             {
                 // 2. Zufälligen Tag picken
-                var tag = monster.Tags[Random.Range(0, monster.Tags.Count)];
+                var tag = monster.bonusTags[Random.Range(0, monster.bonusTags.Count)];
 
                 // 3. Regel für diesen Tag laden
                 var merged = _rules.GetMergedForTags(new[] { tag });
@@ -65,7 +65,7 @@ namespace CHAL.Systems.Loot
                 }
 
                 // 5. SecretDrops pro Monster
-                var secretDrops = _rules.GetSecretDrops(monster.Tags);
+                var secretDrops = _rules.GetSecretDrops(monster.bonusTags);
                 foreach (var sd in secretDrops)
                 {
                     float roll = Random.Range(0f, 100f);
@@ -128,7 +128,7 @@ namespace CHAL.Systems.Loot
         /// </summary>
         public void FinalizeWave(WaveLootContext ctx)
         {
-            var allTags = ctx.Wave.Monsters.SelectMany(m => m.Tags).Distinct().ToArray();
+            var allTags = ctx.Wave.Monsters.SelectMany(m => m.bonusTags).Distinct().ToArray();
             var mergedWave = _rules.GetMergedForTags(allTags);
 
             // MinDrops-Failsafe
