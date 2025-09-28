@@ -15,7 +15,7 @@ namespace CHAL.Data
     vfxPrefab <- visual projectil/ swing or explosion effekt
      */
 
-    [CreateAssetMenu(fileName = "AttackDef", menuName = "Data/AttackDef")]
+    [System.Obsolete("Deprecated.Please use the central skillData", false)]
     public class AttackDef : ScriptableObject
     {
         [Header("Identity")]

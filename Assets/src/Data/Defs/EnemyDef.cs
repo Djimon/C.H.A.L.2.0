@@ -22,7 +22,7 @@ namespace CHAL.Data
         public List<string> baseTags = new();             // z. B. "insectoid", "poison"
 
         [Header("Combat")]
-        public List<AttackDef> baseAttacks = new();       // Basis-Skills
+        public List<SkillData> baseAttacks = new();       // Basis-Skills
         public EnemyAIType aiType = EnemyAIType.AttackFirst;  // Simple AI-Strategie
 
         [Header("Visuals / Prefabs")]

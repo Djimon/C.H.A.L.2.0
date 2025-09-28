@@ -5,17 +5,31 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkilData", menuName = "Data/SkillData")]
 public class SkillData : ScriptableObject
 {
+    [Header("Identity")]
     public string SkillId;
     public string DisplayName;
-    public float BaseDamage;
-    public float Cooldown;
-    public float Range;
-    public float Duration;
-    public float ProjectileSpeed;
-    public int ProjectileCount;
-    public float AoERadius;
-    public List<SkillTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
-    //public DamageType DamageType;  // Physical, Fire, Poison ...
+    public float BaseDamage = 1;
     public List<DamageEntry> DamageTypes;
-    //TODO: kan have multible dmtypes?
+    public float CastTime = 0f;
+    public float Cooldown = 2f;
+
+    [Header("SkillType")]
+    public bool isProjectile =false;
+    public bool isAoE = false;
+    public bool hasDuration = false;
+
+    [Header("Composition")]
+    public float Range = 1f;
+    public float Duration = 0f;
+    public float ProjectileSpeed = 0f;
+    public int ProjectileCount = 0;
+    public float AoERadius = 0f;
+
+    [Header("Meta")]
+    public List<SkillTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
+
+    [Header("Presentation")]
+    public GameObject vfxPrefab; //which the Skilluser will spawn, when he finsihes his animation
+    public AnimationType animationType;
+
 }

@@ -35,6 +35,7 @@ namespace CHAL.Data
         DebuffDuration,
         DoTMaxStacks,
         DotDuration,
+        CastTime,
         Cooldown,
         SummonCount,
         SummonHP,
@@ -44,6 +45,7 @@ namespace CHAL.Data
         Armor,
         MaxHP,
         LeechFactor,
+
         // … beliebig erweiterbar
     }
 
