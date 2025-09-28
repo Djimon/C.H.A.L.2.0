@@ -22,14 +22,13 @@ namespace CHAL.Systems.Hero
         private int _totalGrowth;
 
         //SKILL
-        public ModifierStack ActiveModifiers;
         public List<SkillInstance> Skills;
+
+        public GameObject currentTarget;
 
         public HeroInstance(HeroDef def)
         {
             this.heroDef = def;
-
-            ActiveModifiers = new ModifierStack();
 
             if (Archetype == null)
                 DebugManager.Error($"No Archetype! for Hero {heroDef.name}");

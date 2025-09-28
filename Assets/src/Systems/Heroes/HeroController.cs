@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CHAL.Systems.Hero
 {
-    public class HeroController : MonoBehaviour
+    public class HeroController : MonoBehaviour, IUnitController
     {
         private HeroInstance heroInstance;
 
@@ -26,6 +26,8 @@ namespace CHAL.Systems.Hero
         {
             HeroDef = def;
             heroInstance = new HeroInstance(def);
+
+            heroInstance.Team = UnitTeam.Player;
 
             DebugManager.Log($"[HeroController] Spawned Hero {def.HeroId} ({def.DisplayName})",
                 DebugManager.EDebugLevel.Test, "Hero");
@@ -127,6 +129,11 @@ namespace CHAL.Systems.Hero
             OnHeroDied?.Invoke(this);
 
             // später: Animation, Despawn, Cleanup
+        }
+
+        public EffectReceiver GetEffectReceiver()
+        {
+            return heroInstance;
         }
     }
 }

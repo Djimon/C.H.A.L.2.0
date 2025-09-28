@@ -12,6 +12,8 @@ namespace CHAL.Systems.Skill
 
         public void AddModifier(ModifierData mod) => _mods.Add(mod);
 
+        public void RemoveModifier(ModifierData mod) => _mods.Remove(mod);
+
         public float Apply(ModifierTarget target, float baseValue, List<SkillTag> tags)
         {
             float add = 0f;

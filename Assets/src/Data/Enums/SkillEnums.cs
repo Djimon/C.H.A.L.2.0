@@ -1,5 +1,23 @@
 namespace CHAL.Data
 {
+    public enum SkillType
+    {
+        Melee,      //
+        Projectile, //fernkampf mit Porjektil speed, count, range
+        Spell,      //casts mit effekete, AoE, Buff/Debuff, Aura
+        Summon
+
+    }
+
+    public enum SkillRange
+    {
+        Self = 0,
+        Melee,        // direkt angrenzend
+        Reach,        // verlängerte Nahkampfreichweite (Speer, Hellebarde)
+        MidDistance,  // mittlere Reichweite (typ. 5–10m)
+        FarDistance   // Fernkampf / Magie (Bogen, Feuerball)
+    }
+
     public enum SkillTag
     {
         Melee,

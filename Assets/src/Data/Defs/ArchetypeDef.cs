@@ -12,6 +12,7 @@ namespace CHAL.Data
         public string RoleDescription;         // "Tank, Frontline, Schadensglättung"
 
         // TODO: SignaturePassiveName / Desc
+        public PrimaryAttackArchetype primAttackType;
 
         public List<HeroSlot> PreferredSlots;  // ["Torso", "Head"]
         public List<HeroAIPrio> DefaultAIPrio; // ["AttackHighestHP", "BuffAllies", "AA"]
@@ -75,6 +76,12 @@ namespace CHAL.Data
         Secondary,
         Tertiary,
         Edge
+    }
+
+    public enum PrimaryAttackArchetype
+    { 
+        Melee,
+        Ranged
     }
 
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CHAL.Systems.Enemy
 {
-    public class EnemyController : MonoBehaviour
+    public class EnemyController : MonoBehaviour, IUnitController
     {
         public EnemyStruct EnemyData { get; private set; }
         public EnemyInstance EnemyInstance { get; private set; }
@@ -23,6 +23,8 @@ namespace CHAL.Systems.Enemy
             }
 
             EnemyInstance = new EnemyInstance(def, enemstruct);
+            EnemyInstance.Team = UnitTeam.AI;
+
             EnemyData = enemstruct;
 
             EnemyInstance.OnDied += OnEnemyInstanceDied;
@@ -57,6 +59,11 @@ namespace CHAL.Systems.Enemy
             OnEnemyKilled?.Invoke(this, EnemyData, transform.position);
 
             Destroy(gameObject);
+        }
+
+        public EffectReceiver GetEffectReceiver()
+        {
+            return EnemyInstance;
         }
 
         // Static Event für alle EnemyController

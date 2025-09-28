@@ -168,6 +168,36 @@ namespace CHAL.Data
         public EnemySettings enemies;
 
         // ==========================
+        // SKILLS
+        // ==========================
+        public struct SkillRanges
+        {
+            public float selfRange;
+            public float meleeRange;
+            public float reachRange;
+            public float midDistanceRange;
+            public float farDistanceRange;
+        }
+
+        [Header("Skill Settings")]
+        public SkillRanges skillRanges;
+        public bool AllowFriendlyFire = false;
+
+        public float GetRangeValue(SkillRange range)
+        {
+            return range switch
+            {
+                SkillRange.Self => skillRanges.selfRange,
+                SkillRange.Melee => skillRanges.meleeRange,
+                SkillRange.Reach => skillRanges.reachRange,
+                SkillRange.MidDistance => skillRanges.midDistanceRange,
+                SkillRange.FarDistance => skillRanges.farDistanceRange,
+                _ => skillRanges.meleeRange
+            };
+        }
+
+
+        // ==========================
         // ECONOMY
         // ==========================
         [System.Serializable]

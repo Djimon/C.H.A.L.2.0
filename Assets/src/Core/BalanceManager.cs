@@ -78,6 +78,20 @@ namespace CHAL.Core
             }
         }
 
+        public float GetRangeValue(SkillRange range)
+        {
+            var skillRangeCOnfig = Instance.Config.skillRanges;
+            return range switch
+            {
+                SkillRange.Self => skillRangeCOnfig.selfRange,
+                SkillRange.Melee => skillRangeCOnfig.meleeRange,
+                SkillRange.Reach => skillRangeCOnfig.reachRange,
+                SkillRange.MidDistance => skillRangeCOnfig.midDistanceRange,
+                SkillRange.FarDistance => skillRangeCOnfig.farDistanceRange,
+                _ => skillRangeCOnfig.meleeRange
+            };
+        }
+
     }
 }
 

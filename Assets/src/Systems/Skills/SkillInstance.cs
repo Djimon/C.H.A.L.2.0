@@ -1,4 +1,5 @@
-﻿using CHAL.Data;
+﻿using CHAL.Core;
+using CHAL.Data;
 using CHAL.Systems.Hero;
 using System.Collections.Generic;
 using static UnityEngine.UI.GridLayoutGroup;
@@ -9,7 +10,7 @@ namespace CHAL.Systems.Skill
     {
         public SkillData Data { get; private set; }
 
-        private HeroInstance ownedByHero;
+        private EffectReceiver ownedBy;
 
         // berechnete Werte
         public float Damage { get; private set; }
@@ -25,10 +26,10 @@ namespace CHAL.Systems.Skill
         float cooldownRemaining = 0;
 
 
-        public SkillInstance(SkillData data, HeroInstance owner)
+        public SkillInstance(SkillData data, EffectReceiver owner)
         {
             Data = data;
-            ownedByHero = owner;
+            ownedBy = owner;
             Recalculate();
 
         }
@@ -36,19 +37,19 @@ namespace CHAL.Systems.Skill
         public void Recalculate()
         {
             var tags = Data.Tags ?? new List<SkillTag>();
-            var mods = ownedByHero.ActiveModifiers;
+            var mods = ownedBy.ActiveModifiers;
 
             Damage = mods.Apply(ModifierTarget.Damage, Data.BaseDamage, tags);
             CastTime = mods.Apply(ModifierTarget.CastTime, Data.CastTime, tags);
             Cooldown = mods.Apply(ModifierTarget.Cooldown, Data.Cooldown, tags);
-            Range = mods.Apply(ModifierTarget.Range, Data.Range, tags);
+            Range = mods.Apply(ModifierTarget.Range,BalanceManager.Instance.GetRangeValue(Data.Range), tags);
             Duration = mods.Apply(ModifierTarget.Duration, Data.Duration, tags);
             ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, Data.ProjectileSpeed, tags);
             ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, Data.ProjectileCount, tags);
             AoERadius = mods.Apply(ModifierTarget.AoERadius, Data.AoERadius, tags);
         }
 
-        public bool IsReady(float currentTime) //→ prüft, ob cooldownRemaining <= 0.
+        public bool IsReady() //→ prüft, ob cooldownRemaining <= 0.
         {
             if(cooldownRemaining <= 0)
             {
@@ -68,6 +69,8 @@ namespace CHAL.Systems.Skill
         {
             cooldownRemaining -= deltaTime;
         }
+
+        
 
         public override string ToString()
         {

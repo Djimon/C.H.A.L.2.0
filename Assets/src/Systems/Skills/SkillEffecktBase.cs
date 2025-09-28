@@ -1,0 +1,16 @@
+using CHAL.Systems.Hero;
+using UnityEngine;
+
+namespace CHAL.Systems.Skill
+{
+    public abstract class SkillEffectBase : ScriptableObject
+    {
+        [Tooltip("Optional: unique identifier for debugging or balancing.")]
+        public string EffectId;
+
+        /// <summary>
+        /// Executes the effect from source to target.
+        /// </summary>
+        public abstract void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target);
+    }
+}

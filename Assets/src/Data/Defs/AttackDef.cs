@@ -41,6 +41,6 @@ namespace CHAL.Data
     public struct DamageEntry
     {
         public DamageType type;
-        public float baseMultilpier; // z. B. 1.5f = 150 % EnemyBaseDamage
+        public float baseDamage; // z. B. 1.5f = 150 % EnemyBaseDamage
     }
 }

@@ -10,50 +10,95 @@ public class SkillDataEditor : Editor
         serializedObject.Update();
         SkillData data = (SkillData)target;
 
-        // Basis-Felder
+        // Identity
         EditorGUILayout.LabelField("Identity", EditorStyles.boldLabel);
         data.SkillId = EditorGUILayout.TextField("Skill ID", data.SkillId);
         data.DisplayName = EditorGUILayout.TextField("Display Name", data.DisplayName);
 
-        // Core Damage + Cooldown
+        // Core
         EditorGUILayout.PropertyField(serializedObject.FindProperty("DamageTypes"), true);
+        data.BaseDamage = EditorGUILayout.FloatField("Base Damage", data.BaseDamage);
         data.Cooldown = EditorGUILayout.FloatField("Cooldown", data.Cooldown);
         data.CastTime = EditorGUILayout.FloatField("Cast Time", data.CastTime);
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Skil lType", EditorStyles.boldLabel);
-        data.isProjectile = EditorGUILayout.Toggle("Projectile?", data.isProjectile);
-        data.isAoE = EditorGUILayout.Toggle("AoE?", data.isAoE);
-        data.hasDuration = EditorGUILayout.Toggle("Has Duration?", data.hasDuration);
+
+        // Classification
+        EditorGUILayout.LabelField("Skill Classification", EditorStyles.boldLabel);
+        data.SkillType = (SkillType)EditorGUILayout.EnumPopup("Skill Type", data.SkillType);
+        data.Range = (SkillRange)EditorGUILayout.EnumPopup("Range", data.Range);
 
         EditorGUILayout.Space();
+
+        // Composition (fields depend on SkillType)
         EditorGUILayout.LabelField("Composition", EditorStyles.boldLabel);
-
-        if (data.isProjectile)
+        switch (data.SkillType)
         {
-            data.Range = EditorGUILayout.FloatField("Range", data.Range);
-            data.ProjectileSpeed = EditorGUILayout.FloatField("Projectile Speed", data.ProjectileSpeed);
-            data.ProjectileCount = EditorGUILayout.IntField("Projectile Count", data.ProjectileCount);
-        }
+            case SkillType.Melee:
+                // Melee usually doesn't need extra fields besides Range
+                break;
 
-        if (data.isAoE)
-        {
-            data.AoERadius = EditorGUILayout.FloatField("AoE Radius", data.AoERadius);
-        }
+            case SkillType.Projectile:
+                data.ProjectileSpeed = EditorGUILayout.FloatField("Projectile Speed", data.ProjectileSpeed);
+                data.ProjectileCount = EditorGUILayout.IntField("Projectile Count", data.ProjectileCount);
+                break;
 
-        if (data.hasDuration)
-        {
-            data.Duration = EditorGUILayout.FloatField("Duration", data.Duration);
+            case SkillType.Spell:
+                data.AoERadius = EditorGUILayout.FloatField("AoE Radius", data.AoERadius);
+                data.Duration = EditorGUILayout.FloatField("Duration", data.Duration);
+                break;
+
+            case SkillType.Summon:
+                data.Duration = EditorGUILayout.FloatField("Duration", data.Duration);
+                // später: SummonCount, SummonHP, SummonDamage
+                break;
         }
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Meta", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("tags"), true);
 
+        // Presentation
         EditorGUILayout.LabelField("Presentation", EditorStyles.boldLabel);
-        data.animationType = (AnimationType)EditorGUILayout.EnumPopup("Animation Type", data.animationType);
+
+        // Filter AnimationType dropdown depending on SkillType
+        AnimationType chosen = data.animationType;
+        switch (data.SkillType)
+        {
+            case SkillType.Melee:
+                chosen = (AnimationType)EditorGUILayout.EnumPopup("Animation Type",
+                    FilterAnimationType(data.animationType,
+                        AnimationType.MeleeSwing, AnimationType.MeleeThrust, AnimationType.Defend));
+                break;
+
+            case SkillType.Projectile:
+                chosen = (AnimationType)EditorGUILayout.EnumPopup("Animation Type",
+                    FilterAnimationType(data.animationType,
+                        AnimationType.Shoot, AnimationType.Throw));
+                break;
+
+            case SkillType.Spell:
+            case SkillType.Summon:
+                chosen = (AnimationType)EditorGUILayout.EnumPopup("Animation Type",
+                    FilterAnimationType(data.animationType, AnimationType.Cast));
+                break;
+        }
+        data.animationType = chosen;
+
         data.vfxPrefab = (GameObject)EditorGUILayout.ObjectField("VFX Prefab", data.vfxPrefab, typeof(GameObject), false);
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    /// <summary>
+    /// Ensures the current animationType is within the allowed set.
+    /// If not, fallback to the first allowed type.
+    /// </summary>
+    private AnimationType FilterAnimationType(AnimationType current, params AnimationType[] allowed)
+    {
+        foreach (var a in allowed)
+        {
+            if (current == a)
+                return current;
+        }
+        return allowed.Length > 0 ? allowed[0] : AnimationType.None;
     }
 }
