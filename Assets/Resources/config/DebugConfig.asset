@@ -58,15 +58,15 @@ MonoBehaviour:
     active: 1
     color: {r: 0.9716981, g: 0.8619886, b: 0.09625311, a: 1}
   - name: Hero
-    active: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    active: 0
+    color: {r: 0.972549, g: 0.8627451, b: 0.09803922, a: 1}
   - name: Enemy
-    active: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    active: 0
+    color: {r: 0.5377358, g: 0, b: 0, a: 1}
   - name: Skill
-    active: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    active: 0
+    color: {r: 0, g: 0.754717, b: 0.34509984, a: 1}
   - name: Projectile
-    active: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    active: 0
+    color: {r: 0.15566039, g: 1, b: 0.83510864, a: 1}
   _seeded: 1

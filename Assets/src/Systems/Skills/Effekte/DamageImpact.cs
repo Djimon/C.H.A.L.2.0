@@ -15,7 +15,7 @@ namespace CHAL.Systems.Skill
         {
             float finalDamage = skill.Damage; // schon durch Mods (Str, Buffs, Passives) berechnet
             DamageType dmgType = skill.Data.DamageTypes.Count > 0
-                ? skill.Data.DamageTypes[0].type
+                ? skill.Data.DamageTypes[0].DmgType
                 : DamageType.Physical;
 
             DebugManager.Log($"[Effect] {source} deals {finalDamage} {dmgType} on {target}", DebugManager.EDebugLevel.Test, "Skill");

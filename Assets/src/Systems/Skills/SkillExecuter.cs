@@ -1,4 +1,4 @@
-using CHAL.Core;
+Ôªøusing CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Hero;
@@ -32,7 +32,7 @@ namespace CHAL.Systems.Skill
             float castTime = inst.CastTime;
             if (castTime > 0)
             {
-                // sp‰ter: AnimationManager.Play(inst.Data.AnimationType, castTime)
+                // sp√§ter: AnimationManager.Play(inst.Data.AnimationType, castTime)
                 DebugManager.Log($"[SkillExecutor] {source} casting for {castTime} seconds", DebugManager.EDebugLevel.Dev, "Skill");
             }
 
@@ -75,7 +75,7 @@ namespace CHAL.Systems.Skill
         private static void SpawnProjectile(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
         {
             DebugManager.Log($"[SkillExecutor] {source} launches projectile {inst.Data.DisplayName} at {target}", DebugManager.EDebugLevel.Test, "Skill");
-            // Saubere Fallbacks: Wenn kein Transform mitgegeben wurde, kann man sp‰ter Prefab-Owner o. ‰. nutzen
+            // Saubere Fallbacks: Wenn kein Transform mitgegeben wurde, kann man sp√§ter Prefab-Owner o. √§. nutzen
             if (sourceTr == null)
             {
                 DebugManager.Warning("[SkillExecutor] SpawnProjectile: source Transform not provided", "Skill");
@@ -101,7 +101,7 @@ namespace CHAL.Systems.Skill
             pc.Init(inst, source, target, dir, speed, life);
 
             DebugManager.Log($"[SkillExecutor] Spawned projectile {inst.Data.DisplayName} at {startPos} dir {dir} speed {speed} life {life}", DebugManager.EDebugLevel.Test, "Skill");
-            // WICHTIG: KEINE OnHit-Effekte hier ausf¸hren ó das macht das Projektil bei Kollision
+            // WICHTIG: KEINE OnHit-Effekte hier ausf√ºhren ‚Äî das macht das Projektil bei Kollision
         }
 
         private static void ApplySpell(SkillInstance inst, EffectReceiver source, EffectReceiver target, Transform targetTr)
@@ -118,20 +118,56 @@ namespace CHAL.Systems.Skill
         private static void ApplySummon(SkillInstance inst, EffectReceiver source)
         {
             DebugManager.Log($"[SkillExecutor] {source} summons unit via {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
-            // sp‰ter: Summon-Controller implementieren
+            // sp√§ter: Summon-Controller implementieren
         }
 
-        internal static void ApplyOnHit(SkillInstance skill, EffectReceiver source, EffectReceiver enemyInstance)
+        internal static void ApplyOnHit(SkillInstance skill, EffectReceiver source, EffectReceiver target)
         {
-            var list = skill?.Data?.OnHitEffects;
-            if (list == null || list.Count == 0) return;
-            for (int i = 0; i < list.Count; i++)
+            if (skill == null || skill.Data == null || target == null)
             {
-                list[i]?.Apply(skill, source, enemyInstance);
+                DebugManager.Log($"Skill or target is null", DebugManager.EDebugLevel.Test, "Fight", LogType.Warning);
+                return;
+            }
+
+            // 1) OnHit-Effekte (Buff/DoT u.√§.)
+            var effects = skill.Data.OnHitEffects;
+            if (effects != null && effects.Count > 0)
+            {
+                for (int i = 0; i < effects.Count; i++)
+                    effects[i]?.Apply(skill, source, target);
             }
 
             //Deal Damage
- 
+            float baseDmg = Mathf.Max(0f, skill.Data.BaseDamage);
+            var DmgEntries = skill.Data.DamageTypes;
+
+            if (DmgEntries == null || DmgEntries.Count == 0)
+            {
+                // Fallback: voller BaseDamage als Physical
+                target.TakeDamage(baseDmg, DamageType.Physical);
+                DebugManager.Log(
+                    $"OnHit | {skill.Data.DisplayName} ‚Üí {target} : {baseDmg:F1} Physical",
+                    DebugManager.EDebugLevel.Test, "Fight"
+                );
+                return;
+            }
+
+            for (int i = 0; i < DmgEntries.Count; i++)
+            {
+                var e = DmgEntries[i];
+
+                // negativ = ignorieren
+                float m = Mathf.Max(0f, e.DmgMultiplier);
+                if (m <= 0f) continue;
+
+                float dmg = baseDmg * m;
+                var type = e.DmgType;
+
+                target.TakeDamage(dmg, type);
+                DebugManager.Log($"OnHit | {skill.Data.DisplayName} ‚Üí {target}: {dmg:F1} {type}", DebugManager.EDebugLevel.Test, "Fight");
+            }
+
+
         }
     }
 }

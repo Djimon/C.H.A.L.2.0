@@ -40,7 +40,13 @@ namespace CHAL.Data
     [System.Serializable]
     public struct DamageEntry
     {
-        public DamageType type;
-        public float baseDamage; // z. B. 1.5f = 150 % EnemyBaseDamage
+        public DamageType DmgType;
+        public float DmgMultiplier; // z. B. 1.5f = 150 % EnemyBaseDamage
+
+        public DamageEntry(DamageType type, float multiplier)
+        { 
+            DmgType = type;
+            DmgMultiplier = multiplier;
+        }
     }
 }

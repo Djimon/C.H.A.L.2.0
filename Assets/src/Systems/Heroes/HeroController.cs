@@ -243,8 +243,9 @@ namespace CHAL.Systems.Hero
             sd.Cooldown = 1.20f;
             sd.Range = SkillRange.Melee;
             sd.animationType = AnimationType.MeleeSwing;   // deinen Enum verwenden
-                                                      // sd.OnCastEffects = new List<SkillImpactBase>(); // optional
-                                                      // sd.OnHitEffects  = new List<SkillImpactBase>(); // optional
+
+            List<DamageEntry> entries = new List<DamageEntry> { new DamageEntry(DamageType.Physical, 1f) };
+            sd.DamageTypes = entries;
 
             return new SkillInstance(sd, owner);     // nutzt eure Recalculate-Logik
         }
@@ -259,7 +260,10 @@ namespace CHAL.Systems.Hero
             sd.Cooldown = 1.00f;
             sd.Range = SkillRange.FarDistance;
             sd.animationType = AnimationType.Shoot;  // oder Projectile – passend zu deinem Enum
-                                                      // sd.ProjectileSpeed = 18f;              // falls Feld vorhanden
+
+            List<DamageEntry> entries = new List<DamageEntry> { new DamageEntry(DamageType.Physical, 1f) };
+            sd.DamageTypes = entries;
+                                                      
             return new SkillInstance(sd, owner);
         }
 

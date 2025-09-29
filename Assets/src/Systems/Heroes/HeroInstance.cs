@@ -40,7 +40,7 @@ namespace CHAL.Systems.Hero
 
             InitStats();
 
-            MaxHP = 100;
+            MaxHP = heroDef.BaseHealth;
             CurrentHP = MaxHP;
         }
 

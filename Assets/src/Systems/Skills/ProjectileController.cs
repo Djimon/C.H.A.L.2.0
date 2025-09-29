@@ -62,8 +62,13 @@ namespace CHAL.Systems.Skill
             // Friendly-Fire global
             if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == targetReceiver.Team) return;
 
-            DebugManager.Log($"[Projectile] {skill.Data.DisplayName} hit {targetReceiver}", DebugManager.EDebugLevel.Test, "Projectile");
+            //TODO: nur markierte targets treffen?
+            //v ergleich target mit targetReceiver
+
             SkillExecutor.ApplyOnHit(skill, source, targetReceiver);
+
+            DebugManager.Log($"[Projectile] {skill.Data.DisplayName} hit {targetReceiver}", DebugManager.EDebugLevel.Test, "Projectile");
+
 
             Destroy(gameObject);
         }

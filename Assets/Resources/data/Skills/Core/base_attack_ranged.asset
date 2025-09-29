@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillId: base_attack_ranged
   DisplayName: Base Range Attack
-  BaseDamage: 10
+  BaseDamage: 5
   DamageTypes:
-  - type: 0
-    baseDamage: 1
+  - DmgType: 0
+    DmgMultiplier: 1
   CastTime: 0
   Cooldown: 1
   SkillType: 1
