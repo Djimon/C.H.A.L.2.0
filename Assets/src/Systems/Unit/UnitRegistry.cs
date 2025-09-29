@@ -52,10 +52,10 @@ public sealed class UnitRegistry : ScriptableObject
 
         //Alle degs aus Enemies laden
         var enemydefs = Resources.LoadAll<EnemyDef>("data/Enemies");
-        DebugManager.DebugLog($"enemys?:{enemydefs.Length}");
+        //DebugManager.DebugLog($"enemys?:{enemydefs.Length}");
         foreach (var def in enemydefs)
         {
-            Debug.Log($"?{def.displayNameKey}");
+            //Debug.Log($"?{def.displayNameKey}");
             if (string.IsNullOrWhiteSpace(def.enemyId))
             {
                 DebugManager.Warning($"[UnitRegistry] Skip ungültige ID in {def.name}");
@@ -71,6 +71,10 @@ public sealed class UnitRegistry : ScriptableObject
         }
 
         DebugManager.Log($"[UnitRegistry] Geladen: {_EnemyById.Count} Enemies", DebugManager.EDebugLevel.Production, "System");
+
+        var enemycount = Mathf.Max(0, _EnemyById.Count);
+        DebugManager.Log($"{enemycount} anzahl enemies geladen", DebugManager.EDebugLevel.Production, "System");
+
     }
 
     public HeroDef GetHeroById(string id)

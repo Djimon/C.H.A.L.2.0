@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CHAL.Systems.Skill
 {
-    public class DoTEffect : ActiveEffect
+    public class DoTStatusEffect : ActiveStatusEffect
     {
         public DoTSettings DoTsettings;
         public int CurrentStacks;
@@ -14,7 +14,7 @@ namespace CHAL.Systems.Skill
         // Regeln für Stacking
         public StackingMode Stacking = StackingMode.AddStacks;
 
-        public DoTEffect(DoTSettings settings)
+        public DoTStatusEffect(DoTSettings settings)
         {
             DoTsettings = settings;
             EffectId = settings.EffectId;
@@ -24,7 +24,7 @@ namespace CHAL.Systems.Skill
         }
 
         /// <summary>
-        /// Versucht, einen weiteren Stack hinzuzufügen.
+        /// Reapply-Handling: increase stack till macxStacks or refresh duration.
         /// </summary>
         public void TryAddStack(EffectReceiver source)
         {

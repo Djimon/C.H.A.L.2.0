@@ -9,19 +9,19 @@ public abstract class EffectReceiver
     public float CurrentHP { get; protected set; }
     public float MaxHP { get; protected set; }
 
-    public List<ActiveEffect> ActiveEffects { get; private set; } = new();
+    public List<ActiveStatusEffect> ActiveEffects { get; private set; } = new();
 
     public ModifierStack ActiveModifiers { get; private set; } = new ModifierStack();
 
     public UnitTeam Team;
 
-    public virtual void ApplyEffect(ActiveEffect effect)
+    public virtual void ApplyStatusEffect(ActiveStatusEffect effect)
     {
         if (effect == null) return;
 
         var existing = ActiveEffects.Find(e => e.EffectId == effect.EffectId);
         // — DoT-Case (bestehend): bleibt wie bei dir —
-        if (existing is DoTEffect exDot && effect is DoTEffect newDot)
+        if (existing is DoTStatusEffect exDot && effect is DoTStatusEffect newDot)
         {
             exDot.TryAddStack(effect.source);
             exDot.RemainingTime = Mathf.Max(exDot.RemainingTime, newDot.BaseDuration);
@@ -29,7 +29,7 @@ public abstract class EffectReceiver
         }
 
         // — Buff-Case: analog zu DoT —
-        if (existing is BuffEffect exBuff && effect is BuffEffect newBuff)
+        if (existing is BuffStatusEffect exBuff && effect is BuffStatusEffect newBuff)
         {
             exBuff.TryAddStack(effect.source);
             exBuff.RemainingTime = Mathf.Max(exBuff.RemainingTime, newBuff.BaseDuration);
@@ -37,17 +37,33 @@ public abstract class EffectReceiver
         }
 
         // — Neuer Effekt: beim Buff direkt Modifier aktivieren —
-        if (effect is BuffEffect buff)
+        if (effect is BuffStatusEffect buff)
         {
             ActiveModifiers.AddModifier(buff.Modifier);
             // (Kein doppeltes Add mehr bei Refresh, weil wir oben in den existing-Case gehen)
         }
 
-        // Debuff: später
+        // Debuff
+        if (existing is DebuffStatusEffect exDeBuff && effect is DebuffStatusEffect newDeBuff)
+        {
+            exDeBuff.TryAddStack(effect.source);
+            exDeBuff.RemainingTime = Mathf.Max(exDeBuff.RemainingTime, newDeBuff.BaseDuration);
+            return;
+        }
+
+        // — Neuer Effekt: beim Debuff direkt Modifier aktivieren —
+        if (effect is DebuffStatusEffect debuff)
+        {
+            ActiveModifiers.AddModifier(debuff.Modifier);
+            // (Kein doppeltes Add mehr bei Refresh, weil wir oben in den existing-Case gehen)
+        }
+
+
+
         ActiveEffects.Add(effect);
     }
 
-    public virtual void RemoveEffect(ActiveEffect effect)
+    public virtual void RemoveEffect(ActiveStatusEffect effect)
     {
         ActiveEffects.Remove(effect);
     }
@@ -63,7 +79,7 @@ public abstract class EffectReceiver
             var effect = ActiveEffects[i];
             effect.RemainingTime -= deltaTime;
 
-            if (effect is DoTEffect dot)
+            if (effect is DoTStatusEffect dot)
             {
                 dot.internalTickTimer -= deltaTime;
                 if (dot.internalTickTimer <= 0f)
@@ -75,7 +91,7 @@ public abstract class EffectReceiver
             }
 
             //Buffs
-            if (effect is BuffEffect buff && buff.RemainingTime <= 0f)
+            if (effect is BuffStatusEffect buff && buff.RemainingTime <= 0f)
             {
                 if (buff.Modifier != null && buff.modifierApplied)
                 {
@@ -84,11 +100,19 @@ public abstract class EffectReceiver
                 }
             }
 
-            //ToDo: Debuffs
+            //Debuffs
+            if (effect is DebuffStatusEffect debuff && debuff.RemainingTime <= 0f)
+            {
+                if (debuff.Modifier != null && debuff.modifierApplied)
+                {
+                    ActiveModifiers.RemoveModifier(debuff.Modifier);
+                    debuff.modifierApplied = false;
+                }
+            }
 
             if (effect.RemainingTime <= 0)
             {
-                if (effect is BuffEffect be && be.Modifier != null)
+                if (effect is BuffStatusEffect be && be.Modifier != null)
                 {
                     ActiveModifiers.RemoveModifier(be.Modifier);
                 }

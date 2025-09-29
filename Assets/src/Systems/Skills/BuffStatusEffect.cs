@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CHAL.Systems.Skill
 {
-    public class BuffEffect : ActiveEffect
+    public class BuffStatusEffect : ActiveStatusEffect
     {
         public BuffSettings Settings;
         public int CurrentStacks;
@@ -12,7 +12,7 @@ namespace CHAL.Systems.Skill
         public StackingMode Stacking = StackingMode.RefreshDuration;
         public bool modifierApplied = false;
 
-        public BuffEffect(BuffSettings settings)
+        public BuffStatusEffect(BuffSettings settings)
         {
             Settings = settings;
             EffectId = settings.EffectId;
@@ -21,10 +21,12 @@ namespace CHAL.Systems.Skill
             Modifier = settings.Modifier;
             CurrentMaxStacks = Mathf.Max(1, settings.BaseMaxStacks);
             Stacking = settings.Stacking;
-            Kind = EffectKind.Buff;
+            Kind = StatusType.Buff;
         }
 
-        /// <summary>Versucht, einen weiteren Stack hinzuzufügen (oder Dauer zu refreshen).</summary>
+        /// <summary>
+        /// Reapply-Handling: increase stack till macxStacks or refresh duration..
+        /// </summary>
         public void TryAddStack(EffectReceiver source)
         {
             // Optional: MaxStacks dynamisch aus Mods ableiten (parallele Mechanik zu DoT)
@@ -57,7 +59,7 @@ namespace CHAL.Systems.Skill
     {
         public string EffectId = "DefaultBuff";
         public ModifierData Modifier;          // Stat-Änderung während der Laufzeit
-        public float BaseDuration = 6f;
+        public float BaseDuration = 5f;
         public int BaseMaxStacks = 1;
         public StackingMode Stacking = StackingMode.RefreshDuration;
     }

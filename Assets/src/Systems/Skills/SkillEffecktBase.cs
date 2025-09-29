@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CHAL.Systems.Skill
 {
-    public abstract class SkillEffectBase : ScriptableObject
+    public abstract class SkillImpactBase : ScriptableObject
     {
         [Tooltip("Optional: unique identifier for debugging or balancing.")]
         public string EffectId;

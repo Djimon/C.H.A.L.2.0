@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace CHAL.Systems.Skill
 {
-    [CreateAssetMenu(fileName = "TriggerSkillEffect", menuName = "Skills/Effects/TriggerSkill")]
-    public class TriggerSkillEffect : SkillEffectBase
+    [CreateAssetMenu(fileName = "TriggerSkill", menuName = "Skills/Impact/TriggerSkill")]
+    public class TriggerSkillImpact : SkillImpactBase
     {
         [Tooltip("Skill that will be triggered on hit.")]
         public SkillData SkillToTrigger;

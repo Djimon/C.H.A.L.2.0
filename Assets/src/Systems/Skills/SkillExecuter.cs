@@ -129,6 +129,8 @@ namespace CHAL.Systems.Skill
             {
                 list[i]?.Apply(skill, source, enemyInstance);
             }
+
+            //Deal Damage
  
         }
     }

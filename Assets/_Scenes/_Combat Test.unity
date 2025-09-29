@@ -464,7 +464,7 @@ GameObject:
   - component: {fileID: 390656723}
   m_Layer: 0
   m_Name: Hero
-  m_TagString: Untagged
+  m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -482,8 +482,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HeroDef: {fileID: 11400000, guid: f96dd872c71033e458460914f6e0a931, type: 2}
+  debugSocketSkills:
+  - {fileID: 11400000, guid: 53e474e9581a30f419dd717f2b248b17, type: 2}
+  - {fileID: 11400000, guid: 23820601697bac84aa5619a344f41630, type: 2}
   target: {fileID: 0}
-  attackInterval: 2
 --- !u!54 &390656724
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -907,6 +909,51 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &1700419530
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1700419531}
+  - component: {fileID: 1700419532}
+  m_Layer: 0
+  m_Name: BalanceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1700419531
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700419530}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.1658216, y: 2.9972982, z: -0.59703004}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1700419532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700419530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c364c92703a4d4d4cb8c056c764be7f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  config: {fileID: 0}
 --- !u!1 &1712684379
 GameObject:
   m_ObjectHideFlags: 0
@@ -1164,3 +1211,4 @@ SceneRoots:
   - {fileID: 1712684380}
   - {fileID: 390656728}
   - {fileID: 1348939137}
+  - {fileID: 1700419531}

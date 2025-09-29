@@ -7,10 +7,10 @@ using System.Collections.Generic;
 namespace CHAL.Systems.Skill
 {
     [Serializable]
-    public class ActiveEffect
+    public class ActiveStatusEffect
     {
         public string EffectId;
-        public EffectKind Kind;
+        public StatusType Kind;
 
         public EffectReceiver source;
         public EffectReceiver target;
@@ -29,7 +29,7 @@ namespace CHAL.Systems.Skill
         Replace              // vorhandenen Effekt ersetzen
     }
 
-    public enum EffectKind 
+    public enum StatusType 
     { 
         DoT,
         Buff,

@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace CHAL.Systems.Skill
 {
-    [CreateAssetMenu(fileName = "DamageEffect", menuName = "Skills/Effects/Damage")]
-    public class DamageEffect : SkillEffectBase
+    [CreateAssetMenu(fileName = "DamageImpact", menuName = "Skills/Impact/Damage")]
+    public class DamageImpact : SkillImpactBase
     {
         [Tooltip("Damage entries applied by this effect (elemental/physical).")]
         public List<DamageEntry> Damages;

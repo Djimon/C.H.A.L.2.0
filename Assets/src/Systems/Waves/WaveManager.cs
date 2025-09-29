@@ -108,7 +108,7 @@ namespace CHAL.Systems.Wave
             return spawnPoints[index].position;
         }
 
-        private void HandleEnemyKilled(EnemyController ec, EnemyStruct instance, Vector3 pos)
+        private void HandleEnemyKilled(EnemyController ec, EnemyDef def, EnemyStruct instance, Vector3 pos)
         {
             _aliveEnemies.Remove(ec);
 

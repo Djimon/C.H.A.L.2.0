@@ -1,5 +1,7 @@
-using CHAL.Data;
+﻿using CHAL.Data;
+using CHAL.Systems.Hero;
 using CHAL.Systems.Loot;
+using CHAL.Systems.Skill;
 using CHAL.Systems.Wave;
 using System;
 using System.Collections.Generic;
@@ -9,9 +11,26 @@ namespace CHAL.Systems.Enemy
 {
     public class EnemyController : MonoBehaviour, IUnitController
     {
+        public EnemyDef EnemyDef;
         public EnemyStruct EnemyData { get; private set; }
         public EnemyInstance EnemyInstance { get; private set; }
 
+        private readonly List<SkillInstance> _attacks = new();
+
+        public Transform target;
+
+        // Casting-State
+        private SkillInstance _currentSkill;
+        private float _castRemaining;
+
+        public bool IsAlive => EnemyInstance != null && EnemyInstance.CurrentHP > 0;
+
+        private void Awake()
+        {
+            // Falls via Inspector schon gesetzt: sofort initialisieren
+            if (EnemyDef != null && EnemyInstance == null)
+                Init(EnemyData);
+        }
 
         public void Init(EnemyStruct enemstruct)
         {
@@ -22,52 +41,196 @@ namespace CHAL.Systems.Enemy
                 return;
             }
 
+            EnemyDef = def;
+            EnemyData = enemstruct;
+
             EnemyInstance = new EnemyInstance(def, enemstruct);
             EnemyInstance.Team = UnitTeam.AI;
 
-            EnemyData = enemstruct;
+            DebugManager.Log($"Enemy | Spawned {def.enemyId} (HP={EnemyInstance.MaxHP})",DebugManager.EDebugLevel.Dev,"Enemy");
 
-            EnemyInstance.OnDied += OnEnemyInstanceDied;
+            EnemyInstance.OnDied += HandleEnemyDied;
+
+            BuildAttacksFromDef();
         }
 
-
-        private void OnEnemyInstanceDied(EnemyInstance instance)
+        private void BuildAttacksFromDef()
         {
-            Die();
+            _attacks.Clear();
+
+            if (EnemyDef == null || EnemyDef.baseAttacks == null || EnemyDef.baseAttacks.Count == 0)
+            {
+                DebugManager.Log("Enemy | Warnung: baseAttacks ist leer.");
+                return;
+            }
+
+            // Reihenfolge in baseAttacks = Rotations-Prio
+            foreach (var sd in EnemyDef.baseAttacks)
+            {
+                if (sd == null) continue;
+
+                // Annahme: SkillInstance besitzt einen Ctor(SkillData)
+                var inst = new SkillInstance(sd, EnemyInstance);
+                _attacks.Add(inst);
+            }
+
+            DebugManager.Log($"Enemy | Loaded {_attacks.Count} attacks from Def.");
         }
 
         private void Update()
         {
-            EnemyInstance.UpdateEffects(Time.deltaTime);
+            // ? EnemyInstance.UpdateEffects(Time.deltaTime);
+
+            if (!IsAlive || EnemyInstance == null) return;
+
+            float dt = Time.deltaTime;
+
+            // 1) Effekte ticken
+            EnemyInstance.UpdateEffects(dt);
+
+            // 2) Cooldowns ticken
+            foreach (var s in _attacks)
+                s?.TickCooldown(dt);
+
+            // 3) Ziel prüfen/suchen
+            if (target == null || target.GetComponent<HeroController>() == null)
+                target = FindNextHeroTarget();
+            var heroCtrl = target ? target.GetComponent<HeroController>() : null;
+
+            // 4) Laufenden Cast abwickeln
+            if (_currentSkill != null)
+            {
+                _castRemaining -= dt;
+
+                // (Phase 6 HUD später) — hier nur Nachweis
+                DebugManager.Log($"UI/HUD | Enemy Castbar {_currentSkill.Data.DisplayName}: {Mathf.Max(0, _castRemaining):F2}s");
+
+                if (_castRemaining <= 0f)
+                {
+                    // --- Execute ---
+                    if (heroCtrl != null && heroCtrl.IsAlive)
+                    {
+                        float dist = Vector3.Distance(transform.position, heroCtrl.transform.position);
+                        if (dist <= _currentSkill.Range)
+                        {
+                            DebugManager.Log($"Combat/Enemy | Execute {_currentSkill.Data.DisplayName} → {heroCtrl.name} (dist={dist:F1}m)");
+
+                            SkillExecutor.ExecuteSkill(
+                                _currentSkill,
+                                EnemyInstance,                // Quelle: EffectReceiver
+                                transform,                    // Quelle-Transform (VFX/Projectile)
+                                heroCtrl.GetEffectReceiver(), // Ziel: EffectReceiver
+                                heroCtrl.transform            // Ziel-Transform
+                            );
+                            // OnHit-Logs kommen aus dem Skill/Projectile.
+                        }
+                        else
+                        {
+                            DebugManager.Log($"Targeting | Out of Range (Enemy): {_currentSkill.Data.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F1}m");
+                        }
+                    }
+                    else
+                    {
+                        DebugManager.Log($"Targeting | Enemy hat kein gültiges Ziel für {_currentSkill.Data.DisplayName}.");
+                    }
+
+                    _currentSkill = null; // Cast abgeschlossen
+                }
+
+                return; // solange gecastet wird, keine neue Auswahl
+            }
+
+            // 5) Neuen Skill wählen (nur aus den Def-Autoattacks)
+            var next = SelectNextReadyAttack();
+            if (next != null && heroCtrl != null && heroCtrl.IsAlive)
+            {
+                // --- CastStart ---
+                DebugManager.Log($"Combat/Enemy | CastStart {next.Data.DisplayName} (castTime={next.CastTime:F2}s)");
+                _currentSkill = next;
+                _castRemaining = Mathf.Max(0f, next.CastTime);
+
+                // (Phase 4: Animations-Hook als Stub)
+                DebugManager.Log($"Anim | Enemy Play {next.Data.animationType} len={next.CastTime:F2}s");
+
+                // Cooldown startet bei CastStart (analog Hero)
+                next.StartCooldown();
+            }
+
         }
 
-        private void Attack()
+        private SkillInstance SelectNextReadyAttack()
         {
-            DebugManager.Log("Attack", DebugManager.EDebugLevel.Dev, "Fight");
+            // Nimm den ersten „ready“ gemäß Priorität (Reihenfolge in baseAttacks)
+            foreach (var s in _attacks)
+            {
+                if (s == null) continue;
+                if (s.IsReady()) return s;
+            }
+            return null;
         }
+
+        private Transform FindNextHeroTarget()
+        {
+            var heroes = FindObjectsByType<HeroController>(FindObjectsSortMode.None);
+            if (heroes == null || heroes.Length == 0) return null;
+
+            Transform best = null;
+            float minDist = float.MaxValue;
+
+            foreach (var h in heroes)
+            {
+                if (h == null || !h.IsAlive) continue;
+
+                float d = Vector3.Distance(transform.position, h.transform.position);
+                if (d < minDist)
+                {
+                    minDist = d;
+                    best = h.transform;
+                }
+            }
+            return best;
+        }
+
+        public void TakeDamage(float amount, DamageType type)
+        {
+            if (!IsAlive) return;
+
+            EnemyInstance.TakeDamage(amount, type);
+            DebugManager.Log($"Enemy | {EnemyDef.displayNameKey} took {amount} {type} (HP={EnemyInstance.CurrentHP}/{EnemyInstance.MaxHP})");
+
+        }
+
+        private void OnDestroy()
+        {
+            if (EnemyInstance != null)
+                EnemyInstance.OnDied -= HandleEnemyDied;
+        }
+
+        private void HandleEnemyDied(EnemyInstance inst)
+        {
+            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) - [{EnemyData.bonusTags}] killed!", DebugManager.EDebugLevel.Dev, "Fight");
+            // Event feuern: sagt nur „ich bin tot“, inkl. Position
+            OnEnemyKilled?.Invoke(this, EnemyDef, EnemyData, transform.position);
+
+            // Hier: Animator/VFX/Despawn, Collider off, Loot-Trigger etc.
+            Destroy(gameObject);
+            
+        }
+
 
         private void OnMouseDown()
         {
             EnemyInstance.TakeDamage(999, DamageType.Physical);
         }
 
-        private void Die()
-        {
-            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) - [{EnemyData.bonusTags}] killed!", DebugManager.EDebugLevel.Dev, "Fight");
-
-            // Event feuern: sagt nur �ich bin tot�, inkl. Position
-            OnEnemyKilled?.Invoke(this, EnemyData, transform.position);
-
-            Destroy(gameObject);
-        }
 
         public EffectReceiver GetEffectReceiver()
         {
             return EnemyInstance;
         }
 
-        // Static Event f�r alle EnemyController
-        public static event System.Action<EnemyController, EnemyStruct, Vector3> OnEnemyKilled;
+        // Static Event für alle EnemyController
+        public static event System.Action<EnemyController, EnemyDef, EnemyStruct, Vector3> OnEnemyKilled;
     }
 }
 

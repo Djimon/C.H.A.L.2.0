@@ -1,7 +1,9 @@
 ﻿using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Hero;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 using static UnityEngine.UI.GridLayoutGroup;
 
 namespace CHAL.Systems.Skill
@@ -47,6 +49,8 @@ namespace CHAL.Systems.Skill
             ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, Data.ProjectileSpeed, tags);
             ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, Data.ProjectileCount, tags);
             AoERadius = mods.Apply(ModifierTarget.AoERadius, Data.AoERadius, tags);
+
+            DebugManager.Log($"Initialized Skill {Data.SkillId} with DMG:{Damage} CastTime:{CastTime} cd:{Cooldown} range:{Range} dur:{Duration} ");
         }
 
         public bool IsReady() //→ prüft, ob cooldownRemaining <= 0.
@@ -60,17 +64,18 @@ namespace CHAL.Systems.Skill
             return false;
         }
 
-        void StartCooldown(float currentTime) //→ setzt cooldownRemaining = Cooldown.
+        public void StartCooldown() //→ setzt cooldownRemaining = Cooldown.
         {
             cooldownRemaining = Cooldown;
         }
 
-        void Tick(float deltaTime) //→ reduziert cooldownRemaining.
+        public void TickCooldown(float deltaTime) //→ reduziert cooldownRemaining.
         {
             cooldownRemaining -= deltaTime;
         }
 
-        
+        public float GetCooldownRemaining() => Mathf.Max(0f, cooldownRemaining);
+
 
         public override string ToString()
         {

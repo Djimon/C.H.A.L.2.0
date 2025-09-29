@@ -170,6 +170,7 @@ namespace CHAL.Data
         // ==========================
         // SKILLS
         // ==========================
+        [System.Serializable]
         public struct SkillRanges
         {
             public float selfRange;
