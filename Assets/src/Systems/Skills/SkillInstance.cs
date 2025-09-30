@@ -50,7 +50,7 @@ namespace CHAL.Systems.Skill
             ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, Data.ProjectileCount, tags);
             AoERadius = mods.Apply(ModifierTarget.AoERadius, Data.AoERadius, tags);
 
-            DebugManager.Log($"Initialized Skill {Data.SkillId} with DMG:{Damage} CastTime:{CastTime} cd:{Cooldown} range:{Range} dur:{Duration} ");
+            DebugManager.Log($"Initialized Skill {Data.SkillId} with DMG:{Damage} CastTime:{CastTime} cd:{Cooldown} range:{Range} dur:{Duration} ", DebugManager.EDebugLevel.Debug,"Skill");
         }
 
         public bool IsReady() //→ prüft, ob cooldownRemaining <= 0.

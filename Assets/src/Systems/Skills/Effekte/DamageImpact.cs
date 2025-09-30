@@ -13,13 +13,15 @@ namespace CHAL.Systems.Skill
 
         public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
         {
-            float finalDamage = skill.Damage; // schon durch Mods (Str, Buffs, Passives) berechnet
-            DamageType dmgType = skill.Data.DamageTypes.Count > 0
-                ? skill.Data.DamageTypes[0].DmgType
-                : DamageType.Physical;
-
-            DebugManager.Log($"[Effect] {source} deals {finalDamage} {dmgType} on {target}", DebugManager.EDebugLevel.Test, "Skill");
-            target.TakeDamage(finalDamage, dmgType);
+           
+            foreach (var damage in Damages)
+            {
+                var dmgType = damage.DmgType ;
+                var finalDamage = skill.Damage * damage.DmgMultiplier;
+                DebugManager.Log($"[Effect] {source} deals {finalDamage} {dmgType} on {target}", DebugManager.EDebugLevel.Test, "Skill");
+                target.TakeDamage(finalDamage, dmgType);
+            }
+   
         }
     }
 }

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146acfc335f8ba3409024d2c481fbd7e, type: 3}
+  m_Name: fireball
+  m_EditorClassIdentifier: 
+  SkillId: spell_fireball
+  DisplayName: Fireball
+  BaseDamage: 20
+  DamageTypes:
+  - DmgType: 1
+    DmgMultiplier: 1
+  CastTime: 1
+  Cooldown: 3
+  SkillType: 2
+  isProjectile: 0
+  isAoE: 1
+  hasDuration: 0
+  Range: 3
+  Duration: 0
+  ProjectileSpeed: 0
+  ProjectileCount: 0
+  AoERadius: 5
+  OnCastEffects: []
+  OnHitEffects:
+  - {fileID: 11400000, guid: 6ed4d32417ec51b47aa4dd809f434d57, type: 2}
+  Tags: 
+  vfxPrefab: {fileID: 0}
+  animationType: 4

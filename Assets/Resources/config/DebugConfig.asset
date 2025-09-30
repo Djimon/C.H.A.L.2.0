@@ -49,7 +49,7 @@ MonoBehaviour:
     active: 1
     color: {r: 0.53333336, g: 0.19607843, b: 0.8117647, a: 1}
   - name: UI
-    active: 1
+    active: 0
     color: {r: 0.7935584, g: 1, b: 0.25, a: 1}
   - name: Input
     active: 1
@@ -58,7 +58,7 @@ MonoBehaviour:
     active: 1
     color: {r: 0.9716981, g: 0.8619886, b: 0.09625311, a: 1}
   - name: Hero
-    active: 0
+    active: 1
     color: {r: 0.972549, g: 0.8627451, b: 0.09803922, a: 1}
   - name: Enemy
     active: 0
@@ -69,4 +69,7 @@ MonoBehaviour:
   - name: Projectile
     active: 0
     color: {r: 0.15566039, g: 1, b: 0.83510864, a: 1}
+  - name: Anim
+    active: 0
+    color: {r: 1, g: 1, b: 1, a: 1}
   _seeded: 1

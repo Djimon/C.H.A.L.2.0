@@ -25,7 +25,7 @@ namespace CHAL.Systems.Enemy
 
         public bool IsAlive => EnemyInstance != null && EnemyInstance.CurrentHP > 0;
 
-        private void Awake()
+        private void Start()
         {
             // Falls via Inspector schon gesetzt: sofort initialisieren
             if (EnemyDef != null && EnemyInstance == null)
@@ -103,7 +103,7 @@ namespace CHAL.Systems.Enemy
                 _castRemaining -= dt;
 
                 // (Phase 6 HUD später) — hier nur Nachweis
-                DebugManager.Log($"UI/HUD | Enemy Castbar {_currentSkill.Data.DisplayName}: {Mathf.Max(0, _castRemaining):F2}s");
+                //DebugManager.Log($"UI/HUD | Enemy Castbar {_currentSkill.Data.DisplayName}: {Mathf.Max(0, _castRemaining):F2}s");
 
                 if (_castRemaining <= 0f)
                 {
@@ -145,12 +145,12 @@ namespace CHAL.Systems.Enemy
             if (next != null && heroCtrl != null && heroCtrl.IsAlive)
             {
                 // --- CastStart ---
-                DebugManager.Log($"Combat/Enemy | CastStart {next.Data.DisplayName} (castTime={next.CastTime:F2}s)");
+                //DebugManager.Log($"Combat/Enemy | CastStart {next.Data.DisplayName} (castTime={next.CastTime:F2}s)");
                 _currentSkill = next;
                 _castRemaining = Mathf.Max(0f, next.CastTime);
 
                 // (Phase 4: Animations-Hook als Stub)
-                DebugManager.Log($"Anim | Enemy Play {next.Data.animationType} len={next.CastTime:F2}s");
+                DebugManager.Log($"Anim | Enemy Play {next.Data.animationType} len={next.CastTime:F2}s",DebugManager.EDebugLevel.Debug,"Anim");
 
                 // Cooldown startet bei CastStart (analog Hero)
                 next.StartCooldown();
@@ -208,7 +208,7 @@ namespace CHAL.Systems.Enemy
 
         private void HandleEnemyDied(EnemyInstance inst)
         {
-            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) - [{EnemyData.bonusTags}] killed!", DebugManager.EDebugLevel.Dev, "Fight");
+            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) killed!", DebugManager.EDebugLevel.Dev, "Fight");
             // Event feuern: sagt nur „ich bin tot“, inkl. Position
             OnEnemyKilled?.Invoke(this, EnemyDef, EnemyData, transform.position);
 

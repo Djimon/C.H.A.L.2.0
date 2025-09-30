@@ -59,6 +59,7 @@ namespace CHAL.Data
         SummonHP,
         SummonDamage,
         AuraRange,
+        MovementSpeed,
         Resist,
         Armor,
         MaxHP,

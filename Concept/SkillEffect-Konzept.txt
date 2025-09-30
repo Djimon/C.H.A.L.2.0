@@ -1,0 +1,206 @@
+Zielbild (knapp)
+
+Ein Skill löst Impacts aus (z. B. Schaden, Status anwenden, anderen Skill triggern).
+
+Einheit (Hero/Enemy/…) trägt Status (Buff/Debuff/DoT), die zeitlich wirken (Tick/Stack/Ende).
+
+Modifier sind eine gemeinsame Sprache, die überall gilt (Gear, Passives, Buffs/Debuffs), aber mit Scope zielgenau wirken.
+
+Begriffe (einmal sauber)
+
+Skill: Datenobjekt, das festlegt was passiert (Cooldown, CastTime, Range, …).
+
+Impact (am Skill): „Was passiert bei Cast / bei Treffer?“
+Beispiele: Schaden sofort, Status anwenden, Skill triggern.
+
+Status (an der Einheit): Wirkung über Zeit (Buff, Debuff, DoT) – mit Dauer, Stacks, ggf. Tick.
+
+Modifier: kleinste Regeleinheit „ändere Stat X auf Art Y um Z“.
+
+Autorenseite (Designer-Workflow)
+1) Skill pflegen
+
+Basiseigenschaften: Name, CastTime, Cooldown, Range, BaseDamage, Flags (Projectile, AoE, Duration).
+
+Impacts hinzufügen:
+
+OnCast (direkt beim Auslösen)
+
+OnHit (erst bei Treffer)
+
+Typische Impacts:
+
+DamageImpact (sofortiger Schaden)
+
+ApplyStatusImpact (legt einen Status auf das Ziel)
+
+TriggerSkillImpact (verkettet Skills)
+
+2) Status als Definition anlegen (SO)
+
+Drei einfache Typen reichen fürs MVP:
+
+DoT-Def: Damage per Tick, Tick-Intervall, Dauer, MaxStacks, DamageType.
+
+Buff-Def: ModifierData, Dauer, MaxStacks, Stacking-Regel.
+
+Debuff-Def: ModifierData, Dauer, MaxStacks, Stacking-Regel.
+
+Merksatz: Impacts referenzieren Status-Definitionen. Die Definition baut zur Laufzeit den Status (Runtime-Objekt).
+
+3) ModifierData einmalig beschreiben
+
+Was? – StatType (z. B. MoveSpeed, Armor, MaxHP, DamageTakenMult …)
+
+Wie? – Operation (Add, Mult, Set)
+
+Wieviel? – Wert (z. B. +10, 0.8 = −20 %, 100)
+
+Optional: Filter (z. B. nur Physical Damage)
+
+Scope: Wo soll das wirken?
+
+Stats → auf Einheit-Werte (HP, Armor, Speed …)
+
+Skills → auf Skill-Berechnung (SkillDamage, ProjectileSpeed …)
+
+Status → Meta für Status (z. B. +% DoT-DPS/Dauer) – optional für später
+
+Gleiche ModifierData für Gear/Passives und Buff/Debuff. Keine doppelte Logik – Scope entscheidet, wo sie greift.
+
+Laufzeitseite (Engine-Ablauf)
+1) Skill wird ausgeführt (Executor)
+
+OnCast-Impacts: sofort (z. B. VFX, Instant-Schaden, Status auf den Caster)
+
+CastTime: (Animations-Hook später)
+
+Branch:
+
+Melee/Spell → OnHit-Impacts sofort auf Ziel
+
+Projectile → fliegt stumpf → OnHit-Impacts erst beim Einschlag
+
+Globale Checks: kein Self-Hit; Friendly-Fire je nach globaler Option
+
+2) Status am Ziel (Receiver)
+
+ApplyStatus:
+
+Gibt’s denselben Status (gleiche ID & Typ) schon?
+
+Nein → neu anlegen
+– DoT: mit Duration/Tick starten
+– Buff/Debuff: Modifier einmal hinzufügen
+
+Ja → Stacken/Refresh nach Regel (keine doppelten Modifier)
+
+Update (pro Frame / Tick):
+
+DoT: Tick → Schaden
+
+Dauer läuft runter
+
+Ablauf:
+
+Buff/Debuff: Modifier entfernen
+
+Status löschen
+
+3) Modifiers anwenden (Reihenfolge = wichtig)
+
+Stats neu berechnen (bei Änderungen / regelmäßig):
+
+Base-Werte (Archetype/Def)
+
+Persistente Modifiers (Gear, Passives, Auren) – Scope: Stats
+
+Status-Modifiers (Buff/Debuff) – Scope: Stats
+
+Clamps (z. B. Min/Max)
+
+Sonderfall MaxHP: Wenn MaxHP sinkt → CurrentHP auf MaxHP clampen (kein Extra-Schaden/Heilung).
+Wenn MaxHP steigt → CurrentHP bleibt (kein Gratis-Heal).
+
+Skills neu berechnen (bei Cast/Änderungen):
+
+BaseSkill (SkillData)
+
+Persistente Modifiers – Scope: Skills
+
+Status-Modifiers (falls gewünscht) – Scope: Skills
+
+So vermeidest du Doppel-Dipping und hast deterministisches Verhalten.
+
+Beispiele (konkret, in Worten)
+Freeze (= Slow)
+
+Debuff-Def „Freeze“
+Dauer: 4 s, MaxStacks: 1, Stacking: Refresh
+ModifierData: MoveSpeed × 0.6 (−40 %) – Scope: Stats
+
+Wirkt: sofort beim Treffer (OnHit), endet nach 4 s automatisch → Speed normalisiert.
+
+Break Armor (2 Wege, du wählst)
+
+A) Armor runter
+Modifier: Armor × 0.7 (−30 %), 6 s – Scope: Stats
+→ Mit echter Armor-Stat. Bei Armor=0 hat’s wenig Effekt.
+
+B) Phys. Schaden rauf
+Modifier: DamageTakenMult × 1.25 nur für Physical, 6 s – Scope: Stats
+→ Greift auch ohne Armor-Stat (oft einfacher zu balancen).
+
+Verwundung (temporär weniger MaxHP)
+
+Debuff-Def „Wound“
+Modifier: MaxHP × 0.8 (−20 %), 6 s – Scope: Stats
+
+Runtime-Regel: Beim Aktivieren MaxHP neu berechnen, CurrentHP auf MaxHP clampen. Beim Ende bleibt CurrentHP wie er ist (kein Auto-Heal).
+
+Designer-Quick-Guide (Checkliste)
+
+Skill öffnen → Impacts hinzufügen:
+– OnCast (optional), OnHit (meistens)
+
+ApplyStatusImpact einfügen → gewünschte Status-Def zuweisen
+
+Status-Def anlegen (DoT/Buff/Debuff):
+– Effekt-ID, Dauer, Stacking, ModifierData / Tick-Daten
+
+ModifierData wählen/erstellen:
+– Stat, Operation, Wert, Scope (Stats/Skills/Status)
+
+Balance-Hinweise (kurz & praxisnah)
+
+Multiplikative Modifiers für Prozent-Effekte (z. B. −30 % Armor = × 0.7).
+
+Additiv für flache Boni (z. B. +50 Armor).
+
+Set nur für klare, absolute Effekte (selten).
+
+Wenige Scopes, klar eingesetzt:
+
+Stats: alles, was Einheit-Werte betrifft (HP/Armor/Speed/TakeDamageMult).
+
+Skills: CastSpeed, SkillDamage, ProjectileSpeed, …
+
+Status (optional für später): +% DoT-Dauer/Schaden.
+
+MVP-Grenze (bewusst schlank)
+
+Kein Homing, keine Sonder-Kollisionen im MVP.
+
+Friendly-Fire global, Self-Hit aus.
+
+Keine Exoten wie Silence/Stun/Aura im MVP (kommen später, passen in dasselbe Schema).
+
+„Wenn-dann“-Kompass (Fehlervermeidung)
+
+Wenn ein Effekt neu angewendet wird, dann Modifier einmal adden (nicht bei jedem Refresh).
+
+Wenn Status endet, dann Modifier sauber entfernen.
+
+Wenn MaxHP sich ändert, dann CurrentHP clampen (kein Auto-Heal/-Schaden).
+
+Wenn ein Skill Projectile ist, dann OnHit erst beim Einschlag, nicht beim Cast.

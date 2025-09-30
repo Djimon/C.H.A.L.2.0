@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146acfc335f8ba3409024d2c481fbd7e, type: 3}
+  m_Name: bladestorm
+  m_EditorClassIdentifier: 
+  SkillId: bladestorm
+  DisplayName: Bladestorm
+  BaseDamage: 3
+  DamageTypes:
+  - DmgType: 0
+    DmgMultiplier: 1
+  CastTime: 0.5
+  Cooldown: 2
+  SkillType: 0
+  isProjectile: 0
+  isAoE: 1
+  hasDuration: 0
+  Range: 2
+  Duration: 0
+  ProjectileSpeed: 0
+  ProjectileCount: 0
+  AoERadius: 3
+  OnCastEffects: []
+  OnHitEffects: []
+  Tags: 
+  vfxPrefab: {fileID: 0}
+  animationType: 1

@@ -60,7 +60,7 @@ namespace CHAL.Systems.Hero
                         socketedSkills.Add(new SkillInstance(sd, heroInstance)); // :contentReference[oaicite:3]{index=3}
             }
 
-            DebugManager.Log($"Hero | Built skills: Rotation={socketedSkills.Count}, AutoAttack={(autoAttack != null ? autoAttack.Data.DisplayName : "none")}");
+            DebugManager.Log($"Hero | Built skills: Rotation={socketedSkills.Count}, AutoAttack={(autoAttack != null ? autoAttack.Data.DisplayName : "none")}", DebugManager.EDebugLevel.Debug,"Hero");
         }
 
         // Initialisierung
@@ -106,7 +106,7 @@ namespace CHAL.Systems.Hero
                 castRemaining -= dt;
 
                 // (Optional: HUD Castbar via Gizmos später)
-                DebugManager.Log($"UI/HUD | Castbar {currentSkill.Data.DisplayName}: {Mathf.Max(0f, castRemaining):F2}s");
+                DebugManager.Log($"UI/HUD | Castbar {currentSkill.Data.DisplayName}: {Mathf.Max(0f, castRemaining):F2}s", DebugManager.EDebugLevel.Debug,"UI");
 
                 if (castRemaining <= 0f)
                 {
@@ -118,7 +118,7 @@ namespace CHAL.Systems.Hero
                         float dist = Vector3.Distance(transform.position, enemyCtrl.transform.position);
                         if (dist <= currentSkill.Range)
                         {
-                            DebugManager.Log($"Combat/Hero | Execute {currentSkill.Data.DisplayName} → {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)");
+                            DebugManager.Log($"Combat/Hero | Execute {currentSkill.Data.DisplayName} → {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)", DebugManager.EDebugLevel.Debug, "Fight");
                             SkillExecutor.ExecuteSkill(
                                 currentSkill,
                                 heroInstance,
@@ -130,12 +130,12 @@ namespace CHAL.Systems.Hero
                         }
                         else
                         {
-                            DebugManager.Log($"Targeting | Out of Range: {currentSkill.Data.DisplayName} dist={dist:F1}m > {currentSkill.Range:F1}m");
+                            //DebugManager.Log($"Targeting | Out of Range: {currentSkill.Data.DisplayName} dist={dist:F1}m > {currentSkill.Range:F1}m");
                         }
                     }
                     else
                     {
-                        DebugManager.Log($"Targeting | Kein gültiges Ziel für {currentSkill.Data.DisplayName}.");
+                        //DebugManager.Log($"Targeting | Kein gültiges Ziel für {currentSkill.Data.DisplayName}.");
                     }
 
                     currentSkill = null; // Cast abgeschlossen
@@ -155,12 +155,12 @@ namespace CHAL.Systems.Hero
             if (next != null && target != null)
             {
                 // --- CastStart ---
-                DebugManager.Log($"Combat/Hero | CastStart {next.Data.DisplayName} (castTime={next.CastTime:F2}s)");
+                //DebugManager.Log($"Combat/Hero | CastStart {next.Data.DisplayName} (castTime={next.CastTime:F2}s)");
                 currentSkill = next;
                 castRemaining = Mathf.Max(0f, next.CastTime);
 
                 // (Phase 4 „Anim“-Hook später; jetzt Log)
-                DebugManager.Log($"Anim | Play {next.Data.animationType} len={next.CastTime:F2}s");
+                DebugManager.Log($"Anim | Play {next.Data.animationType} len={next.CastTime:F2}s", DebugManager.EDebugLevel.Debug,"Anim");
 
                 // Cooldown startet beim CastStart (so ist GCD-ähnliches Verhalten möglich)
                 next.StartCooldown();

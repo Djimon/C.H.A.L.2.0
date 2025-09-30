@@ -30,29 +30,41 @@ public class SkillDataEditor : Editor
 
         EditorGUILayout.Space();
 
+        EditorGUILayout.LabelField("Additional Flags", EditorStyles.boldLabel);
+        data.isProjectile = EditorGUILayout.Toggle(new GUIContent("Projectile?", "Also unlock projectile fields for this skill."), data.isProjectile);
+        data.isAoE = EditorGUILayout.Toggle(new GUIContent("AoE?", "Also unlock AoE fields for this skill."), data.isAoE);
+        data.hasDuration = EditorGUILayout.Toggle(new GUIContent("Has Duration?", "Also unlock duration fields for this skill."), data.hasDuration);
+
+        EditorGUILayout.Space();
+
         // Composition (fields depend on SkillType)
         EditorGUILayout.LabelField("Composition", EditorStyles.boldLabel);
-        switch (data.SkillType)
+        bool wantsProjectile = (data.SkillType == SkillType.Projectile) || data.isProjectile;
+        bool wantsAoE = (data.SkillType == SkillType.Spell) || data.isAoE;
+        bool wantsDuration = (data.SkillType == SkillType.Spell || data.SkillType == SkillType.Summon) || data.hasDuration;
+
+        EditorGUILayout.Space();
+        if (wantsProjectile)
         {
-            case SkillType.Melee:
-                // Melee usually doesn't need extra fields besides Range
-                break;
-
-            case SkillType.Projectile:
-                data.ProjectileSpeed = EditorGUILayout.FloatField("Projectile Speed", data.ProjectileSpeed);
-                data.ProjectileCount = EditorGUILayout.IntField("Projectile Count", data.ProjectileCount);
-                break;
-
-            case SkillType.Spell:
-                data.AoERadius = EditorGUILayout.FloatField("AoE Radius", data.AoERadius);
-                data.Duration = EditorGUILayout.FloatField("Duration", data.Duration);
-                break;
-
-            case SkillType.Summon:
-                data.Duration = EditorGUILayout.FloatField("Duration", data.Duration);
-                // später: SummonCount, SummonHP, SummonDamage
-                break;
+            data.ProjectileSpeed = EditorGUILayout.FloatField("Projectile Speed", data.ProjectileSpeed);
+            data.ProjectileCount = EditorGUILayout.IntField("Projectile Count", data.ProjectileCount);
         }
+
+        if (wantsAoE)
+        {
+            data.AoERadius = EditorGUILayout.FloatField("AoE Radius", data.AoERadius);
+        }
+
+        if (wantsDuration)
+        {
+            data.Duration = EditorGUILayout.FloatField("Duration", data.Duration);
+        }
+
+        EditorGUILayout.Space();
+
+        // Hooks / Impacts (wieder sichtbar)
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCastEffects"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnHitEffects"), true);
 
         EditorGUILayout.Space();
 
@@ -84,6 +96,11 @@ public class SkillDataEditor : Editor
         data.animationType = chosen;
 
         data.vfxPrefab = (GameObject)EditorGUILayout.ObjectField("VFX Prefab", data.vfxPrefab, typeof(GameObject), false);
+
+        if (GUI.changed)
+        {
+            EditorUtility.SetDirty(data);
+        }
 
         serializedObject.ApplyModifiedProperties();
     }
