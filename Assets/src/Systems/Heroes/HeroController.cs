@@ -87,91 +87,121 @@ namespace CHAL.Systems.Hero
 
             float dt = Time.deltaTime;
 
+
+            Tick_ReceiverStatusEffects(dt);
+
+            EnsureTarget();
+
+            Tick_SkillCooldown(dt);
+
+            if (isCasting())
+                Advance_CastTimerOrFinish(dt);
+            else
+                Try_StartNextSkillByRotation();
+
+
+            Handle_DebugShortcuts();
+        }
+
+
+        private void Tick_ReceiverStatusEffects(float dt)
+        {
             // Effekte ticken lassen
             heroInstance.UpdateEffects(dt);
+        }
 
+        private void EnsureTarget()
+        {
             // Target validieren oder neu suchen
             if (target == null || target.GetComponent<EnemyController>() == null)
             {
                 target = FindNextEnemyTarget();
             }
+        }
 
+        private void Tick_SkillCooldown(float dt)
+        {
             //Cooldowns aller Skill ticken lassen
             foreach (var s in socketedSkills)
                 s?.TickCooldown(dt);
-            autoAttack?.TickCooldown(dt); 
+            autoAttack?.TickCooldown(dt);
+        }
 
-            if (currentSkill != null)
+
+        private bool isCasting()
+        {
+            return currentSkill != null;
+        }
+
+        private void Advance_CastTimerOrFinish(float dt)
+        {
+            // vormals Inline im Update
+            castRemaining -= dt;
+
+            DebugManager.Log(
+                $"UI/HUD | Castbar {currentSkill.Data.DisplayName}: {Mathf.Max(0f, castRemaining):F2}s",
+                DebugManager.EDebugLevel.Debug, "UI"
+            );
+
+            if (castRemaining > 0f) return;
+
+            // --- Execute ---
+            var enemyCtrl = target ? target.GetComponent<EnemyController>() : null;
+            if (enemyCtrl != null && enemyCtrl.EnemyInstance != null)
             {
-                castRemaining -= dt;
-
-                // (Optional: HUD Castbar via Gizmos später)
-                DebugManager.Log($"UI/HUD | Castbar {currentSkill.Data.DisplayName}: {Mathf.Max(0f, castRemaining):F2}s", DebugManager.EDebugLevel.Debug,"UI");
-
-                if (castRemaining <= 0f)
+                float dist = Vector3.Distance(transform.position, enemyCtrl.transform.position);
+                if (dist <= currentSkill.Range)
                 {
-                    // --- Execute ---
-                    var enemyCtrl = target ? target.GetComponent<EnemyController>() : null;
-                    if (enemyCtrl != null && enemyCtrl.EnemyInstance != null)
-                    {
-                        // Range-Check unmittelbar vor Execute
-                        float dist = Vector3.Distance(transform.position, enemyCtrl.transform.position);
-                        if (dist <= currentSkill.Range)
-                        {
-                            DebugManager.Log($"Combat/Hero | Execute {currentSkill.Data.DisplayName} → {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)", DebugManager.EDebugLevel.Debug, "Fight");
-                            SkillExecutor.ExecuteSkill(
-                                currentSkill,
-                                heroInstance,
-                                transform,
-                                enemyCtrl.EnemyInstance,
-                                enemyCtrl.transform
-                            );
-                            // OnHit-Logs erfolgen im Executor/Projectile.
-                        }
-                        else
-                        {
-                            //DebugManager.Log($"Targeting | Out of Range: {currentSkill.Data.DisplayName} dist={dist:F1}m > {currentSkill.Range:F1}m");
-                        }
-                    }
-                    else
-                    {
-                        //DebugManager.Log($"Targeting | Kein gültiges Ziel für {currentSkill.Data.DisplayName}.");
-                    }
+                    DebugManager.Log(
+                        $"Combat/Hero | Execute {currentSkill.Data.DisplayName} → {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
+                        DebugManager.EDebugLevel.Debug, "Fight"
+                    );
 
-                    currentSkill = null; // Cast abgeschlossen
+                    SkillExecutor.ExecuteSkill(
+                        currentSkill,
+                        heroInstance,
+                        transform,
+                        enemyCtrl.EnemyInstance,
+                        enemyCtrl.transform
+                    );
                 }
-
-                return; // solange Casting läuft, keine neue Skillwahl
+                // sonst: Out-of-Range 
             }
+            // sonst: kein gültiges Ziel 
 
+            currentSkill = null; // Cast abgeschlossen
+        }
+
+        private void Try_StartNextSkillByRotation()
+        {
             var next = SelectNextReadySkill();
-            if (next == null)
-            {
-                // Fallback: AutoAttack nur wenn ALLE onCooldown
-                if (autoAttack != null && autoAttack.IsReady())
-                    next = autoAttack;
-            }
+            if (next == null && autoAttack != null && autoAttack.IsReady())
+                next = autoAttack;
 
-            if (next != null && target != null)
-            {
-                // --- CastStart ---
-                //DebugManager.Log($"Combat/Hero | CastStart {next.Data.DisplayName} (castTime={next.CastTime:F2}s)");
-                currentSkill = next;
-                castRemaining = Mathf.Max(0f, next.CastTime);
+            if (next == null || target == null) return;
 
-                // (Phase 4 „Anim“-Hook später; jetzt Log)
-                DebugManager.Log($"Anim | Play {next.Data.animationType} len={next.CastTime:F2}s", DebugManager.EDebugLevel.Debug,"Anim");
+            // --- CastStart ---
+            currentSkill = next;
+            castRemaining = Mathf.Max(0f, next.CastTime);
 
-                // Cooldown startet beim CastStart (so ist GCD-ähnliches Verhalten möglich)
-                next.StartCooldown();
-            }
+            DebugManager.Log(
+                $"Anim | Play {next.Data.animationType} len={next.CastTime:F2}s",
+                DebugManager.EDebugLevel.Debug, "Anim"
+            );
 
+            // Cooldown beim CastStart (wie bisher)
+            next.StartCooldown();
+        }
+
+        private void Handle_DebugShortcuts()
+        {
             // Debug: Per Taste Schaden an sich selbst
             if (Input.GetKeyDown(KeyCode.H))
             {
                 TakeDamage(5, DamageType.Physical);
             }
         }
+
 
         private SkillInstance SelectNextReadySkill()
         {
