@@ -79,67 +79,47 @@ namespace CHAL.Systems.Enemy
 
         private void Update()
         {
-            // ? EnemyInstance.UpdateEffects(Time.deltaTime);
-
-            if (!IsAlive || EnemyInstance == null) return;
+            if (!IsAlive || EnemyInstance == null) 
+                return;
 
             float dt = Time.deltaTime;
 
+            Tick_ReceiverStatusEffects(dt);
+            Tick_SkillCooldowns(dt);
+            HeroController heroCtrl = GetNextHeroTarget();
+
+            // 4) Laufenden Cast abwickeln
+            if (IsCasting())
+                Advance_CastTimeOrFinish(dt, heroCtrl);
+            else
+                Try_StartNextSkillByRotation(heroCtrl);
+
+        }
+
+        private void Tick_ReceiverStatusEffects(float dt)
+        {
             // 1) Effekte ticken
             EnemyInstance.UpdateEffects(dt);
+        }
 
+        private void Tick_SkillCooldowns(float dt)
+        {
             // 2) Cooldowns ticken
             foreach (var s in _attacks)
                 s?.TickCooldown(dt);
+        }
 
+        private HeroController GetNextHeroTarget()
+        {
             // 3) Ziel prüfen/suchen
             if (target == null || target.GetComponent<HeroController>() == null)
                 target = FindNextHeroTarget();
             var heroCtrl = target ? target.GetComponent<HeroController>() : null;
+            return heroCtrl;
+        }
 
-            // 4) Laufenden Cast abwickeln
-            if (_currentSkill != null)
-            {
-                _castRemaining -= dt;
-
-                // (Phase 6 HUD später) — hier nur Nachweis
-                //DebugManager.Log($"UI/HUD | Enemy Castbar {_currentSkill.Data.DisplayName}: {Mathf.Max(0, _castRemaining):F2}s");
-
-                if (_castRemaining <= 0f)
-                {
-                    // --- Execute ---
-                    if (heroCtrl != null && heroCtrl.IsAlive)
-                    {
-                        float dist = Vector3.Distance(transform.position, heroCtrl.transform.position);
-                        if (dist <= _currentSkill.Range)
-                        {
-                            DebugManager.Log($"Combat/Enemy | Execute {_currentSkill.Data.DisplayName} → {heroCtrl.name} (dist={dist:F1}m)");
-
-                            SkillExecutor.ExecuteSkill(
-                                _currentSkill,
-                                EnemyInstance,                // Quelle: EffectReceiver
-                                transform,                    // Quelle-Transform (VFX/Projectile)
-                                heroCtrl.GetEffectReceiver(), // Ziel: EffectReceiver
-                                heroCtrl.transform            // Ziel-Transform
-                            );
-                            // OnHit-Logs kommen aus dem Skill/Projectile.
-                        }
-                        else
-                        {
-                            DebugManager.Log($"Targeting | Out of Range (Enemy): {_currentSkill.Data.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F1}m");
-                        }
-                    }
-                    else
-                    {
-                        DebugManager.Log($"Targeting | Enemy hat kein gültiges Ziel für {_currentSkill.Data.DisplayName}.");
-                    }
-
-                    _currentSkill = null; // Cast abgeschlossen
-                }
-
-                return; // solange gecastet wird, keine neue Auswahl
-            }
-
+        private void Try_StartNextSkillByRotation(HeroController heroCtrl)
+        {
             // 5) Neuen Skill wählen (nur aus den Def-Autoattacks)
             var next = SelectNextReadyAttack();
             if (next != null && heroCtrl != null && heroCtrl.IsAlive)
@@ -150,13 +130,60 @@ namespace CHAL.Systems.Enemy
                 _castRemaining = Mathf.Max(0f, next.CastTime);
 
                 // (Phase 4: Animations-Hook als Stub)
-                DebugManager.Log($"Anim | Enemy Play {next.Data.animationType} len={next.CastTime:F2}s",DebugManager.EDebugLevel.Debug,"Anim");
+                DebugManager.Log($"Anim | Enemy Play {next.Data.animationType} len={next.CastTime:F2}s", DebugManager.EDebugLevel.Debug, "Anim");
 
                 // Cooldown startet bei CastStart (analog Hero)
                 next.StartCooldown();
             }
-
         }
+
+        private bool IsCasting()
+        {
+            return _currentSkill != null;
+        }
+
+        private void Advance_CastTimeOrFinish(float dt, HeroController heroCtrl)
+        {
+            _castRemaining -= dt;
+
+            // (Phase 6 HUD später) — hier nur Nachweis
+            //DebugManager.Log($"UI/HUD | Enemy Castbar {_currentSkill.Data.DisplayName}: {Mathf.Max(0, _castRemaining):F2}s");
+
+            if (_castRemaining <= 0f)
+            {
+                // --- Execute ---
+                if (heroCtrl != null && heroCtrl.IsAlive)
+                {
+                    float dist = Vector3.Distance(transform.position, heroCtrl.transform.position);
+                    if (dist <= _currentSkill.Range)
+                    {
+                        DebugManager.Log($"Combat/Enemy | Execute {_currentSkill.Data.DisplayName} → {heroCtrl.name} (dist={dist:F1}m)");
+
+                        SkillExecutor.ExecuteSkill(
+                            _currentSkill,
+                            EnemyInstance,                // Quelle: EffectReceiver
+                            transform,                    // Quelle-Transform (VFX/Projectile)
+                            heroCtrl.GetEffectReceiver(), // Ziel: EffectReceiver
+                            heroCtrl.transform            // Ziel-Transform
+                        );
+                        // OnHit-Logs kommen aus dem Skill/Projectile.
+                    }
+                    else
+                    {
+                        DebugManager.Log($"Targeting | Out of Range (Enemy): {_currentSkill.Data.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F1}m");
+                    }
+                }
+                else
+                {
+                    DebugManager.Log($"Targeting | Enemy hat kein gültiges Ziel für {_currentSkill.Data.DisplayName}.");
+                }
+
+                _currentSkill = null; // Cast abgeschlossen
+            }
+
+            return; // solange gecastet wird, keine neue Auswahl
+        }
+
 
         private SkillInstance SelectNextReadyAttack()
         {
