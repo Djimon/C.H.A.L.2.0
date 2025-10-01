@@ -33,10 +33,20 @@ namespace CHAL.Systems.Skill
 
         private void Update()
         {
+            MoveForward();
+
+            Check_LifetimeExpiration();
+        }
+
+        private void MoveForward()
+        {
             float delta = Time.deltaTime;
             transform.position += direction * speed * delta;
             lifespan -= delta;
+        }
 
+        private void Check_LifetimeExpiration()
+        {
             if (lifespan <= 0f)
             {
                 DebugManager.Log($"[Projectile] {skill.Data.DisplayName} expired before hitting", DebugManager.EDebugLevel.Dev, "Projectile");
@@ -44,33 +54,45 @@ namespace CHAL.Systems.Skill
             }
         }
 
+
         private void OnTriggerEnter(Collider other)
         {
-            if (!other.CompareTag("Unit")) return;
-            if (other.gameObject.layer == LayerMask.NameToLayer("Projectile")) return;
-
-            // Alle Units haben einen Controller mit EffectReceiver
-            var unitCtrl = other.GetComponent<IUnitController>() ?? other.GetComponentInParent<IUnitController>(); 
-            if (unitCtrl == null) return;
-
-            var targetReceiver = unitCtrl.GetEffectReceiver();
-            if (targetReceiver == null) return;
-
-            // Self-hit niemals erlaubt
-            if (ReferenceEquals(source, targetReceiver)) return;
-
-            // Friendly-Fire global
-            if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == targetReceiver.Team) return;
+            EffectReceiver targetReceiver;
+            ValidateFastReturns(other,out targetReceiver);
 
             //TODO: nur markierte targets treffen?
-            //v ergleich target mit targetReceiver
+            // vergleich target mit targetReceiver
 
             SkillExecutor.ApplyOnHit(skill, source, targetReceiver);
-
             DebugManager.Log($"[Projectile] {skill.Data.DisplayName} hit {targetReceiver}", DebugManager.EDebugLevel.Test, "Projectile");
 
-
             Destroy(gameObject);
+        }
+
+        private void ValidateFastReturns(Collider other, out EffectReceiver targRE)
+        {
+            targRE = null;
+            if (!other.CompareTag("Unit"))
+                return;
+            if (other.gameObject.layer == LayerMask.NameToLayer("Projectile"))
+                return;
+
+            // Alle Units haben einen Controller mit EffectReceiver
+            var unitCtrl = other.GetComponent<IUnitController>() ?? other.GetComponentInParent<IUnitController>();
+            if (unitCtrl == null)
+                return;
+
+            targRE = unitCtrl.GetEffectReceiver();
+            if (targRE == null)
+                return;
+
+            // Self-hit niemals erlaubt
+            if (ReferenceEquals(source, targRE))
+                return;
+
+            // Friendly-Fire global
+            if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == targRE.Team)
+                return;
         }
     }
 }

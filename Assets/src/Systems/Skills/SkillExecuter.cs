@@ -19,23 +19,13 @@ namespace CHAL.Systems.Skill
 
             DebugManager.Log($"[SkillExecutor] {source} starts casting {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
 
-            // 1. OnCast Effects
-            if (inst.Data.OnCastEffects != null)
-            {
-                foreach (var effect in inst.Data.OnCastEffects)
-                {
-                    effect.Apply(inst, source, source); // self-target for buffs
-                }
-            }
+            Do_OnCastImpactEffects(inst, source);
+            Handle_CastTimeHook(inst, source);
+            HandleSkillByType(inst, source, sourceTr, target, targetTr);
+        }
 
-            // 2. Cast time simulation
-            float castTime = inst.CastTime;
-            if (castTime > 0)
-            {
-                // später: AnimationManager.Play(inst.Data.AnimationType, castTime)
-                DebugManager.Log($"[SkillExecutor] {source} casting for {castTime} seconds", DebugManager.EDebugLevel.Dev, "Skill");
-            }
-
+        private static void HandleSkillByType(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
+        {
             // 3. Apply main effect
             switch (inst.Data.SkillType)
             {
@@ -57,20 +47,63 @@ namespace CHAL.Systems.Skill
             }
         }
 
+        private static void Handle_CastTimeHook(SkillInstance inst, EffectReceiver source)
+        {
+            // 2. Cast time simulation
+            float castTime = inst.CastTime;
+            if (castTime > 0)
+            {
+                // später: AnimationManager.Play(inst.Data.AnimationType, castTime)
+                DebugManager.Log($"[SkillExecutor] {source} casting for {castTime} seconds", DebugManager.EDebugLevel.Dev, "Skill");
+            }
+        }
+
+        private static void Do_OnCastImpactEffects(SkillInstance inst, EffectReceiver source)
+        {
+            // 1. OnCast Effects
+            if (inst.Data.OnCastImpactEffects != null)
+            {
+                foreach (var effect in inst.Data.OnCastImpactEffects)
+                {
+                    effect.Apply(inst, source, source); // self-target for buffs
+                }
+            }
+        }
+
         public static void ExecuteSkill(SkillInstance inst, EffectReceiver source, EffectReceiver target)
         {
             ExecuteSkill(inst, source, null, target, null);
         }
 
-        private static void ApplyMelee(SkillInstance inst, EffectReceiver source, EffectReceiver target)
+        private static void ValidateFastReturnRules(EffectReceiver source, EffectReceiver target)
         {
             if (target == null) return;
             if (ReferenceEquals(source, target)) return;
             if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == target.Team) return;
+        }
+
+        private static void ApplyMelee(SkillInstance inst, EffectReceiver source, EffectReceiver target)
+        {
+            ValidateFastReturnRules(source, target);
 
             DebugManager.Log($"[SkillExecutor] {source} hits {target} with {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
             ApplyOnHit(inst, source, target);
         }
+
+        private static void ApplySpell(SkillInstance inst, EffectReceiver source, EffectReceiver target, Transform targetTr)
+        {
+            ValidateFastReturnRules(source, target);
+
+            DebugManager.Log($"[SkillExecutor] {source} casts spell {inst.Data.DisplayName} on {target}", DebugManager.EDebugLevel.Dev, "Skill");
+            ApplyOnHit(inst, source, target);
+        }
+
+        private static void ApplySummon(SkillInstance inst, EffectReceiver source)
+        {
+            DebugManager.Log($"[SkillExecutor] {source} summons unit via {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
+            // später: Summon-Controller implementieren
+        }
+
 
         private static void SpawnProjectile(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
         {
@@ -82,13 +115,23 @@ namespace CHAL.Systems.Skill
                 return;
             }
 
-            Vector3 startPos = sourceTr.position;
-            Vector3 dir;
+            Vector3 startPos, dir;
+            ComputeSpawnAndDirection(sourceTr, targetTr, out startPos, out dir);
+            CreateProjectile(inst, source, target, startPos, dir);
+        }
+
+        
+        private static void ComputeSpawnAndDirection(Transform sourceTr, Transform targetTr, out Vector3 startPos, out Vector3 dir)
+        {
+            startPos = sourceTr.position;
             if (targetTr != null) dir = (targetTr.position - sourceTr.position);
             else dir = sourceTr.forward;
             if (dir.sqrMagnitude < 0.0001f) dir = sourceTr.forward;
             dir.Normalize();
+        }
 
+        private static void CreateProjectile(SkillInstance inst, EffectReceiver source, EffectReceiver target, Vector3 startPos, Vector3 dir)
+        {
             float speed = Mathf.Max(0.01f, inst.ProjectileSpeed);
             float life = Mathf.Max(0.1f, inst.Range / speed);
 
@@ -104,23 +147,6 @@ namespace CHAL.Systems.Skill
             // WICHTIG: KEINE OnHit-Effekte hier ausführen — das macht das Projektil bei Kollision
         }
 
-        private static void ApplySpell(SkillInstance inst, EffectReceiver source, EffectReceiver target, Transform targetTr)
-        {
-            if (target == null) return;
-            if (ReferenceEquals(source, target)) return;
-            if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == target.Team) return;
-            
-            DebugManager.Log($"[SkillExecutor] {source} casts spell {inst.Data.DisplayName} on {target}", DebugManager.EDebugLevel.Dev, "Skill");
-            ApplyOnHit(inst, source, target);
-        }
-
-
-        private static void ApplySummon(SkillInstance inst, EffectReceiver source)
-        {
-            DebugManager.Log($"[SkillExecutor] {source} summons unit via {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
-            // später: Summon-Controller implementieren
-        }
-
         internal static void ApplyOnHit(SkillInstance skill, EffectReceiver source, EffectReceiver target)
         {
             if (skill == null || skill.Data == null || target == null)
@@ -129,29 +155,20 @@ namespace CHAL.Systems.Skill
                 return;
             }
 
-            // 1) OnHit-Effekte (Buff/DoT u.ä.)
-            var effects = skill.Data.OnHitEffects;
-            if (effects != null && effects.Count > 0)
-            {
-                for (int i = 0; i < effects.Count; i++)
-                    effects[i]?.Apply(skill, source, target);
-            }
+            DoOnHitImpactEffects(skill, source, target);
 
-            //Deal Damage
             float baseDmg = Mathf.Max(0f, skill.Data.BaseDamage);
             var DmgEntries = skill.Data.DamageTypes;
 
             if (DmgEntries == null || DmgEntries.Count == 0)
-            {
-                // Fallback: voller BaseDamage als Physical
-                target.TakeDamage(baseDmg, DamageType.Physical);
-                DebugManager.Log(
-                    $"OnHit | {skill.Data.DisplayName} → {target} : {baseDmg:F1} Physical",
-                    DebugManager.EDebugLevel.Test, "Fight"
-                );
-                return;
-            }
+                FallbackDamage(skill, target, baseDmg, DmgEntries);
+            
+            ApplyCompleteDamage(skill, target, baseDmg, DmgEntries);
 
+        }
+
+        private static void ApplyCompleteDamage(SkillInstance skill, EffectReceiver target, float baseDmg, System.Collections.Generic.List<DamageEntry> DmgEntries)
+        {
             for (int i = 0; i < DmgEntries.Count; i++)
             {
                 var e = DmgEntries[i];
@@ -166,8 +183,28 @@ namespace CHAL.Systems.Skill
                 target.TakeDamage(dmg, type);
                 DebugManager.Log($"OnHit | {skill.Data.DisplayName} → {target}: {dmg:F1} {type}", DebugManager.EDebugLevel.Test, "Fight");
             }
+        }
 
+        private static void FallbackDamage(SkillInstance skill, EffectReceiver target, float baseDmg, System.Collections.Generic.List<DamageEntry> DmgEntries)
+        {
+            // Fallback: voller BaseDamage als Physical
+            target.TakeDamage(baseDmg, DamageType.Physical);
+            DebugManager.Log(
+                $"OnHit | {skill.Data.DisplayName} → {target} : {baseDmg:F1} Physical",
+                DebugManager.EDebugLevel.Test, "Fight"
+            );
+            return;  
+        }
 
+        private static void DoOnHitImpactEffects(SkillInstance skill, EffectReceiver source, EffectReceiver target)
+        {
+            // 1) OnHit-Effekte (Buff/DoT u.ä.)
+            var effects = skill.Data.OnHitImpactEffects;
+            if (effects != null && effects.Count > 0)
+            {
+                for (int i = 0; i < effects.Count; i++)
+                    effects[i]?.Apply(skill, source, target);
+            }
         }
     }
 }

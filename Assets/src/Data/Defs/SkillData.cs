@@ -33,9 +33,9 @@ public class SkillData : ScriptableObject
 
     [Header("Hooks / Effects")]
     [Tooltip("Effects applied immediately when the skill is cast.")]
-    public List<SkillImpactBase> OnCastEffects;
+    public List<SkillImpactBase> OnCastImpactEffects;
     [Tooltip("Effects applied when this skill successfully hits a target.")]
-    public List<SkillImpactBase> OnHitEffects;
+    public List<SkillImpactBase> OnHitImpactEffects;
 
     [Header("Meta")]
     public List<SkillTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
