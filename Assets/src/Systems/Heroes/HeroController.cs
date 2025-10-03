@@ -151,8 +151,8 @@ namespace CHAL.Systems.Hero
             if (_currentTarget != null)
             {
                 // Lebt es noch?
-                var er = _currentTarget.GetComponent<EffectReceiver>();
-                if (er == null || er.CurrentHP <= 0f || IsOutOfSight(myPos, _currentTarget.position, sight))
+                var er = _currentTarget.GetComponent<EnemyController>();
+                if (er == null || er.GetEffectReceiver().CurrentHP <= 0f || IsOutOfSight(myPos, _currentTarget.position, sight))
                 {
                     _currentTarget = null; // Lock lösen
                 }
@@ -161,7 +161,7 @@ namespace CHAL.Systems.Hero
             // Wenn kein Target: neu wählen (Prio v0: Nearest; Alternative HighestHP)
             if (_currentTarget == null)
             {
-                var team = GetComponent<EffectReceiver>()?.Team ?? UnitTeam.Neutral;
+                var team = heroInstance.Team;
 
                 // Wähle deine gewünschte Prio:
                 // Transform t = UnitLocator.Instance.GetHighestHPEnemy(myPos, team, sight);
@@ -354,6 +354,8 @@ namespace CHAL.Systems.Hero
                 DebugManager.EDebugLevel.Test, "Hero");
 
             OnHeroDied?.Invoke(this);
+
+            gameObject.SetActive(false);
 
             // ToDO: Animation, Despawn, Cleanup
         }

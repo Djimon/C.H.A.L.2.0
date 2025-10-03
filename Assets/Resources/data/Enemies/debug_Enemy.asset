@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyId: debug_rat
   displayNameKey: debug_rat
-  baseHP: 100
+  baseHP: 30
   baseDamage: 2
   moveSpeed: 2
+  sightRange: 10
   lootValue: 1
   xpReward: 1
   BaseRank: 1

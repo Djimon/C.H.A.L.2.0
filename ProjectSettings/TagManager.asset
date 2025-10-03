@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - clickableObject
   - Unit
+  - Obstacle
   layers:
   - Default
   - TransparentFX
@@ -14,12 +15,12 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - Projectile
+  - Ground
+  - Obstacle
   - 
   - 
   - Loot
-  - 
+  - Projectile
   - 
   - 
   - 
