@@ -1,0 +1,140 @@
+\documentclass[12pt]{article}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage{titlesec}
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+%\usepackage[ngerman]{babel}
+\usepackage[english]{babel}
+\usepackage{tocloft}
+\usepackage[most]{tcolorbox}
+\usepackage{graphicx}
+
+
+\pagestyle{fancy}
+\fancyhf{} % alle Felder leeren
+
+\renewcommand{\headrulewidth}{0pt}
+
+\renewcommand{\footrulewidth}{0.4pt} % Linienhöhe
+\renewcommand{\footrule}{{%
+		\color{gray!50!white}\hrule height 0.4pt
+}}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\definecolor{header2}{HTML}{0067FE} %mpmX blue
+\definecolor{header1}{HTML}{00DC96} %mpmX green
+\definecolor{header3}{HTML}{333333}
+
+\titleformat{\section}
+{\normalfont\Large\bfseries\color{black!10!header1}} % Schriftstil
+{\thesection}{1em}{}[\color{header3!50!gray}\titlerule] % Nummerierung, Abstand, Unterlinie
+\titlespacing*{\section}{0pt}{1.5em}{1em} % linker Rand, Abstand davor, Abstand danach
+
+\titleformat{\subsection}
+{\normalfont\large\bfseries\color{header1!90}}
+{\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{1em}{0.75em}
+
+\titleformat{\subsubsection}
+{\normalfont\normalsize\bfseries\color{header2!70}}
+{\thesubsubsection}{1em}{}
+\titlespacing*{\subsubsection}{0pt}{0.75em}{0.2em}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries\color{header3!50!gray}}
+{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}{0pt}{1em}{0.2em}
+
+\titleformat{\subparagraph}
+{\normalfont\normalsize\itshape\color{header3!30!gray}}
+{\thesubparagraph}{1em}{}
+\titlespacing*{\subparagraph}{0em}{1em}{0em}
+
+
+\setcounter{secnumdepth}{5} % Nummerierung bis Ebene bis Ebene 5  
+\setcounter{tocdepth}{3} % Inhaltsverzeichnis bis Ebene 3 aufblättern:
+
+\setlength{\cftsecindent}{0pt}
+\setlength{\cftsubsecindent}{0em}
+\setlength{\cftsubsubsecindent}{1em}
+% Schriftart im TOC kleiner & modern
+\renewcommand{\cftsecfont}{\color{black!10!header1}\sffamily} %
+\renewcommand{\cftsubsecfont}{\color{header1!90}\sffamily\small}
+\renewcommand{\cftsubsubsecfont}{\color{header2!70}\sffamily\footnotesize}
+\renewcommand{\cftsecpagefont}{\sffamily}
+\renewcommand{\cftsubsecpagefont}{\sffamily\small}
+\renewcommand{\cftsubsubsecpagefont}{\sffamily\footnotesize}
+\renewcommand{\cftdotsep}{2}
+
+% Dokumenttitel (klassisch)
+\newcommand{\doctitle}{Game Design Document}
+\title{GENE STORM \\ \doctitle}
+\author{Djih}
+\date{\today}
+
+
+% Header
+\fancyhead[L]{\footnotesize\color{gray!60!black}\sffamily \leftmark}
+\fancyhead[R]{\includegraphics[height=0.5cm]{logo}}
+
+% Footer
+\fancyfoot[L]{\footnotesize\color{gray!60!black}\sffamily\doctitle} % Dokumententitel links
+\fancyfoot[C]{\footnotesize\color{gray!60!black}\sffamily \today}
+\fancyfoot[R]{\footnotesize\color{gray!60!black}\sffamily Page \thepage\ of \pageref{LastPage}} % Rechts: Seite X von Y
+
+\begin{document}
+	\maketitle
+	
+	\begin{picture}(0,0)
+		\put(170,160){\includegraphics[width=3cm]{logo}}
+	\end{picture}
+	
+	\begin{tcolorbox}[breakable,enhanced, colback=white, colframe=gray!50,
+		boxrule=0.4pt, arc=1mm, left=4mm, right=4mm, top=2mm, bottom=2mm,
+		enhanced]
+		
+		\tableofcontents	
+	\end{tcolorbox}
+	
+	\thispagestyle{empty} %verhindert Header und Footer auf dieser ersten Seite
+	\newpage
+	
+	\input{chapters/frontmatter}
+	
+	\input{chapters/overview}
+	
+	\input{chapters/gamedesign}
+	
+	\input{chapters/systems}
+	
+	\input{chapters/content_bible}
+	
+	\input{chapters/tdd}
+	
+	\input{chapters/UI}
+	
+	\input{chapters/balance}
+
+	
+\end{document}
+
+
+\section{Modernes Layout}
+Hier beginnt dein Inhalt.
+
+\subsection{Moderner Unterabschnitt}
+Inhalt hier.
+
+\subsubsection{Biespiel 1}
+weitere Text kommt hier
+
+\paragraph{Szenario A}
+wird hier beschrieben
+
+\subparagraph{Ausprägung 112}
+geht noch tiefer ins detail und bricht dann automatisch um und ist dann hoffentlich auch nach dem Umbruch noch eingrückt?
