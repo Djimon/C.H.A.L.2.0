@@ -10,7 +10,7 @@ public class MoveAgent
 
     private Vector3 Destination;
 
-    public void SetDestination(Vector4 dest)
+    public void SetDestination(Vector3 dest)
     { 
         Destination = dest;
     }

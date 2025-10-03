@@ -14,10 +14,11 @@ namespace CHAL.Data
         public int baseHP = 10;
         public int baseDamage = 2;
         public float moveSpeed = 2f;
+        public float sightRange = 10f;
+
+        [Header("Reward Settings")]
         public int lootValue = 1;            // Einfluss aufs Budget-System
         public int xpReward = 1;
-
-        [Header("Classification")]
         public EnemyRank BaseRank = EnemyRank.Normal;  // Rank = Spawn, Normal, Magic, Elite, Boss …
         public List<string> baseTags = new();             // z. B. "insectoid", "poison"
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace CHAL.Data
 {
@@ -14,6 +15,8 @@ namespace CHAL.Data
         public ArchetypeDef Archetype;       // Verweis auf ArchetypeDef
         public int BaseHealth = 100;
         public float BaseMovementSpeed = 2f;
+        public float sightRange = 20f;
+
 
         [Header("Visuals")]
         public Sprite Portrait;

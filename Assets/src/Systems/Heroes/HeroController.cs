@@ -30,7 +30,7 @@ namespace CHAL.Systems.Hero
 
         //AI
         private MoveAgent move;
-        private float SightRange = 10f; //Define in HeroDef
+        private float SightRange = 10f; 
 
         // Events
         public event Action<HeroController> OnHeroDied;
