@@ -28,6 +28,10 @@ namespace CHAL.Systems.Hero
 
         public bool IsAlive => heroInstance != null && heroInstance.CurrentHP > 0;
 
+        //AI
+        private MoveAgent move;
+        private float SightRange = 10f; //Define in HeroDef
+
         // Events
         public event Action<HeroController> OnHeroDied;
 
@@ -90,7 +94,11 @@ namespace CHAL.Systems.Hero
 
             Tick_ReceiverStatusEffects(dt);
 
-            EnsureTarget();
+            EnsureTarget(); //Brutforce only for debug
+
+            Targeting();
+
+            DoMovement();
 
             Tick_SkillCooldown(dt);
 
@@ -117,6 +125,16 @@ namespace CHAL.Systems.Hero
             {
                 target = FindNextEnemyTarget();
             }
+        }
+
+        private void Targeting()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DoMovement()
+        {
+            throw new NotImplementedException();
         }
 
         private void Tick_SkillCooldown(float dt)
@@ -147,6 +165,10 @@ namespace CHAL.Systems.Hero
 
             // --- Execute ---
             var enemyCtrl = target ? target.GetComponent<EnemyController>() : null;
+
+            //TODO: Target in Sight? return 
+            //TODO: Target in range? return
+
             if (enemyCtrl != null && enemyCtrl.EnemyInstance != null)
             {
                 float dist = Vector3.Distance(transform.position, enemyCtrl.transform.position);

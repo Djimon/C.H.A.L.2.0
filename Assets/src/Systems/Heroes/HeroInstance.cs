@@ -54,6 +54,12 @@ namespace CHAL.Systems.Hero
             }
         }
 
+        public float GetEffectiveMovementSpeed()
+        {
+            //TODO: Modfier drauf rechnen
+            return heroDef.BaseMovementSpeed;
+        }
+
         protected override void OnDeath()
         {
             //DIE

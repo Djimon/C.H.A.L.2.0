@@ -25,6 +25,10 @@ namespace CHAL.Systems.Enemy
 
         public bool IsAlive => EnemyInstance != null && EnemyInstance.CurrentHP > 0;
 
+        //AI
+        private MoveAgent move;
+        float sightRange = 10f; //Define in EnemyDef
+
         private void Start()
         {
             // Falls via Inspector schon gesetzt: sofort initialisieren
@@ -85,6 +89,11 @@ namespace CHAL.Systems.Enemy
             float dt = Time.deltaTime;
 
             Tick_ReceiverStatusEffects(dt);
+
+            Targeting();
+
+            DoMovement();
+
             Tick_SkillCooldowns(dt);
             HeroController heroCtrl = GetNextHeroTarget();
 
@@ -100,6 +109,16 @@ namespace CHAL.Systems.Enemy
         {
             // 1) Effekte ticken
             EnemyInstance.UpdateEffects(dt);
+        }
+
+        private void Targeting()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DoMovement()
+        {
+            throw new NotImplementedException();
         }
 
         private void Tick_SkillCooldowns(float dt)
