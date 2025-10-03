@@ -24,5 +24,9 @@ namespace CHAL.Data
 
         [Header("Wave Templates")]
         public List<WaveDef> waveDefs;     // aktuell noch konkret, später Constraints
+        public int subWaveCount = 5;
+        public float interSubWaveDealy = 10f;
+        public int maxConCurrentEnemies = 25;
+
     }
 }
