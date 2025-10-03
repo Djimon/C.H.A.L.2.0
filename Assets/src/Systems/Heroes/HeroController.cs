@@ -1,6 +1,8 @@
 ﻿using CHAL.Data;
+using CHAL.Systems.AI;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Skill;
+using CHAL.Systems.Unit;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,11 +31,22 @@ namespace CHAL.Systems.Hero
         public bool IsAlive => heroInstance != null && heroInstance.CurrentHP > 0;
 
         //AI
-        private MoveAgent move;
-        private float SightRange = 10f; 
+        private MoveAgent _move;
+        private bool _initedMove = false;
+        private Transform _currentTarget;
 
         // Events
         public event Action<HeroController> OnHeroDied;
+
+        private void OnEnable()
+        {
+            UnitLocator.Instance.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            UnitLocator.Instance.Unregister(this);
+        }
 
         public void Start()
         {
@@ -94,7 +107,7 @@ namespace CHAL.Systems.Hero
 
             Tick_ReceiverStatusEffects(dt);
 
-            EnsureTarget(); //Brutforce only for debug
+            //EnsureTarget(); //Brutforce only for debug
 
             Targeting();
 
@@ -102,7 +115,7 @@ namespace CHAL.Systems.Hero
 
             Tick_SkillCooldown(dt);
 
-            if (isCasting())
+            if (IsCasting())
                 Advance_CastTimerOrFinish(dt);
             else
                 Try_StartNextSkillByRotation();
@@ -129,12 +142,72 @@ namespace CHAL.Systems.Hero
 
         private void Targeting()
         {
-            throw new NotImplementedException();
+            if (!IsAlive) { _currentTarget = null; return; }
+
+            float sight = HeroDef.sightRange; // Def.sightRange oder BalanceConfig.SightRangeDefault
+            var myPos = transform.position;
+
+            // Falls wir ein Ziel hatten: ist es noch valide (lebt & in Sicht)?
+            if (_currentTarget != null)
+            {
+                // Lebt es noch?
+                var er = _currentTarget.GetComponent<EffectReceiver>();
+                if (er == null || er.CurrentHP <= 0f || IsOutOfSight(myPos, _currentTarget.position, sight))
+                {
+                    _currentTarget = null; // Lock lösen
+                }
+            }
+
+            // Wenn kein Target: neu wählen (Prio v0: Nearest; Alternative HighestHP)
+            if (_currentTarget == null)
+            {
+                var team = GetComponent<EffectReceiver>()?.Team ?? UnitTeam.Neutral;
+
+                // Wähle deine gewünschte Prio:
+                // Transform t = UnitLocator.Instance.GetHighestHPEnemy(myPos, team, sight);
+                Transform t = UnitLocator.Instance != null
+                    ? UnitLocator.Instance.GetNearestEnemy(myPos, team, sight)
+                    : null;
+
+                _currentTarget = t;
+            }
+
         }
 
         private void DoMovement()
         {
-            throw new NotImplementedException();
+            EnsureMoveAgentInitialized();
+
+            if (_currentTarget == null || _move == null)
+            {
+                // Kein Target: optional zum „Spawn/Home“ laufen – v0: stehen.
+                _move.StopOrHold();
+                return;
+            }
+
+            // StoppingDistance = Reach aus nächster geplanten Aktion
+            float reach = GetPlannedReachOrDefault();
+            _move.StoppingDistance = reach;
+
+            Vector3 targetPos = _currentTarget.position;
+
+            // Ranged-Comfort: nur, wenn NICHT gerade caste
+            bool isCasting = IsCasting(); 
+            if (!isCasting && ShouldDoRangedBackstep(targetPos))
+            {
+                // v0: kleiner Rückschritt entlang -forward Richtung vom Target
+                Vector3 dir = (transform.position - targetPos).normalized;
+                float RangedComfortMin = 3.0f;
+                Vector3 backTarget = transform.position + dir * (RangedComfortMin + 0.5f);
+                _move.SetDestination(backTarget);
+                return;
+            }
+
+            // Normaler Move bis in StoppingRange
+            if (!_move.IsInStoppingRange(targetPos))
+                _move.SetDestination(targetPos);
+            else
+                _move.StopOrHold();
         }
 
         private void Tick_SkillCooldown(float dt)
@@ -146,7 +219,7 @@ namespace CHAL.Systems.Hero
         }
 
 
-        private bool isCasting()
+        private bool IsCasting()
         {
             return currentSkill != null;
         }
@@ -318,6 +391,52 @@ namespace CHAL.Systems.Hero
                                                       
             return new SkillInstance(sd, owner);
         }
+
+        // Liefert die Reach (StoppingDistance) für die NÄCHSTE geplante Aktion.
+        // v0: Falls du noch keinen Zugriff auf den nächsten Skill-Range hast,
+        // nimm Melee/Ranged-Heuristik oder den AutoAttack-Typ.
+        private float GetPlannedReachOrDefault()
+        {
+            // TODO: Wenn dein Rotationssystem den nächsten Skill/AutoAttack liefert,
+            //       gib dessen Range hier zurück (in Metern).
+            //       Bis dahin: Heuristik – Hero/Enemy hat typ AutoAttackMelee?
+            bool nextIsMelee = true; // <— ersetze später durch echte Abfrage
+            float MeleeReachDefault = 1.5f;
+            return nextIsMelee ? MeleeReachDefault : 0f;
+        }
+
+        // Optional: Ist das Ziel außerhalb Sicht?
+        private static bool IsOutOfSight(Vector3 self, Vector3 target, float sightRange)
+        {
+            float sr2 = sightRange * sightRange;
+            return (target - self).sqrMagnitude > sr2;
+        }
+
+        private void EnsureMoveAgentInitialized()
+        {
+            if (_move == null) _move = GetComponent<MoveAgent>();
+            // Init nur einmal, danach kannst du Buffs/Debuffs per ApplyRuntimeSpeed() verändern
+            if (_move != null && !_initedMove)
+            {
+                float baseSpeed = HeroDef.sightRange; // HeroDef.moveSpeed / EnemyDef.moveSpeed
+                bool isHero = true;
+                _move.Init(baseSpeed, isHero, radius: 0.35f, overridePriority: null);
+                _initedMove = true;
+            }
+        }
+
+        private bool ShouldDoRangedBackstep(Vector3 targetPos)
+        {
+            // Wenn du Nahkämpfer bist → nie backstep
+            bool isRangedArchetype = true; // TODO: aus Def/Archetype ableiten
+            if (!isRangedArchetype) return false;
+
+            float RangedComfortMin = 3.0f; //TODO: global auslagern
+            float min = RangedComfortMin;
+            float sqr = (targetPos - transform.position).sqrMagnitude;
+            return sqr < (min * min);
+        }
+
 
         public EffectReceiver GetEffectReceiver()
         {
