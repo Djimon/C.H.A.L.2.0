@@ -46,6 +46,8 @@ namespace CHAL.Systems.Wave
         }
         private List<SubWaveSlice> _subWavePlan; // Index 0..S-1
 
+        private bool _allSubWavesSpawned = false;
+
         private void Awake()
         {
             _rules = new LootRulesService();
@@ -85,6 +87,7 @@ namespace CHAL.Systems.Wave
             var wave = BuildWaveComposition(mapDef, wDef); // behält deine existierende Logik
             _waveCtx = new WaveLootContext(wave);
             _aliveEnemies.Clear();
+            _allSubWavesSpawned = false;
 
             // --- SubWave-Plan vorbereiten (feste Größe pro SubWave + Backloading) ---
             PrepareSubWaveDistribution(mapDef, wDef, out _subWavePlan);
@@ -123,6 +126,10 @@ namespace CHAL.Systems.Wave
 
             // Danach: Wave endet wie gehabt, sobald alle Gegner tot sind (HandleEnemyKilled → EndWave)
             DebugManager.Log("All SubWaves spawned. Waiting for cleanup...", DebugManager.EDebugLevel.Test, "Wave");
+
+            _allSubWavesSpawned = true;
+
+            TryEndWave();
         }
 
         private IEnumerator RunSubWaveRoutine(MapDef mapDef, WaveDef wDef, SubWaveSlice slice)
@@ -351,7 +358,12 @@ namespace CHAL.Systems.Wave
                 lc.Init(d.ItemId, d.quantity);
             }
 
-            if (_aliveEnemies.Count == 0)
+                TryEndWave();
+        }
+
+        private void TryEndWave()
+        {
+            if (_allSubWavesSpawned && _aliveEnemies.Count == 0)
             {
                 _roller.FinalizeWave(_waveCtx);
                 DebugManager.Log("Wave Completed!", DebugManager.EDebugLevel.Test, "Wave");
