@@ -13,6 +13,9 @@ namespace CHAL.Systems.Loot
 {
     public sealed class LootRoller
     {
+        //TODO: Implement Luck
+        // luck 0 = same cahnce, luck 100 = 2x chance on rare items
+
         private readonly LootRulesService _rules;
         private readonly UnluckyProtection _unlucky;
 

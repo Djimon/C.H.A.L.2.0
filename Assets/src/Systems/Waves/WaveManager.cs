@@ -339,7 +339,7 @@ namespace CHAL.Systems.Wave
             waveRewards.AddCurrency("gold", _roller.RollGoldForMonster(instance, _MapMangerRef.CurrentMap.baseLevel));
             waveRewards.AddXP(_roller.RollXPForMonster(instance, _MapMangerRef.CurrentMap.baseLevel, _MapMangerRef.CurrentMap.difficulty, _MapMangerRef.CurrentWave));
 
-            var drops = _roller.RollLootForMonster(instance, _waveCtx);
+            var drops = _roller.RollLootForMonster(def, instance, _waveCtx);
             foreach (var d in drops)
             {
                 Vector3 spawnPos = pos + Vector3.up * 1f
@@ -600,7 +600,7 @@ namespace CHAL.Systems.Wave
 
             // UnluckyProtection hier absichtlich frisch, damit Runs unabhängig sind
             var roller = new LootRoller(_rules, new UnluckyProtection());
-            WaveSimRunner.RunStats(roller, wave, mapDef.baseLevel, mapDef.difficulty, runs: 100);
+            //WaveSimRunner.RunStats(roller, wave, mapDef.baseLevel, mapDef.difficulty, runs: 100);
         }
 
     }
