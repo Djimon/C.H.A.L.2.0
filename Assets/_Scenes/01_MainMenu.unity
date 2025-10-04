@@ -322,6 +322,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config: {fileID: 0}
+  inputManager: {fileID: 0}
+  heroCatalog: {fileID: 11400000, guid: b0339df6de471254690437ae7760d56c, type: 2}
 --- !u!1 &1482080552
 GameObject:
   m_ObjectHideFlags: 0

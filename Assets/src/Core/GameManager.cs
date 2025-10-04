@@ -27,6 +27,9 @@ namespace CHAL.Core
 
         [SerializeField]
         public HeroDef starterHero { get; private set; }
+        [SerializeField]
+        private HeroCatalog heroCatalog;
+        public HeroCatalog HeroCatalogue => heroCatalog;
 
         public static GameManager Instance { get; private set; }
         public PlayerProfile Profile { get; private set; }

@@ -20,7 +20,6 @@ namespace CHAL.Systems.Map
         public GameObject selectHeroUI;
 
         [Header("Heroes")]
-        [SerializeField] private List<HeroDef> heroCatalog;      // im Inspector befüllen
         [SerializeField] private GameObject heroFallbackPrefab;   // optionaler Fallback
         private Dictionary<string, HeroDef> _heroById;
         private List<string> _pendingSelectedHeroes;
@@ -79,8 +78,6 @@ namespace CHAL.Systems.Map
             else
                 DebugManager.Warning("Missing MapPrefab");
 
-
-            BuildHeroIndex();
 
             var selectUI = selectHeroUI.GetComponent<HeroSelectionUI>();
             selectUI.Init(this);
@@ -150,8 +147,8 @@ namespace CHAL.Systems.Map
 
         private HeroDef ResolveHeroDef(string heroId)
         {
-            if (string.IsNullOrEmpty(heroId) || _heroById == null) return null;
-            return _heroById.TryGetValue(heroId, out var def) ? def : null;
+            if (string.IsNullOrEmpty(heroId)) return null;
+            return GameManager.Instance.HeroCatalogue != null ? GameManager.Instance.HeroCatalogue.GetById(heroId) : null;
         }
 
         private GameObject GetHeroPrefab(HeroDef def)
@@ -159,6 +156,11 @@ namespace CHAL.Systems.Map
             // Annahme: Dein HeroDef enthält ein Prefab-Feld (falls nicht, nutze heroFallbackPrefab)
             var prefab = def != null ? def.Prefab : null; // falls dein Feld anders heißt: anpassen
             return prefab != null ? prefab : heroFallbackPrefab;
+        }
+
+        internal void SetSelectedHeroes(List<string> heroIds)
+        {
+            _pendingSelectedHeroes = heroIds != null ? new List<string>(heroIds) : null;
         }
 
         public void OnWaveCompleted(bool success, WaveRewards rewards)
@@ -199,21 +201,5 @@ namespace CHAL.Systems.Map
             StartWave();
         }
 
-        private void BuildHeroIndex()
-        {
-            _heroById = new Dictionary<string, HeroDef>();
-            if (heroCatalog == null) return;
-            foreach (var def in heroCatalog)
-            {
-                if (def == null) continue;
-                if (!string.IsNullOrEmpty(def.HeroId))           // HeroDef.HeroId existiert bereits
-                    _heroById[def.HeroId] = def;
-            }
-        }
-
-        internal void SetSelectedHeroes(List<string> heroIds)
-        {
-            _pendingSelectedHeroes = heroIds != null ? new List<string>(heroIds) : null;
-        }
     }
 }
