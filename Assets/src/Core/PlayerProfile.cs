@@ -25,6 +25,9 @@ namespace CHAL.Data
         public int missingXP;           // Noch fehlende XP bis LevelUp
         public float levelProgress;     // 0..1 für UI-Balken
 
+        //  --- Heros/ Roster ---
+        public List<string> UnlockedHeroes = new();
+
         // --- Currencies ---
         public Dictionary<string, int> Currencies = new();
         // Beispiel: { "gold" -> 1234, "dna" -> 50 
@@ -46,6 +49,9 @@ namespace CHAL.Data
         { 
             playerName = name;
             playerColors = colors;
+
+            var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
+            EnsureStarterHeroUnlocked(starterId);
 
             SaveSystem.Save(this);
         }
@@ -78,6 +84,35 @@ namespace CHAL.Data
 
             Currencies[currencyId] -= amount;
             return true;
+        }
+
+        public IReadOnlyList<string> GetUnlockedHeroes()
+            => UnlockedHeroes;
+
+        public bool IsHeroUnlocked(string heroId)
+            => !string.IsNullOrEmpty(heroId) && UnlockedHeroes.Contains(heroId);
+
+        public bool UnlockHero(string heroId)
+        {
+            if (string.IsNullOrEmpty(heroId)) return false;
+            if (UnlockedHeroes.Contains(heroId)) return false;
+            UnlockedHeroes.Add(heroId);
+            return true;
+        }
+
+        public bool LockHero(string heroId)
+        {
+            if (string.IsNullOrEmpty(heroId)) return false;
+            return UnlockedHeroes.Remove(heroId);
+        }
+
+        public bool EnsureStarterHeroUnlocked(string starterHeroId)
+        {
+            if (string.IsNullOrEmpty(starterHeroId)) return false;
+            if (UnlockedHeroes == null) UnlockedHeroes = new List<string>();
+            if (UnlockedHeroes.Contains(starterHeroId)) return false;
+            UnlockedHeroes.Add(starterHeroId);
+            return true; // hat was geändert
         }
 
 

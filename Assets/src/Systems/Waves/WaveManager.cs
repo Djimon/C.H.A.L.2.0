@@ -13,7 +13,9 @@ namespace CHAL.Systems.Wave
     {
         [Header("Setup")]
         public WaveDef waveDef;
-        public List<Transform> spawnPoints;
+        public List<Transform> EnemySpawnPoints;
+
+        public List<Transform> HeroSpawns;
 
         [Header("Debug Input")]
         [SerializeField] private MapDef debugMap;
@@ -161,7 +163,7 @@ namespace CHAL.Systems.Wave
 
             GameObject prefab = GetEnemyPrefab(baseDef);
 
-            var go = Instantiate(prefab, SelectSpawnpoint(spawnPoints), Quaternion.identity);
+            var go = Instantiate(prefab, SelectSpawnpoint(EnemySpawnPoints), Quaternion.identity);
             var ec = go.GetComponent<EnemyController>();
             ec.Init(instance);
             _aliveEnemies.Add(ec);

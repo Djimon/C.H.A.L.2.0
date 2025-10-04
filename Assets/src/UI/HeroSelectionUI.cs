@@ -93,6 +93,11 @@ public class HeroSelectionUI : IngameUI
         mapManager = mapMGR;
         maxSlots = mapManager.CurrentMap.heroSlots;
 
+        var profile = GameManager.Instance.Profile;
+        var roster = profile != null ? profile.GetUnlockedHeroes() : System.Array.Empty<string>();
+        availableHeroes = new List<string>(roster); // UI-Liste füllen
+
+
         selectedHeroes = new List<string>(new string[maxSlots]);
 
         // UI-Slots sichtbar/unsichtbar schalten
@@ -180,6 +185,7 @@ public class HeroSelectionUI : IngameUI
     private void OnStartWaveClicked()
     {
         //ToDO: Give the map the selectedHeroes
+        mapManager.SetSelectedHeroes(selectedHeroes);
         mapManager.StartWave();
         Show(false);
     }

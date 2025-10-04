@@ -25,6 +25,9 @@ namespace CHAL.Core
         [SerializeField]
         private InputManager inputManager;
 
+        [SerializeField]
+        public HeroDef starterHero { get; private set; }
+
         public static GameManager Instance { get; private set; }
         public PlayerProfile Profile { get; private set; }
 
@@ -96,8 +99,12 @@ namespace CHAL.Core
 
         public void ResetProfile()
         {
+            var oldName = Profile.playerName;
+            var oldColors = Profile.playerColors;
             Profile = new PlayerProfile();
-            SaveGame();
+
+            Profile.InitializePlayer(oldName, oldColors);
+            //InitalizePlayer autosavfes
         }
 
         // ---------------------------
@@ -144,6 +151,9 @@ namespace CHAL.Core
                 DebugManager.Warning("Kein Save zum Fortsetzen gefunden", "System");
                 return;
             }
+
+            var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
+            Profile.EnsureStarterHeroUnlocked(starterId);
 
             SetState(GameState.Hideout); 
             SceneManager.LoadScene("03_Hideout");

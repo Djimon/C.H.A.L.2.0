@@ -199,7 +199,10 @@ namespace CHAL.Systems.Hero
                 Vector3 dir = (transform.position - targetPos).normalized;
                 float RangedComfortMin = 3.0f;
                 Vector3 backTarget = transform.position + dir * (RangedComfortMin + 0.5f);
-                _move.SetDestination(backTarget);
+
+                //TODO: Only for ranged attackers!!
+                //_move.SetDestination(backTarget);
+
                 return;
             }
 

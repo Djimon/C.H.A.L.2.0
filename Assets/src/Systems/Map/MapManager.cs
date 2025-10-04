@@ -1,6 +1,9 @@
 ﻿using CHAL.Core;
 using CHAL.Data;
+using CHAL.Systems.Hero;
 using CHAL.Systems.Wave;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CHAL.Systems.Map
@@ -15,6 +18,12 @@ namespace CHAL.Systems.Map
         public GameObject waveRewardUI;
         public GameObject mapRewardUI;
         public GameObject selectHeroUI;
+
+        [Header("Heroes")]
+        [SerializeField] private List<HeroDef> heroCatalog;      // im Inspector befüllen
+        [SerializeField] private GameObject heroFallbackPrefab;   // optionaler Fallback
+        private Dictionary<string, HeroDef> _heroById;
+        private List<string> _pendingSelectedHeroes;
 
 
         private WaveManager _waveManager;
@@ -70,6 +79,9 @@ namespace CHAL.Systems.Map
             else
                 DebugManager.Warning("Missing MapPrefab");
 
+
+            BuildHeroIndex();
+
             var selectUI = selectHeroUI.GetComponent<HeroSelectionUI>();
             selectUI.Init(this);
             selectUI.Show(true);   
@@ -95,9 +107,58 @@ namespace CHAL.Systems.Map
                 return;
             }
 
+            SpawnSelectedHeroesAtSlots(_pendingSelectedHeroes, _waveManager);
+
             DebugManager.Log($"Starte Wave {CurrentWave}/{MaxWaves}", DebugManager.EDebugLevel.Test, "Map");
 
             _waveManager.StartWave(CurrentMap, CurrentWave, this);
+        }
+
+        private void SpawnSelectedHeroesAtSlots(List<string> heroIds, WaveManager waveMgr)
+        {
+            if (waveMgr == null) return;
+            var spawns = waveMgr.HeroSpawns; // kommen aus dem Map-Prefab (am WaveManager)
+            if (spawns == null || spawns.Count == 0) return;      // keine Slots auf der Map
+
+            int max = Mathf.Min(spawns.Count, heroIds != null ? heroIds.Count : 0);
+            for (int i = 0; i < max; i++)
+            {
+                var heroId = heroIds[i];
+                if (string.IsNullOrEmpty(heroId)) continue;
+
+                var def = ResolveHeroDef(heroId);
+                var prefab = GetHeroPrefab(def);
+                if (prefab == null)
+                {
+                    DebugManager.Warning($"No prefab for hero '{heroId}'. Skipping.", "Map");
+                    continue;
+                }
+
+                var spawnTr = spawns[i];
+                var go = Instantiate(prefab, spawnTr.position, spawnTr.rotation);
+                var hc = go.GetComponent<HeroController>();
+                if (hc != null)
+                {
+                    hc.Init(def); // setzt Team=Player u.a. und baut AutoAttack/Skills im Start() auf
+                }
+                else
+                {
+                    DebugManager.Warning($"Spawned hero '{heroId}' has no HeroController!", "Map");
+                }
+            }
+        }
+
+        private HeroDef ResolveHeroDef(string heroId)
+        {
+            if (string.IsNullOrEmpty(heroId) || _heroById == null) return null;
+            return _heroById.TryGetValue(heroId, out var def) ? def : null;
+        }
+
+        private GameObject GetHeroPrefab(HeroDef def)
+        {
+            // Annahme: Dein HeroDef enthält ein Prefab-Feld (falls nicht, nutze heroFallbackPrefab)
+            var prefab = def != null ? def.Prefab : null; // falls dein Feld anders heißt: anpassen
+            return prefab != null ? prefab : heroFallbackPrefab;
         }
 
         public void OnWaveCompleted(bool success, WaveRewards rewards)
@@ -136,6 +197,23 @@ namespace CHAL.Systems.Map
             CurrentWave++;
             GameManager.Instance.SetState(GameState.MapPhase);
             StartWave();
+        }
+
+        private void BuildHeroIndex()
+        {
+            _heroById = new Dictionary<string, HeroDef>();
+            if (heroCatalog == null) return;
+            foreach (var def in heroCatalog)
+            {
+                if (def == null) continue;
+                if (!string.IsNullOrEmpty(def.HeroId))           // HeroDef.HeroId existiert bereits
+                    _heroById[def.HeroId] = def;
+            }
+        }
+
+        internal void SetSelectedHeroes(List<string> heroIds)
+        {
+            _pendingSelectedHeroes = heroIds != null ? new List<string>(heroIds) : null;
         }
     }
 }
