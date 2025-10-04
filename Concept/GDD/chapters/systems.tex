@@ -10,8 +10,94 @@
 
 \subsection{Perks and Traits}
 
+
+
 \subsection{Enemies}
 
+
+
 \subsection{Loot and Rarities}
+\subsubsection*{Purpose}
+This section specifies the complete loot flow from wave setup to final rewards. It is implementation-agnostic and defines inputs, order of operations, and balancing knobs.
+
+\subsubsection*{Key Terms}
+\begin{itemize}
+	\item \textbf{Wave Budget $B$}: Total loot value budget allocated to a wave.
+	\item \textbf{Spent Budget $U$}: Accumulated loot value already awarded in the current wave.
+	\item \textbf{Rarity $R$}: Item quality tier (e.g., Common, Uncommon, Rare, Epic, Legendary, \dots).
+	\item \textbf{Base Chance $p_{\text{base}}[R]$}: The configured per–rarity drop chance before any modifiers.
+	\item \textbf{Unlucky Multiplier $m_{\text{unlucky}}[R]$}: Pity-protection factor derived from recent fails / hits per rarity.
+	\item \textbf{Luck Factor $L$}: Linear luck strength; $L=0$ (no bonus), $L=1$ (+100%), $L=2$ (+200%), etc.
+	\item \textbf{Luck Scale $k[R]$}: Optional per–rarity scaling of luck (default $k[R]=1.0$).
+	\item \textbf{Budget Multiplier $m_{\text{budget}}(U, \text{lootValue}, B, R)$}: Soft damping when $U$ approaches/exceeds $B$, including rarity floors.
+	\item \textbf{Effective Tags}: The union of an enemy’s \emph{baseTags} and \emph{bonusTags}.
+\end{itemize}
+
+\subsubsection*{0) Wave Setup}
+\begin{enumerate}
+	\item \textbf{Compute Wave Budget $B$}: Derived from wave composition (ranks, counts), map difficulty and level; add variance; initialize $U=0$.
+	\item \textbf{Load and Merge Loot Rules}: For all tags present in the wave, prepare the merged rule set (drop pools, min/max drops, rarity guarantees, secret rules).
+\end{enumerate}
+
+\subsubsection*{1) On Enemy Kill}
+\begin{enumerate}
+	\item \textbf{Determine Roll Count}: Based on enemy rank/type (e.g., Elite may trigger more rolls than Normal).
+	\item \textbf{Build Effective Tag Set}: $effectiveTags = baseTags \cup bonusTags$ (duplicates ignored for logic; weighting optional).
+\end{enumerate}
+
+\subsubsection*{2) Per Roll (for this enemy)}
+\begin{enumerate}
+	\item \textbf{Pick Tag}: Randomly select one tag from $effectiveTags$ (optionally bias bonusTags slightly).
+	\item \textbf{Resolve Tag Rule}: Activate the corresponding merged loot rule for this tag (yields a list of loot entries to attempt).
+\end{enumerate}
+
+\subsubsection*{3) Iterate the Tag’s Drop Entries}
+For each \emph{loot entry} (which may be a single chance or a list of chances), evaluate one \emph{rarity block} at a time. The system supports \emph{parallel rarity rolls} so that multiple rarities can succeed in the same slot.
+
+\paragraph*{Factor Order (per rarity $R$):}
+\begin{enumerate}
+	\item \textbf{Base Chance}: $p_{\text{base}}[R]$
+	\item \textbf{Unlucky (Pity)}: multiply by $m_{\text{unlucky}}[R]$
+	\item \textbf{Luck (Linear, No Cap)}: multiply by $(1 + L \cdot k[R])$ \
+	\emph{Example:} $p_{\text{eff, preBudget}}[R] = p_{\text{base}}[R] \cdot m_{\text{unlucky}}[R] \cdot (1 + L \cdot k[R])$
+	\item \textbf{Budget (Soft Brake + Floors)}: multiply by $m_{\text{budget}}(U, \text{lootValue}, B, R)$ \
+	$\rightarrow$ $p_{\text{roll}}[R] = p_{\text{eff, preBudget}}[R] \cdot m_{\text{budget}}(\cdot)$
+	\item \textbf{RNG Roll}: If success, \textbf{award one item} of rarity $R$ (this slot can yield multiple items if several rarities succeed).
+\end{enumerate}
+
+\paragraph*{Post-Roll Accounting (per rarity):}
+\begin{itemize}
+	\item On success: add the item to results; increase $U$ by its \texttt{lootValue}; call Unlucky.OnDrop$(R)$.
+	\item On fail: call Unlucky.OnFail$(R)$.
+\end{itemize}
+
+\subsubsection*{4) Secret Drops (Optional, Per Enemy)}
+Evaluate secret/conditional drops (e.g., specific tag combinations). These are additional rolls that can yield extra items. They do not interfere with the regular pity counters unless explicitly specified.
+
+\subsubsection*{5) Wave Finalization}
+\begin{enumerate}
+	\item \textbf{MinDrops Failsafe}: If total items $<$ configured minimum for the wave, add items from the wave’s mixed pool until the minimum is met. This path increases $U$; whether it resets pity per rarity is a policy toggle (recommended: \emph{does not} reset pity to preserve fairness).
+	\item \textbf{Rarity Guarantees}: If a minimum per rarity is required, top up those rarities. This path typically \emph{does not} alter pity and may optionally bypass budget damping depending on economy policy.
+\end{enumerate}
+
+\subsubsection*{Design Notes}
+\begin{itemize}
+	\item \textbf{Parallel Rarity Rolls}: Each rarity is evaluated independently; \emph{all successes drop}. Lower-tier success does not consume or block higher-tier success.
+	\item \textbf{Luck Scope}: Luck affects \emph{quality} (rarity chances) only. Quantity remains governed by entries, rules, and budget. If desired, allow certain luck-driven drops to \emph{ignore} budget damping (economy-sensitive).
+	\item \textbf{Budget as Soft Brake}: $m_{\text{budget}}$ smoothly reduces chances when $U$ exceeds $B$; rarity floors prevent near-zero results for higher tiers.
+	\item \textbf{Tags as Theme Driver}: Use $effectiveTags$ for both regular and secret rolls; optional small biases can keep bonusTags slightly more impactful without excluding baseTags.
+\end{itemize}
+
+\subsubsection*{Balancing Knobs}
+\begin{itemize}
+	\item \textbf{Per–rarity base chances} $p_{\text{base}}[R]$
+	\item \textbf{Unlucky growth/reset rates} per rarity
+	\item \textbf{Luck factor} $L$ (from passive tree, map mods, etc.) and \textbf{luck scales} $k[R]$
+	\item \textbf{Budget damping} curve parameters and \textbf{rarity floors}
+	\item \textbf{Tag pick weighting} (base vs. bonus) and secret-drop criteria
+	\item \textbf{Failsafe policies}: whether MinDrops/Guarantees affect pity or budget
+\end{itemize}
+
+
 
 \subsection{Meta Progression}

@@ -17,27 +17,28 @@
 \contentsline {subsection}{\numberline {3.5}Perks and Traits}{3}{}%
 \contentsline {subsection}{\numberline {3.6}Enemies}{3}{}%
 \contentsline {subsection}{\numberline {3.7}Loot and Rarities}{3}{}%
-\contentsline {subsection}{\numberline {3.8}Meta Progression}{3}{}%
-\contentsline {section}{\numberline {4}Content Bible}{3}{}%
-\contentsline {subsection}{\numberline {4.1}Archetypes and Characters}{3}{}%
-\contentsline {subsection}{\numberline {4.2}Skill Catalog}{3}{}%
-\contentsline {subsection}{\numberline {4.3}Modificator Catalog}{3}{}%
-\contentsline {subsection}{\numberline {4.4}Enemy Taxonomy}{3}{}%
-\contentsline {subsection}{\numberline {4.5}Maps & Waves}{4}{}%
-\contentsline {section}{\numberline {5}Technical Design}{4}{}%
-\contentsline {subsection}{\numberline {5.1}Architecture Overview}{4}{}%
-\contentsline {subsection}{\numberline {5.2}Datamodell}{4}{}%
-\contentsline {subsection}{\numberline {5.3}Runtime-Pipelines}{4}{}%
-\contentsline {subsection}{\numberline {5.4}Saving}{4}{}%
-\contentsline {subsection}{\numberline {5.5}Tooling and Debugging}{4}{}%
-\contentsline {subsection}{\numberline {5.6}Performance Budget}{4}{}%
-\contentsline {subsection}{\numberline {5.7}Coding Guidelines}{4}{}%
-\contentsline {section}{\numberline {6}UI/UX Specification}{4}{}%
-\contentsline {subsection}{\numberline {6.1}Information Flow}{4}{}%
-\contentsline {subsection}{\numberline {6.2}Key Screens}{4}{}%
-\contentsline {subsection}{\numberline {6.3}Input Periphery}{4}{}%
-\contentsline {subsection}{\numberline {6.4}Feedback}{4}{}%
-\contentsline {section}{\numberline {7}Balance and Tuning}{4}{}%
-\contentsline {subsection}{\numberline {7.1}Target Values}{4}{}%
-\contentsline {subsection}{\numberline {7.2}Curves}{4}{}%
-\contentsline {subsection}{\numberline {7.3}Test Scenarios}{4}{}%
+\contentsline {subsection}{\numberline {3.8}Loot Roll Logic (End-to-End)}{3}{}%
+\contentsline {subsection}{\numberline {3.9}Meta Progression}{6}{}%
+\contentsline {section}{\numberline {4}Content Bible}{6}{}%
+\contentsline {subsection}{\numberline {4.1}Archetypes and Characters}{6}{}%
+\contentsline {subsection}{\numberline {4.2}Skill Catalog}{6}{}%
+\contentsline {subsection}{\numberline {4.3}Modificator Catalog}{6}{}%
+\contentsline {subsection}{\numberline {4.4}Enemy Taxonomy}{6}{}%
+\contentsline {subsection}{\numberline {4.5}Maps & Waves}{6}{}%
+\contentsline {section}{\numberline {5}Technical Design}{6}{}%
+\contentsline {subsection}{\numberline {5.1}Architecture Overview}{6}{}%
+\contentsline {subsection}{\numberline {5.2}Datamodell}{6}{}%
+\contentsline {subsection}{\numberline {5.3}Runtime-Pipelines}{6}{}%
+\contentsline {subsection}{\numberline {5.4}Saving}{6}{}%
+\contentsline {subsection}{\numberline {5.5}Tooling and Debugging}{6}{}%
+\contentsline {subsection}{\numberline {5.6}Performance Budget}{6}{}%
+\contentsline {subsection}{\numberline {5.7}Coding Guidelines}{6}{}%
+\contentsline {section}{\numberline {6}UI/UX Specification}{6}{}%
+\contentsline {subsection}{\numberline {6.1}Information Flow}{6}{}%
+\contentsline {subsection}{\numberline {6.2}Key Screens}{6}{}%
+\contentsline {subsection}{\numberline {6.3}Input Periphery}{6}{}%
+\contentsline {subsection}{\numberline {6.4}Feedback}{6}{}%
+\contentsline {section}{\numberline {7}Balance and Tuning}{6}{}%
+\contentsline {subsection}{\numberline {7.1}Target Values}{6}{}%
+\contentsline {subsection}{\numberline {7.2}Curves}{6}{}%
+\contentsline {subsection}{\numberline {7.3}Test Scenarios}{6}{}%
