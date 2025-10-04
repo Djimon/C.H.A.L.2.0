@@ -26,11 +26,15 @@ namespace CHAL.Systems.Loot
         /// Rollt Loot für einen einzelnen Gegner bei dessen Tod.
         /// Nutzt Budget & Unlucky aus dem WaveContext.
         /// </summary>
-        public List<LootResultEntry> RollLootForMonster(EnemyStruct monster, WaveLootContext ctx)
+        public List<LootResultEntry> RollLootForMonster(EnemyDef def, EnemyStruct monster, WaveLootContext ctx)
         {
             var results = new List<LootResultEntry>();
 
-            if (monster.bonusTags == null || monster.bonusTags.Count == 0)
+            var effectiveTags = def.baseTags.Concat(monster.bonusTags ?? Enumerable.Empty<string>())
+                                            .Distinct(System.StringComparer.OrdinalIgnoreCase)
+                                            .ToList();
+
+            if (effectiveTags == null || effectiveTags.Count == 0)
                 return results;
 
             // 1. Multiplikator abhängig vom Rank bestimmen
@@ -39,7 +43,9 @@ namespace CHAL.Systems.Loot
             for (int r = 0; r < rolls; r++)
             {
                 // 2. Zufälligen Tag picken
-                var tag = monster.bonusTags[Random.Range(0, monster.bonusTags.Count)];
+                //TODO: Base-tags werden ignoriert?
+
+                var tag = effectiveTags[Random.Range(0, effectiveTags.Count)];
 
                 // 3. Regel für diesen Tag laden
                 var merged = _rules.GetMergedForTags(new[] { tag });
@@ -65,7 +71,7 @@ namespace CHAL.Systems.Loot
                 }
 
                 // 5. SecretDrops pro Monster
-                var secretDrops = _rules.GetSecretDrops(monster.bonusTags);
+                var secretDrops = _rules.GetSecretDrops(effectiveTags);
                 foreach (var sd in secretDrops)
                 {
                     float roll = Random.Range(0f, 100f);
