@@ -24,7 +24,7 @@ MonoBehaviour:
   baseTags:
   - insectoid
   baseAttacks:
-  - {fileID: 11400000, guid: 1b3dce28142df8f458380154b1d7c967, type: 2}
+  - {fileID: 11400000, guid: 53e474e9581a30f419dd717f2b248b17, type: 2}
   - {fileID: 11400000, guid: 23820601697bac84aa5619a344f41630, type: 2}
   aiType: 1
   prefab: {fileID: 0}

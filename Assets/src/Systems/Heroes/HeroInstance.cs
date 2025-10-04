@@ -26,6 +26,9 @@ namespace CHAL.Systems.Hero
 
         public GameObject currentTarget;
 
+        public event Action<HeroInstance> Died;
+        private bool _isDead;
+
         public HeroInstance(HeroDef def)
         {
             this.heroDef = def;
@@ -47,6 +50,7 @@ namespace CHAL.Systems.Hero
         public override void TakeDamage(float amount, DamageType type)
         {
             //ToDO: Armor Resistences, etc
+            if (_isDead) return;
             CurrentHP -= amount;
             if (CurrentHP < 0)
             {
@@ -62,8 +66,12 @@ namespace CHAL.Systems.Hero
 
         protected override void OnDeath()
         {
-            //DIE
+            if (_isDead) return;                  // idempotent
+            _isDead = true;
+            CurrentHP = 0;
+
             DebugManager.Log($"{heroDef.DisplayName} died.", DebugManager.EDebugLevel.Test, "Hero");
+            Died?.Invoke(this);            
         }
 
         private void InitStats()
@@ -108,6 +116,12 @@ namespace CHAL.Systems.Hero
             }
 
             _totalGrowth = _goals.Values.Sum();
+        }
+
+        public float GetEffectiveBaseDamage()
+        {
+            // TODO: ActiveModifiers berücksichtigen (Multiplikatoren/Additive)
+            return heroDef.BaseDamage;
         }
 
         [ContextMenu("Debug/LevelUP")]

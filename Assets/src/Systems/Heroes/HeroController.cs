@@ -46,6 +46,9 @@ namespace CHAL.Systems.Hero
         private void OnDisable()
         {
             UnitLocator.Instance.Unregister(this);
+
+            if (heroInstance != null)                  // <— NEU: Abo lösen
+                heroInstance.Died -= OnHeroInstanceDied;
         }
 
         public void Start()
@@ -93,6 +96,8 @@ namespace CHAL.Systems.Hero
             heroInstance = new HeroInstance(def);
             heroInstance.Team = UnitTeam.Player;
 
+            heroInstance.Died += OnHeroInstanceDied;
+
             DebugManager.Log($"[HeroController] Spawned Hero {def.HeroId} ({def.DisplayName})",
                 DebugManager.EDebugLevel.Test, "Hero");
         }
@@ -131,14 +136,6 @@ namespace CHAL.Systems.Hero
             heroInstance.UpdateEffects(dt);
         }
 
-        private void EnsureTarget()
-        {
-            // Target validieren oder neu suchen
-            if (target == null || target.GetComponent<EnemyController>() == null)
-            {
-                target = FindNextEnemyTarget();
-            }
-        }
 
         private void Targeting()
         {
@@ -169,9 +166,17 @@ namespace CHAL.Systems.Hero
                     ? UnitLocator.Instance.GetNearestEnemy(myPos, team, sight)
                     : null;
 
-                _currentTarget = t;
+                if (t != null)
+                {
+                    _currentTarget = t;
+                }
+                else
+                {
+                    _currentTarget = null;
+                }
             }
 
+            target = _currentTarget;
         }
 
         private void DoMovement()
@@ -181,7 +186,7 @@ namespace CHAL.Systems.Hero
             if (_currentTarget == null || _move == null)
             {
                 // Kein Target: optional zum „Spawn/Home“ laufen – v0: stehen.
-                _move.StopOrHold();
+                _move.ClearPathHard();
                 return;
             }
 
@@ -345,10 +350,12 @@ namespace CHAL.Systems.Hero
             DebugManager.Log($"[HeroController] {HeroDef.DisplayName} took {amount} {type} damage (HP={heroInstance.CurrentHP}/{heroInstance.MaxHP})",
                 DebugManager.EDebugLevel.Dev, "Hero");
 
-            if (heroInstance.CurrentHP <= 0)
-            {
-                Die();
-            }
+        }
+
+        private void OnHeroInstanceDied(HeroInstance inst)   // <— NEU
+        {
+            if (inst != heroInstance) return;
+            Die();
         }
 
         private void Die()
@@ -358,7 +365,11 @@ namespace CHAL.Systems.Hero
 
             OnHeroDied?.Invoke(this);
 
+            currentSkill = null;
+            _move?.StopOrHold();
+
             gameObject.SetActive(false);
+            Destroy(gameObject);
 
             // ToDO: Animation, Despawn, Cleanup
         }
@@ -368,7 +379,7 @@ namespace CHAL.Systems.Hero
             var sd = ScriptableObject.CreateInstance<SkillData>();
             sd.SkillId = "base_attack_melee";
             sd.DisplayName = "Base Melee";
-            sd.BaseDamage = 5f;
+            sd.BaseDamage = owner.GetEffectiveBaseDamage();
             sd.CastTime = 0.30f;
             sd.Cooldown = 1.20f;
             sd.Range = SkillRange.Melee;
@@ -385,7 +396,7 @@ namespace CHAL.Systems.Hero
             var sd = ScriptableObject.CreateInstance<SkillData>();
             sd.SkillId = "base_attack_ranged";
             sd.DisplayName = "Base Ranged";
-            sd.BaseDamage = 4f;
+            sd.BaseDamage = owner.GetEffectiveBaseDamage();
             sd.CastTime = 0.20f;
             sd.Cooldown = 1.00f;
             sd.Range = SkillRange.FarDistance;
@@ -423,7 +434,7 @@ namespace CHAL.Systems.Hero
             // Init nur einmal, danach kannst du Buffs/Debuffs per ApplyRuntimeSpeed() verändern
             if (_move != null && !_initedMove)
             {
-                float baseSpeed = HeroDef.sightRange; // HeroDef.moveSpeed / EnemyDef.moveSpeed
+                float baseSpeed = HeroDef.BaseMovementSpeed; // HeroDef.moveSpeed / EnemyDef.moveSpeed
                 bool isHero = true;
                 _move.Init(baseSpeed, isHero, radius: 0.35f, overridePriority: null);
                 _initedMove = true;

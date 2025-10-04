@@ -14,6 +14,7 @@ namespace CHAL.Data
         [Header("Gameplay")]
         public ArchetypeDef Archetype;       // Verweis auf ArchetypeDef
         public int BaseHealth = 100;
+        public float BaseDamage = 10f;
         public float BaseMovementSpeed = 2f;
         public float sightRange = 20f;
 

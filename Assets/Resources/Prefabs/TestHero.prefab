@@ -156,7 +156,7 @@ MonoBehaviour:
   HeroDef: {fileID: 11400000, guid: f96dd872c71033e458460914f6e0a931, type: 2}
   debugSocketSkills:
   - {fileID: 11400000, guid: 1b3dce28142df8f458380154b1d7c967, type: 2}
-  - {fileID: 11400000, guid: 23820601697bac84aa5619a344f41630, type: 2}
+  - {fileID: 11400000, guid: 0bc2123b6f0160442b93bcf11e52bdad, type: 2}
   - {fileID: 11400000, guid: 24617086cc8f57440867bd08f9f0199f, type: 2}
   - {fileID: 11400000, guid: 257f15c9a708614478c74564b7d3d253, type: 2}
   target: {fileID: 0}

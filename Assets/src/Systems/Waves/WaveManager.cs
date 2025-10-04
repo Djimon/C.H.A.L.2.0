@@ -351,8 +351,8 @@ namespace CHAL.Systems.Wave
             var drops = _roller.RollLootForMonster(def, instance, _waveCtx);
             foreach (var d in drops)
             {
-                Vector3 spawnPos = pos + Vector3.up * 1f
-                                   + new Vector3(UnityEngine.Random.Range(-0.2f, 0.2f), 0, UnityEngine.Random.Range(-0.2f, 0.2f));
+                Vector3 spawnPos = pos + Vector3.up * 2f
+                                   + new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
                 var lootObj = Instantiate(lootPrefab, spawnPos, Quaternion.identity);
                 var lc = lootObj.GetComponent<LootCube>();
                 lc.Init(d.ItemId, d.quantity);

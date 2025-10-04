@@ -101,6 +101,16 @@ namespace CHAL.Systems.AI
         }
 
         /// <summary>
+        /// Clear path complete
+        /// </summary>
+        public void ClearPathHard()
+        {
+            if (_agent == null) return;
+            _agent.isStopped = true;
+            _agent.ResetPath();
+        }
+
+        /// <summary>
         /// Reached the destination?
         /// </summary>
         public bool IsInStoppingRange(Vector3 targetPos)

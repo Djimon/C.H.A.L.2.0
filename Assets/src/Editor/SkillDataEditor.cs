@@ -63,8 +63,8 @@ public class SkillDataEditor : Editor
         EditorGUILayout.Space();
 
         // Hooks / Impacts (wieder sichtbar)
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCastEffects"), true);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnHitEffects"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCastImpactEffects"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnHitImpactEffects"), true);
 
         EditorGUILayout.Space();
 

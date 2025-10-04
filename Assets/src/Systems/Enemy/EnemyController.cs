@@ -32,6 +32,9 @@ namespace CHAL.Systems.Enemy
         private bool _initedMove = false;
         private Transform _currentTarget;
 
+        // Static Event für alle EnemyController
+        public static event Action<EnemyController, EnemyDef, EnemyStruct, Vector3> OnEnemyKilled;
+
         private void OnEnable()
         {
             UnitLocator.Instance.Register(this);
@@ -154,8 +157,16 @@ namespace CHAL.Systems.Enemy
                     ? UnitLocator.Instance.GetNearestEnemy(myPos, team, sight)
                     : null;
 
-                _currentTarget = t;
+                if (t != null)
+                {
+                    _currentTarget = t;
+                }
+                else
+                {
+                    _currentTarget = null;
+                }
             }
+            target = _currentTarget;
         }
 
         private void DoMovement()
@@ -165,7 +176,7 @@ namespace CHAL.Systems.Enemy
             if (_currentTarget == null || _move == null)
             {
                 // Kein Target: optional zum „Spawn/Home“ laufen – v0: stehen.
-                _move.StopOrHold();
+                _move.ClearPathHard();
                 return;
             }
 
@@ -392,8 +403,6 @@ namespace CHAL.Systems.Enemy
             return EnemyInstance;
         }
 
-        // Static Event für alle EnemyController
-        public static event System.Action<EnemyController, EnemyDef, EnemyStruct, Vector3> OnEnemyKilled;
     }
 }
 
