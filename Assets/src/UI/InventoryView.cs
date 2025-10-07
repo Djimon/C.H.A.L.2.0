@@ -1,10 +1,12 @@
-using CHAL.Systems.Inventory;
+ï»¿using CHAL.Systems.Inventory;
+using CHAL.Systems.Items;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEditor.Progress;
 
 public class InventoryView : MonoBehaviour
 {
+    public Sprite myInventoryBG;
     [SerializeField] private Vector2 _offset;
     [SerializeField] private UIDocument _doc;
 
@@ -44,27 +46,28 @@ public class InventoryView : MonoBehaviour
         _grid = root.Q<VisualElement>("Grid");
         if (_grid == null) { DebugManager.Error("UXML braucht ein Element mit name='Grid'."); return; }
 
+        _grid.style.backgroundImage = new StyleBackground(myInventoryBG);
+
         _grid.style.flexDirection = FlexDirection.Column;
         _grid.style.flexWrap = Wrap.Wrap;
         _grid.Clear();
 
-        //Zeilencontainer erstellen
-        int total = _cols * _rows;
+        // Layout
         int idx = 0;
         for (int r = 0; r < _rows; r++)
         {
             var row = new VisualElement();
             row.style.flexDirection = FlexDirection.Row;
-            //row.style.flexWrap = Wrap.NoWrap;
+            row.style.flexWrap = Wrap.NoWrap;
+            row.style.marginBottom = 4;
+
             for (int c = 0; c < _cols; c++, idx++)
-            {
-                var btn = MakeSlot(idx); // deine Button-Erzeugung (64x64 + Events)
-                row.Add(btn);
-            }
+                row.Add(MakeSlot(idx));              // siehe Schritt 2
+
             _grid.Add(row);
         }
 
-        CreateGhost(root);
+        //CreateGhost(root);
 
         _domain.OnSlotChanged += OnSlotChanged;
         RenderAllNow();
@@ -107,90 +110,44 @@ public class InventoryView : MonoBehaviour
         });
     }
 
-    private VisualElement MakeSlot(int i)
+    private VisualElement MakeSlot(int slotIndex)
     {
-        var tile = new VisualElement { name = $"slot_{i}"};
-        // simple Größe
-        tile.style.width = 64; tile.style.height = 64; tile.style.marginRight = 4; tile.style.marginBottom = 4;
-        tile.focusable = true;
-        tile.pickingMode = PickingMode.Position;
-        int slotIndex = i;
-        var label = new Label("-");
+        var tile = new VisualElement { name = $"slot_{slotIndex}" };
 
+        // IMMER SICHTBAR
+        tile.style.width = 64;
+        tile.style.height = 64;
+        tile.style.marginRight = 4;
+        tile.style.marginBottom = 4;
+        tile.style.flexDirection = FlexDirection.Column;
+        tile.pickingMode = PickingMode.Position;
+        tile.focusable = false;
+
+        // sichtbarer Rahmen + dunkler Hintergrund (volle Deckkraft)
+        tile.style.backgroundColor = new Color(0.16f, 0.16f, 0.16f, 1f);
+        var border = new Color(0.35f, 0.35f, 0.35f, 1f);
+        tile.style.borderTopWidth = tile.style.borderRightWidth =
+        tile.style.borderBottomWidth = tile.style.borderLeftWidth = 1;
+        tile.style.borderTopColor = tile.style.borderRightColor =
+        tile.style.borderBottomColor = tile.style.borderLeftColor = border;
+
+        // ICON (oben)
         var icon = new Image { name = "icon" };
         icon.scaleMode = ScaleMode.ScaleToFit;
-        icon.image = null;                       // starten ohne Sprite
-        icon.tintColor = Color.gray;             // Fallback: eintönig grau
-        icon.style.width = 64; icon.style.height = 46;                  // oben Icon
-        icon.pickingMode = PickingMode.Ignore;   // Events an das Tile durchlassen
+        icon.image = null;                      // leer = kein Sprite
+        icon.tintColor = Color.gray;            // Platzhaltergrau
+        icon.style.width = 64;
+        icon.style.height = 46;
+        icon.pickingMode = PickingMode.Ignore;  // Events weiterreichen (falls spÃ¤ter nÃ¶tig)
         tile.Add(icon);
 
-
+        // LABEL (unten)
+        var label = new Label("-") { name = "label" };
         label.style.unityTextAlign = TextAnchor.MiddleCenter;
+        label.style.fontSize = 11;
         label.style.flexGrow = 1;
-        label.pickingMode = PickingMode.Ignore; // <<<<<< WICHTIG
+        label.pickingMode = PickingMode.Ignore;
         tile.Add(label);
-
-        // LMB: Drag starten & auf Ziel droppen
-        tile.RegisterCallback<PointerDownEvent>(evt =>
-        {
-            if (evt.button != 0) return;
-
-            if (evt.button == 0)
-            {
-                var from = new ItemMoveObject { instanceID = _instanceID, slot = slotIndex };
-                _dnd.BeginDrag(from,splitHalf:false);
-
-                var s = _domain.Peek(_instanceID, slotIndex);
-
-                if (!s.HasValue) return;
-
-                if (s.HasValue && s.Value.count > 1)
-                    _ghostLabel.text = $"{s.Value.itemID}\n×{System.Math.Max(1, s.Value.count)}";
-                else
-                    _ghostLabel.text = $"{s.Value.itemID ?? "-"}\n×1";
-
-                _ghost.style.visibility = Visibility.Visible;
-                evt.StopImmediatePropagation();
-            }
-        });
-        //Drag benden: ablegen
-        tile.RegisterCallback<PointerUpEvent>(evt =>
-        {
-            if (evt.button != 0 || !_dnd.HasFrom) return;
-
-            if (evt.button == 0 && _dnd.HasFrom)
-            {
-                // Drop hier ablegen
-                _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
-                _ghost.style.visibility = Visibility.Hidden;
-                evt.StopPropagation();
-            }
-        });
-
-        // RMB: halbieren
-        tile.RegisterCallback<PointerDownEvent>(evt =>
-        {
-            if (evt.button != 1) return;
-
-            if (evt.button == 1)
-            {
-                var from = new ItemMoveObject { instanceID = _instanceID, slot = slotIndex };
-                _dnd.BeginDrag(from, splitHalf: true);
-
-                var s = _domain.Peek(_instanceID, slotIndex);
-
-                if (!s.HasValue) return;
-
-                if (s.HasValue && s.Value.count > 1)
-                    _ghostLabel.text = $"{s.Value.itemID}\n×{System.Math.Max(1, s.Value.count / 2)}";
-                else
-                    _ghostLabel.text = $"{s.Value.itemID ?? "-"}\n×1";
-
-                _ghost.style.visibility = Visibility.Visible;
-                evt.StopImmediatePropagation();
-            }
-        });
 
         return tile;
     }
@@ -212,36 +169,35 @@ public class InventoryView : MonoBehaviour
 
         var label = tile.Q<Label>("label") ?? tile.Q<Label>();
         var icon = tile.Q<Image>("icon") ?? tile.Q<Image>();
+        if (label == null || icon == null) return; // Safety, sollte nicht passieren
 
-        if (icon == null)
-        {
-            icon = new Image { name = "icon", scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
-            icon.style.width = 64; icon.style.height = 46;
-            tile.Insert(0, icon);
-        }
-        if (label == null)
-        {
-            label = new Label("-") { name = "label" };
-            label.style.unityTextAlign = TextAnchor.MiddleCenter;
-            label.style.fontSize = 11;
-            label.style.flexGrow = 1;
-            label.pickingMode = PickingMode.Ignore;
-            tile.Add(label);
-        }
-
-        var s = _domain.Peek(_instanceID, slotIndex);
+        var s = _domain.Peek(_instanceID, slotIndex); // Domain liefert Stack (oder null)
 
         if (s.HasValue)
         {
-            label.text = $"{s.Value.itemID}\n×{s.Value.count}";
-            // icon.image = <Sprite aus Registry>; // später
-            icon.tintColor = Color.white;  // oder neutral
+            // Count
+            label.text = $"Ã—{s.Value.count}";
+
+            // Icon + Tooltip-Name aus Registry (Fallbacks sicher)
+            Sprite sprite = null; 
+            string displayName = s.Value.itemID;
+            if (ItemRegistry.Instance.TryGet(s.Value.itemID, out var def)) // âœ” TryGet existiert
+            {
+                sprite = def.icon;
+                // TODO spÃ¤ter: displayName = Localization.Get(def) â€“ bis dahin itemId
+            }
+
+            icon.image = sprite !=null ? sprite.texture: null;               // null => bleibt grau
+            icon.tintColor = sprite ? Color.white : Color.gray;
+            tile.tooltip = displayName;        // Mouseover-Name
         }
         else
         {
+            // leer
             label.text = "-";
-            icon.image = null;             // fallback
-            icon.tintColor = Color.gray;   // einstöckiges Grau
+            icon.image = null;
+            icon.tintColor = Color.gray;
+            tile.tooltip = "leer";
         }
     }
 
