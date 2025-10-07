@@ -144,10 +144,63 @@ public class InventoryView : MonoBehaviour
         // LABEL (unten)
         var label = new Label("-") { name = "label" };
         label.style.unityTextAlign = TextAnchor.MiddleCenter;
+        label.style.color = Color.white;
         label.style.fontSize = 11;
         label.style.flexGrow = 1;
         label.pickingMode = PickingMode.Ignore;
         tile.Add(label);
+
+        //aufheben
+        tile.RegisterCallback<PointerDownEvent>(evt =>
+        {
+            if (evt.button != 0) return;
+
+            if (evt.button == 0 && !_dnd.HasFrom)
+            {
+                // Pickup nur wenn Slot belegt
+                var s = _domain.Peek(_instanceID, slotIndex);
+                if (!s.HasValue) return;
+
+                _dnd.BeginDrag(
+                    new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
+                    splitHalf: false
+                );
+            }
+            // Drop wird auf PointerUp gemacht (saubereres Verhalten)
+            evt.StopPropagation();
+        }, TrickleDown.TrickleDown);
+
+        //putdown
+        tile.RegisterCallback<PointerUpEvent>(evt =>
+        {
+            if (evt.button != 0) return;
+            if (!_dnd.HasFrom) return; // nichts in der Hand → nichts zu droppen
+            if (evt.button == 0)
+            {
+                _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
+                evt.StopPropagation();
+            }
+        }, TrickleDown.TrickleDown);
+
+
+        //Split
+        tile.RegisterCallback<PointerDownEvent>(evt =>
+        {
+            if (evt.button != 1) return;
+
+            if (evt.button == 1 && !_dnd.HasFrom)
+            {
+                // Pickup nur wenn Slot belegt
+                var s = _domain.Peek(_instanceID, slotIndex);
+                if (!s.HasValue) return;
+
+                _dnd.BeginDrag(
+                    new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
+                    splitHalf: true
+                );
+            }
+            evt.StopImmediatePropagation();
+        }, TrickleDown.TrickleDown);
 
         return tile;
     }
