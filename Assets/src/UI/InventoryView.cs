@@ -18,6 +18,8 @@ public class InventoryView : MonoBehaviour
     private VisualElement _ghost;
     private Label _ghostLabel;
 
+    [SerializeField]
+    public InvDnDProvider _invDnDProvider;
     private DragDropService _dnd;
 
     private void Awake()
@@ -25,7 +27,9 @@ public class InventoryView : MonoBehaviour
         // Auto-Fallback: wenn im Inspector nichts zugewiesen ist
         if (_doc == null)
             _doc = GetComponent<UIDocument>();
+
     }
+
 
     public void Bind(IInventoryDomain domain, string instanceID, int cols, int rows)
     {
@@ -34,7 +38,7 @@ public class InventoryView : MonoBehaviour
         _cols = cols;
         _rows = rows;
 
-        _dnd = new DragDropService(_domain);
+
 
         if (!_doc) { DebugManager.Error("UIDocument fehlt."); return; }
 
@@ -51,6 +55,20 @@ public class InventoryView : MonoBehaviour
         _grid.style.flexDirection = FlexDirection.Column;
         _grid.style.flexWrap = Wrap.Wrap;
         _grid.Clear();
+
+        if (_invDnDProvider == null)
+            _invDnDProvider = FindFirstObjectByType<InvDnDProvider>();
+
+        if (_invDnDProvider != null)
+        {
+            if (_invDnDProvider.domain == null)
+                _invDnDProvider.domain = _domain;       // <<< WICHTIG
+            _dnd = _invDnDProvider.Service;              // garantiert nicht null
+        }
+        else
+        {
+            _dnd = new DragDropService(_domain);         // Fallback: eigener Service
+        }
 
         // Layout
         int idx = 0;

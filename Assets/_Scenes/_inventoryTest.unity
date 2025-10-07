@@ -186,6 +186,7 @@ MonoBehaviour:
   myInventoryBG: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   _offset: {x: 0, y: 400}
   _doc: {fileID: 0}
+  _invDnDProvider: {fileID: 454150012}
 --- !u!1 &309612630
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,6 +375,51 @@ MonoBehaviour:
   myInventoryBG: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   _offset: {x: 0, y: 0}
   _doc: {fileID: 0}
+  _invDnDProvider: {fileID: 454150012}
+--- !u!1 &454150011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 454150013}
+  - component: {fileID: 454150012}
+  m_Layer: 0
+  m_Name: DnDProvider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &454150012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 454150011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 961efa0a206c6244798a6cb4f542faf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &454150013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 454150011}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.4502261, y: 2.1654415, z: 0.15156364}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1464211402
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,3 +612,4 @@ SceneRoots:
   - {fileID: 1692025716}
   - {fileID: 436547961}
   - {fileID: 206783062}
+  - {fileID: 454150013}
