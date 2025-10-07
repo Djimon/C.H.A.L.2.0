@@ -164,6 +164,16 @@ namespace CHAL.Systems.Items
             DebugManager.Log($"[ItemRegistry] Placeholder für '{itemId}' angelegt unter {assetPath}");
         }
 
+        public ItemType GetTypeOf(string itemId)
+        {
+            return ItemTypeUtils.FromId(itemId);
+        }
+
+        public bool IsType(string itemId, ItemType t)
+        {
+            return GetTypeOf(itemId) == t;
+        }
+
         public void TriggerInstance()
         {
             DebugManager.Log("trigger Instance form Itemregistry");

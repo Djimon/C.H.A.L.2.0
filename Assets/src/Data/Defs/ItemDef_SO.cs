@@ -1,4 +1,5 @@
 
+using CHAL.Systems.Items;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ namespace CHAL.Data
     {
         [Tooltip("Schema: category:item, z.B. remains:gland")]
         public string itemId;
+        [HideInInspector]
+        public ItemType itemType;
 
         //public string displayName; //abgeleitet von ID über Localizationmanager -> TODO
         [TextArea] public string description;
@@ -30,6 +33,8 @@ namespace CHAL.Data
 
         void OnValidate()
         {
+            itemType = ItemTypeUtils.FromId(itemId);
+
             // Basisschutz: korrekte ID
             if (!ItemKey.TryParse(itemId, out _))
             {
