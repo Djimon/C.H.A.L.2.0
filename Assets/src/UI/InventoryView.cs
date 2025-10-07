@@ -150,12 +150,11 @@ public class InventoryView : MonoBehaviour
         label.pickingMode = PickingMode.Ignore;
         tile.Add(label);
 
-        //aufheben
-        tile.RegisterCallback<PointerDownEvent>(evt =>
+   
+        tile.RegisterCallback<ClickEvent>(evt =>
         {
-            if (evt.button != 0) return;
-
-            if (evt.button == 0 && !_dnd.HasFrom)
+            //Take
+            if (!_dnd.HasFrom)
             {
                 // Pickup nur wenn Slot belegt
                 var s = _domain.Peek(_instanceID, slotIndex);
@@ -166,27 +165,23 @@ public class InventoryView : MonoBehaviour
                     splitHalf: false
                 );
             }
-            // Drop wird auf PointerUp gemacht (saubereres Verhalten)
-            evt.StopPropagation();
-        }, TrickleDown.TrickleDown);
 
-        //putdown
-        tile.RegisterCallback<PointerUpEvent>(evt =>
-        {
-            if (evt.button != 0) return;
-            if (!_dnd.HasFrom) return; // nichts in der Hand → nichts zu droppen
-            if (evt.button == 0)
+            //Drop
+            if (_dnd.HasFrom)
             {
+                // Drop off
                 _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
-                evt.StopPropagation();
             }
-        }, TrickleDown.TrickleDown);
+
+
+        });
 
 
         //Split
-        tile.RegisterCallback<PointerDownEvent>(evt =>
+        tile.RegisterCallback<MouseUpEvent>(evt =>
         {
             if (evt.button != 1) return;
+            if (_dnd.HasFrom) return;
 
             if (evt.button == 1 && !_dnd.HasFrom)
             {
@@ -200,7 +195,7 @@ public class InventoryView : MonoBehaviour
                 );
             }
             evt.StopImmediatePropagation();
-        }, TrickleDown.TrickleDown);
+        });
 
         return tile;
     }

@@ -63,7 +63,7 @@ namespace CHAL.Systems.Inventory
                 return;
             }
 
-            DebugManager.Log($"[Drag&Drop]: Move erfolgreich: {res.SlotDeltas[0].newStack.Value.itemID} {res.reason}", DebugManager.EDebugLevel.Dev, "Inventory");
+            DebugManager.Log($"[Drag&Drop]: Move erfolgreich", DebugManager.EDebugLevel.Dev, "Inventory");
 
             // success
             Cancel();
