@@ -173,5 +173,22 @@ namespace CHAL.UI
             if (maxPx > 0) px = Mathf.Min(px, maxPx);
             return px;
         }
+
+        public InventoryView? GetOtherInventory(InventoryView caller)
+        {
+            if (caller == null) return null;
+
+            var candidates = _views
+                .Where(v =>
+                    v != null &&
+                    v.IsInventoryView &&
+                    v.IsVisible &&
+                    !v.ReadOnly &&
+                    v is InventoryView iv && iv != caller)
+                .Cast<InventoryView>()
+                .ToList();
+
+            return candidates.Count == 1 ? candidates[0] : null;
+        }
     }
 }

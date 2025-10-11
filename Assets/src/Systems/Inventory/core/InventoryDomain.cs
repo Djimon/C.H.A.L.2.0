@@ -163,9 +163,43 @@ namespace CHAL.Systems.Inventory
                 !_instances.TryGetValue(req.toInventory.instanceID, out var dst))
             { result.reason = "InstanceNotFound"; return false; }
 
-            if (req.fromInventory.slot < 0 || req.fromInventory.slot >= src.slots.Length ||
-                req.toInventory.slot < 0 || req.toInventory.slot >= dst.slots.Length)
-            { result.reason = "IndexOutOfRange"; return false; }
+            if (req.toInventory.slot < 0) //search for fitting slot
+            {
+                var movingstack = Peek(req.fromInventory.instanceID, req.fromInventory.slot);
+                if (!movingstack.HasValue)
+                {
+                    result.reason = "SourceEmpty";
+                    return false;
+                }
+
+                // Suche passenden Zielslot im Zielinventar
+                var dstInv = _instances[req.toInventory.instanceID];
+                for (int i = 0; i < dstInv.slots.Length; i++)
+                {
+                    var slot = dstInv.slots[i];
+                    if (!PassesFilter(slot, movingstack.Value.itemID))
+                        continue;
+
+                    // entweder leer ...
+                    if (!slot.stack.HasValue)
+                    {
+                        var newReq = req;
+                        newReq.toInventory.slot = i;
+                        return TryMove(in newReq, out result);
+                    }
+
+                    // ... oder gleicher Stack mit Platz
+                    if (slot.stack.Value.itemID == movingstack.Value.itemID && slot.stack.Value.count < slot.maxStack)
+                    {
+                        var newReq = req;
+                        newReq.toInventory.slot = i;
+                        return TryMove(in newReq, out result);
+                    }
+                }
+
+                result.reason = "NoValidTargetSlot";
+                return false;
+            }
 
             var a = src.slots[req.fromInventory.slot];
             var b = dst.slots[req.toInventory.slot];

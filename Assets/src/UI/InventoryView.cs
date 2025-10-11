@@ -1,6 +1,7 @@
 ﻿using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using System;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -92,6 +93,11 @@ namespace CHAL.UI
             UIDockingManager.Instance?.Unregister(this);
         }
 
+        private void OnDestroy()
+        {
+            if (_domain != null) _domain.OnSlotChanged -= OnSlotChanged;
+        }
+
         /// <summary>
         /// Baut UI & bindet Domain. cols/rows können hier überschrieben werden (Definition aus InvDef).
         /// </summary>
@@ -142,6 +148,199 @@ namespace CHAL.UI
             // Domain-Events & initiales Rendern
             _domain.OnSlotChanged += OnSlotChanged;
             RenderAllNow();
+        }
+
+        private void WireSlotInteractions(VisualElement tile, int slotIndex)
+        {
+            // ReadOnly → keinerlei Interaktion
+            if (readOnly) return;
+
+            // LMB: kompletter Klick = Pickup ODER Drop
+            tile.RegisterCallback<ClickEvent>(evt =>
+            {
+                if (_dnd == null) return;
+
+                // QuickMove (Shift + leer)
+                if (evt.shiftKey && !_dnd.HasFrom)
+                {
+                    var s = _domain.Peek(_instanceID, slotIndex);
+                    if (!s.HasValue) return;
+
+                    var other = UIDockingManager.Instance?.GetOtherInventory(this);
+                    if (other == null)
+                    {
+                        DebugManager.Info("QuickMove abgebrochen – kein gültiges Zielinventar verfügbar.");
+                        return;
+                    }
+
+                    var req = new MoveRequest
+                    {
+                        fromInventory = new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
+                        toInventory = new ItemMoveObject { instanceID = other.InstanceId, slot = -1 },
+                        moveMode = MoveMode.Move
+                    };
+
+                    if (!_domain.TryMove(req, out var res))
+                        DebugManager.Info($"QuickMove fehlgeschlagen: {res.reason}");
+                    else
+                        DebugManager.Log($"QuickMove OK: {s.Value.itemID} → {other.InstanceId}");
+
+                    return; // QuickMove stoppt hier
+                }
+
+                //QUick-Move must be asked first
+
+
+                if (!_dnd.HasFrom)
+                {
+                    var s = _domain.Peek(_instanceID, slotIndex);
+                    if (!s.HasValue) return; // leerer Slot
+
+                    _dnd.BeginDrag(
+                        new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
+                        splitHalf: false
+                    );
+                }
+                else
+                {
+                    _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
+                }
+    
+            });
+
+
+
+            // RMB: Split-Pickup (kein Auto-Drop)
+            tile.RegisterCallback<MouseUpEvent>(evt =>
+            {
+                if (evt.button != 1) return;
+                if (_dnd == null || _dnd.HasFrom) return;
+
+                var s = _domain.Peek(_instanceID, slotIndex);
+                if (!s.HasValue || s.Value.count <= 1) return;
+
+                _dnd.BeginDrag(
+                    new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
+                    splitHalf: true
+                );
+            });
+        }
+
+
+        // ---------- Rendering ----------
+        private void BuildGrid()
+        {
+            // Layout des Grids: Zeilen-Container, Slots als VisualElements
+            _grid.style.flexDirection = FlexDirection.Column;
+            _grid.style.flexWrap = Wrap.NoWrap;
+            _grid.Clear();
+
+            int idx = 0;
+            for (int r = 0; r < _rows; r++)
+            {
+                var row = new VisualElement();
+                row.style.flexDirection = FlexDirection.Row;
+                row.style.flexWrap = Wrap.NoWrap;
+                row.style.marginBottom = _slotGap;
+
+                for (int c = 0; c < _cols; c++, idx++)
+                    row.Add(MakeSlot(idx));
+
+                _grid.Add(row);
+            }
+        }
+
+        private VisualElement MakeSlot(int slotIndex)
+        {
+            var tile = new VisualElement { name = $"slot_{slotIndex}" };
+
+            // Sichtbare Kachel
+            tile.style.width = _computedSlotSize > 0 ? _computedSlotSize : _minSlotSize;
+            tile.style.height = _computedSlotSize > 0 ? _computedSlotSize : _minSlotSize;
+            tile.style.marginRight = _slotGap;
+            tile.style.marginBottom = 0;
+            tile.style.flexDirection = FlexDirection.Column;
+            tile.pickingMode = PickingMode.Position;
+            tile.focusable = false;
+
+            tile.style.backgroundColor = new Color(0.16f, 0.16f, 0.16f, 1f);
+            var border = new Color(0.35f, 0.35f, 0.35f, 1f);
+            tile.style.borderTopWidth = tile.style.borderRightWidth =
+            tile.style.borderBottomWidth = tile.style.borderLeftWidth = 1;
+            tile.style.borderTopColor = tile.style.borderRightColor =
+            tile.style.borderBottomColor = tile.style.borderLeftColor = border;
+
+            // Icon (oben ~75% Höhe)
+            var icon = new Image { name = "icon" };
+            icon.scaleMode = ScaleMode.ScaleToFit;
+            icon.sprite = null;
+            icon.tintColor = Color.gray;
+            icon.pickingMode = PickingMode.Ignore;
+            icon.style.width = _minSlotSize;
+            icon.style.height = Mathf.RoundToInt(_minSlotSize * 0.72f);
+            tile.Add(icon);
+
+            // Label (unten)
+            var label = new Label("-") { name = "label" };
+            label.style.unityTextAlign = TextAnchor.MiddleCenter;
+            label.style.color = Color.white;
+            label.style.fontSize = Mathf.Clamp(Mathf.RoundToInt(_minSlotSize * 0.18f), 10, 16);
+            label.style.flexGrow = 1;
+            label.pickingMode = PickingMode.Ignore;
+            tile.Add(label);
+
+            // Interaktion (Click=LMB; RMB via MouseUp)
+            WireSlotInteractions(tile, slotIndex);
+
+            return tile;
+        }
+
+        private void OnSlotChanged(string instanceId, int slotIndex, ItemStack? newStack)
+        {
+            if (instanceId != _instanceID) return;
+            UpdateTileVisual(slotIndex);
+        }
+
+        private void RenderAllNow()
+        {
+            int total = _domain.SlotCount(_instanceID);
+            for (int i = 0; i < total; i++) UpdateTileVisual(i);
+        }
+
+        private void UpdateTileVisual(int slotIndex)
+        {
+            var tile = _grid.Q<VisualElement>($"slot_{slotIndex}");
+            if (tile == null) return;
+
+            var label = tile.Q<Label>("label") ?? tile.Q<Label>();
+            var icon = tile.Q<Image>("icon") ?? tile.Q<Image>();
+            if (label == null || icon == null) return;
+
+            var s = _domain.Peek(_instanceID, slotIndex);
+
+            if (s.HasValue)
+            {
+                label.text = $"×{s.Value.count}";
+
+                Sprite sprite = null;
+                string displayName = s.Value.itemID;
+                if (ItemRegistry.Instance.TryGet(s.Value.itemID, out var def))
+                {
+                    sprite = def.icon;
+                    // displayName = def.displayName ?? displayName; // später
+                }
+
+                icon.sprite = sprite;                        // Unity 6: direkt Sprite
+                icon.tintColor = sprite ? Color.white : Color.gray;
+                tile.tooltip = displayName;
+            }
+            else
+            {
+                label.text = "-";
+                icon.sprite = null;
+                icon.tintColor = Color.gray;
+                tile.tooltip = "leer";
+            }
         }
 
         private void RecomputeSlotMetricsAndApply()
@@ -217,169 +416,6 @@ namespace CHAL.UI
 
             // Außenabstand zwischen Views an einer Kante (vom DockingManager genutzt)
             _outer.style.marginLeft = _outer.style.marginRight = _outer.style.marginTop = _outer.style.marginBottom = 0;
-        }
-
-        private void BuildGrid()
-        {
-            // Layout des Grids: Zeilen-Container, Slots als VisualElements
-            _grid.style.flexDirection = FlexDirection.Column;
-            _grid.style.flexWrap = Wrap.NoWrap;
-            _grid.Clear();
-
-            int idx = 0;
-            for (int r = 0; r < _rows; r++)
-            {
-                var row = new VisualElement();
-                row.style.flexDirection = FlexDirection.Row;
-                row.style.flexWrap = Wrap.NoWrap;
-                row.style.marginBottom = _slotGap;
-
-                for (int c = 0; c < _cols; c++, idx++)
-                    row.Add(MakeSlot(idx));
-
-                _grid.Add(row);
-            }
-        }
-
-        private VisualElement MakeSlot(int slotIndex)
-        {
-            var tile = new VisualElement { name = $"slot_{slotIndex}" };
-
-            // Sichtbare Kachel
-            tile.style.width = _computedSlotSize > 0 ? _computedSlotSize : _minSlotSize;
-            tile.style.height = _computedSlotSize > 0 ? _computedSlotSize : _minSlotSize;
-            tile.style.marginRight = _slotGap;
-            tile.style.marginBottom = 0;
-            tile.style.flexDirection = FlexDirection.Column;
-            tile.pickingMode = PickingMode.Position;
-            tile.focusable = false;
-
-            tile.style.backgroundColor = new Color(0.16f, 0.16f, 0.16f, 1f);
-            var border = new Color(0.35f, 0.35f, 0.35f, 1f);
-            tile.style.borderTopWidth = tile.style.borderRightWidth =
-            tile.style.borderBottomWidth = tile.style.borderLeftWidth = 1;
-            tile.style.borderTopColor = tile.style.borderRightColor =
-            tile.style.borderBottomColor = tile.style.borderLeftColor = border;
-
-            // Icon (oben ~75% Höhe)
-            var icon = new Image { name = "icon" };
-            icon.scaleMode = ScaleMode.ScaleToFit;
-            icon.sprite = null;
-            icon.tintColor = Color.gray;
-            icon.pickingMode = PickingMode.Ignore;
-            icon.style.width = _minSlotSize;
-            icon.style.height = Mathf.RoundToInt(_minSlotSize * 0.72f);
-            tile.Add(icon);
-
-            // Label (unten)
-            var label = new Label("-") { name = "label" };
-            label.style.unityTextAlign = TextAnchor.MiddleCenter;
-            label.style.color = Color.white;
-            label.style.fontSize = Mathf.Clamp(Mathf.RoundToInt(_minSlotSize * 0.18f), 10, 16);
-            label.style.flexGrow = 1;
-            label.pickingMode = PickingMode.Ignore;
-            tile.Add(label);
-
-            // Interaktion (Click=LMB; RMB via MouseUp)
-            WireSlotInteractions(tile, slotIndex);
-
-            return tile;
-        }
-
-        private void WireSlotInteractions(VisualElement tile, int slotIndex)
-        {
-            // ReadOnly → keinerlei Interaktion
-            if (readOnly) return;
-
-            // LMB: kompletter Klick = Pickup ODER Drop
-            tile.RegisterCallback<ClickEvent>(evt =>
-            {
-                if (_dnd == null) return;
-
-                if (!_dnd.HasFrom)
-                {
-                    var s = _domain.Peek(_instanceID, slotIndex);
-                    if (!s.HasValue) return; // leerer Slot
-
-                    _dnd.BeginDrag(
-                        new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
-                        splitHalf: false
-                    );
-                }
-                else
-                {
-                    _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
-                }
-            });
-
-            // RMB: Split-Pickup (kein Auto-Drop)
-            tile.RegisterCallback<MouseUpEvent>(evt =>
-            {
-                if (evt.button != 1) return;
-                if (_dnd == null || _dnd.HasFrom) return;
-
-                var s = _domain.Peek(_instanceID, slotIndex);
-                if (!s.HasValue || s.Value.count <= 1) return;
-
-                _dnd.BeginDrag(
-                    new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
-                    splitHalf: true
-                );
-            });
-        }
-
-        private void OnDestroy()
-        {
-            if (_domain != null) _domain.OnSlotChanged -= OnSlotChanged;
-        }
-
-        // ---------- Rendering ----------
-        private void OnSlotChanged(string instanceId, int slotIndex, ItemStack? newStack)
-        {
-            if (instanceId != _instanceID) return;
-            UpdateTileVisual(slotIndex);
-        }
-
-        private void RenderAllNow()
-        {
-            int total = _domain.SlotCount(_instanceID);
-            for (int i = 0; i < total; i++) UpdateTileVisual(i);
-        }
-
-        private void UpdateTileVisual(int slotIndex)
-        {
-            var tile = _grid.Q<VisualElement>($"slot_{slotIndex}");
-            if (tile == null) return;
-
-            var label = tile.Q<Label>("label") ?? tile.Q<Label>();
-            var icon = tile.Q<Image>("icon") ?? tile.Q<Image>();
-            if (label == null || icon == null) return;
-
-            var s = _domain.Peek(_instanceID, slotIndex);
-
-            if (s.HasValue)
-            {
-                label.text = $"×{s.Value.count}";
-
-                Sprite sprite = null;
-                string displayName = s.Value.itemID;
-                if (ItemRegistry.Instance.TryGet(s.Value.itemID, out var def))
-                {
-                    sprite = def.icon;
-                    // displayName = def.displayName ?? displayName; // später
-                }
-
-                icon.sprite = sprite;                        // Unity 6: direkt Sprite
-                icon.tintColor = sprite ? Color.white : Color.gray;
-                tile.tooltip = displayName;
-            }
-            else
-            {
-                label.text = "-";
-                icon.sprite = null;
-                icon.tintColor = Color.gray;
-                tile.tooltip = "leer";
-            }
         }
     }
 }
