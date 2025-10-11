@@ -148,6 +148,7 @@ namespace CHAL.UI
             // Domain-Events & initiales Rendern
             _domain.OnSlotChanged += OnSlotChanged;
             RenderAllNow();
+
         }
 
         private void WireSlotInteractions(VisualElement tile, int slotIndex)
@@ -205,7 +206,7 @@ namespace CHAL.UI
                 {
                     _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
                 }
-    
+
             });
 
 
@@ -403,6 +404,7 @@ namespace CHAL.UI
 
                 label.style.fontSize = Mathf.Clamp(Mathf.RoundToInt(s * 0.18f), 10, 18);
             }
+
         }
 
         private void ApplyContainerSizing()
@@ -417,5 +419,8 @@ namespace CHAL.UI
             // Außenabstand zwischen Views an einer Kante (vom DockingManager genutzt)
             _outer.style.marginLeft = _outer.style.marginRight = _outer.style.marginTop = _outer.style.marginBottom = 0;
         }
+
+        // ------ Ghost ------
+
     }
 }

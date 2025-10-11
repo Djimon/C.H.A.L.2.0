@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: blood
   m_EditorClassIdentifier: 
   itemId: remains:blood
-  displayName: blood
+  itemType: 1
   description: 'Type: Remains'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f1349510e7e11054184b7fe985fb08e4, type: 3}
   rarity: 1
   lootValue: 40
   remainData:
     remainType: 
   runeData:
     effectType: 
-    power: 0
+    runeColortType: 0
   partData:
     dnaType: 
     moduleFuel: []

@@ -37,7 +37,7 @@ public class InventoryDemoBootstrap : MonoBehaviour
         _domain.RegisterInstance(_bagB);
 
         // Test-Items (nutz deine IDs aus ItemRegistry)
-        _domain.TryAdd(_bagA.instanceID, new ItemStack("part:antler", 7), out _);
+        _domain.TryAdd(_bagA.instanceID, new ItemStack("part:eye", 7), out _);
         _domain.TryAdd(_bagA.instanceID, new ItemStack("remains:glitter_dust", 12), out _);
         _domain.TryAdd(_bagB.instanceID, new ItemStack("module:core", 3), out _);
         _domain.TryAdd(_bagB.instanceID, new ItemStack("remains:blood", 6), out _);
