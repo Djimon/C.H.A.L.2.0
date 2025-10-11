@@ -1,5 +1,6 @@
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
+using CHAL.UI;
 using UnityEngine;
 
 public class InventoryDemoBootstrap : MonoBehaviour

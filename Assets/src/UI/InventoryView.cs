@@ -1,275 +1,385 @@
 ﻿using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.Progress;
 
-public class InventoryView : MonoBehaviour
+namespace CHAL.UI
 {
-    public Sprite myInventoryBG;
-    [SerializeField] private Vector2 _offset;
-    [SerializeField] private UIDocument _doc;
 
-    private VisualElement _grid;
-    private IInventoryDomain _domain;
-    private string _instanceID;
-    private int _cols, _rows;
+    public enum DockEdge { Left, Right, Top, Bottom }
+    public enum SlotFitMode { FitWidth, FitBoth }
 
-    private VisualElement _ghost;
-    private Label _ghostLabel;
-
-    [SerializeField]
-    public InvDnDProvider _invDnDProvider;
-    private DragDropService _dnd;
-
-    private void Awake()
+    public class InventoryView : MonoBehaviour, IDockableView
     {
-        // Auto-Fallback: wenn im Inspector nichts zugewiesen ist
-        if (_doc == null)
-            _doc = GetComponent<UIDocument>();
+        // ---------- Layout & UI ----------
+        [Header("UXML hookup")]
+        [SerializeField] private UIDocument _doc;
+        [SerializeField] private string _containerElementName = "Panel";
+        [SerializeField] private string _gridElementName = "Grid";
 
-    }
+        [Header("Grid config")]
+        [SerializeField] private int _cols = 4;
+        [SerializeField] private int _rows = 3;
+        [SerializeField] private bool _responsiveSizing = true;
+        [SerializeField] private int _minSlotSize = 64;
+        [SerializeField] private int _maxSlotSize = 512;
+        [SerializeField] private int _slotGap = 4;
+        [SerializeField] private SlotFitMode _fitMode = SlotFitMode.FitWidth;
+
+        private int _computedSlotSize;
+
+        [Header("Container width")]
+        [Range(0.05f, 1f)][SerializeField] private float baseWidthPercent = 0.25f; // 25% des Panels
+        [SerializeField] private int minWidthPx = 320;
+        [SerializeField] private int maxWidthPx = 700;
+
+        [Header("Docking (flags only; layout by DockingManager)")]
+        [SerializeField] private DockEdge dockEdge = DockEdge.Left;
+        [SerializeField] private int dockPriority = 0;
+        [SerializeField] private bool autoDock = true;
+
+        [Header("Behavior")]
+        [SerializeField] private bool readOnly = false; // blockiert User-Interaktion
+
+        [Header("Optional visuals")]
+        public Sprite myInventoryBG;
+
+        // ---------- Runtime ----------
+        private VisualElement _outer;    // Container (gedockt)
+        private VisualElement _grid;     // Slots-Grid
+
+        private IInventoryDomain _domain;
+        private string _instanceID;
+
+        [SerializeField] public InvDnDProvider _invDnDProvider;
+        private DragDropService _dnd;
+
+        // Properties für Manager/QuickMove
+        public string InstanceId => _instanceID;
+        public bool IsVisible => _outer != null && _outer.resolvedStyle.visibility == Visibility.Visible;
+        public VisualElement OuterContainer => _outer;
+        public DockEdge Edge => dockEdge;
+        public int DockPriority => dockPriority;
+        public bool AutoDock => autoDock;
+        public bool ReadOnly => readOnly;
+
+        public float BaseWidthPercent => baseWidthPercent;
+
+        public int MinWidthPx => minWidthPx;
+
+        public int MaxWidthPx => maxWidthPx;
+
+        public string StableId => InstanceId;
+
+        public bool IsInventoryView => true;
+
+        public bool IsItemCard => false;
 
 
-    public void Bind(IInventoryDomain domain, string instanceID, int cols, int rows)
-    {
-        _domain = domain;
-        _instanceID = instanceID;
-        _cols = cols;
-        _rows = rows;
-
-
-
-        if (!_doc) { DebugManager.Error("UIDocument fehlt."); return; }
-
-        var root = _doc.rootVisualElement;
-        root.style.position = Position.Absolute;
-        root.style.left = _offset.x;
-        root.style.top = _offset.y;
-
-        _grid = root.Q<VisualElement>("Grid");
-        if (_grid == null) { DebugManager.Error("UXML braucht ein Element mit name='Grid'."); return; }
-
-        _grid.style.backgroundImage = new StyleBackground(myInventoryBG);
-
-        _grid.style.flexDirection = FlexDirection.Column;
-        _grid.style.flexWrap = Wrap.Wrap;
-        _grid.Clear();
-
-        if (_invDnDProvider == null)
-            _invDnDProvider = FindFirstObjectByType<InvDnDProvider>();
-
-        if (_invDnDProvider != null)
+        private void Awake()
         {
-            if (_invDnDProvider.domain == null)
-                _invDnDProvider.domain = _domain;       // <<< WICHTIG
-            _dnd = _invDnDProvider.Service;              // garantiert nicht null
-        }
-        else
-        {
-            _dnd = new DragDropService(_domain);         // Fallback: eigener Service
-        }
-
-        // Layout
-        int idx = 0;
-        for (int r = 0; r < _rows; r++)
-        {
-            var row = new VisualElement();
-            row.style.flexDirection = FlexDirection.Row;
-            row.style.flexWrap = Wrap.NoWrap;
-            row.style.marginBottom = 4;
-
-            for (int c = 0; c < _cols; c++, idx++)
-                row.Add(MakeSlot(idx));              // siehe Schritt 2
-
-            _grid.Add(row);
+            if (_doc == null) _doc = GetComponent<UIDocument>();
         }
 
-        //CreateGhost(root);
-
-        _domain.OnSlotChanged += OnSlotChanged;
-        RenderAllNow();
-
-    }
-
-    private void CreateGhost(VisualElement root)
-    {
-        _ghost = new VisualElement { name = "Ghost" };
-        _ghost.style.position = Position.Absolute;
-        _ghost.style.width = 64; _ghost.style.height = 64;
-        _ghost.style.backgroundColor = new Color(1, 1, 1, 0.1f);
-        _ghost.style.borderTopWidth = _ghost.style.borderRightWidth = _ghost.style.borderBottomWidth = _ghost.style.borderLeftWidth = 1;
-        _ghost.style.borderTopColor = _ghost.style.borderRightColor = _ghost.style.borderBottomColor = _ghost.style.borderLeftColor = new Color(0.3f, 0.3f, 0.3f, 0.8f);
-        _ghost.style.visibility = Visibility.Hidden;
-
-        _ghostLabel = new Label("-");
-        _ghostLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-        _ghostLabel.style.flexGrow = 1;
-        _ghost.Add(_ghostLabel);
-        root.Add(_ghost);
-
-        root.RegisterCallback<PointerMoveEvent>(e =>
+        private void OnEnable()
         {
-            if (_dnd.HasFrom)
+            UIDockingManager.Instance?.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            UIDockingManager.Instance?.Unregister(this);
+        }
+
+        /// <summary>
+        /// Baut UI & bindet Domain. cols/rows können hier überschrieben werden (Definition aus InvDef).
+        /// </summary>
+        public void Bind(IInventoryDomain domain, string instanceID, int cols, int rows)
+        {
+            _domain = domain;
+            _instanceID = instanceID;
+            _cols = Mathf.Max(1, cols);
+            _rows = Mathf.Max(1, rows);
+
+            if (!_doc) { DebugManager.Error("UIDocument fehlt."); return; }
+
+            var root = _doc.rootVisualElement;
+            _outer = root.Q<VisualElement>(_containerElementName) ?? root; // Fallback: root
+
+            _outer.RegisterCallback<GeometryChangedEvent>(_ => RecomputeSlotMetricsAndApply());
+
+            RecomputeSlotMetricsAndApply();
+
+            _grid = root.Q<VisualElement>(_gridElementName);
+            if (_grid == null) { DebugManager.Error("UXML braucht ein Element mit name='Grid'."); return; }
+
+            // Container-Grundlayout (Breite in %, min/max in px)
+            ApplyContainerSizing();
+
+            // Hintergrund (optional)
+            if (myInventoryBG != null)
+                _grid.style.backgroundImage = new StyleBackground(myInventoryBG);
+
+            // DnD-Service holen (shared aus Provider, sonst eigener)
+            if (_invDnDProvider == null)
+                _invDnDProvider = FindFirstObjectByType<InvDnDProvider>();
+            if (_invDnDProvider != null)
             {
-                _ghost.style.left = e.position.x + 8;
-                _ghost.style.top = e.position.y + 8;
+                if (_invDnDProvider.domain == null)
+                    _invDnDProvider.domain = _domain;
+
+                _dnd = _invDnDProvider.Service;
             }
-        });
-
-        // ESC zum Abbrechen
-        root.RegisterCallback<KeyDownEvent>(e =>
-        {
-            if (e.keyCode == KeyCode.Escape && _dnd.HasFrom)
+            else
             {
-                _dnd.Cancel();
-                _ghost.style.visibility = Visibility.Hidden;
+                _dnd = new DragDropService(_domain);
             }
-        });
-    }
 
-    private VisualElement MakeSlot(int slotIndex)
-    {
-        var tile = new VisualElement { name = $"slot_{slotIndex}" };
+            // Grid bauen
+            BuildGrid();
 
-        // IMMER SICHTBAR
-        tile.style.width = 64;
-        tile.style.height = 64;
-        tile.style.marginRight = 4;
-        tile.style.marginBottom = 4;
-        tile.style.flexDirection = FlexDirection.Column;
-        tile.pickingMode = PickingMode.Position;
-        tile.focusable = false;
+            // Domain-Events & initiales Rendern
+            _domain.OnSlotChanged += OnSlotChanged;
+            RenderAllNow();
+        }
 
-        // sichtbarer Rahmen + dunkler Hintergrund (volle Deckkraft)
-        tile.style.backgroundColor = new Color(0.16f, 0.16f, 0.16f, 1f);
-        var border = new Color(0.35f, 0.35f, 0.35f, 1f);
-        tile.style.borderTopWidth = tile.style.borderRightWidth =
-        tile.style.borderBottomWidth = tile.style.borderLeftWidth = 1;
-        tile.style.borderTopColor = tile.style.borderRightColor =
-        tile.style.borderBottomColor = tile.style.borderLeftColor = border;
-
-        // ICON (oben)
-        var icon = new Image { name = "icon" };
-        icon.scaleMode = ScaleMode.ScaleToFit;
-        icon.image = null;                      // leer = kein Sprite
-        icon.tintColor = Color.gray;            // Platzhaltergrau
-        icon.style.width = 64;
-        icon.style.height = 46;
-        icon.pickingMode = PickingMode.Ignore;  // Events weiterreichen (falls später nötig)
-        tile.Add(icon);
-
-        // LABEL (unten)
-        var label = new Label("-") { name = "label" };
-        label.style.unityTextAlign = TextAnchor.MiddleCenter;
-        label.style.color = Color.white;
-        label.style.fontSize = 11;
-        label.style.flexGrow = 1;
-        label.pickingMode = PickingMode.Ignore;
-        tile.Add(label);
-
-   
-        tile.RegisterCallback<ClickEvent>(evt =>
+        private void RecomputeSlotMetricsAndApply()
         {
-            //Take
-            if (!_dnd.HasFrom)
+            if (!_responsiveSizing || _outer == null || _grid == null) return;
+
+            var r = _outer.contentRect;                // echte, gelayoutete Größe
+            if (r.width <= 0f || r.height <= 0f) return;
+
+            // 1) Fit nach Breite
+            float gapsX = Mathf.Max(0, _cols - 1) * _slotGap;
+            float widthForSlots = Mathf.Max(0, r.width - gapsX);
+            int fromWidth = Mathf.FloorToInt(widthForSlots / Mathf.Max(1, _cols));
+
+            int target = fromWidth;
+
+            // 2) Option FitBoth: auch Höhe berücksichtigen (nur sinnvoll, wenn der Container eine echte Höhe hat)
+            if (_fitMode == SlotFitMode.FitBoth)
             {
-                // Pickup nur wenn Slot belegt
+                float gapsY = Mathf.Max(0, _rows - 1) * _slotGap;
+                float heightForSlots = Mathf.Max(0, r.height - gapsY);
+                int fromHeight = Mathf.FloorToInt(heightForSlots / Mathf.Max(1, _rows));
+                target = Mathf.Min(fromWidth, fromHeight);
+            }
+
+            // 3) clampen
+            int maxClamp = (_maxSlotSize > 0) ? _maxSlotSize : int.MaxValue;
+            int computed = Mathf.Clamp(target, _minSlotSize, maxClamp);
+
+            if (computed == _computedSlotSize) return; // nichts zu tun
+            _computedSlotSize = computed;
+
+            ApplySlotMetrics(); // Größen an alle Tiles pushen
+
+            UIDockingManager.Instance?.NotifyViewChanged(this);
+        }
+
+        private void ApplySlotMetrics()
+        {
+            // Row-Abstände
+            foreach (var row in _grid.Children())
+                row.style.marginBottom = _slotGap;
+
+            // Pro Tile: Größe + Icon/Label ableiten
+            for (int i = 0; i < _cols * _rows; i++)
+            {
+                var tile = _grid.Q<VisualElement>($"slot_{i}");
+                var icon = tile?.Q<Image>("icon");
+                var label = tile?.Q<Label>("label");
+                if (tile == null || icon == null || label == null) continue;
+
+                int s = _computedSlotSize;
+
+                tile.style.width = s;
+                tile.style.height = s;
+                tile.style.marginRight = _slotGap;
+
+                icon.style.width = s;
+                icon.style.height = Mathf.RoundToInt(s * 0.72f);
+
+                label.style.fontSize = Mathf.Clamp(Mathf.RoundToInt(s * 0.18f), 10, 18);
+            }
+        }
+
+        private void ApplyContainerSizing()
+        {
+            if (_outer == null) return;
+
+            // Prozentbreite + min/max (UI Toolkit wendet das korrekt relativ zum Parent an)
+            _outer.style.width = Length.Percent(Mathf.Clamp01(baseWidthPercent) * 100f);
+            _outer.style.minWidth = minWidthPx;
+            _outer.style.maxWidth = maxWidthPx;
+
+            // Außenabstand zwischen Views an einer Kante (vom DockingManager genutzt)
+            _outer.style.marginLeft = _outer.style.marginRight = _outer.style.marginTop = _outer.style.marginBottom = 0;
+        }
+
+        private void BuildGrid()
+        {
+            // Layout des Grids: Zeilen-Container, Slots als VisualElements
+            _grid.style.flexDirection = FlexDirection.Column;
+            _grid.style.flexWrap = Wrap.NoWrap;
+            _grid.Clear();
+
+            int idx = 0;
+            for (int r = 0; r < _rows; r++)
+            {
+                var row = new VisualElement();
+                row.style.flexDirection = FlexDirection.Row;
+                row.style.flexWrap = Wrap.NoWrap;
+                row.style.marginBottom = _slotGap;
+
+                for (int c = 0; c < _cols; c++, idx++)
+                    row.Add(MakeSlot(idx));
+
+                _grid.Add(row);
+            }
+        }
+
+        private VisualElement MakeSlot(int slotIndex)
+        {
+            var tile = new VisualElement { name = $"slot_{slotIndex}" };
+
+            // Sichtbare Kachel
+            tile.style.width = _computedSlotSize > 0 ? _computedSlotSize : _minSlotSize;
+            tile.style.height = _computedSlotSize > 0 ? _computedSlotSize : _minSlotSize;
+            tile.style.marginRight = _slotGap;
+            tile.style.marginBottom = 0;
+            tile.style.flexDirection = FlexDirection.Column;
+            tile.pickingMode = PickingMode.Position;
+            tile.focusable = false;
+
+            tile.style.backgroundColor = new Color(0.16f, 0.16f, 0.16f, 1f);
+            var border = new Color(0.35f, 0.35f, 0.35f, 1f);
+            tile.style.borderTopWidth = tile.style.borderRightWidth =
+            tile.style.borderBottomWidth = tile.style.borderLeftWidth = 1;
+            tile.style.borderTopColor = tile.style.borderRightColor =
+            tile.style.borderBottomColor = tile.style.borderLeftColor = border;
+
+            // Icon (oben ~75% Höhe)
+            var icon = new Image { name = "icon" };
+            icon.scaleMode = ScaleMode.ScaleToFit;
+            icon.sprite = null;
+            icon.tintColor = Color.gray;
+            icon.pickingMode = PickingMode.Ignore;
+            icon.style.width = _minSlotSize;
+            icon.style.height = Mathf.RoundToInt(_minSlotSize * 0.72f);
+            tile.Add(icon);
+
+            // Label (unten)
+            var label = new Label("-") { name = "label" };
+            label.style.unityTextAlign = TextAnchor.MiddleCenter;
+            label.style.color = Color.white;
+            label.style.fontSize = Mathf.Clamp(Mathf.RoundToInt(_minSlotSize * 0.18f), 10, 16);
+            label.style.flexGrow = 1;
+            label.pickingMode = PickingMode.Ignore;
+            tile.Add(label);
+
+            // Interaktion (Click=LMB; RMB via MouseUp)
+            WireSlotInteractions(tile, slotIndex);
+
+            return tile;
+        }
+
+        private void WireSlotInteractions(VisualElement tile, int slotIndex)
+        {
+            // ReadOnly → keinerlei Interaktion
+            if (readOnly) return;
+
+            // LMB: kompletter Klick = Pickup ODER Drop
+            tile.RegisterCallback<ClickEvent>(evt =>
+            {
+                if (_dnd == null) return;
+
+                if (!_dnd.HasFrom)
+                {
+                    var s = _domain.Peek(_instanceID, slotIndex);
+                    if (!s.HasValue) return; // leerer Slot
+
+                    _dnd.BeginDrag(
+                        new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
+                        splitHalf: false
+                    );
+                }
+                else
+                {
+                    _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
+                }
+            });
+
+            // RMB: Split-Pickup (kein Auto-Drop)
+            tile.RegisterCallback<MouseUpEvent>(evt =>
+            {
+                if (evt.button != 1) return;
+                if (_dnd == null || _dnd.HasFrom) return;
+
                 var s = _domain.Peek(_instanceID, slotIndex);
-                if (!s.HasValue) return;
-
-                _dnd.BeginDrag(
-                    new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
-                    splitHalf: false
-                );
-            }
-
-            //Drop
-            if (_dnd.HasFrom)
-            {
-                // Drop off
-                _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
-            }
-
-
-        });
-
-
-        //Split
-        tile.RegisterCallback<MouseUpEvent>(evt =>
-        {
-            if (evt.button != 1) return;
-            if (_dnd.HasFrom) return;
-
-            if (evt.button == 1 && !_dnd.HasFrom)
-            {
-                // Pickup nur wenn Slot belegt
-                var s = _domain.Peek(_instanceID, slotIndex);
-                if (!s.HasValue) return;
+                if (!s.HasValue || s.Value.count <= 1) return;
 
                 _dnd.BeginDrag(
                     new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
                     splitHalf: true
                 );
-            }
-            evt.StopImmediatePropagation();
-        });
+            });
+        }
 
-        return tile;
-    }
-
-    private void OnDestroy()
-    {
-        if (_domain != null) _domain.OnSlotChanged -= OnSlotChanged;
-    }
-
-    private void OnSlotChanged(string instanceId, int slotIndex, ItemStack? newStack)
-    {
-        if (instanceId != _instanceID) return;
-        UpdateTileVisual(slotIndex);
-    }
-    private void UpdateTileVisual(int slotIndex)
-    {
-        var tile = _grid.Q<VisualElement>($"slot_{slotIndex}");
-        if (tile == null) return;
-
-        var label = tile.Q<Label>("label") ?? tile.Q<Label>();
-        var icon = tile.Q<Image>("icon") ?? tile.Q<Image>();
-        if (label == null || icon == null) return; // Safety, sollte nicht passieren
-
-        var s = _domain.Peek(_instanceID, slotIndex); // Domain liefert Stack (oder null)
-
-        if (s.HasValue)
+        private void OnDestroy()
         {
-            // Count
-            label.text = $"×{s.Value.count}";
+            if (_domain != null) _domain.OnSlotChanged -= OnSlotChanged;
+        }
 
-            // Icon + Tooltip-Name aus Registry (Fallbacks sicher)
-            Sprite sprite = null; 
-            string displayName = s.Value.itemID;
-            if (ItemRegistry.Instance.TryGet(s.Value.itemID, out var def)) // ✔ TryGet existiert
+        // ---------- Rendering ----------
+        private void OnSlotChanged(string instanceId, int slotIndex, ItemStack? newStack)
+        {
+            if (instanceId != _instanceID) return;
+            UpdateTileVisual(slotIndex);
+        }
+
+        private void RenderAllNow()
+        {
+            int total = _domain.SlotCount(_instanceID);
+            for (int i = 0; i < total; i++) UpdateTileVisual(i);
+        }
+
+        private void UpdateTileVisual(int slotIndex)
+        {
+            var tile = _grid.Q<VisualElement>($"slot_{slotIndex}");
+            if (tile == null) return;
+
+            var label = tile.Q<Label>("label") ?? tile.Q<Label>();
+            var icon = tile.Q<Image>("icon") ?? tile.Q<Image>();
+            if (label == null || icon == null) return;
+
+            var s = _domain.Peek(_instanceID, slotIndex);
+
+            if (s.HasValue)
             {
-                sprite = def.icon;
-                // TODO später: displayName = Localization.Get(def) – bis dahin itemId
+                label.text = $"×{s.Value.count}";
+
+                Sprite sprite = null;
+                string displayName = s.Value.itemID;
+                if (ItemRegistry.Instance.TryGet(s.Value.itemID, out var def))
+                {
+                    sprite = def.icon;
+                    // displayName = def.displayName ?? displayName; // später
+                }
+
+                icon.sprite = sprite;                        // Unity 6: direkt Sprite
+                icon.tintColor = sprite ? Color.white : Color.gray;
+                tile.tooltip = displayName;
             }
-
-            icon.image = sprite !=null ? sprite.texture: null;               // null => bleibt grau
-            icon.tintColor = sprite ? Color.white : Color.gray;
-            tile.tooltip = displayName;        // Mouseover-Name
+            else
+            {
+                label.text = "-";
+                icon.sprite = null;
+                icon.tintColor = Color.gray;
+                tile.tooltip = "leer";
+            }
         }
-        else
-        {
-            // leer
-            label.text = "-";
-            icon.image = null;
-            icon.tintColor = Color.gray;
-            tile.tooltip = "leer";
-        }
-    }
-
-    private void RenderAllNow()
-    {
-        int total = _domain.SlotCount(_instanceID);
-        for (int i = 0; i < total; i++) UpdateTileVisual(i);
     }
 }
