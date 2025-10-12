@@ -93,12 +93,14 @@ namespace CHAL.UI
         private void OnEnable()
         {
             UIDockingManager.Instance?.Register(this);
+            StartCoroutine(BindFromTemplate());
         }
 
         private void Awake()
         {
             if (_doc == null) _doc = GetComponent<UIDocument>();
         }
+
 
         private void OnDisable()
         {
@@ -244,6 +246,41 @@ namespace CHAL.UI
                 );
             });
         }
+
+
+        IEnumerator BindFromTemplate()
+        {
+            // Warten bis GameManager + Domain bereit
+            while (GameManager.Instance == null || GameManager.Instance.Inventory == null)
+                yield return null;
+
+            if (_inventoryDef == null) { Debug.LogError("InventoryView: kein Template gesetzt."); yield break; }
+
+            // player_* Default: instanceId = "player_" + enum-name (lowercase), falls im Inspector leer
+            if (string.IsNullOrEmpty(inventoryID))
+            {
+                inventoryID = "player_" + _inventoryDef.TypeId.ToString().ToLowerInvariant();
+            }
+
+            var gm = GameManager.Instance;
+            var domain = gm != null ? gm.Inventory : null;
+            if (domain == null) { yield break; }
+
+            // Nur binden, niemals erzeugen
+            if (!domain.TryGetInstance(inventoryID, out var inst))
+            {
+                // GameManager hat die Player_* evtl. noch nicht gebaut → später erneut versuchen
+                yield break;
+            }
+
+            // Grid-Maße aus der Instanz/Def
+            int cols = (inst.InvDef != null) ? inst.InvDef.cols : _inventoryDef.cols;
+            int rows = (inst.InvDef != null) ? inst.InvDef.rows : _inventoryDef.rows;
+
+            // Binden
+            Bind(domain, inst.instanceID, cols, rows);
+        }
+
 
         // ---------- Rendering ----------
         private void BuildGrid()

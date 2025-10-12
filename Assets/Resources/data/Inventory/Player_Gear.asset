@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9381806e225998048a538a34116647f4, type: 3}
   m_Name: Player_Gear
   m_EditorClassIdentifier: 
-  TypeId: player_gear
+  TypeId: 0
   NameKey: Player_Gear
   cols: 6
   rows: 9
   defaultMaxStackPerSlot: 1
   globalSlotFilter:
-    AllowedItemTypes: 04000000
+    AllowedItemTypes: 
     AllowedItemIds: []
     AllowedTags: []
     BlockedItemTypes: 

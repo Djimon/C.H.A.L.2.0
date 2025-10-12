@@ -55,7 +55,7 @@ namespace CHAL.Core
         public InventoryDomain Inventory { get; private set; }
         public bool InventoryReady { get; private set; }
 
-        private readonly Dictionary<string, InventoryDef> _inventoryTemplates = new();
+        private readonly Dictionary<PlayerInventoryType, InventoryDef> _inventoryTemplates = new();
 
 
 
@@ -227,6 +227,65 @@ namespace CHAL.Core
         private void BuildPlayerInventoriesFromFolder()
         {
             if (Inventory == null) Inventory = new InventoryDomain();
+
+            const string path = "data/Inventory";
+            var defs = Resources.LoadAll<InventoryDef>(path);
+            foreach (var def in defs)
+            {
+                if (def == null) continue;
+
+                // Player-Inventare: alles außer 'all' (du hast Remains/Parts/Runes/Modules/Gear)
+                if (def.TypeId == PlayerInventoryType.all) continue;
+
+                // Konvention: instanceId = "player_" + enum-name in lowercase
+                string instanceId = "player_" + def.TypeId.ToString().ToLowerInvariant();
+                if (Inventory.HasInstance(instanceId)) continue;
+
+                var inst = InventoryInstance.Create(instanceId, def);
+                Inventory.RegisterInstance(inst);
+            }
+        }
+
+        public InventoryDef GetTemplate(PlayerInventoryType typeId)
+        {
+            if (_inventoryTemplates.TryGetValue(typeId, out var def)) return def;
+
+            const string path = "data/Inventory";
+            var all = Resources.LoadAll<InventoryDef>(path);
+            foreach (var d in all)
+                if (d != null)
+                    _inventoryTemplates[d.TypeId] = d;
+
+            if (_inventoryTemplates.TryGetValue(typeId, out def)) return def;
+
+            DebugManager.Error($"GetTemplate: kein InventoryDef mit TypeId='{typeId}' unter Resources/{path}");
+            return null;
+        }
+
+        public InventoryInstance EnsureInstance(string instanceId, PlayerInventoryType templateTypeId)
+        {
+            if (string.IsNullOrEmpty(instanceId))
+            {
+                Debug.LogError("EnsureInstance: instanceId leer.");
+                return null;
+            }
+
+            var domain = Inventory;
+            if (domain == null)
+            {
+                Debug.LogError("EnsureInstance: InventoryDomain fehlt (GameManager.Inventory == null).");
+                return null;
+            }
+
+            if (domain.HasInstance(instanceId))
+                return domain.GetInstance(instanceId);
+
+            var def = GetTemplate(templateTypeId);
+            if (def == null) return null;
+
+            var inst = InventoryInstance.Create(instanceId, def);
+            domain.RegisterInstance(inst);
+            return inst;
         }
 
         private void MapDomainToProfile()

@@ -390,5 +390,15 @@ namespace CHAL.Systems.Inventory
             result.success = true;
             return true;
         }
+
+        internal bool TryGetInstance(string inventoryID, out InventoryInstance inst)
+        {
+            if (string.IsNullOrEmpty(inventoryID))
+            {
+                inst = null;
+                return false;
+            }
+            return _instances.TryGetValue(inventoryID, out inst);
+        }
     }
 }
