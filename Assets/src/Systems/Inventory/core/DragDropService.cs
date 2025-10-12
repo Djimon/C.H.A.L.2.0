@@ -1,3 +1,9 @@
+using CHAL.Systems.Items;
+using System;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UIElements;
+
 namespace CHAL.Systems.Inventory
 {
     /// Merkt Quelle als ItemMoveObject & baut MoveRequest. Keine Visuals, nur Funktion.
@@ -15,6 +21,7 @@ namespace CHAL.Systems.Inventory
 
         public DragDropService(IInventoryDomain domain) { _domain = domain; }
 
+
         // “Pickup” (auch per RMB für Split möglich)
         public void BeginDrag(ItemMoveObject from, bool splitHalf)
         {
@@ -22,7 +29,9 @@ namespace CHAL.Systems.Inventory
             _from = from;
             _hasFrom = true;
             _splitHalf = splitHalf;
+        
         }
+
 
         // Abbruch (ESC, Rechtsklick außerhalb, etc.)
         public void Cancel()

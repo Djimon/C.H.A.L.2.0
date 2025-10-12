@@ -178,7 +178,6 @@ MonoBehaviour:
   maxWidthPx: 700
   dockEdge: 0
   dockPriority: 0
-  dockSpacing: 2
   autoDock: 1
   readOnly: 0
   myInventoryBG: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
@@ -363,7 +362,6 @@ MonoBehaviour:
   maxWidthPx: 700
   dockEdge: 0
   dockPriority: 0
-  dockSpacing: 2
   autoDock: 1
   readOnly: 0
   myInventoryBG: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
@@ -378,6 +376,7 @@ GameObject:
   m_Component:
   - component: {fileID: 454150013}
   - component: {fileID: 454150012}
+  - component: {fileID: 454150014}
   m_Layer: 0
   m_Name: DnDProvider
   m_TagString: Untagged
@@ -412,6 +411,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &454150014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 454150011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: bc5b45d7bdeaa2d46b7c4e9556f74c71, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: f78101bb557642a4794cef721709cdef, type: 3}
+  m_SortingOrder: 10
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
 --- !u!1 &674965898
 GameObject:
   m_ObjectHideFlags: 0
@@ -728,6 +746,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5db907624a5c3c4d8474cba9ae0a0ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DockSpacing: 8
 --- !u!4 &1798942852
 Transform:
   m_ObjectHideFlags: 0

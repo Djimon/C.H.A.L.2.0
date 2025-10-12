@@ -1,5 +1,6 @@
 using CHAL.Systems.Inventory;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class InvDnDProvider : MonoBehaviour
 {
@@ -21,5 +22,7 @@ public class InvDnDProvider : MonoBehaviour
         // Domain kann im Editor nachgezogen werden; Service bei Bedarf neu aufbauen
         if (domain != null && _service == null)
             _service = new DragDropService(domain);
+
+
     }
 }
