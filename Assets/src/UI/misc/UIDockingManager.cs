@@ -1,4 +1,6 @@
 ﻿using CHAL.UI;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,6 +18,12 @@ namespace CHAL.UI
         // alle registrierten Views, keine Scene-Scans
         private readonly List<IDockableView> _views = new();
         private bool _relayoutQueued;
+
+        //ghost
+        private List<UIDocument> _docs = new();
+        public IReadOnlyList<UIDocument> ActiveDocs => _docs; // deine interne Liste
+        public event Action<UIDocument> OnDocAdded;
+        public event Action<UIDocument> OnDocRemoved;
 
         private void Awake()
         {
@@ -43,6 +51,11 @@ namespace CHAL.UI
         {
             if (view == null || _views.Contains(view)) return;
             _views.Add(view);
+            if (view.doc != null && !_docs.Contains(view.doc))
+            {
+                _docs.Add(view.doc);
+                OnDocAdded?.Invoke(view.doc);     // <-- Event feuern
+            }
             EnsureAbsolutePosition(view.OuterContainer);
             QueueRelayout();
         }
@@ -51,6 +64,8 @@ namespace CHAL.UI
         {
             if (view == null) return;
             _views.Remove(view);
+            if (view.doc != null && _docs.Remove(view.doc))
+                OnDocRemoved?.Invoke(view.doc);   // <-- Event feuern
             QueueRelayout();
         }
 

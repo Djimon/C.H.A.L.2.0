@@ -53,19 +53,6 @@ namespace CHAL.UI
         private VisualElement _outer;    // Container (gedockt)
         private VisualElement _grid;     // Slots-Grid
 
-        private VisualElement _root;
-
-        // --------Static Ghost --------
-        static VisualElement sGhost;
-        static VisualElement sGhostIcon;
-        static Label sGhostCount;
-        static bool sDragActive;
-        static VisualElement _currentPanel;
-        static readonly Vector2 _ghostOffset = new Vector2(5f, 5f);
-
-        static readonly List<UIDocument> sDocs = new List<UIDocument>();
-
-
         // --- domain  ----
         private IInventoryDomain _domain;
         private string _instanceID;
@@ -95,28 +82,21 @@ namespace CHAL.UI
 
         public bool IsItemCard => false;
 
+        public UIDocument doc => _doc;
+
 
         private void Awake()
         {
             if (_doc == null) _doc = GetComponent<UIDocument>();
-
-            _root = _doc.rootVisualElement;
-            CreateGhost();
         }
 
         private void OnEnable()
         {
             UIDockingManager.Instance?.Register(this);
-            if (_doc == null) _doc = GetComponent<UIDocument>();
-            if (_doc != null && !sDocs.Contains(_doc))
-                sDocs.Add(_doc);
         }
 
         private void OnDisable()
         {
-            if (_doc != null)
-                sDocs.Remove(_doc);
-
             UIDockingManager.Instance?.Unregister(this);
         }
 
@@ -127,43 +107,7 @@ namespace CHAL.UI
 
         void Update()
         {
-            if (!sDragActive || _root.panel == null) return;
-
             
-
-            if (sDragActive) 
-            {
-                if (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Escape))
-                {
-                    EndGhostDrag();
-                }
-
-                UIDocument targetDoc = GetPanelUnderMouse();
-
-                VisualElement targetPanel = targetDoc.rootVisualElement.Q<VisualElement>("Panel");
-
-                if (_currentPanel != targetPanel)
-                {
-                    ReparentGhostTo(targetDoc);
-                    _currentPanel = targetPanel;
-                }
-
-                // Hole Screen-Pos (Bottom-Left) – z.B. mit Input.mousePosition
-                Vector2 screenPos = Input.mousePosition;
-                // Y-Flip für UI Toolkit (Top-Left)
-                screenPos.y = Screen.height - screenPos.y;
-                // Panel-Koordinaten (ohne PanelSettings-Scaling)
-                Vector2 panelPos = RuntimePanelUtils.ScreenToPanel(_root.panel, screenPos);
-
-                // Dann setzen:
-                sGhost.style.left = panelPos.x + _ghostOffset.x;
-                sGhost.style.top = panelPos.y + _ghostOffset.y;
-                sGhost.BringToFront();
-                sGhost.style.visibility = Visibility.Visible;
-                sGhostCount.style.visibility = Visibility.Visible;
-            }
-
-
         }
 
         /// <summary>
@@ -264,8 +208,6 @@ namespace CHAL.UI
                 {
                     var s = _domain.Peek(_instanceID, slotIndex);
                     if (!s.HasValue) return; // leerer Slot
-                    
-                    BeginGhostDrag((ItemStack)s);
 
                     _dnd.BeginDrag(
                         new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
@@ -274,7 +216,6 @@ namespace CHAL.UI
                 }
                 else
                 {
-                    EndGhostDrag();
                     _dnd.TryDropOn(new ItemMoveObject { instanceID = _instanceID, slot = slotIndex });
                 }
 
@@ -290,8 +231,6 @@ namespace CHAL.UI
 
                 var s = _domain.Peek(_instanceID, slotIndex);
                 if (!s.HasValue || s.Value.count <= 1) return;
-
-                BeginGhostDrag((ItemStack)s, true);
 
                 _dnd.BeginDrag(
                     new ItemMoveObject { instanceID = _instanceID, slot = slotIndex },
@@ -491,163 +430,6 @@ namespace CHAL.UI
 
             // Außenabstand zwischen Views an einer Kante (vom DockingManager genutzt)
             _outer.style.marginLeft = _outer.style.marginRight = _outer.style.marginTop = _outer.style.marginBottom = 0;
-        }
-
-        // ------ Ghost ------
-        private void CreateGhost()
-        {
-            // 1) Overlay im Inventory-Root anlegen
-            sGhost = new VisualElement { name = "DnD_GhostOverlay" };
-            sGhost.pickingMode = PickingMode.Ignore;           // Click-Through
-            sGhost.style.position = Position.Absolute;
-            sGhost.style.visibility = Visibility.Hidden;
-            _root.Add(sGhost);
-
-            // 2) Inhalt: Icon + Count
-            sGhostIcon = new VisualElement { name = "GhostIcon" };
-            sGhostIcon.pickingMode = PickingMode.Ignore;
-            sGhostIcon.style.width = 48;
-            sGhostIcon.style.height = 48;
-            sGhostIcon.style.opacity = 0.6f;                   // halbtransparent
-            sGhost.Add(sGhostIcon);
-
-            sGhostCount = new Label();
-            sGhostCount.pickingMode = PickingMode.Ignore;
-            sGhostCount.style.position = Position.Absolute;
-            sGhostCount.style.right = -4;
-            sGhostCount.style.bottom = -4;
-            sGhostCount.style.unityTextAlign = TextAnchor.MiddleCenter;
-            sGhostCount.style.fontSize = 11;
-            sGhostCount.style.paddingLeft = 4;
-            sGhostCount.style.paddingRight = 4;
-            sGhostCount.style.paddingTop = 1;
-            sGhostCount.style.paddingBottom = 1;
-            sGhostCount.style.backgroundColor = new Color(0, 0, 0, 0.6f);
-            sGhostCount.style.color = Color.white;
-            sGhost.Add(sGhostCount);
-
-            // 3) Cursor-Follow (nur wenn Ghost aktiv)
-            //_root.RegisterCallback<PointerMoveEvent>(OnPointerMove);
-        }
-
-        public void EndGhostDrag()
-        {
-            sDragActive = false;
-            if (sGhost != null)
-            {
-                sGhost.style.visibility = Visibility.Hidden;
-                sGhostCount.style.visibility = Visibility.Hidden;
-            }
-                
-        }
-
-        public void BeginGhostDrag(ItemStack s, bool isSplit = false)
-        {
-
-            ItemRegistry.Instance.TryGet(s.itemID, out var def);
-            Sprite icon = def.icon;
-            int stackCount = s.count;
-
-            EnsureGhostExists();            // lazy-create
-            EnsureGhostInSomePanel();       // initial anhängen (irgendein aktives Panel)
-
-            if (icon != null)
-                sGhostIcon.style.backgroundImage = new StyleBackground(icon);
-            else
-                sGhostIcon.style.backgroundImage = StyleKeyword.None;
-
-            if (stackCount > 1)
-            {
-                sGhostCount.text = isSplit? Mathf.Max(1, Mathf.FloorToInt(stackCount / 2)).ToString() : stackCount.ToString();
-                sGhostCount.style.visibility = Visibility.Visible;
-            }
-            else
-            {
-                sGhostCount.text = "";
-                sGhostCount.style.visibility = Visibility.Hidden;
-            }
-
-            sGhost.BringToFront();
-            sGhost.style.visibility = Visibility.Visible;
-            sDragActive = true;
-        }
-
-        static void EnsureGhostExists()
-        {
-            if (sGhost != null) return;
-
-            sGhost = new VisualElement { name = "DnD_GhostOverlay_Global" };
-            sGhost.pickingMode = PickingMode.Ignore;
-            sGhost.style.position = Position.Absolute;
-            sGhost.style.visibility = Visibility.Hidden;
-
-            sGhostIcon = new VisualElement { name = "GhostIcon" };
-            sGhostIcon.pickingMode = PickingMode.Ignore;
-            sGhostIcon.style.width = 48;
-            sGhostIcon.style.height = 48;
-            sGhostIcon.style.opacity = 0.6f;
-            sGhost.Add(sGhostIcon);
-
-            sGhostCount = new Label();
-            sGhostCount.pickingMode = PickingMode.Ignore;
-            sGhostCount.style.position = Position.Absolute;
-            sGhostCount.style.right = -4;
-            sGhostCount.style.bottom = -4;
-            sGhostCount.style.fontSize = 11;
-            sGhostCount.style.backgroundColor = new Color(0, 0, 0, 0.6f);
-            sGhostCount.style.color = Color.white;
-            sGhost.Add(sGhostCount);
-        }
-
-        static void EnsureGhostInSomePanel()
-        {
-            // Hänge initial in das erste verfügbare Panel
-            for (int i = sDocs.Count - 1; i >= 0; i--)
-            {
-                var doc = sDocs[i];
-                if (doc != null && doc.rootVisualElement != null && doc.rootVisualElement.panel != null)
-                {
-                    ReparentGhostTo(doc);
-                    _currentPanel = doc.rootVisualElement.Q<VisualElement>("Panel");
-                    return;
-                }
-            }
-            // kein Panel -> bleibt detached; Update blendet es dann aus
-        }
-
-        static void ReparentGhostTo(UIDocument doc)
-        {
-            if (doc == null || doc.rootVisualElement == null) return;
-
-            // vorsorglich ablösen
-            sGhost.RemoveFromHierarchy();
-            // an das Ziel-Panel hängen (Root)
-            doc.rootVisualElement.Add(sGhost);
-            // nach vorn holen
-            sGhost.BringToFront();
-        }
-
-        static UIDocument GetPanelUnderMouse()
-        {
-            Vector2 screen = Input.mousePosition;
-            screen.y = Screen.height - screen.y;
-
-            // Wir prüfen jedes Panel: Screen->Panel und Contains(worldBound)
-            // Reihenfolge: letzte registrierte zuerst (typisch "oben")
-            for (int i = sDocs.Count - 1; i >= 0; i--)
-            {
-                var doc = sDocs[i];
-                if (doc == null) continue;
-
-                var root = doc.rootVisualElement;
-                var panel = root?.panel;
-                if (panel == null) continue;
-
-                Vector2 panelPos = RuntimePanelUtils.ScreenToPanel(panel, screen);
-                if (root.worldBound.Contains(panelPos))
-                    return doc;
-            }
-            return null;
         }
 
     }

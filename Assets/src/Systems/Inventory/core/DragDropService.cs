@@ -21,6 +21,9 @@ namespace CHAL.Systems.Inventory
 
         public DragDropService(IInventoryDomain domain) { _domain = domain; }
 
+        //events
+        public event Action<ItemStack,bool> OnBeginDrag;
+        public event Action OnEndDrag;
 
         // “Pickup” (auch per RMB für Split möglich)
         public void BeginDrag(ItemMoveObject from, bool splitHalf)
@@ -29,7 +32,10 @@ namespace CHAL.Systems.Inventory
             _from = from;
             _hasFrom = true;
             _splitHalf = splitHalf;
-        
+
+            var stack = _domain.Peek(from.instanceID, from.slot);
+            if (stack.HasValue) OnBeginDrag?.Invoke(stack.Value, splitHalf);
+
         }
 
 
@@ -38,6 +44,8 @@ namespace CHAL.Systems.Inventory
         {
             _hasFrom = false;
             _splitHalf = false;
+
+            OnEndDrag?.Invoke();
         }
 
         public void TryDropOn(ItemMoveObject to)

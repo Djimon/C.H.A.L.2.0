@@ -6,6 +6,8 @@ namespace CHAL.UI
     public interface IDockableView
     {
         // Pflicht: der äußere Menü-Container, den der Manager positioniert
+        UIDocument doc { get;}
+
         VisualElement OuterContainer { get; }
 
         // Sichtbarkeit ausschließlich über UI Toolkit
