@@ -1,7 +1,9 @@
-﻿using CHAL.Data;
+﻿using CHAL.Core;
+using CHAL.Data;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
@@ -16,6 +18,9 @@ namespace CHAL.UI
 
     public class InventoryView : MonoBehaviour, IDockableView
     {
+        public InventoryDef _inventoryDef;
+        public string inventoryID;
+
         // ---------- Layout & UI ----------
         [Header("UXML hookup")]
         [SerializeField] private UIDocument _doc;
@@ -85,14 +90,14 @@ namespace CHAL.UI
         public UIDocument doc => _doc;
 
 
-        private void Awake()
-        {
-            if (_doc == null) _doc = GetComponent<UIDocument>();
-        }
-
         private void OnEnable()
         {
             UIDockingManager.Instance?.Register(this);
+        }
+
+        private void Awake()
+        {
+            if (_doc == null) _doc = GetComponent<UIDocument>();
         }
 
         private void OnDisable()
@@ -109,6 +114,7 @@ namespace CHAL.UI
         {
             
         }
+
 
         /// <summary>
         /// Baut UI & bindet Domain. cols/rows können hier überschrieben werden (Definition aus InvDef).
@@ -238,7 +244,6 @@ namespace CHAL.UI
                 );
             });
         }
-
 
         // ---------- Rendering ----------
         private void BuildGrid()

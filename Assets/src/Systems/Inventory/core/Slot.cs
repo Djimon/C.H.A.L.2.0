@@ -1,4 +1,6 @@
 using CHAL.Systems.Items;
+using System;
+using System.Collections.Generic;
 
 namespace CHAL.Systems.Inventory
 {
@@ -19,15 +21,16 @@ namespace CHAL.Systems.Inventory
         }
     }
 
+    [Serializable]
     public sealed class SlotFilter
     {
-        public ItemType[] AllowedItemTypes;
-        public string[] AllowedItemIds;
-        public string[] AllowedTags;
+        public List<ItemType> AllowedItemTypes;
+        public List<string> AllowedItemIds;
+        public List<string> AllowedTags;
 
-        public ItemType[] BlockedItemTypes;
-        public string[] BlockedItemIds;
-        public string[] BlockedTags;
+        public List<ItemType> BlockedItemTypes;
+        public List<string> BlockedItemIds;
+        public List<string> BlockedTags;
     }
 
 }

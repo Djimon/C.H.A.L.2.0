@@ -1,12 +1,18 @@
+using CHAL.Core;
+using UnityEngine;
+
 namespace CHAL.Systems.Inventory
 {
-    public class InventoryDef 
+    [CreateAssetMenu(fileName = "Inventory Def", menuName = "Data/Inventory Def")]
+    public class InventoryDef : ScriptableObject
     {
-        public string TypeId;
+        public PlayerInventoryType TypeId;
         public string NameKey;
-        public int cols;
-        public int rows;
-        public int defaultMaxStackPerSlot = 99;
+        [Min(1)]  public int cols;
+        [Min(1)]  public int rows;
+        public int defaultMaxStackPerSlot = 250;
+
+
         public SlotFilter globalSlotFilter;
     }
 

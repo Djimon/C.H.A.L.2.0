@@ -8,13 +8,26 @@ namespace CHAL.Systems.Inventory
     {
         private readonly Dictionary<string, InventoryInstance> _instances = new();
 
-
         // Optionaler Hook: Tags/Item-Infos. In Unity lieferst du hier Adapter auf ItemRegistry.
         public Func<string, bool> ItemExists;
         public Func<string, string, bool> ItemHasTag; // (itemId, tag) => true/false
 
 
         public event Action<string, int, ItemStack?> OnSlotChanged;
+
+        public bool HasInstance(string instanceId)
+        {
+            if (string.IsNullOrEmpty(instanceId)) return false;
+            return _instances.ContainsKey(instanceId);
+        }
+
+
+        public InventoryInstance GetInstance(string instanceId)
+        {
+            if (string.IsNullOrEmpty(instanceId)) return null;
+            _instances.TryGetValue(instanceId, out var inst);
+            return inst;
+        }
 
 
         public void RegisterInstance(InventoryInstance inst)
@@ -34,6 +47,18 @@ namespace CHAL.Systems.Inventory
             return _instances.TryGetValue(instanceId, out var inv) ? inv.slots.Length : 0;
         }
 
+        public void ClearAllSlots(string instanceId)
+        {
+            if (!_instances.TryGetValue(instanceId, out var inv) || inv?.slots == null)
+                return;
+
+            for (int i = 0; i < inv.slots.Length; i++)
+            {
+                inv.slots[i].stack = null;
+                OnSlotChanged?.Invoke(instanceId, i, null);
+            }
+        }
+
         private static bool PassesFilter(Slot slot, string itemId)
         {
             var f = slot.Filter;
@@ -41,7 +66,7 @@ namespace CHAL.Systems.Inventory
 
             // 1) Blocked IDs
             if (f.BlockedItemIds != null)
-                for (int i = 0; i < f.BlockedItemIds.Length; i++)
+                for (int i = 0; i < f.BlockedItemIds.Count ; i++)
                     if (f.BlockedItemIds[i] == itemId)
                     {
                         DebugManager.Log($"Failed Filter: blocked: {f.BlockedItemIds[i]}", DebugManager.EDebugLevel.Dev, "Inventory");
@@ -49,10 +74,10 @@ namespace CHAL.Systems.Inventory
                     } 
 
             // 2) Allowed IDs
-            if (f.AllowedItemIds != null && f.AllowedItemIds.Length > 0)
+            if (f.AllowedItemIds != null && f.AllowedItemIds.Count > 0)
             {
                 bool ok = false;
-                for (int i = 0; i < f.AllowedItemIds.Length; i++)
+                for (int i = 0; i < f.AllowedItemIds.Count; i++)
                     if (f.AllowedItemIds[i] == itemId) { ok = true; break; }
                 if (!ok)
                 {
@@ -67,17 +92,17 @@ namespace CHAL.Systems.Inventory
             // 4) Types prüfen
             var t = ItemTypeUtils.FromId(itemId);
             if (f.BlockedItemTypes != null)
-                for (int i = 0; i < f.BlockedItemTypes.Length; i++)
+                for (int i = 0; i < f.BlockedItemTypes.Count; i++)
                     if (f.BlockedItemTypes[i] == t)
                     {
                         DebugManager.Log($"Failed Filter: blocked ItemType: {t}", DebugManager.EDebugLevel.Dev, "Inventory");
                         return false;
                     }
 
-            if (f.AllowedItemTypes != null && f.AllowedItemTypes.Length > 0)
+            if (f.AllowedItemTypes != null && f.AllowedItemTypes.Count > 0)
             {
                 bool ok = false;
-                for (int i = 0; i < f.AllowedItemTypes.Length; i++)
+                for (int i = 0; i < f.AllowedItemTypes.Count; i++)
                     if (f.AllowedItemTypes[i] == t) { ok = true; break; }
                 if (!ok)
                 {

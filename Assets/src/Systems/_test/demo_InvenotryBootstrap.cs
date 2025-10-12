@@ -1,6 +1,7 @@
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using CHAL.UI;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryDemoBootstrap : MonoBehaviour
@@ -16,21 +17,9 @@ public class InventoryDemoBootstrap : MonoBehaviour
     {
         _domain = new InventoryDomain();
 
-        int Rows = 3;
-        int Cols = 4;
-
-        var def = new InventoryDef { TypeId = "demo:bag", NameKey = "Demo", cols = 4, rows = 3, defaultMaxStackPerSlot = 5 };
-        _bagA = InventoryInstance.Create("bagA", def);
-
-        var def2 = new InventoryDef {
-                TypeId = "demo:bag2", 
-                NameKey = "Demo 2", 
-                cols = Cols,
-                rows = Rows,
-                defaultMaxStackPerSlot = 4,
-                globalSlotFilter = new SlotFilter { AllowedItemTypes = new[] {ItemType.Remains} }};
+        _bagA = InventoryInstance.Create("bagA", _bagA.InvDef);
         
-        _bagB = InventoryInstance.Create("bagB", def2);
+        _bagB = InventoryInstance.Create("bagB", _bagB.InvDef);
 
 
         _domain.RegisterInstance(_bagA);
@@ -43,8 +32,8 @@ public class InventoryDemoBootstrap : MonoBehaviour
         _domain.TryAdd(_bagB.instanceID, new ItemStack("remains:blood", 6), out _);
 
         // UI binden
-        if (bagAView) bagAView.Bind(_domain, _bagA.instanceID, def.cols, def.rows);
-        if (bagBView) bagBView.Bind(_domain, _bagB.instanceID, def2.cols, def2.rows);
+        if (bagAView) bagAView.Bind(_domain, _bagA.instanceID, _bagA.InvDef.cols, _bagA.InvDef.rows);
+        if (bagBView) bagBView.Bind(_domain, _bagB.instanceID, _bagB.InvDef.cols, _bagB.InvDef.rows);
 
 
     }
