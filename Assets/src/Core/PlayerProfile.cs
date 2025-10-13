@@ -1,14 +1,14 @@
 using CHAL.Core;
+using CHAL.Systems.Economy;
 using CHAL.Systems.Inventory;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace CHAL.Data
 {
     [Serializable]
-    public class PlayerProfile
+    public class PlayerProfile : IWallet
     {
         // --- Meta ---
         public DateTime LastSaveTime;            // Für Autosave / Debug
@@ -64,6 +64,7 @@ namespace CHAL.Data
             RecalculateLevel();
         }
 
+
         public int GetCurrency(string currencyId)
         {
             return Currencies.TryGetValue(currencyId, out var amount) ? amount : 0;
@@ -71,6 +72,8 @@ namespace CHAL.Data
 
         public void AddCurrency(string currencyId, int amount)
         {
+            if (amount <= 0) return;
+
             if (!Currencies.ContainsKey(currencyId))
                 Currencies[currencyId] = 0;
 
@@ -79,11 +82,24 @@ namespace CHAL.Data
 
         public bool SpendCurrency(string currencyId, int amount)
         {
-            if (GetCurrency(currencyId) < amount)
-                return false;
+            if (amount <= 0) return false;
+            if (!CanSpend(currencyId, amount)) return false;
 
             Currencies[currencyId] -= amount;
             return true;
+        }
+
+        public bool CanSpend(string currencyId, int amount)
+        {
+            if (amount <= 0) return false;
+            return (GetCurrency(currencyId) >= amount);
+        }
+
+
+        public void Refund(string currencyId, int amount)
+        {
+            if (amount <= 0) return;
+            AddCurrency(currencyId, amount);
         }
 
         public IReadOnlyList<string> GetUnlockedHeroes()
