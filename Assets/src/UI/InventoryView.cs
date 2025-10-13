@@ -336,7 +336,7 @@ namespace CHAL.UI
             tile.Add(icon);
 
             // Label (unten)
-            var label = new Label("-") { name = "label" };
+            var label = new Label("-") { name = "label" };  //TODO: gefährlich wegen nciht threadsave
             label.style.unityTextAlign = TextAnchor.MiddleCenter;
             label.style.color = Color.white;
             label.style.fontSize = Mathf.Clamp(Mathf.RoundToInt(_minSlotSize * 0.18f), 10, 16);

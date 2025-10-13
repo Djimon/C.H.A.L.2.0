@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9381806e225998048a538a34116647f4, type: 3}
   m_Name: Player_Modules
   m_EditorClassIdentifier: 
-  TypeId: player_modules
+  TypeId: 4
   NameKey: Player_Modules
   cols: 6
   rows: 9

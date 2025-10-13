@@ -1,5 +1,8 @@
+using System;
+
 namespace CHAL.Systems.Items
 {
+    [Serializable]
     public enum ItemType
     {
         Unknown = 0,

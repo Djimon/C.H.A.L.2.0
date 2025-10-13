@@ -215,6 +215,12 @@ namespace CHAL.Core
 
         }
 
+        public void TestInitInventory()
+        {
+            BuildPlayerInventoriesFromFolder();
+            MapProfileToDomain();
+        }
+
         internal void StartMap(string sceneName, MapDef selectedMap)
         {
             pendingMap = selectedMap;
