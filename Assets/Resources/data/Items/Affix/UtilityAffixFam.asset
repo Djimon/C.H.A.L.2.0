@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 758d1b394e2bc21498c6e214a94743f4, type: 3}
+  m_Name: UtilityAffixFam
+  m_EditorClassIdentifier: 
+  FamilyName: Utility
+  Entries:
+  - AffixId: melee_skill_pwr_pct
+    Weight: 100
+  - AffixId: range_skill_pwr_pct
+    Weight: 100
+  - AffixId: skill_range_pct
+    Weight: 50
+  - AffixId: aoe_radius_pct
+    Weight: 100
+  - AffixId: projectile_speed_pct
+    Weight: 100
+  - AffixId: pierce_chance_pct
+    Weight: 50
+  - AffixId: cast_speed_pct
+    Weight: 50
+  - AffixId: skill_cooldown_reduc_pct
+    Weight: 50
+  - AffixId: item_rarity_pct
+    Weight: 50
+  TagLimits:
+  - Tag: speed
+    Limit: 1
+  - Tag: special
+    Limit: 1
+  - Tag: skill
+    Limit: 2

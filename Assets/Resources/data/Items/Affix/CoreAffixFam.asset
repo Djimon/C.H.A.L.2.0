@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 758d1b394e2bc21498c6e214a94743f4, type: 3}
+  m_Name: CoreAffixFam
+  m_EditorClassIdentifier: 
+  FamilyName: Core
+  Entries:
+  - AffixId: str_flat
+    Weight: 100
+  - AffixId: dex_flat
+    Weight: 100
+  - AffixId: con_flat
+    Weight: 100
+  - AffixId: int_flat
+    Weight: 100
+  - AffixId: wil_flat
+    Weight: 100
+  - AffixId: crit_chance_pct
+    Weight: 50
+  - AffixId: crit_dmg_pct
+    Weight: 50
+  - AffixId: phys_dmg_pct
+    Weight: 100
+  - AffixId: elem_dmg_pct
+    Weight: 100
+  TagLimits:
+  - Tag: attribute
+    Limit: 2
+  - Tag: damage
+    Limit: 1

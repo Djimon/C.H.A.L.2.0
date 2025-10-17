@@ -102,3 +102,5 @@ InitTestScene*.unity*
 
 #exclude missing items - they are jsut placeholders
 **/missing/
+/Assets/Resources/data/Items/remains/missing.meta
+stub

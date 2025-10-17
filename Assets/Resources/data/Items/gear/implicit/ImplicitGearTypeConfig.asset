@@ -1,0 +1,207 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc6d42da35b4ba347aa74c6f991261b7, type: 3}
+  m_Name: ImplicitGearTypeConfig
+  m_EditorClassIdentifier: 
+  Pools:
+  - GearType: 0
+    Entries:
+    - ImplicitId: dmg_pct
+      Weight: 100
+    - ImplicitId: thorns_flat
+      Weight: 0
+    - ImplicitId: phys_dmg_flat
+      Weight: 100
+    - ImplicitId: elem_dmg_flat
+      Weight: 300
+    - ImplicitId: armor_pct
+      Weight: 100
+    - ImplicitId: elem_resist_pct
+      Weight: 300
+    - ImplicitId: dodge_pct
+      Weight: 300
+    - ImplicitId: barrier_pct
+      Weight: 300
+    - ImplicitId: armor_flat
+      Weight: 100
+    - ImplicitId: barrier_flat
+      Weight: 100
+    - ImplicitId: life_pct
+      Weight: 100
+    - ImplicitId: life_flat
+      Weight: 100
+    - ImplicitId: item_rarity_pct
+      Weight: 50
+    - ImplicitId: move_speed_pct
+      Weight: 0
+    - ImplicitId: thonrs_flat
+      Weight: 0
+  - GearType: 1
+    Entries:
+    - ImplicitId: dmg_pct
+      Weight: 50
+    - ImplicitId: thorns_flat
+      Weight: 0
+    - ImplicitId: phys_dmg_flat
+      Weight: 50
+    - ImplicitId: elem_dmg_flat
+      Weight: 50
+    - ImplicitId: armor_pct
+      Weight: 500
+    - ImplicitId: elem_resist_pct
+      Weight: 500
+    - ImplicitId: dodge_pct
+      Weight: 100
+    - ImplicitId: barrier_pct
+      Weight: 300
+    - ImplicitId: armor_flat
+      Weight: 500
+    - ImplicitId: barrier_flat
+      Weight: 300
+    - ImplicitId: life_pct
+      Weight: 500
+    - ImplicitId: life_flat
+      Weight: 500
+    - ImplicitId: item_rarity_pct
+      Weight: 25
+    - ImplicitId: move_speed_pct
+      Weight: 0
+    - ImplicitId: thonrs_flat
+      Weight: 100
+  - GearType: 2
+    Entries:
+    - ImplicitId: dmg_pct
+      Weight: 300
+    - ImplicitId: thorns_flat
+      Weight: 0
+    - ImplicitId: phys_dmg_flat
+      Weight: 300
+    - ImplicitId: elem_dmg_flat
+      Weight: 100
+    - ImplicitId: armor_pct
+      Weight: 50
+    - ImplicitId: elem_resist_pct
+      Weight: 0
+    - ImplicitId: dodge_pct
+      Weight: 50
+    - ImplicitId: barrier_pct
+      Weight: 100
+    - ImplicitId: armor_flat
+      Weight: 50
+    - ImplicitId: barrier_flat
+      Weight: 100
+    - ImplicitId: life_pct
+      Weight: 50
+    - ImplicitId: life_flat
+      Weight: 50
+    - ImplicitId: item_rarity_pct
+      Weight: 50
+    - ImplicitId: move_speed_pct
+      Weight: 0
+    - ImplicitId: thonrs_flat
+      Weight: 50
+  - GearType: 3
+    Entries:
+    - ImplicitId: dmg_pct
+      Weight: 100
+    - ImplicitId: thorns_flat
+      Weight: 0
+    - ImplicitId: phys_dmg_flat
+      Weight: 100
+    - ImplicitId: elem_dmg_flat
+      Weight: 100
+    - ImplicitId: armor_pct
+      Weight: 300
+    - ImplicitId: elem_resist_pct
+      Weight: 300
+    - ImplicitId: dodge_pct
+      Weight: 500
+    - ImplicitId: barrier_pct
+      Weight: 100
+    - ImplicitId: armor_flat
+      Weight: 100
+    - ImplicitId: barrier_flat
+      Weight: 100
+    - ImplicitId: life_pct
+      Weight: 100
+    - ImplicitId: life_flat
+      Weight: 100
+    - ImplicitId: item_rarity_pct
+      Weight: 50
+    - ImplicitId: move_speed_pct
+      Weight: 0
+    - ImplicitId: thonrs_flat
+      Weight: 100
+  - GearType: 4
+    Entries:
+    - ImplicitId: dmg_pct
+      Weight: 50
+    - ImplicitId: thorns_flat
+      Weight: 0
+    - ImplicitId: phys_dmg_flat
+      Weight: 50
+    - ImplicitId: elem_dmg_flat
+      Weight: 50
+    - ImplicitId: armor_pct
+      Weight: 100
+    - ImplicitId: elem_resist_pct
+      Weight: 50
+    - ImplicitId: dodge_pct
+      Weight: 200
+    - ImplicitId: barrier_pct
+      Weight: 50
+    - ImplicitId: armor_flat
+      Weight: 100
+    - ImplicitId: barrier_flat
+      Weight: 100
+    - ImplicitId: life_pct
+      Weight: 50
+    - ImplicitId: life_flat
+      Weight: 100
+    - ImplicitId: item_rarity_pct
+      Weight: 100
+    - ImplicitId: move_speed_pct
+      Weight: 750
+    - ImplicitId: thonrs_flat
+      Weight: 300
+  - GearType: 5
+    Entries:
+    - ImplicitId: dmg_pct
+      Weight: 500
+    - ImplicitId: thorns_flat
+      Weight: 0
+    - ImplicitId: phys_dmg_flat
+      Weight: 300
+    - ImplicitId: elem_dmg_flat
+      Weight: 300
+    - ImplicitId: armor_pct
+      Weight: 100
+    - ImplicitId: elem_resist_pct
+      Weight: 100
+    - ImplicitId: dodge_pct
+      Weight: 50
+    - ImplicitId: barrier_pct
+      Weight: 200
+    - ImplicitId: armor_flat
+      Weight: 50
+    - ImplicitId: barrier_flat
+      Weight: 50
+    - ImplicitId: life_pct
+      Weight: 200
+    - ImplicitId: life_flat
+      Weight: 50
+    - ImplicitId: item_rarity_pct
+      Weight: 100
+    - ImplicitId: move_speed_pct
+      Weight: 0
+    - ImplicitId: thonrs_flat
+      Weight: 0
