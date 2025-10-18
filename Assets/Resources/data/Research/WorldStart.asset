@@ -24,10 +24,9 @@ MonoBehaviour:
   requirements:
     waves: 0
     maps: 0
-    mapRequirements:
-    - difficulty: 0
-      amount: 0
+    mapRequirements: []
     killsGeneral: 0
     killsByTag: []
     eliteCount: 0
     bossCount: 0
+    championCount: 0

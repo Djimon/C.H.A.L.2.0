@@ -20,6 +20,7 @@ public class ResearchRequirement
 
     [Min(0)] public int eliteCount;
     [Min(0)] public int bossCount;
+    [Min(0)] public int championCount;
 
     public void ValidateSoft(Action<string> warn, string ctx)
     {

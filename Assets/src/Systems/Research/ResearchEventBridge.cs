@@ -1,0 +1,33 @@
+﻿using System.Collections.Generic;
+using CHAL.Data;
+
+namespace CHAL.Systems.Research
+{
+    public sealed class ResearchEventBridge
+    {
+        private readonly ResearchService _service;
+
+        public ResearchEventBridge(ResearchService service)
+        {
+            _service = service;
+        }
+
+        // Aufruf z.B. im WaveManager:
+        public void OnWaveCompleted()
+        {
+            _service.ApplyWaveCompleted();
+        }
+
+        // Aufruf z.B. im MapManager (falls du MapDifficulty schon führst; sonst bool→Mapping machen)
+        public void OnMapCompleted(MapDifficulty difficulty)
+        {
+            _service.ApplyMapCompleted(difficulty);
+        }
+
+        // Aufruf z.B. im Death/Combat-Handler
+        public void OnEnemyKilled(IReadOnlyList<string> enemyTags, EnemyRank rank)
+        {
+            _service.ApplyEnemyKilled(enemyTags, rank);
+        }
+    }
+}
