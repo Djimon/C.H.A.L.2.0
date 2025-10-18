@@ -1,5 +1,8 @@
+using System;
+
 namespace CHAL.Data
 {
+    [Serializable]
     public enum MapDifficulty
     {
         Stable,

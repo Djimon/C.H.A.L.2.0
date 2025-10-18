@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
+  m_Name: WorldStart
+  m_EditorClassIdentifier: 
+  id: world_start
+  title: WorldStart
+  lane: 0
+  stage: 10
+  parentRefs: []
+  parents: []
+  unlocks:
+  - unlockType: 0
+    targetId: research:world
+  requirements:
+    waves: 0
+    maps: 0
+    mapRequirements:
+    - difficulty: 0
+      amount: 0
+    killsGeneral: 0
+    killsByTag: []
+    eliteCount: 0
+    bossCount: 0

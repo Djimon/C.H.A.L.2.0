@@ -19,17 +19,6 @@ namespace CHAL.Core
         Hideout
     }
 
-    public enum PlayerInventoryType
-    {
-        all,
-        Remains,
-        Parts,
-        Runes,
-        Modules,
-        Gear
-    }
-
-
     public class GameManager : MonoBehaviour
     {
 

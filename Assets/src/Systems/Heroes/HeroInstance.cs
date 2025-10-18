@@ -77,19 +77,19 @@ namespace CHAL.Systems.Hero
         private void InitStats()
         {
             // Startwerte nach GrowthRole
-            var startMap = new Dictionary<GrowthRole, int> {
-                { GrowthRole.Core, 14 },
-                { GrowthRole.Secondary, 11 },
-                { GrowthRole.Tertiary, 8 },
-                { GrowthRole.Edge, 6 }
+            var startMap = new Dictionary<LevelGrowthRole, int> {
+                { LevelGrowthRole.Core, 14 },
+                { LevelGrowthRole.Secondary, 11 },
+                { LevelGrowthRole.Tertiary, 8 },
+                { LevelGrowthRole.Edge, 6 }
             };
 
             // Zielwerte aus Config
-            var targetMap = new Dictionary<GrowthRole, int> {
-                { GrowthRole.Core, Archetype.GrowthConfig.CoreTarget },
-                { GrowthRole.Secondary, Archetype.GrowthConfig.SecondaryTarget },
-                { GrowthRole.Tertiary, Archetype.GrowthConfig.TertiaryTarget },
-                { GrowthRole.Edge, Archetype.GrowthConfig.EdgeTarget }
+            var targetMap = new Dictionary<LevelGrowthRole, int> {
+                { LevelGrowthRole.Core, Archetype.GrowthConfig.CoreTarget },
+                { LevelGrowthRole.Secondary, Archetype.GrowthConfig.SecondaryTarget },
+                { LevelGrowthRole.Tertiary, Archetype.GrowthConfig.TertiaryTarget },
+                { LevelGrowthRole.Edge, Archetype.GrowthConfig.EdgeTarget }
             };
 
             // Reihenfolge der Stats laut ArchetypeDef
@@ -108,7 +108,7 @@ namespace CHAL.Systems.Hero
             // GrowthPattern anwenden
             for (int i = 0; i < Archetype.GrowthConfig.GrowthPattern.growthPriority.Length; i++)
             {
-                GrowthRole growthPrio = Archetype.GrowthConfig.GrowthPattern.growthPriority[i];
+                LevelGrowthRole growthPrio = Archetype.GrowthConfig.GrowthPattern.growthPriority[i];
                 HeroAttribs stat = slots[i];
 
                 attributes[stat] = startMap[growthPrio];

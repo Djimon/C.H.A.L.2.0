@@ -12,10 +12,6 @@ using static UnityEngine.Rendering.DebugUI;
 
 namespace CHAL.UI
 {
-
-    public enum DockEdge { Left, Right, Top, Bottom }
-    public enum SlotFitMode { FitWidth, FitBoth }
-
     public class InventoryView : MonoBehaviour, IDockableView
     {
         public InventoryDef _inventoryDef;

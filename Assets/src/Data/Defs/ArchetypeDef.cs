@@ -53,24 +53,24 @@ namespace CHAL.Data
         public int SecondaryTarget = 100;
         public int TertiaryTarget = 80;
         public int EdgeTarget = 65;
-        public GrowthPattern GrowthPattern = new GrowthPattern();
+        public LevelGrowthPattern GrowthPattern = new LevelGrowthPattern();
     }
 
     [Serializable]
-    public class GrowthPattern
+    public class LevelGrowthPattern
     {
         [Tooltip("Pattern aus genau 5 Rollen, z.B. Core, Sec, Sec, Ter, Edge")]
-        public GrowthRole[] growthPriority = new GrowthRole[5]
+        public LevelGrowthRole[] growthPriority = new LevelGrowthRole[5]
         {
-        GrowthRole.Core,
-        GrowthRole.Secondary,
-        GrowthRole.Secondary,
-        GrowthRole.Tertiary,
-        GrowthRole.Edge
+        LevelGrowthRole.Core,
+        LevelGrowthRole.Secondary,
+        LevelGrowthRole.Secondary,
+        LevelGrowthRole.Tertiary,
+        LevelGrowthRole.Edge
         };
     }
 
-    public enum GrowthRole
+    public enum LevelGrowthRole
     {
         Core,
         Secondary,

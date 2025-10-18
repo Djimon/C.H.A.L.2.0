@@ -1,18 +1,8 @@
+using CHAL.Data;
 using System;
 
 namespace CHAL.Systems.Items
 {
-    [Serializable]
-    public enum ItemType
-    {
-        Unknown = 0,
-        Remains, // Ressources
-        Part, // materials
-        Module, //=Skill
-        Gear, 
-        Rune
-    }
-
     public static class ItemTypeUtils
     {
         public static ItemType FromId(string itemId)
@@ -27,6 +17,7 @@ namespace CHAL.Systems.Items
                 case "rune": return ItemType.Rune;
                 case "part": return ItemType.Part;
                 case "module": return ItemType.Module;
+                case "gear": return ItemType.Gear;
                 default: return ItemType.Unknown;
             }
         }
