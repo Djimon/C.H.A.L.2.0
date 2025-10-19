@@ -46,7 +46,14 @@ namespace CHAL.Core
 
         private readonly Dictionary<PlayerInventoryType, InventoryDef> _inventoryTemplates = new();
 
+        // Routing-Maps: prefix (enumname lower) -> type, type -> instanceId
+        private readonly Dictionary<string, PlayerInventoryType> _prefixToType =
+            new Dictionary<string, PlayerInventoryType>(StringComparer.Ordinal);
+        private readonly Dictionary<PlayerInventoryType, string> _typeToInstanceId =
+            new Dictionary<PlayerInventoryType, string>();
 
+        private static string BuildInstanceId(PlayerInventoryType t)
+            => "player_" + t.ToString().ToLowerInvariant();
 
         public GameBalanceConfig Config
         {
@@ -73,17 +80,15 @@ namespace CHAL.Core
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // Save laden oder neuen Spielstand erstellen
+            // Save laden falls vorhanden
             Profile = SaveSystem.Load();
+
             if (Profile == null)
             {
                 Debug.Log("Kein Save gefunden ");
                 //Profile = new PlayerProfile(); //erst im Character Creator
             }
-            else //PlayerProfiel vorhanden 
-            {
-                Inventory = new InventoryDomain();
-            }
+  
 
             var xpplvl = Config.economy.xp.xpPerLevel;
             DebugManager.Log($"Xp per level: {xpplvl}");
@@ -99,6 +104,7 @@ namespace CHAL.Core
             }
 
             Unlucky ??= new UnluckyProtection();
+            
         }
 
         private void Start()
@@ -148,13 +154,15 @@ namespace CHAL.Core
                 Inventory = new InventoryDomain();
 
             BuildPlayerInventoriesFromFolder();
-            MapDomainToProfile();
+            BuildInventoryRoutingMaps();
+            MapProfileToDomain();
             InventoryReady = true;
 
             SaveGame();
             SetState(GameState.Hideout);
             SceneManager.LoadScene("03_Hideout"); // zentral!
         }
+
 
 
         public void GoToMainMenu()
@@ -178,15 +186,13 @@ namespace CHAL.Core
                 return;
             }
 
-            var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
-            Profile.EnsureStarterHeroUnlocked(starterId);
-
-            if (Inventory == null)
-                Inventory = new InventoryDomain();
-
             BuildPlayerInventoriesFromFolder();
+            BuildInventoryRoutingMaps();
             MapProfileToDomain();
             InventoryReady = true;
+
+            var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
+            Profile.EnsureStarterHeroUnlocked(starterId);
 
             SetState(GameState.Hideout); 
             SceneManager.LoadScene("03_Hideout");
@@ -285,25 +291,26 @@ namespace CHAL.Core
             return inst;
         }
 
-        private void MapDomainToProfile()
+        public void MapDomainToProfile()
         {
             if (Inventory == null || Profile == null) return;
 
             int applied = 0;
-            foreach (var inv in Profile.Inventories)
+            var invs = Profile.Inventories;
+            for (int i = 0; i < invs.Count; i++)
             {
-                if (inv == null) continue;
-                var key = FindDomainKeyFor(inv.invID);
-                if (string.IsNullOrEmpty(key))
-                {
-                    DebugManager.Warning($"Inventory not found {inv.invID}");
-                    continue;
-                }
+                var inv = invs[i];
+                if (inv == null || string.IsNullOrEmpty(inv.invID)) continue;
 
-                var dict = ReadDomainAsDict(key);       // existierende Helper von dir
+                string instanceId = "player_" + inv.invID.ToLowerInvariant();
+                var dict = ReadDomainAsDict(instanceId);
                 inv.FromDictionary(dict);
                 applied++;
             }
+
+            DebugManager.Log(
+                $"MapDomainToProfile: applied {applied} inventories",
+                DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
         }
 
         public void MapProfileToDomain()
@@ -311,17 +318,21 @@ namespace CHAL.Core
             if (Inventory == null || Profile == null) return;
 
             int applied = 0;
-            foreach (var inv in Profile.Inventories)
+            var invs = Profile.Inventories;
+            for (int i = 0; i < invs.Count; i++)
             {
-                if (inv == null) continue;
-                var key = FindDomainKeyFor(inv.invID);
-                if (string.IsNullOrEmpty(key)) continue;
+                var inv = invs[i];
+                if (inv == null || string.IsNullOrEmpty(inv.invID)) continue;
 
+                string instanceId = "player_" + inv.invID.ToLowerInvariant();
                 var dict = inv.ToDictionary();
-                TryFillDomainFrom(dict, key);           // existierende Helper von dir
+                TryFillDomainFrom(dict, instanceId);
                 applied++;
             }
 
+            DebugManager.Log(
+                $"MapProfileToDomain: applied {applied} inventories",
+                DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
         }
 
         private Dictionary<string, int> ReadDomainAsDict(string instanceId)
@@ -339,32 +350,103 @@ namespace CHAL.Core
 
         private void TryFillDomainFrom(Dictionary<string, int> source, string instanceId)
         {
+            if (Inventory == null || string.IsNullOrEmpty(instanceId)) return;
+
             int slots = Inventory.SlotCount(instanceId);
-            if (slots <= 0) return;
-
-            // leer machen, weil wir beim Laden/Neustart bewusst den Profilzustand spiegeln
-            for (int i = 0; i < slots; i++)
-                if (Inventory.Peek(instanceId, i).HasValue)
-                    Inventory.TryRemove(instanceId, i, int.MaxValue, out _);
-
-            foreach (var kv in source)
+            if (slots <= 0)
             {
-                if (kv.Value <= 0) continue;
-                Inventory.TryAdd(instanceId, new ItemStack(kv.Key, kv.Value), out _);
+                // Versuche die Instanz on-demand zu erstellen:
+                // Konvention: "player_" + enumname_lower  → Enum parsen
+                var suffix = instanceId.StartsWith("player_") ? instanceId.Substring("player_".Length) : instanceId;
+                if (Enum.TryParse<PlayerInventoryType>(suffix, true, out var type))
+                {
+                    var created = EnsureInstance(instanceId, type);
+                    if (created != null)
+                        slots = created.SlotCount;
+
+                    DebugManager.Log($"try to create isntance for  {suffix}");
+                }
+
+                if (slots <= 0)
+                {
+                    DebugManager.Log(
+                        $"TryFillDomainFrom: instance '{instanceId}' has no slots / not found (after ensure).",
+                        DebugManager.EDebugLevel.Dev, "Inventory", LogType.Warning);
+                    return;
+                }
+            }
+
+            // 1) Clear existing stacks
+            Inventory.ClearAllSlots(instanceId);
+
+            // 2) Refill
+            if (source != null)
+            {
+                int x = 0;
+                foreach (var kv in source)
+                {
+                    if (kv.Value <= 0) continue;
+                    Inventory.TryAdd(instanceId, new ItemStack(kv.Key, kv.Value), out _);
+                    x += kv.Value;
+                }
+                DebugManager.Log($"Refilled Inventory {instanceId} (amount:{x})", DebugManager.EDebugLevel.Dev, "Inventory");
             }
         }
 
-        private static string FindDomainKeyFor(string inventoryId)
+        // Einmal beim Boot/Def-Load aufrufen
+        private void BuildInventoryRoutingMaps()
         {
-            switch (inventoryId)
+            _prefixToType.Clear();
+            _typeToInstanceId.Clear();
+
+            // NUR die Typen registrieren, für die du auch tatsächlich Defs/Inventare hast
+            // Falls du schon eine Liste deiner geladenen InventoryDefs hast, nimm die.
+            // Minimalvariante: alle Enumwerte erlauben.
+            foreach (PlayerInventoryType t in Enum.GetValues(typeof(PlayerInventoryType)))
             {
-                case "remains": return "player_remains";
-                case "part": return "player_parts";
-                case "rune": return "player_runes";
-                case "module": return "player_modules";
-                case "gear": return "player_gear";     // nur falls du es schon führst; sonst null lassen
-                default: return null;
+                var prefix = t.ToString().ToLowerInvariant(); // 1:1-Regel
+                if (!_prefixToType.ContainsKey(prefix))
+                    _prefixToType.Add(prefix, t);
+
+                if (!_typeToInstanceId.ContainsKey(t))
+                    _typeToInstanceId.Add(t, BuildInstanceId(t));
             }
+
+            DebugManager.Log(
+                $"Inventory routing ready: prefixes={_prefixToType.Count}, instanceIds={_typeToInstanceId.Count}",
+                DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
+        }
+
+        // Öffentliche, einfache Resolver-API für alle Systeme
+        public bool TryResolveByItemId(string itemId, out PlayerInventoryType type, out string instanceId)
+        {
+            type = default;
+            instanceId = null;
+            if (string.IsNullOrEmpty(itemId)) return false;
+
+            int colon = itemId.IndexOf(':');
+            if (colon <= 0) return false;
+
+            var prefix = itemId.Substring(0, colon).Trim().ToLowerInvariant(); // exakt enumname lower
+            DebugManager.Log($"TEST: {prefix}");
+            if (!_prefixToType.TryGetValue(prefix, out type))
+                return false;
+
+            if (!_typeToInstanceId.TryGetValue(type, out instanceId))
+            {
+                instanceId = "player_" + type.ToString().ToLowerInvariant();
+                _typeToInstanceId[type] = instanceId;
+            }
+
+            return true;
+        }
+
+        public string InstanceIdFor(PlayerInventoryType t)
+        {
+            if (_typeToInstanceId.TryGetValue(t, out var id)) return id;
+            id = BuildInstanceId(t);
+            _typeToInstanceId[t] = id;
+            return id;
         }
     }
 }

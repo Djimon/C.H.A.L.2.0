@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Player_Remains
   m_EditorClassIdentifier: 
   TypeId: 1
-  NameKey: player_remains
+  NameKey: player_remain
   cols: 6
   rows: 9
   defaultMaxStackPerSlot: 999

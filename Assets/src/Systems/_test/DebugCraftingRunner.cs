@@ -35,7 +35,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
 
     void Start()
     {
-        GameManager.Instance.EnsureInstance("player_parts", PlayerInventoryType.Parts);
+        GameManager.Instance.EnsureInstance("player_parts", PlayerInventoryType.Part);
         GameManager.Instance.EnsureInstance("All_Inventory", PlayerInventoryType.all);
 
 

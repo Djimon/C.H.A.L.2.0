@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Player_Modules
   m_EditorClassIdentifier: 
   TypeId: 4
-  NameKey: player_modules
+  NameKey: player_module
   cols: 6
   rows: 9
   defaultMaxStackPerSlot: 10

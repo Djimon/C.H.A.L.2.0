@@ -416,49 +416,46 @@ namespace CHAL.Systems.Wave
 
         private void TransferRewardsToProfile(WaveRewards rewards)
         {
-            var profile = GameManager.Instance.Profile;
-            if (profile == null || rewards?.Items == null) return;
+            var gm = GameManager.Instance;
+            var profile = gm.Profile;
+            var domain = gm.Inventory;
 
-            //foreach (var kv in rewards.Items)
-            //{
-            //    string itemId = kv.Key;
-            //    int count = kv.Value;
+            if (profile == null || domain == null || rewards?.Items == null) return;       
 
-            //    if (itemId.StartsWith("remain"))
-            //        profile.Remains.AddItem(itemId, count);
-            //    else if (itemId.StartsWith("part"))
-            //        profile.Parts.AddItem(itemId, count);
-            //    else if (itemId.StartsWith("rune"))
-            //        profile.Runes.AddItem(itemId, count);
-            //    else if (itemId.StartsWith("module"))
-            //        profile.Modules.AddItem(itemId, count);
-            //    else
-            //        DebugManager.Log($"Unknown item prefix: {itemId}",
-            //            DebugManager.EDebugLevel.Test, "Inventory");
-            //}
+            int applied = 0, unknown = 0;
 
+            // 1) Items in die DOMAIN buchen
             foreach (var kv in rewards.Items)
             {
-                string itemId = kv.Key;
+                // robust gegen Whitespaces/unsichtbare Zeichen
+                var itemId = kv.Key?.Trim();
                 int count = kv.Value;
+                if (string.IsNullOrEmpty(itemId)) continue;
 
-                // generisch: nimm das erste Inventar, dessen Id als Präfix zur itemId passt
-                for (int i = 0; i < profile.Inventories.Count; i++)
+                // ZENTRAL: enum-basierter Resolver aus dem GameManager
+                if (!gm.TryResolveByItemId(itemId, out var invType, out var instanceId))
                 {
-                    DebugManager.Log($"check Inventory: {profile.Inventories[i].invID}");
-                    if (profile.Inventories[i] != null && itemId.StartsWith(profile.Inventories[i].invID))
-                    {
-                        profile.Inventories[i].AddItem(itemId, count);
-                        break;
-                    }
-                    else
-                    {
-                        DebugManager.Log(
-                            $"TransferRewardsToProfile: no matches itemId='{itemId} to Inventroy {profile.Inventories[i].invID}'",
-                            DebugManager.EDebugLevel.Test, "Inventory", LogType.Warning);
-                    }
+                    DebugManager.Log(
+                        $"Unknown inventory prefix for itemId='{itemId}'",
+                        DebugManager.EDebugLevel.Test, "Inventory", LogType.Warning);
+                    unknown++;
+                    continue;
                 }
 
+                // Instanz sicherstellen (falls noch nicht vorhanden)
+                gm.EnsureInstance(instanceId, invType);
+
+                // In die DOMAIN buchen
+                var ok = domain.TryAdd(instanceId, new ItemStack(itemId, count), out var tx);
+                if (!ok)
+                {
+                    DebugManager.Log($"TryAdd failed for {itemId} x{count} → {tx.reason}",
+                        DebugManager.EDebugLevel.Dev, "Inventory", LogType.Warning);
+                }
+                else
+                {
+                    applied++;
+                }
             }
 
             foreach (var kv in rewards.Currencies)
@@ -481,7 +478,7 @@ namespace CHAL.Systems.Wave
                         DebugManager.EDebugLevel.Test, "System");
             }
 
-            GameManager.Instance.SaveGame();
+            gm.SaveGame();
         }
 
         public void CollectLoot(string itemId, int quantity)

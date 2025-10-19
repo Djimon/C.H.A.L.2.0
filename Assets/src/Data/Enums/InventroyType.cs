@@ -1,14 +1,16 @@
+using System;
 using UnityEngine;
 
 namespace CHAL.Data
 {
+    [Serializable]
     public enum PlayerInventoryType
     {
         all,
         Remains,
-        Parts,
-        Runes,
-        Modules,
+        Part,
+        Rune,
+        Module,
         Gear
     }
 }

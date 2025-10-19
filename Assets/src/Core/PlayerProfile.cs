@@ -56,7 +56,7 @@ namespace CHAL.Data
             SaveSystem.Save(this);
         }
 
-        private void InitInventories()
+        public void InitInventories()
         {
             Inventories.Add(new("remains"));
             Inventories.Add(new("part")); 
