@@ -81,7 +81,7 @@ namespace CHAL.Systems.Enemy
 
             if (EnemyDef == null || EnemyDef.baseAttacks == null || EnemyDef.baseAttacks.Count == 0)
             {
-                DebugManager.Log("Enemy | Warnung: baseAttacks ist leer.");
+                DebugManager.Log("Enemy | Warnung: baseAttacks ist leer.", DebugManager.EDebugLevel.Dev, "Combat");
                 return;
             }
 
@@ -95,7 +95,7 @@ namespace CHAL.Systems.Enemy
                 _attacks.Add(inst);
             }
 
-            DebugManager.Log($"Enemy | Loaded {_attacks.Count} attacks from Def.");
+            DebugManager.Log($"Enemy | Loaded {_attacks.Count} attacks from Def.", DebugManager.EDebugLevel.Dev, "Combat");
         }
 
         private void Update()
@@ -260,7 +260,7 @@ namespace CHAL.Systems.Enemy
                     float dist = Vector3.Distance(transform.position, heroCtrl.transform.position);
                     if (dist <= _currentSkill.Range)
                     {
-                        DebugManager.Log($"Combat/Enemy | Execute {_currentSkill.Data.DisplayName} → {heroCtrl.name} (dist={dist:F1}m)");
+                        DebugManager.Log($"Execute {_currentSkill.Data.DisplayName} → {heroCtrl.name} (dist={dist:F1}m)",DebugManager.EDebugLevel.Dev,"Combat");
 
                         SkillExecutor.ExecuteSkill(
                             _currentSkill,
@@ -273,12 +273,12 @@ namespace CHAL.Systems.Enemy
                     }
                     else
                     {
-                        DebugManager.Log($"Targeting | Out of Range (Enemy): {_currentSkill.Data.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F1}m");
+                        DebugManager.Log($"Targeting | Out of Range (Enemy): {_currentSkill.Data.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F1}m",DebugManager.EDebugLevel.Dev, "Combat");
                     }
                 }
                 else
                 {
-                    DebugManager.Log($"Targeting | Enemy hat kein gültiges Ziel für {_currentSkill.Data.DisplayName}.");
+                    DebugManager.Log($"Targeting | Enemy hat kein gültiges Ziel für {_currentSkill.Data.DisplayName}.", DebugManager.EDebugLevel.Dev, "Combat");
                 }
 
                 _currentSkill = null; // Cast abgeschlossen
@@ -338,7 +338,7 @@ namespace CHAL.Systems.Enemy
 
         private void HandleEnemyDied(EnemyInstance inst)
         {
-            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) killed!", DebugManager.EDebugLevel.Dev, "Fight");
+            DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) killed!", DebugManager.EDebugLevel.Dev, "Combat");
             // Event feuern: sagt nur „ich bin tot“, inkl. Position
             OnEnemyKilled?.Invoke(this, EnemyDef, EnemyData, transform.position);
 

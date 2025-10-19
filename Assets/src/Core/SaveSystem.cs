@@ -1,231 +1,95 @@
+﻿using BayatGames.SaveGameFree;
 using CHAL.Data;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace CHAL.Core
 {
     public static class SaveSystem
     {
-        private static string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
+        // ---- Einstellungen ----
+        private static GameSaveConfig _cfg;
+        private static GameSaveConfig Cfg
+        {
+            get
+            {
+                if (_cfg == null)
+                    _cfg = Resources.Load<GameSaveConfig>("Config/GameSaveConfig");
+                return _cfg;
+            }
+        }
+
+        private static void ConfigureSaveGame()
+        {
+            if (Cfg == null)
+            {
+                DebugManager.Log("SaveSystem: GameSaveConfig not found at Resources/Config/GameSaveConfig", DebugManager.EDebugLevel.Dev, "Save", LogType.Error);
+                return;
+            }
+            SaveGame.Encode = Cfg.ShouldEncodeRuntime();
+            SaveGame.EncodePassword = Cfg.encodePassword ?? string.Empty;
+            // SaveGame.SavePath bleibt Default (persistentDataPath)
+        }
+
+        // ---- API: Save/Load für PlayerProfile ----
+        private static string FileId()
+        {
+            return Cfg != null ? Cfg.ResolveFileIdRuntime() : "profiles/main/profile.json";
+        }
 
         public static void Save(PlayerProfile profile)
         {
-            var sb = new StringBuilder();
-            sb.AppendLine("{");
-
-            //Basic profiel data
-            sb.AppendLine($"  \"name\": \"{profile.playerName}\",");
-            //TODO: Colors
-            //Use InvariantCulture to prevent the stringbuilder zo use local decimal seperators
-            sb.AppendLine(
-            $"  \"color01\": \"{profile.playerColors[0].r.ToString(CultureInfo.InvariantCulture)}," + 
-                   $"{profile.playerColors[0].g.ToString(CultureInfo.InvariantCulture)}," +
-                   $"{profile.playerColors[0].b.ToString(CultureInfo.InvariantCulture)}\","
-);
-
-            // XP, Gold, DNA
-            sb.AppendLine($"  \"xp\": {profile.XP},");
-            sb.AppendLine($"  \"gold\": {profile.GetCurrency("gold")},");
-            sb.AppendLine($"  \"crystal\": {profile.GetCurrency("crystal")},");
-
-            // MapProgress
-            sb.AppendLine("  \"map_progress\":[");
-            var keys = new List<int>(profile.MapProgress.Keys);
-            keys.Sort();
-            for (int i = 0; i < keys.Count; i++)
+            if (profile == null)
             {
-                int map = keys[i];
-                int diff = profile.MapProgress[map];
-                string comma = (i < keys.Count - 1) ? "," : "";
-                sb.AppendLine($"    {{ \"{map}\": \"{diff}\" }}{comma}");
+                DebugManager.Log("SaveSystem.Save: profile is null", DebugManager.EDebugLevel.Dev, "Save", LogType.Warning);
+                return;
             }
+            ConfigureSaveGame();
 
-            sb.AppendLine("  ],");
+            profile.PrepareInventorySnapshot();
+            profile.LastSaveTime = DateTime.UtcNow;
+            var id = FileId();
+            
+            SaveGame.Save(id, profile);
 
-            // Inventories
-            WriteInventory(sb, "remains", profile.Remains.ToDictionary());
-            sb.AppendLine(",");
-            WriteInventory(sb, "parts", profile.Parts.ToDictionary());
-            sb.AppendLine(",");
-            WriteInventory(sb, "runes", profile.Runes.ToDictionary());
-            sb.AppendLine(",");
-            WriteInventory(sb, "modules", profile.Modules.ToDictionary());
-            sb.AppendLine(",");
-
-
-            //last entry 
-            profile.LastSaveTime = DateTime.Now;
-            string lastSaveStr = profile.LastSaveTime.ToString("o");
-            // LastSaveTime
-            sb.AppendLine($"  \"last_savetime\": \"{lastSaveStr}\"");
-
-            sb.AppendLine("\n}");
-
-
-            File.WriteAllText(SavePath, sb.ToString());
-            Debug.Log($"Save written: {SavePath}");
-        }
-
-        private static void WriteInventory(StringBuilder sb, string name, Dictionary<string, int> dict)
-        {
-            sb.AppendLine($"  \"{name}\": [");
-            int c = 0;
-            foreach (var kv in dict)
-            {
-                c++;
-                string comma = (c < dict.Count) ? "," : "";
-                sb.AppendLine($"    {{ \"{kv.Key}\" : {kv.Value} }}{comma}");
-            }
-            sb.Append("  ]");
+            DebugManager.Log($"SaveSystem: saved → {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
         public static PlayerProfile Load()
         {
-            if (!File.Exists(SavePath))
+            ConfigureSaveGame();
+
+            var id = FileId();
+            if (!SaveGame.Exists(id))
+            {
+                DebugManager.Log($"SaveSystem.Load: no file at '{id}'", DebugManager.EDebugLevel.Dev, "Save", LogType.Warning);
                 return null;
-
-            string json = File.ReadAllText(SavePath);
-
-            var profile = new PlayerProfile();
-            // Sehr rudiment�rer Parser: wir extrahieren per String-Suche
-            // (f�r robustere Variante: SimpleJSON oder Newtonsoft nehmen)
-
-            string lst = ExtractString(json, "\"last_savetime\"");
-            if (!string.IsNullOrEmpty(lst) && DateTime.TryParse(lst, null, System.Globalization.DateTimeStyles.RoundtripKind, out var dt))
-            {
-                profile.LastSaveTime = dt;
             }
 
-            profile.playerName = ExtractString(json, "\"name\"");
-            Color c1 = GetColorFromString(ExtractString(json, "\"color01\""));
-            profile.playerColors = new Color[] {c1};
-
-            profile.XP = ExtractInt(json, "\"xp\"");
-            profile.AddCurrency("gold", ExtractInt(json, "\"gold\""));
-            profile.AddCurrency("crystal", ExtractInt(json, "\"crystal\""));
-
-            profile.MapProgress = ExtractMapProgress(json);
-            profile.Remains.FromDictionary(ExtractInventory(json, "remains"));
-            profile.Parts.FromDictionary(ExtractInventory(json, "parts"));
-            profile.Runes.FromDictionary(ExtractInventory(json, "runes"));
-            profile.Modules.FromDictionary(ExtractInventory(json, "modules"));
-
-            Debug.Log($"Save loaded: {SavePath}");
-            return profile;
-        }
-
-        private static Color GetColorFromString(string v)
-        {
-            if (string.IsNullOrWhiteSpace(v))
-                return Color.blue;
-
-            try
+            // ⬇️ Revert: direkt PlayerProfile laden
+            var p = SaveGame.Load<PlayerProfile>(id);
+            if (p == null)
             {
-                var parts = v.Split(',');
-                if (parts.Length != 3)
-                    return Color.blue;
-
-                float r = float.Parse(parts[0], CultureInfo.InvariantCulture);
-                float g = float.Parse(parts[1], CultureInfo.InvariantCulture);
-                float b = float.Parse(parts[2], CultureInfo.InvariantCulture);
-
-                return new Color(r, g, b);
-            }
-            catch
-            {
-                return Color.blue;
-            }
-        }
-
-        private static int ExtractInt(string json, string key)
-        {
-            int idx = json.IndexOf(key);
-            if (idx < 0) return 0;
-            int colon = json.IndexOf(":", idx) + 1;
-            int comma = json.IndexOfAny(new char[] { ',', '\n' }, colon);
-            string num = json.Substring(colon, comma - colon).Trim();
-            int.TryParse(num, out int result);
-            return result;
-        }
-
-        private static string ExtractString(string json, string key)
-        {
-            int idx = json.IndexOf(key);
-            if (idx < 0) return null;
-            int colon = json.IndexOf(":", idx) + 1;
-            int quote1 = json.IndexOf("\"", colon);
-            if (quote1 < 0) return null;
-            int quote2 = json.IndexOf("\"", quote1 + 1);
-            if (quote2 < 0) return null;
-            return json.Substring(quote1 + 1, quote2 - quote1 - 1);
-        }
-
-        private static Dictionary<int, int> ExtractMapProgress(string json)
-        {
-            var result = new Dictionary<int, int>();
-
-            int start = json.IndexOf("\"map_progress\"");
-            if (start < 0) return result;
-
-            int arrayStart = json.IndexOf("[", start);
-            int arrayEnd = json.IndexOf("]", arrayStart);
-            if (arrayStart < 0 || arrayEnd < 0) return result;
-
-            string inner = json.Substring(arrayStart, arrayEnd - arrayStart);
-
-            // Matches: { "1": "3" } oder { "1": 3 }
-            var rx = new System.Text.RegularExpressions.Regex(@"\{\s*""(\d+)""\s*:\s*""?(\d+)""?\s*\}");
-            var matches = rx.Matches(inner);
-            foreach (System.Text.RegularExpressions.Match m in matches)
-            {
-                if (int.TryParse(m.Groups[1].Value, out var map) &&
-                    int.TryParse(m.Groups[2].Value, out var diff))
-                {
-                    result[map] = diff;
-                }
-            }
-            return result;
-        }
-
-        private static Dictionary<string, int> ExtractInventory(string json, string key)
-        {
-            var result = new Dictionary<string, int>();
-            int start = json.IndexOf($"\"{key}\"");
-            if (start < 0) return result;
-            int arrayStart = json.IndexOf("[", start);
-            int arrayEnd = json.IndexOf("]", arrayStart);
-            string inner = json.Substring(arrayStart, arrayEnd - arrayStart);
-
-            string[] entries = inner.Split(new[] { '{', '}', ',', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var e in entries)
-            {
-                var line = e.Trim();
-                if (line.StartsWith("\""))
-                {
-                    var parts = line.Replace("\"", "").Split(':');
-                    if (parts.Length == 3)
-                    {
-                        string id = parts[0].Trim()+':'+ parts[1].Trim();
-                        int.TryParse(parts[2], out int count);
-                        result[id] = count;
-                    }
-                    else if (parts.Length == 2)
-                    {
-                        string id = parts[0].Trim();
-                        int.TryParse(parts[1], out int count);
-                        result[id] = count;
-                    }
-                }
+                DebugManager.Log($"SaveSystem.Load: failed to read '{id}'", DebugManager.EDebugLevel.Dev, "Save", LogType.Error);
+                return null;
             }
 
-            DebugManager.Log($"savefile-> read inventory:");
-            DebugManager.Log(string.Join(", ", result.Select(kv => $"{kv.Key}: {kv.Value}")));
-            return result;
+            p.RestoreInventoriesFromSnapshot();
+
+            DebugManager.Log($"SaveSystem: loaded ← {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            return p;
+        }
+
+        /// <summary>Für „Neu anfangen“: löscht das eine Profil komplett.</summary>
+        public static bool DeleteProfileData()
+        {
+            ConfigureSaveGame();
+            var id = FileId();
+            if (!SaveGame.Exists(id)) return false;
+            SaveGame.Delete(id);
+            DebugManager.Log($"SaveSystem: deleted '{id}'", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            return true;
         }
     }
 }

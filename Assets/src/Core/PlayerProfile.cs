@@ -32,28 +32,37 @@ namespace CHAL.Data
         public Dictionary<string, int> Currencies = new();
         // Beispiel: { "gold" -> 1234, "dna" -> 50 
 
-        // --- Items ---
-        public Inventory Remains = new("remains");
-        public Inventory Parts = new("part");
-        public Inventory Runes = new("rune");
-        public Inventory Modules = new("module");
-
         // Map Progress
         //first int is MapNo, 
         //second int is highest difficulty succeded
-        public Dictionary<int,int> MapProgress = new();
+        public Dictionary<int, int> MapProgress = new();
         // Setzen: SetMapProgress(1,MapDifficulty.easy,9)
         // Abfragen:  GetMapProgress(1, MapDifficulty.medium)
 
+        // --- Items ---
+        [NonSerialized] public List<Inventory> Inventories = new();
+        // Persistenter Snapshot aller Inventare (nur für Save/Load)
+        public List<InventorySnapshot> InventorySave = new();
+
         public void InitializePlayer(string name, Color[] colors)
-        { 
+        {
             playerName = name;
             playerColors = colors;
 
             var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
             EnsureStarterHeroUnlocked(starterId);
+            InitInventories();
 
             SaveSystem.Save(this);
+        }
+
+        private void InitInventories()
+        {
+            Inventories.Add(new("remains"));
+            Inventories.Add(new("part")); 
+            Inventories.Add(new("rune"));
+            Inventories.Add(new("module"));
+            Inventories.Add(new("gear"));
         }
 
         public int GetXP() => XP;
@@ -169,5 +178,65 @@ namespace CHAL.Data
             DebugManager.Log($"Player next Level {levelProgress:P2} - missing:{missingXP} ", DebugManager.EDebugLevel.Debug, "Player");
         }
 
+
+        public void PrepareInventorySnapshot()
+        {
+            InventorySave ??= new List<InventorySnapshot>();
+            InventorySave.Clear();
+
+            foreach (var inv in Inventories)
+            {
+                if (inv == null) continue;
+                DebugManager.Log($"inv: {inv.invID} -  {inv.GetAllItems().Count}");
+                var dict = inv.ToDictionary() ?? new Dictionary<string, int>();
+                InventorySave.Add(new InventorySnapshot { id = inv.invID, items = dict });
+            }
+
+            // kleine, robuste Logs
+            DebugManager.Log("InventorySnapshot built:", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            foreach (var s in InventorySave)
+                DebugManager.Log($" - {s.id}: {s.items?.Count ?? 0}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+        }
+
+        // Nach dem Laden: Snapshot zurück in die Live-Inventare schieben
+        public void RestoreInventoriesFromSnapshot()
+        {
+            if (InventorySave == null) return;
+
+            // Falls z.B. frisch aus Menü geladen wurde: sicherstellen, dass Live-Inventare existieren
+            if (Inventories.Count == 0)
+                InitInventories();
+
+            // Hilfsresolver
+            Inventory GetById(string id)
+            {
+                for (int i = 0; i < Inventories.Count; i++)
+                    if (string.Equals(Inventories[i].invID, id, StringComparison.Ordinal))
+                        return Inventories [i];
+                return null;
+            }
+
+            int applied = 0;
+            foreach (var snap in InventorySave)
+            {
+                if (string.IsNullOrEmpty(snap.id)) continue;
+                var inv = GetById(snap.id);
+                if (inv == null) continue;
+
+                inv.FromDictionary(snap.items ?? new Dictionary<string, int>());
+                applied++;
+            }
+
+            DebugManager.Log($"InventorySnapshot restored — applied:{applied}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+        }
+
+
+    }
+
+    [Serializable]
+    public struct InventorySnapshot
+    {
+        public string id;                                 // z.B. "remains", "part", "rune", "module", "gear"
+        public Dictionary<string, int> items;             // flache Map (itemId -> count)
     }
 }

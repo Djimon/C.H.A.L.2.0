@@ -28,7 +28,7 @@ namespace CHAL.Systems.Enemy
             CurrentHP -= amount;
 
             DebugManager.Log($"Enemy {StructData.EnemyId} took {amount} {type} damage (HP={CurrentHP}/{MaxHP})",
-                DebugManager.EDebugLevel.Dev, "Fight");
+                DebugManager.EDebugLevel.Dev, "Combat");
 
             if (CurrentHP <= 0)
                 OnDeath();
@@ -36,7 +36,7 @@ namespace CHAL.Systems.Enemy
 
         protected override void OnDeath()
         {
-            DebugManager.Log($"Enemy {StructData.EnemyId} died!", DebugManager.EDebugLevel.Dev, "Fight");
+            DebugManager.Log($"Enemy {StructData.EnemyId} died!", DebugManager.EDebugLevel.Dev, "Combat");
             OnDied?.Invoke(this);
             // Loot/XP Events feuern etc.
         }

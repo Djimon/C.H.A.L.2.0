@@ -151,7 +151,7 @@ namespace CHAL.Systems.Skill
         {
             if (skill == null || skill.Data == null || target == null)
             {
-                DebugManager.Log($"Skill or target is null", DebugManager.EDebugLevel.Test, "Fight", LogType.Warning);
+                DebugManager.Log($"Skill or target is null", DebugManager.EDebugLevel.Test, "Combat", LogType.Warning);
                 return;
             }
 
@@ -181,7 +181,7 @@ namespace CHAL.Systems.Skill
                 var type = e.DmgType;
 
                 target.TakeDamage(dmg, type);
-                DebugManager.Log($"OnHit | {skill.Data.DisplayName} → {target}: {dmg:F1} {type}", DebugManager.EDebugLevel.Test, "Fight");
+                DebugManager.Log($"OnHit | {skill.Data.DisplayName} → {target}: {dmg:F1} {type}", DebugManager.EDebugLevel.Test, "Combat");
             }
         }
 
@@ -191,7 +191,7 @@ namespace CHAL.Systems.Skill
             target.TakeDamage(baseDmg, DamageType.Physical);
             DebugManager.Log(
                 $"OnHit | {skill.Data.DisplayName} → {target} : {baseDmg:F1} Physical",
-                DebugManager.EDebugLevel.Test, "Fight"
+                DebugManager.EDebugLevel.Test, "Combat"
             );
             return;  
         }

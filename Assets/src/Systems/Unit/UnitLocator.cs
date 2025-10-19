@@ -31,7 +31,7 @@ namespace CHAL.Systems.Unit
                 DebugManager.Error("[UnitLocator] Mehrere Instanzen in der Scene gefunden – bitte nur eine!");
             }
             Instance = this;
-            DebugManager.Log("[UnitLocator] Ready (scene-scoped).", DebugManager.EDebugLevel.Dev, "System");
+            DebugManager.Log("[UnitLocator] Ready (scene-scoped).", DebugManager.EDebugLevel.Dev, "Combat");
         }
 
         private void OnDestroy()
@@ -48,28 +48,28 @@ namespace CHAL.Systems.Unit
         {
             if (hero == null) return;
             _heroes.Add(hero);
-            DebugManager.Log($"[UnitLocator] +Hero {hero.name} (now {_heroes.Count})", DebugManager.EDebugLevel.Debug, "System");
+            DebugManager.Log($"[UnitLocator] +Hero {hero.name} (now {_heroes.Count})", DebugManager.EDebugLevel.Debug, "Combat");
         }
 
         public void Unregister(HeroController hero)
         {
             if (hero == null) return;
             _heroes.Remove(hero);
-            DebugManager.Log($"[UnitLocator] -Hero {hero?.name} (now {_heroes.Count})", DebugManager.EDebugLevel.Debug, "System");
+            DebugManager.Log($"[UnitLocator] -Hero {hero?.name} (now {_heroes.Count})", DebugManager.EDebugLevel.Debug, "Combat");
         }
 
         public void Register(EnemyController enemy)
         {
             if (enemy == null) return;
             _enemies.Add(enemy);
-            DebugManager.Log($"[UnitLocator] +Enemy {enemy.name} (now {_enemies.Count})", DebugManager.EDebugLevel.Debug, "System");
+            DebugManager.Log($"[UnitLocator] +Enemy {enemy.name} (now {_enemies.Count})", DebugManager.EDebugLevel.Debug, "Combat");
         }
 
         public void Unregister(EnemyController enemy)
         {
             if (enemy == null) return;
             _enemies.Remove(enemy);
-            DebugManager.Log($"[UnitLocator] -Enemy {enemy?.name} (now {_enemies.Count})", DebugManager.EDebugLevel.Debug, "System");
+            DebugManager.Log($"[UnitLocator] -Enemy {enemy?.name} (now {_enemies.Count})", DebugManager.EDebugLevel.Debug, "Combat");
         }
 
         // ---------- Queries ----------

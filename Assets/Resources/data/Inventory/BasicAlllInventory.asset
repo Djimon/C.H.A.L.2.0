@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9381806e225998048a538a34116647f4, type: 3}
   m_Name: BasicAlllInventory
   m_EditorClassIdentifier: 
-  TypeId: all_inventory
-  NameKey: All_Inventory
+  TypeId: 0
+  NameKey: all_inventory
   cols: 6
   rows: 9
   defaultMaxStackPerSlot: 999

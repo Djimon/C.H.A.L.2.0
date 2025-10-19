@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Player_Gear
   m_EditorClassIdentifier: 
   TypeId: 5
-  NameKey: Player_Gear
+  NameKey: player_gear
   cols: 6
   rows: 9
   defaultMaxStackPerSlot: 1

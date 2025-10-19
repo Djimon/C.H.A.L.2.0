@@ -51,6 +51,11 @@ namespace CHAL.Systems.Hero
                 heroInstance.Died -= OnHeroInstanceDied;
         }
 
+        private void OnDestroy()
+        {
+            UnitLocator.Instance.Unregister(this);
+        }
+
         public void Start()
         {
             if (HeroDef != null && heroInstance == null)
@@ -237,11 +242,6 @@ namespace CHAL.Systems.Hero
             // vormals Inline im Update
             castRemaining -= dt;
 
-            DebugManager.Log(
-                $"UI/HUD | Castbar {currentSkill.Data.DisplayName}: {Mathf.Max(0f, castRemaining):F2}s",
-                DebugManager.EDebugLevel.Debug, "UI"
-            );
-
             if (castRemaining > 0f) return;
 
             // --- Execute ---
@@ -257,7 +257,7 @@ namespace CHAL.Systems.Hero
                 {
                     DebugManager.Log(
                         $"Combat/Hero | Execute {currentSkill.Data.DisplayName} → {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
-                        DebugManager.EDebugLevel.Debug, "Fight"
+                        DebugManager.EDebugLevel.Debug, "Combat"
                     );
 
                     SkillExecutor.ExecuteSkill(

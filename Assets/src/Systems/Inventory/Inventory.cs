@@ -7,21 +7,22 @@ namespace CHAL.Systems.Inventory
     [Serializable]
     public class Inventory
     {
-        private readonly string _prefix;
+        public readonly string invID; //=ItemPrefix
         private List<InventoryItem> _items = new();
 
         public Inventory(string prefix)
         {
-            _prefix = prefix;
+            invID = prefix;
         }
 
         public bool AddItem(string itemId, int amount = 1)
         {
-            if (!itemId.StartsWith(_prefix))
+            DebugManager.Log($"TEST: {itemId.StartsWith(invID)}");
+            if (!itemId.StartsWith(invID))
                 return false;
 
-            int maxStack = InventoryRules.GetMaxStack(_prefix);
-            int maxSlots = InventoryRules.GetMaxSlots(_prefix);
+            int maxStack = InventoryRules.GetMaxStack(invID);
+            int maxSlots = InventoryRules.GetMaxSlots(invID);
 
             // existierenden Stack suchen
             var entry = _items.Find(i => i.ItemId == itemId);
@@ -44,6 +45,7 @@ namespace CHAL.Systems.Inventory
                     return false;
                 }
 
+                DebugManager.Log($"Added Item {itemId}({toAdd}) to Inventory {invID}.", DebugManager.EDebugLevel.Test, "Inventory");
                 return true;
             }
 
@@ -60,6 +62,7 @@ namespace CHAL.Systems.Inventory
                     return false;
                 }
 
+                DebugManager.Log($"Added Item {itemId}({toAdd}) to Inventory {invID}.", DebugManager.EDebugLevel.Test, "Inventory");
                 return true;
             }
 

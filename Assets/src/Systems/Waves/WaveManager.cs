@@ -1,8 +1,10 @@
 ﻿using CHAL.Core;
 using CHAL.Data;
+using CHAL.Systems.Inventory;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Map;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -165,7 +167,7 @@ namespace CHAL.Systems.Wave
                 return;
             }
 
-            var baseDef = candidates[Random.Range(0, candidates.Count)];
+            var baseDef = candidates[UnityEngine.Random.Range(0, candidates.Count)];
             var instance = UpgradeRank(baseDef, rank, mapDef);
 
             GameObject prefab = GetEnemyPrefab(baseDef);
@@ -352,7 +354,7 @@ namespace CHAL.Systems.Wave
             foreach (var d in drops)
             {
                 Vector3 spawnPos = pos + Vector3.up * 2f
-                                   + new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
+                                   + new Vector3(UnityEngine.Random.Range(-0.2f, 0.2f), 0, UnityEngine.Random.Range(-0.2f, 0.2f));
                 var lootObj = Instantiate(lootPrefab, spawnPos, Quaternion.identity);
                 var lc = lootObj.GetComponent<LootCube>();
                 lc.Init(d.ItemId, d.quantity);
@@ -415,23 +417,48 @@ namespace CHAL.Systems.Wave
         private void TransferRewardsToProfile(WaveRewards rewards)
         {
             var profile = GameManager.Instance.Profile;
+            if (profile == null || rewards?.Items == null) return;
+
+            //foreach (var kv in rewards.Items)
+            //{
+            //    string itemId = kv.Key;
+            //    int count = kv.Value;
+
+            //    if (itemId.StartsWith("remain"))
+            //        profile.Remains.AddItem(itemId, count);
+            //    else if (itemId.StartsWith("part"))
+            //        profile.Parts.AddItem(itemId, count);
+            //    else if (itemId.StartsWith("rune"))
+            //        profile.Runes.AddItem(itemId, count);
+            //    else if (itemId.StartsWith("module"))
+            //        profile.Modules.AddItem(itemId, count);
+            //    else
+            //        DebugManager.Log($"Unknown item prefix: {itemId}",
+            //            DebugManager.EDebugLevel.Test, "Inventory");
+            //}
 
             foreach (var kv in rewards.Items)
             {
                 string itemId = kv.Key;
                 int count = kv.Value;
 
-                if (itemId.StartsWith("remain"))
-                    profile.Remains.AddItem(itemId, count);
-                else if (itemId.StartsWith("part"))
-                    profile.Parts.AddItem(itemId, count);
-                else if (itemId.StartsWith("rune"))
-                    profile.Runes.AddItem(itemId, count);
-                else if (itemId.StartsWith("module"))
-                    profile.Modules.AddItem(itemId, count);
-                else
-                    DebugManager.Log($"Unknown item prefix: {itemId}",
-                        DebugManager.EDebugLevel.Test, "Inventory");
+                // generisch: nimm das erste Inventar, dessen Id als Präfix zur itemId passt
+                for (int i = 0; i < profile.Inventories.Count; i++)
+                {
+                    DebugManager.Log($"check Inventory: {profile.Inventories[i].invID}");
+                    if (profile.Inventories[i] != null && itemId.StartsWith(profile.Inventories[i].invID))
+                    {
+                        profile.Inventories[i].AddItem(itemId, count);
+                        break;
+                    }
+                    else
+                    {
+                        DebugManager.Log(
+                            $"TransferRewardsToProfile: no matches itemId='{itemId} to Inventroy {profile.Inventories[i].invID}'",
+                            DebugManager.EDebugLevel.Test, "Inventory", LogType.Warning);
+                    }
+                }
+
             }
 
             foreach (var kv in rewards.Currencies)
@@ -499,7 +526,7 @@ namespace CHAL.Systems.Wave
             {
                 var magicPool = BalanceManager.Instance.Config.enemies.magicTagPool;
                 if (magicPool != null && magicPool.Count > 0)
-                    inst.bonusTags.Add(magicPool[Random.Range(0, magicPool.Count)]);
+                    inst.bonusTags.Add(magicPool[UnityEngine.Random.Range(0, magicPool.Count)]);
             }
             else if (rank == EnemyRank.Elite)
             {
@@ -507,9 +534,9 @@ namespace CHAL.Systems.Wave
                 var mods = mapDef.allowedModifiers ?? new List<string>();
                 if (mods.Count > 0)
                 {
-                    inst.bonusTags.Add(mods[Random.Range(0, mods.Count)]);
+                    inst.bonusTags.Add(mods[UnityEngine.Random.Range(0, mods.Count)]);
                     while (inst.bonusTags.Count < minEliteTags)
-                        inst.bonusTags.Add(mods[Random.Range(0, mods.Count)]);
+                        inst.bonusTags.Add(mods[UnityEngine.Random.Range(0, mods.Count)]);
                 }
                 else
                 {
@@ -557,7 +584,7 @@ namespace CHAL.Systems.Wave
 
             for (int i = 0; i < count; i++)
             {
-                var baseDef = candidates[Random.Range(0, candidates.Count)];
+                var baseDef = candidates[UnityEngine.Random.Range(0, candidates.Count)];
                 var instance = UpgradeRank(baseDef, rank, mapDef);
                 wave.Monsters.Add(instance);
             }
@@ -571,7 +598,7 @@ namespace CHAL.Systems.Wave
                 return Vector3.zero;
             }
 
-            int index = Random.Range(0, spawnPoints.Count);
+            int index = UnityEngine.Random.Range(0, spawnPoints.Count);
             return spawnPoints[index].position;
         }
 
@@ -640,7 +667,7 @@ namespace CHAL.Systems.Wave
         public void AddXP(int amount)
         {
             XP += amount;
-            DebugManager.Log($"gained {amount} XP", DebugManager.EDebugLevel.Dev, "Fight");
+            DebugManager.Log($"gained {amount} XP", DebugManager.EDebugLevel.Dev, "Combat");
         }
     }
 }

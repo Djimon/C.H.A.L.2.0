@@ -117,8 +117,10 @@ namespace CHAL.Core
         {
             var oldName = Profile.playerName;
             var oldColors = Profile.playerColors;
-            Profile = new PlayerProfile();
 
+            //SaveSystem.DeleteProfileData();
+
+            Profile = new PlayerProfile();
             Profile.InitializePlayer(oldName, oldColors);
             //InitalizePlayer autosavfes
         }
@@ -287,21 +289,39 @@ namespace CHAL.Core
         {
             if (Inventory == null || Profile == null) return;
 
-            // Ziel-Instanzen existieren, weil BuildPlayerInventoriesFromTemplates() sie angelegt hat
-            Profile.Remains.FromDictionary(ReadDomainAsDict("player_remains"));
-            Profile.Parts.FromDictionary(ReadDomainAsDict("player_parts"));
-            Profile.Runes.FromDictionary(ReadDomainAsDict("player_runes"));
-            Profile.Modules.FromDictionary(ReadDomainAsDict("player_modules"));
+            int applied = 0;
+            foreach (var inv in Profile.Inventories)
+            {
+                if (inv == null) continue;
+                var key = FindDomainKeyFor(inv.invID);
+                if (string.IsNullOrEmpty(key))
+                {
+                    DebugManager.Warning($"Inventory not found {inv.invID}");
+                    continue;
+                }
+
+                var dict = ReadDomainAsDict(key);       // existierende Helper von dir
+                inv.FromDictionary(dict);
+                applied++;
+            }
         }
 
         public void MapProfileToDomain()
         {
             if (Inventory == null || Profile == null) return;
 
-            TryFillDomainFrom(Profile.Remains.ToDictionary(), "player_remains");
-            TryFillDomainFrom(Profile.Parts.ToDictionary(), "player_parts");
-            TryFillDomainFrom(Profile.Runes.ToDictionary(), "player_runes");
-            TryFillDomainFrom(Profile.Modules.ToDictionary(), "player_modules");
+            int applied = 0;
+            foreach (var inv in Profile.Inventories)
+            {
+                if (inv == null) continue;
+                var key = FindDomainKeyFor(inv.invID);
+                if (string.IsNullOrEmpty(key)) continue;
+
+                var dict = inv.ToDictionary();
+                TryFillDomainFrom(dict, key);           // existierende Helper von dir
+                applied++;
+            }
+
         }
 
         private Dictionary<string, int> ReadDomainAsDict(string instanceId)
@@ -334,5 +354,17 @@ namespace CHAL.Core
             }
         }
 
+        private static string FindDomainKeyFor(string inventoryId)
+        {
+            switch (inventoryId)
+            {
+                case "remains": return "player_remains";
+                case "part": return "player_parts";
+                case "rune": return "player_runes";
+                case "module": return "player_modules";
+                case "gear": return "player_gear";     // nur falls du es schon führst; sonst null lassen
+                default: return null;
+            }
+        }
     }
 }
