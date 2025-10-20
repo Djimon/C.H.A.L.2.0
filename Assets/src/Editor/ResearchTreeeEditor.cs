@@ -521,33 +521,46 @@ public sealed class ResearchTreeDefEditor : Editor
 
     private void RunCompile()
     {
-        var compiled = ResearchTreeCompiler.Compile(_tree);
-
-        // kleine Zusammenfassung
-        int laneCount = _tree?.researchTreeLanes?.Count ?? 0;
-        int stageCount = 0;
-        if (_tree?.researchTreeLanes != null)
-            foreach (var lane in _tree.researchTreeLanes)
-                if (lane != null && lane.stages != null)
-                    stageCount += lane.stages.Count;
-
-        int nodeCount = compiled.nodesById?.Count ?? 0;
-        int parentLinks = 0;
-        if (compiled.parentsById != null)
-            foreach (var kv in compiled.parentsById)
-                parentLinks += kv.Value?.Count ?? 0;
-
-        DebugManager.Log(
-            $"ResearchTree Compile OK → Lanes={laneCount}, Stages={stageCount}, Nodes={nodeCount}, ParentLinks={parentLinks}",
-            DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log
-        );
-
-        if (nodeCount == 0)
+        try
         {
+            var compiled = ResearchTreeCompiler.Compile(_tree);
+
+            int laneCount = _tree?.researchTreeLanes?.Count ?? 0;
+            int stageCount = 0;
+            if (_tree?.researchTreeLanes != null)
+                foreach (var lane in _tree.researchTreeLanes)
+                    if (lane != null && lane.stages != null)
+                        stageCount += lane.stages.Count;
+
+            int nodeCount = compiled.nodesById?.Count ?? 0;
+            int parentLinks = 0;
+            if (compiled.parentsById != null)
+                foreach (var kv in compiled.parentsById)
+                    parentLinks += kv.Value?.Count ?? 0;
+
             DebugManager.Log(
-                "ResearchTree Hinweis: Noch keine Nodes im Tree gefunden.",
-                DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Warning
+                $"ResearchTree Compile OK → Lanes={laneCount}, Stages={stageCount}, Nodes={nodeCount}, ParentLinks={parentLinks}",
+                DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log
             );
+
+            // Optional: kleines Dialog-Feedback (einmalig)
+            EditorUtility.DisplayDialog("ResearchTree Validate",
+                $"Lanes: {laneCount}\nStages: {stageCount}\nNodes: {nodeCount}\nParent links: {parentLinks}",
+                "OK");
+
+            if (nodeCount == 0)
+            {
+                DebugManager.Log(
+                    "ResearchTree Hinweis: Noch keine Nodes im Tree gefunden.",
+                    DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Warning
+                );
+            }
+        }
+        catch (System.Exception ex)
+        {
+            DebugManager.Log($"Compile ERROR: {ex.Message}", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Error);
+            Debug.LogException(ex);
+            EditorUtility.DisplayDialog("ResearchTree Validate", "Fehler beim Kompilieren. Siehe Console.", "OK");
         }
     }
 

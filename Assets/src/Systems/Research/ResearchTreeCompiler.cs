@@ -1,6 +1,7 @@
-﻿using System;
+﻿using CHAL.Data;
+using System;
 using System.Collections.Generic;
-using CHAL.Data;
+using UnityEngine;
 
 namespace CHAL.Systems.Research
 {
@@ -35,17 +36,21 @@ namespace CHAL.Systems.Research
                 return new ResearchTreeCompiled(nodesById, posById, parentsById);
             }
 
-            // Lane-Schleife
-            for (int lane = 0; lane < tree.researchLanes.Count; lane++)
+            var lanes = tree.researchTreeLanes; // <- WICHTIG: der echte Baum!
+            if (lanes == null || lanes.Count == 0)
             {
-                // Falls du ResearchTreeLane statt ResearchLane nutzt:
-                var tl = tree.researchLanes[lane] as dynamic; // nur zur Illustration
-                var stages = (tl is ResearchTreeLane rtl) ? rtl.stages : null;
-                if (stages == null) continue;
+                DebugManager.Log("ResearchTreeCompiler: researchTreeLanes ist leer.", DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
+                return new ResearchTreeCompiled(nodesById, posById, parentsById);
+            }
 
-                for (int stage = 0; stage < stages.Count; stage++)
+            for (int lane = 0; lane < lanes.Count; lane++)
+            {
+                var laneDef = lanes[lane];
+                if (laneDef?.stages == null) continue;
+
+                for (int stage = 0; stage < laneDef.stages.Count; stage++)
                 {
-                    var stageRef = stages[stage];
+                    var stageRef = laneDef.stages[stage];
                     if (stageRef?.nodes == null) continue;
 
                     foreach (var entry in stageRef.nodes)
@@ -57,14 +62,13 @@ namespace CHAL.Systems.Research
 
                         if (nodesById.ContainsKey(id))
                         {
-                            DebugManager.Log($"ResearchTreeCompiler: doppelte Node-ID '{id}' im Tree.", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Error);
+                            DebugManager.Log($"ResearchTreeCompiler: doppelte Node-ID '{id}' im Tree.", DebugManager.EDebugLevel.Dev, "Research", LogType.Error);
                             continue;
                         }
 
                         nodesById[id] = entry.node;
                         posById[id] = (lane, stage);
 
-                        // Parents
                         var plist = new List<string>();
                         if (entry.parentRefs != null)
                         {
