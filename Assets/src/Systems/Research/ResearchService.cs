@@ -15,6 +15,8 @@ namespace CHAL.Systems.Research
         private ResearchTreeDef _treeDef; // nur für Layout/Meta-Daten (optional für UI)
         private ResearchState _state;
 
+        private Dictionary<string, List<string>> _compiledParents;
+
         // EnemyRank-Gewichtungen für Kill-"Punkte" (kannst du später in ein Config-Asset verlagern)
         private readonly Dictionary<EnemyRank, int> _rankWeights = new Dictionary<EnemyRank, int>
         {
@@ -30,11 +32,14 @@ namespace CHAL.Systems.Research
         private static bool IsEliteLike(EnemyRank r) => r == EnemyRank.Elite || r == EnemyRank.Champion;
         private static bool IsBoss(EnemyRank r) => r == EnemyRank.Boss;
 
+        private static bool IsChamp(EnemyRank r) => r == EnemyRank.Champion;
+
         // Event: Wenn ein Knoten abgeschlossen wurde (für UnlockRegistry)
         public event Action<string, IReadOnlyList<ResearchUnlock>> OnNodeCompleted;
 
         // ------------------ Init ------------------
-        public void Init(IEnumerable<ResearchNodeDef> nodeDefs, ResearchTreeDef treeDef, ResearchState state)
+      
+        public void InitFromTree(ResearchTreeDef treeDef, ResearchState state)
         {
             _treeDef = treeDef;
             _state = state ?? new ResearchState();
@@ -42,29 +47,51 @@ namespace CHAL.Systems.Research
             _nodesById.Clear();
             _idsByLaneStage.Clear();
 
-            foreach (var def in nodeDefs)
-            {
-                if (def == null || string.IsNullOrWhiteSpace(def.id)) continue;
-                _nodesById[def.id] = def;
+            var compiled = ResearchTreeCompiler.Compile(treeDef);
 
-                var key = (def.lane, def.stage);
+            // nodesById + posById übernehmen
+            foreach (var kv in compiled.nodesById)
+            {
+                _nodesById[kv.Key] = kv.Value;
+            }
+
+            foreach (var kv in compiled.posById)
+            {
+                var key = (kv.Value.lane, kv.Value.stage);
                 if (!_idsByLaneStage.TryGetValue(key, out var list))
                 {
                     list = new List<string>();
                     _idsByLaneStage[key] = list;
                 }
-                list.Add(def.id);
+                list.Add(kv.Key);
             }
 
-            // SlotIndex-Determinismus: pro (lane,stage) nach ID sortieren (stabil)
+            // SlotIndex-Determinismus: pro (lane,stage) nach ID sortieren
             foreach (var kv in _idsByLaneStage)
                 kv.Value.Sort(StringComparer.Ordinal);
 
-            // State-Komplettierung: Progress-Einträge sicherstellen
+            // State: Progress-Einträge sicherstellen
             foreach (var id in _nodesById.Keys)
                 EnsureProgress(id);
 
-            DebugManager.Log($"ResearchService.Init: Nodes={_nodesById.Count}", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
+            // Save: parents werden künftig NICHT aus NodeDef gelesen.
+            _compiledParents = compiled.parentsById; // -> Feld hinzufügen: Dictionary<string,List<string>> _compiledParents;
+
+            DebugManager.Log($"ResearchService.InitFromTree: Nodes={_nodesById.Count}", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
+        }
+
+        // Änderung in IsNodeAvailable: NICHT mehr def.parents nutzen
+        public bool IsNodeAvailable(string nodeId)
+        {
+            if (!_nodesById.TryGetValue(nodeId, out var def)) return false;
+            if (IsCompleted(nodeId)) return false;
+
+            if (_compiledParents != null && _compiledParents.TryGetValue(nodeId, out var parents))
+            {
+                foreach (var pid in parents)
+                    if (!_state.completedNodeIds.Contains(pid)) return false;
+            }
+            return true;
         }
 
         private NodeProgress EnsureProgress(string nodeId)
@@ -81,35 +108,6 @@ namespace CHAL.Systems.Research
         public string GetActiveNodeId() => _state.activeNodeId;
 
         public bool IsCompleted(string nodeId) => _state.completedNodeIds.Contains(nodeId);
-
-        public bool IsNodeAvailable(string nodeId)
-        {
-            if (!_nodesById.TryGetValue(nodeId, out var def)) return false;
-            if (IsCompleted(nodeId)) return false;
-
-            // Parents erfüllt?
-            if (def.parents != null)
-            {
-                foreach (var pid in def.parents)
-                {
-                    if (!_state.completedNodeIds.Contains(pid)) return false;
-                }
-            }
-            return true;
-        }
-
-        // Für UI-Layout: bestimme SlotIndex eines (lane,stage,nodeId)
-        public int GetSlotIndex(string nodeId)
-        {
-            if (!_nodesById.TryGetValue(nodeId, out var def)) return 0;
-            var key = (def.lane, def.stage);
-            if (_idsByLaneStage.TryGetValue(key, out var list))
-            {
-                var idx = list.IndexOf(nodeId);
-                return idx >= 0 ? idx : 0;
-            }
-            return 0;
-        }
 
         public NodeProgress GetNodeProgress(string nodeId)
         {
@@ -155,7 +153,7 @@ namespace CHAL.Systems.Research
             var p = EnsureProgress(id);
             p.mapsTotal += 1;
 
-            var key = (int)difficulty;
+            var key = difficulty;
             if (!p.mapsByDifficulty.TryGetValue(key, out var cnt))
                 p.mapsByDifficulty[key] = 1;
             else
@@ -174,8 +172,9 @@ namespace CHAL.Systems.Research
             // Rarity-Zähler (ungewichtet)
             if (IsBoss(rank)) p.bossCount += 1;
             else if (IsEliteLike(rank)) p.eliteCount += 1;
+            else if (IsChamp(rank)) p.champCount += 1;
 
-            int weight = _rankWeights.TryGetValue(rank, out var w) ? w : 1;
+                int weight = _rankWeights.TryGetValue(rank, out var w) ? w : 1;
 
             // Zielkills (byTag) priorisieren: nur wenn Requirement Tags fordert
             bool anyTagMatched = false;
@@ -240,7 +239,7 @@ namespace CHAL.Systems.Research
             {
                 foreach (var mr in req.mapRequirements)
                 {
-                    var key = (int)mr.difficulty;
+                    var key = mr.difficulty;
                     int cur = p.mapsByDifficulty.TryGetValue(key, out var c) ? c : 0;
                     if (cur < mr.amount) return false;
                 }

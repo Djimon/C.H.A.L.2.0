@@ -1,3 +1,4 @@
+using CHAL.Data;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +10,7 @@ namespace CHAL.Systems.Research
         // Waves / Maps
         public int waves;
         public int mapsTotal;
-        public Dictionary<int, int> mapsByDifficulty = new Dictionary<int, int>(); // key = (int)MapDifficulty
+        public Dictionary<MapDifficulty, int> mapsByDifficulty = new Dictionary<MapDifficulty, int>(); // key = (int)MapDifficulty
 
         // Kills
         public int killsGeneralWeighted;
@@ -18,6 +19,7 @@ namespace CHAL.Systems.Research
         // Rarities (ungewichtet, reine Stückzahlen für "Elites" / "Bosses"-Requirements)
         public int eliteCount;
         public int bossCount;
+        internal int champCount;
     }
 
     [Serializable]

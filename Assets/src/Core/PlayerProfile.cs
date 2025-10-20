@@ -1,15 +1,18 @@
 using CHAL.Core;
 using CHAL.Systems.Economy;
 using CHAL.Systems.Inventory;
+using CHAL.Systems.Research;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static CHAL.Systems.Research.ResearchSnapshot;
 
 namespace CHAL.Data
 {
     [Serializable]
     public class PlayerProfile : IWallet
     {
+        public string profileId;
         // --- Meta ---
         public DateTime LastSaveTime;            // Für Autosave / Debug
 
@@ -44,10 +47,16 @@ namespace CHAL.Data
         // Persistenter Snapshot aller Inventare (nur für Save/Load)
         public List<InventorySnapshot> InventorySave = new();
 
+        // --- Research ---
+        [NonSerialized] public ResearchState ResearchRuntime;
+
         public void InitializePlayer(string name, Color[] colors)
         {
             playerName = name;
             playerColors = colors;
+
+            //TODO: make name filepath save
+            profileId = "p_" + name;
 
             var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
             EnsureStarterHeroUnlocked(starterId);
@@ -187,7 +196,7 @@ namespace CHAL.Data
             foreach (var inv in Inventories)
             {
                 if (inv == null) continue;
-                DebugManager.Log($"inv: {inv.invID} -  {inv.GetAllItems().Count}");
+                //DebugManager.Log($"inv: {inv.invID} -  {inv.GetAllItems().Count}");
                 var dict = inv.ToDictionary() ?? new Dictionary<string, int>();
                 InventorySave.Add(new InventorySnapshot { id = inv.invID, items = dict });
             }
@@ -230,6 +239,77 @@ namespace CHAL.Data
             DebugManager.Log($"InventorySnapshot restored — applied:{applied}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
+        public ResearchSnapshot BuildResearchSnapshotFrom(ResearchState state)
+        {
+            var snap = new ResearchSnapshot();
+            if (state == null) return snap;
+
+            snap.activeNodeId = state.activeNodeId;
+            snap.completedNodeIds.AddRange(state.completedNodeIds);
+
+            foreach (var kv in state.perNodeProgress)
+            {
+                var p = kv.Value;
+                var e = new NodeProgressEntry
+                {
+                    nodeId = kv.Key,
+                    progress = new NodeProgressSave
+                    {
+                        waves = p.waves,
+                        mapsTotal = p.mapsTotal,
+                        killsGeneralWeighted = p.killsGeneralWeighted,
+                        eliteCount = p.eliteCount,
+                        bossCount = p.bossCount,
+                        mapsByDifficulty = new List<MapRequirement>(),
+                        killsByTagWeighted = new List<KillTagCount>(),
+                    }
+                };
+                if (p.mapsByDifficulty != null)
+                    foreach (var md in p.mapsByDifficulty)
+                        e.progress.mapsByDifficulty.Add(new MapRequirement { difficulty = md.Key, amount = md.Value });
+
+                if (p.killsByTagWeighted != null)
+                    foreach (var t in p.killsByTagWeighted)
+                        e.progress.killsByTagWeighted.Add(new KillTagCount { enemyTag = t.Key, count = t.Value });
+
+                snap.perNodeProgress.Add(e);
+            }
+            return snap;
+        }
+
+        public void RestoreResearchInto(ResearchState state, ResearchSnapshot snap)
+        {
+            if (state == null) return;
+
+            state.activeNodeId = snap?.activeNodeId;
+            state.completedNodeIds.Clear();
+            state.perNodeProgress.Clear();
+
+            if (snap == null) return;
+
+            foreach (var id in snap.completedNodeIds)
+                state.completedNodeIds.Add(id);
+
+            foreach (var e in snap.perNodeProgress)
+            {
+                var np = new NodeProgress
+                {
+                    waves = e.progress.waves,
+                    mapsTotal = e.progress.mapsTotal,
+                    killsGeneralWeighted = e.progress.killsGeneralWeighted,
+                    eliteCount = e.progress.eliteCount,
+                    bossCount = e.progress.bossCount,
+                    mapsByDifficulty = new Dictionary<MapDifficulty, int>(),
+                    killsByTagWeighted = new Dictionary<string, int>(StringComparer.Ordinal),
+                };
+                if (e.progress.mapsByDifficulty != null)
+                    foreach (var md in e.progress.mapsByDifficulty) np.mapsByDifficulty[md.difficulty] = md.amount;
+                if (e.progress.killsByTagWeighted != null)
+                    foreach (var t in e.progress.killsByTagWeighted) np.killsByTagWeighted[t.enemyTag ?? ""] = t.count;
+
+                state.perNodeProgress[e.nodeId] = np;
+            }
+        }
 
     }
 

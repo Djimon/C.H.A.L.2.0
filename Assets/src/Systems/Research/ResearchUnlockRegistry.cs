@@ -27,7 +27,6 @@ namespace CHAL.Systems.Research
             _recipes.Clear();
             _skillBranches.Clear();
             _heroes.Clear();
-
             _catalog.Clear();
         }
 

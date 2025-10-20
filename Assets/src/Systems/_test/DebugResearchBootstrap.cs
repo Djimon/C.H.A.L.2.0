@@ -44,7 +44,7 @@ public sealed class ResearchBootstrap : MonoBehaviour
         }
 
         // 3) Research-Service initialisieren
-        Service.Init(nodeDefs, treeDef, State);
+        Service.InitFromTree(treeDef, State);
 
         // 4) ResearchUnlockRegistry: vollständigen Katalog aufbauen + aus abgeschlossenem State rekonstruieren
         //    HINWEIS: Dein aktueller ResearchUnlockRegistry-Stand besitzt Sets; falls du die Dictionary<string,bool>-Erweiterung eingebaut hast,

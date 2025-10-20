@@ -23,6 +23,9 @@ namespace CHAL.Data
         [Header("View (Chips/Gates)")]
         public Sprite defaultGateGlyph;
 
+        [Header("Actual research Tree")]
+        public List<ResearchTreeLane>   researchTreeLanes = new List<ResearchTreeLane>();
+
         // Helper für UI: Lane-Name & -Farbe aus Index holen
         public string GetLaneName(int lane)
         {
@@ -44,5 +47,29 @@ namespace CHAL.Data
     { 
         public string laneName;
         public Color laneColor;
+    }
+
+    [Serializable]
+    public sealed class ResearchTreeLane
+    {
+        public string laneName;
+        public Color laneColor;
+
+        public List<ResearchTreeStage> stages = new List<ResearchTreeStage>();
+    }
+
+    [Serializable]
+    public sealed class ResearchTreeStage
+    {
+        [Tooltip("Nodes in dieser Stage (gleiche Y-Ebene).")]
+        public List<ResearchTreeNodeRef> nodes = new List<ResearchTreeNodeRef>();
+    }
+
+    [Serializable]
+    public sealed class ResearchTreeNodeRef
+    {
+        public ResearchNodeDef node;
+        [Tooltip("Parents als Node-Refs; wird zu IDs kompiliert.")]
+        public List<ResearchNodeDef> parentRefs = new List<ResearchNodeDef>();
     }
 }

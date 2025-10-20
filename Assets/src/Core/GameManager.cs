@@ -3,8 +3,10 @@ using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Map;
+using CHAL.Systems.Research;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -41,6 +43,7 @@ namespace CHAL.Core
 
         public MapDef pendingMap { get; private set; }
 
+        // ---- INVENTORY -----
         public InventoryDomain Inventory { get; private set; }
         public bool InventoryReady { get; private set; }
 
@@ -54,6 +57,14 @@ namespace CHAL.Core
 
         private static string BuildInstanceId(PlayerInventoryType t)
             => "player_" + t.ToString().ToLowerInvariant();
+
+        // --- Research ---
+        [SerializeField] private ResearchTreeDef researchTree;
+        [SerializeField] private List<ResearchNodeDef> researchNodes = new();
+
+        public ResearchService Research { get; private set; }
+        public ResearchUnlockRegistry ResearchUnlocks { get; private set; }
+        public ResearchEventBridge ResearchBridge { get; private set; }
 
         public GameBalanceConfig Config
         {
@@ -148,8 +159,9 @@ namespace CHAL.Core
 
         internal void StartNewGame(PlayerProfile profile)
         {
-            Profile = profile;
+            Profile = profile;          
 
+            //Inventory
             if (Inventory == null)
                 Inventory = new InventoryDomain();
 
@@ -157,6 +169,9 @@ namespace CHAL.Core
             BuildInventoryRoutingMaps();
             MapProfileToDomain();
             InventoryReady = true;
+
+            //Research
+            InitResearch(loadExisting: false);
 
             SaveGame();
             SetState(GameState.Hideout);
@@ -186,10 +201,14 @@ namespace CHAL.Core
                 return;
             }
 
+            //Inventroy
             BuildPlayerInventoriesFromFolder();
             BuildInventoryRoutingMaps();
             MapProfileToDomain();
             InventoryReady = true;
+
+            //Research
+            InitResearch(loadExisting: true);
 
             var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
             Profile.EnsureStarterHeroUnlocked(starterId);
@@ -224,6 +243,18 @@ namespace CHAL.Core
             SetState(GameState.MapPhase);
             SceneManager.LoadScene(sceneName);
 
+        }
+
+
+        private void OnApplicationQuit()
+        {
+            SaveSystem.Save(Instance?.Profile);
+
+            if (Profile != null && Profile.ResearchRuntime != null)
+            {
+                var snap = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
+                SaveSystem.SaveResearch(Profile.profileId, snap);
+            }
         }
 
         //INVENTORY
@@ -447,6 +478,58 @@ namespace CHAL.Core
             id = BuildInstanceId(t);
             _typeToInstanceId[t] = id;
             return id;
+        }
+
+        private void InitResearch(bool loadExisting)
+        {
+            EnsureResearchDefsLoaded();
+
+            // Runtime-Container sicherstellen
+            if (Profile.ResearchRuntime == null)
+                Profile.ResearchRuntime = new ResearchState();
+
+            // Services erstellen (einmalig)
+            Research ??= new ResearchService();
+            ResearchUnlocks ??= new ResearchUnlockRegistry();
+            ResearchBridge = new ResearchEventBridge(Research);
+
+            // Laden oder frischen Stand anlegen
+            if (loadExisting)
+            {
+                var snap = SaveSystem.LoadResearch(Profile.profileId);
+                Profile.RestoreResearchInto(Profile.ResearchRuntime, snap);
+            }
+            else
+            {
+                Profile.ResearchRuntime.activeNodeId = null;
+                Profile.ResearchRuntime.completedNodeIds.Clear();
+                Profile.ResearchRuntime.perNodeProgress.Clear();
+
+                // alte Datei optional entfernen, dann leeren Snapshot sofort anlegen
+                SaveSystem.DeleteResearch(Profile.profileId);
+                SaveSystem.SaveResearch(Profile.profileId, Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime));
+            }
+
+            // Service + Registry richtig initialisieren
+            Research.InitFromTree(researchTree, Profile.ResearchRuntime);
+            ResearchUnlocks.RebuildFrom(researchNodes, Profile.ResearchRuntime.completedNodeIds);
+
+            // Speichern beim Abschluss & Registry pflegen
+            Research.OnNodeCompleted += (nodeId, unlocks) =>
+            {
+                ResearchUnlocks.ApplyNodeUnlocks(nodeId, unlocks);
+                var snapNow = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
+                SaveSystem.SaveResearch(Profile.profileId, snapNow);
+            };
+        }
+
+        private void EnsureResearchDefsLoaded()
+        {
+            if (researchTree == null)
+                researchTree = Resources.Load<ResearchTreeDef>("data/Research/Tree");
+
+            if (researchNodes == null || researchNodes.Count == 0)
+                researchNodes = Resources.LoadAll<ResearchNodeDef>("data/Research/Nodes").ToList();
         }
     }
 }

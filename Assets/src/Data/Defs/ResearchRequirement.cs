@@ -43,7 +43,7 @@ public class ResearchRequirement
 
     public bool IsEmpty()
     {
-        if (waves > 0 || maps > 0 || killsGeneral > 0 || eliteCount > 0 || bossCount > 0)
+        if (waves > 0 || maps > 0 || killsGeneral > 0 || eliteCount > 0 || bossCount > 0 || championCount >0)
             return false;
 
         if (killsByTag != null)
