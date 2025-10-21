@@ -73,6 +73,7 @@ namespace CHAL.Systems.Research
             {
                 initHUD();
             }
+
             if (!viewport || !content) return;
 
             if (enablePan) HandlePan();
@@ -168,6 +169,10 @@ namespace CHAL.Systems.Research
             // Pan nur, wenn Maus ¸ber Viewport
             if (Input.GetMouseButtonDown(0) && RectTransformUtility.RectangleContainsScreenPoint(viewport, Input.mousePosition))
             {
+                // Wenn der Klick auf dem HUD (UITK) liegt: NICHT schlieﬂen, NICHT pannen
+                if (hud != null && hud.IsPointerOverUI(Input.mousePosition)) return;
+                // Klick liegt in der Map -> Details schlieﬂen und Pan starten
+                if (hud != null) hud.HideDetails();
                 dragging = true;
                 lastMouse = (Vector2)Input.mousePosition;
             }
@@ -230,9 +235,10 @@ namespace CHAL.Systems.Research
             if (service.IsNodeAvailable(nodeId) && !service.IsCompleted(nodeId))
             {
                 if (hud) hud.ShowDetails(nodeId);
-                service.SetActive(nodeId);
                 RefreshAllStates();
             }
+
+            
         }
 
         public void CenterOnActiveOrFirst()
