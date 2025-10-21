@@ -62,7 +62,7 @@ namespace CHAL.Core
         [SerializeField] private ResearchTreeDef researchTree;
         [SerializeField] private List<ResearchNodeDef> researchNodes = new();
 
-        public ResearchService Research { get; private set; }
+        public ResearchService researchService { get; private set; }
         public ResearchUnlockRegistry ResearchUnlocks { get; private set; }
         public ResearchEventBridge ResearchBridge { get; private set; }
 
@@ -480,7 +480,7 @@ namespace CHAL.Core
             return id;
         }
 
-        private void InitResearch(bool loadExisting)
+        public void InitResearch(bool loadExisting)
         {
             EnsureResearchDefsLoaded();
 
@@ -489,9 +489,9 @@ namespace CHAL.Core
                 Profile.ResearchRuntime = new ResearchState();
 
             // Services erstellen (einmalig)
-            Research ??= new ResearchService();
+            researchService ??= new ResearchService();
             ResearchUnlocks ??= new ResearchUnlockRegistry();
-            ResearchBridge = new ResearchEventBridge(Research);
+            ResearchBridge = new ResearchEventBridge(researchService);
 
             // Laden oder frischen Stand anlegen
             if (loadExisting)
@@ -511,11 +511,11 @@ namespace CHAL.Core
             }
 
             // Service + Registry richtig initialisieren
-            Research.InitFromTree(researchTree, Profile.ResearchRuntime);
+            researchService.InitFromTree(researchTree, Profile.ResearchRuntime);
             ResearchUnlocks.RebuildFrom(researchNodes, Profile.ResearchRuntime.completedNodeIds);
 
             // Speichern beim Abschluss & Registry pflegen
-            Research.OnNodeCompleted += (nodeId, unlocks) =>
+            researchService.OnNodeCompleted += (nodeId, unlocks) =>
             {
                 ResearchUnlocks.ApplyNodeUnlocks(nodeId, unlocks);
                 var snapNow = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);

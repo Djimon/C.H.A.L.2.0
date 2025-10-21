@@ -1,7 +1,8 @@
-﻿using System;
+﻿using CHAL.Data;             // ResearchNodeDef, ResearchRequirement, ResearchUnlockTypes, ResearchTreeDef
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using CHAL.Data;             // ResearchNodeDef, ResearchRequirement, ResearchUnlockTypes, ResearchTreeDef
+using UnityEngine;
 
 
 namespace CHAL.Systems.Research
@@ -112,6 +113,80 @@ namespace CHAL.Systems.Research
         public NodeProgress GetNodeProgress(string nodeId)
         {
             return _state.perNodeProgress.TryGetValue(nodeId, out var p) ? p : new NodeProgress();
+        }
+
+        public ResearchNodeDef GetNodeDef(string nodeID)
+        {
+            return _nodesById.TryGetValue(nodeID, out var def) ? def: null;
+        }
+
+        public float GetNodeProgress01(string nodeId)
+        {
+            if (IsCompleted(nodeId)) return 1f;
+            var def = GetNodeDef(nodeId);
+            if (def == null || def.requirements == null) return 0f;
+
+            var r = def.requirements;
+            var p = GetNodeProgress(nodeId);
+
+            float have = 0f;
+            float need = 0f;
+
+            // Waves (falls vorhanden)
+            if (r.waves > 0)
+            {
+                need += r.waves;
+                have += Mathf.Clamp(p.waves, 0, r.waves);
+            }
+
+            // Maps gesamt (falls vorhanden)
+            if (r.maps > 0)
+            {
+                need += r.maps;
+                have += Mathf.Clamp(p.mapsTotal, 0, r.maps);
+            }
+
+            // Maps per Difficulty (falls vorhanden)
+            if (r.mapRequirements != null)
+            {
+                foreach (var mr in r.mapRequirements)
+                {
+                    if (mr.amount <= 0) continue;
+                    int cur = 0;
+                    if (p.mapsByDifficulty != null && p.mapsByDifficulty.TryGetValue(mr.difficulty, out var c))
+                        cur = c;
+                    need += mr.amount;
+                    have += Mathf.Clamp(cur, 0, mr.amount);
+                }
+            }
+
+            // Kills gesamt gewichtet (falls vorhanden)
+            if (r.killsGeneral > 0)
+            {
+                need += r.killsGeneral;
+                have += Mathf.Clamp(p.killsGeneralWeighted, 0, r.killsGeneral);
+            }
+
+            // Kills nach Tag (falls vorhanden)
+            if (r.killsByTag != null)
+            {
+                foreach (var kc in r.killsByTag)
+                {
+                    if (kc == null || string.IsNullOrEmpty(kc.enemyTag) || kc.count <= 0) continue;
+                    int cur = 0;
+                    if (p.killsByTagWeighted != null && p.killsByTagWeighted.TryGetValue(kc.enemyTag, out var v))
+                        cur = v;
+                    need += kc.count;
+                    have += Mathf.Clamp(cur, 0, kc.count);
+                }
+            }
+
+            // Elites / Bosse (falls vorhanden)
+            if (r.eliteCount > 0) { need += r.eliteCount; have += Mathf.Clamp(p.eliteCount, 0, r.eliteCount); }
+            if (r.bossCount > 0) { need += r.bossCount; have += Mathf.Clamp(p.bossCount, 0, r.bossCount); }
+
+            if (need <= 0.0001f) return 0f;
+            return Mathf.Clamp01(have / need);
         }
 
         // ------------------ Befehle ------------------

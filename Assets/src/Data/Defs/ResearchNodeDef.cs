@@ -17,6 +17,7 @@ namespace CHAL.Data
 
         [Header("Requirements (UND-Logik)")]
         public ResearchRequirement requirements = new ResearchRequirement();
+        internal string desc;
 
         private void OnValidate()
         {

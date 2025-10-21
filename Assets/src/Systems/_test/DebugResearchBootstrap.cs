@@ -21,6 +21,12 @@ public sealed class ResearchBootstrap : MonoBehaviour
     [SerializeField] private EnemyRank debugEnemyRank = EnemyRank.Normal;
     [SerializeField] private List<string> debugEnemyTags = new List<string> { "insectoid" };
 
+    [Header("Debug UI")]
+    public ResearchMapView mapView;
+
+    //Readonly nach druaßen geben
+    public ResearchTreeDef TreeDef => treeDef;
+
     // Falls du Script Execution Order nutzt: stelle sicher, dass dieses Mono vor Verbrauchern startet.
 
     private void Awake()
@@ -61,6 +67,13 @@ public sealed class ResearchBootstrap : MonoBehaviour
             $"ResearchBootstrap ready. Nodes={nodeDefs?.Count ?? 0}",
             DebugManager.EDebugLevel.Dev, "Research", LogType.Log
         );
+
+        mapView.service = Service;
+    }
+
+    private void Start()
+    {
+        mapView.initHUD();
     }
 
     [ContextMenu("Debug/Complete Wave")]

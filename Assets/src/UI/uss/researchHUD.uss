@@ -1,0 +1,81 @@
+.hud-root {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.active-box {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 300px;
+    height: 96px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 8px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.active-icon {
+    width: 64px;
+    height: 64px;
+    background-color: rgba(255, 255, 255, 0.15);
+    margin-right: 10px;
+    border-radius: 6px;
+}
+
+.active-name {
+    font-size: 16px;
+    font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.active-percent {
+    margin-left: auto;
+    font-size: 20px;
+    font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.detail-panel {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 380px;
+    min-height: 320px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    padding: 12px;
+    flex-direction: column;
+}
+
+.detail-title {
+    font-size: 18px;
+    font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.detail-flavor {
+    white-space: normal;
+    color: rgb(255, 255, 255);
+}
+
+.detail-multiline {
+    white-space: normal;
+    color: rgb(255, 255, 255);
+}
+
+.detail-section-title {
+    margin-top: 8px;
+    font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.run-button {
+    margin-top: 12px;
+    height: 34px;
+}

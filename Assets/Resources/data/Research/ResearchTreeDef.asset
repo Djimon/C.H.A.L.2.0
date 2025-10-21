@@ -15,21 +15,16 @@ MonoBehaviour:
   researchLanes:
   - laneName: World
     laneColor: {r: 0.48584908, g: 0.6563681, b: 1, a: 0}
-  - laneName: Meta
-    laneColor: {r: 0.72721535, g: 0.48627448, b: 1, a: 0}
   nodeWidth: 240
   nodeHeight: 120
   stageStepY: 180
   laneBaseX: 2c010000bc0200004c040000dc050000
   topMarginY: 120
-  defaultGateGlyph: {fileID: 0}
+  defaultGateGlyph: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   researchTreeLanes:
   - laneName: World
     laneColor: {r: 0.48584908, g: 0.6563681, b: 1, a: 0}
     stages:
     - nodes:
-      - node: {fileID: 11400000, guid: 1264387442190ab41b88d285647e8e60, type: 2}
+      - node: {fileID: 11400000, guid: b2b17e72d9934fb438c9be83cdd6a752, type: 2}
         parentRefs: []
-  - laneName: Meta
-    laneColor: {r: 0.72721535, g: 0.48627448, b: 1, a: 0}
-    stages: []
