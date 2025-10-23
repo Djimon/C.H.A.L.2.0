@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
+  m_Name: advanced_crafting
+  m_EditorClassIdentifier: 
+  id: crafting_advanced_crafting
+  title: advanced_crafting
+  unlocks:
+  - unlockType: 1
+    targetId: crafting_tier_2
+  - unlockType: 2
+    targetId: advanced_helmet
+  - unlockType: 2
+    targetId: advanced_chest
+  - unlockType: 2
+    targetId: advanced_gloves
+  - unlockType: 2
+    targetId: advanced_legs
+  - unlockType: 2
+    targetId: advanced_boots
+  - unlockType: 2
+    targetId: advanced_amulet
+  requirements:
+    waves: 0
+    maps: 0
+    mapRequirements: []
+    killsGeneral: 2500
+    killsByTag: []
+    eliteCount: 0
+    bossCount: 0
+    championCount: 25
