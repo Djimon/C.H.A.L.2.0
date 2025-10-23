@@ -21,6 +21,10 @@ namespace CHAL.Systems.Research
         private bool serviceReady = false;
         public ResearchNodeWidget nodePrefab;
 
+        [Header("Auto-Layout (X)")]
+        public int nodeSpacingX = 60;
+        public int lanePaddingX = 80;
+
         // Pan/Zoom
         [Header("Pan/Zoom")]
         public bool enablePan = true;
@@ -93,31 +97,144 @@ namespace CHAL.Systems.Research
             // Compile Tree
             var compiled = ResearchTreeCompiler.Compile(treeDef);
 
-            // Positionsberechnung pro Node
+            // ---- 1) Gruppieren: pro Lane -> pro Stage -> sortierte Node-IDs
+            var laneStageIds = new Dictionary<int, Dictionary<int, List<string>>>();
             foreach (var kv in compiled.posById)
             {
                 var id = kv.Key;
                 var (lane, stage) = kv.Value;
-                int x = (lane >= 0 && lane < theme.laneBaseX.Count) ? theme.laneBaseX[lane] : theme.laneBaseX.Last();
-                int y = theme.topMarginY + stage * theme.stageStepY;
+
+                if (!laneStageIds.TryGetValue(lane, out var stageMap))
+                {
+                    stageMap = new Dictionary<int, List<string>>();
+                    laneStageIds[lane] = stageMap;
+                }
+                if (!stageMap.TryGetValue(stage, out var list))
+                {
+                    list = new List<string>();
+                    stageMap[stage] = list;
+                }
+                list.Add(id);
+            }
+            // stabil sortieren (nach ID) pro Stage
+            foreach (var stageMap in laneStageIds.Values)
+                foreach (var list in stageMap.Values)
+                    list.Sort(System.StringComparer.Ordinal);
+
+            // ---- 2) Lane-Breiten bestimmen (max parallel pro Stage)
+            int laneCount = treeDef.laneBaseX != null ? treeDef.laneBaseX.Count : 0;
+            var laneWidths = new int[laneCount]; // effektive Breite jeder Lane
+            var laneMaxPerStage = new int[laneCount];
+
+            for (int lane = 0; lane < laneCount; lane++)
+            {
+                if (!laneStageIds.TryGetValue(lane, out var stageMap))
+                {
+                    laneWidths[lane] = 0;
+                    laneMaxPerStage[lane] = 0;
+                    continue;
+                }
+
+                int maxParallel = 0;
+                foreach (var kvs in stageMap)
+                    maxParallel = Mathf.Max(maxParallel, kvs.Value.Count);
+
+                laneMaxPerStage[lane] = maxParallel;
+
+                if (maxParallel <= 1)
+                {
+                    laneWidths[lane] = treeDef.nodeWidth; // eine Node breit
+                }
+                else
+                {
+                    laneWidths[lane] = (maxParallel * treeDef.nodeWidth) + ((maxParallel - 1) * nodeSpacingX);
+                }
+            }
+
+            // ---- 3) Lane-Center X berechnen (auf Basis laneBaseX, bei Kollisionen nach rechts schieben)
+            // Center initial = laneBaseX; daraus Start/End bestimmen; bei Overlap nach rechts korrigieren
+            var laneCenters = new float[laneCount];
+            var laneStartX = new float[laneCount];
+            var laneEndX = new float[laneCount];
+
+            for (int lane = 0; lane < laneCount; lane++)
+            {
+                float desiredCenter = (lane < treeDef.laneBaseX.Count) ? treeDef.laneBaseX[lane] : (treeDef.laneBaseX.Count > 0 ? treeDef.laneBaseX[^1] + lane * 300 : 300 + lane * 300);
+                float width = laneWidths[lane];
+                float start = desiredCenter - width * 0.5f;
+                float end = desiredCenter + width * 0.5f;
+
+                // mit vorheriger Lane abgleichen
+                if (lane > 0)
+                {
+                    float minStart = laneEndX[lane - 1] + lanePaddingX;
+                    if (start < minStart)
+                    {
+                        float shift = minStart - start;
+                        start += shift;
+                        end += shift;
+                    }
+                }
+
+                laneCenters[lane] = (start + end) * 0.5f;
+                laneStartX[lane] = start;
+                laneEndX[lane] = end;
+            }
+
+            // ---- 4) Node-Positionen pro Stage symmetrisch verteilen
+            // y bleibt wie gehabt: topMarginY + stage * stageStepY (nach unten = -y)
+            foreach (var kv in compiled.posById)
+            {
+                var id = kv.Key;
+                var (lane, stage) = kv.Value;
+
+                int y = treeDef.topMarginY + stage * treeDef.stageStepY;
+                float centerX = laneCenters[Mathf.Clamp(lane, 0, laneCenters.Length - 1)];
+
+                // Anzahl in dieser Stage
+                int countInStage = 1;
+                int indexInStage = 0;
+                if (laneStageIds.TryGetValue(lane, out var stageMap) && stageMap.TryGetValue(stage, out var ids))
+                {
+                    countInStage = ids.Count;
+                    indexInStage = ids.IndexOf(id);
+                    if (indexInStage < 0) indexInStage = 0;
+                }
+
+                float x;
+                if (countInStage <= 1)
+                {
+                    x = centerX; // nur eine Node, mittig
+                }
+                else
+                {
+                    float totalWidth = (countInStage * treeDef.nodeWidth) + ((countInStage - 1) * nodeSpacingX);
+                    float startX = centerX - totalWidth * 0.5f + treeDef.nodeWidth * 0.5f; // erste Node-Mitte
+                    x = startX + indexInStage * (treeDef.nodeWidth + nodeSpacingX);
+                }
+
                 nodePositions[id] = new Vector2(x, -y); // -y: UI-Y nach unten
             }
 
-            // Nodes instantiieren
+            // ---- 5) Nodes instantiieren
             foreach (var id in compiled.nodesById.Keys)
             {
                 var def = compiled.nodesById[id];
                 var go = Instantiate(nodePrefab.gameObject, nodeContainer);
                 var rt = go.GetComponent<RectTransform>();
-                rt.anchoredPosition = nodePositions[id];
-                rt.sizeDelta = new Vector2(theme.nodeWidth, theme.nodeHeight);
+
+                // WICHTIG: gleicher Koordinatenraum wie die Edge-Graphics (Top-Left-Anchor)
+                rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); // Top-Left
+                rt.pivot = new Vector2(0.5f, 0.5f);            // Position = Center (passt zu unserer Berechnung)
+                rt.sizeDelta = new Vector2(treeDef.nodeWidth, treeDef.nodeHeight);
+                rt.anchoredPosition = nodePositions[id];           // (x, -y) -> siehe Berechnung oben
 
                 var w = go.GetComponent<ResearchNodeWidget>();
                 w.Init(this, id, def.title, null);
                 widgets[id] = w;
             }
 
-            // Edges zeichnen
+            // ---- 6) Edges zeichnen (unver‰ndert)
             foreach (var kv in compiled.parentsById)
             {
                 var child = kv.Key;
@@ -137,23 +254,38 @@ namespace CHAL.Systems.Research
 
         void CreateEdge(Vector2 from, Vector2 to, bool completed)
         {
+            // Lokale Bounding-Box ermitteln (Top-Left Raum)
+            float minX = Mathf.Min(from.x, to.x);
+            float maxX = Mathf.Max(from.x, to.x);
+            float minY = Mathf.Min(from.y, to.y);
+            float maxY = Mathf.Max(from.y, to.y);
+
+            // Grˆﬂe darf nie 0 sein, sonst Cull/Mask-Probleme
+            float w = Mathf.Max(1f, maxX - minX);
+            float h = Mathf.Max(1f, maxY - minY);
+
+            // Edge-Objekt anlegen
             var go = new GameObject("Edge", typeof(RectTransform), typeof(ResearchEdgeGraphic));
             go.transform.SetParent(edgeContainer, false);
 
             var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = new Vector2(0, 1); // top-left
-            rt.pivot = new Vector2(0, 1);
-            rt.anchoredPosition = Vector2.zero;
-            rt.sizeDelta = content.sizeDelta; // groﬂ genug, oder (0,0) ñ der Graphic nutzt lokale Koords
+            rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); // Top-Left
+            rt.pivot = new Vector2(0f, 1f);               // lokale (0,0) = Top-Left dieses Edge-Rechtecks
+            rt.anchoredPosition = new Vector2(minX, minY);    // an die Bounding-Box setzen
+            rt.sizeDelta = new Vector2(w, h);          // exakt so groﬂ wie gebraucht
 
+            // Graphic konfigurieren ñ Start/End in lokale Koords dieses Rects
             var g = go.GetComponent<ResearchEdgeGraphic>();
+            g.raycastTarget = false;                     // Edge blockt keine Klicks
             g.color = theme.edgeColor;
             g.completedColor = theme.edgeCompletedColor;
             g.useCompletedColor = completed;
             g.thickness = theme.edgeThickness;
 
-            g.start = from;
-            g.end = to;
+            // Punkte relativ zur lokalen Top-Left dieses Edge-Rechtecks
+            g.start = new Vector2(from.x - minX, from.y - minY);
+            g.end = new Vector2(to.x - minX, to.y - minY);
+
             g.SetAllDirty();
         }
 

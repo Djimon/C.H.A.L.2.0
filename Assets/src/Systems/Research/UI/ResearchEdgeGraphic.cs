@@ -16,6 +16,12 @@ namespace CHAL.Systems.Research
         public bool useCompletedColor;
         public Color completedColor = new Color(0.6f, 1f, 0.6f, 1f);
 
+        protected override void Awake()
+        {
+            base.Awake();
+            raycastTarget = false; // Edges sollen niemals UI-Input blockieren
+        }
+
         protected override void OnPopulateMesh(VertexHelper vh)
         {
             vh.Clear();
