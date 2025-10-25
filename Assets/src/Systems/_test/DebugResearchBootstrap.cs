@@ -13,7 +13,7 @@ public sealed class ResearchBootstrap : MonoBehaviour
     [Header("Runtime (read-only)")]
     public ResearchService Service { get; private set; }
     public ResearchUnlockRegistry Registry { get; private set; }
-    public ResearchEventBridge Bridge { get; private set; }
+    [SerializeField]  public ResearchEventBridge Bridge { get; private set; }
     public ResearchState State { get; private set; }
 
     [Header("Debug (Inspector)")]

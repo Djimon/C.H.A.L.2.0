@@ -13,7 +13,7 @@
     top: 20px;
     width: 300px;
     height: 96px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.75);
     border-radius: 8px;
     padding: 8px;
     flex-direction: row;
@@ -47,7 +47,7 @@
     top: 20px;
     width: 380px;
     min-height: 320px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.76);
     border-radius: 10px;
     padding: 12px;
     flex-direction: column;
