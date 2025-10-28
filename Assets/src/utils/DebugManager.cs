@@ -49,7 +49,7 @@ public static class DebugManager
         EnsureDefault("System", Color.yellow);
         EnsureDefault("Info", Color.green);
         EnsureDefault("Debug", Color.white);
-        EnsureDefault("Warning", new Color(1f, 0.64f, 0f));
+        EnsureDefault("Warning", new Color(1f, 0.65f, 0f));
         EnsureDefault("Error", Color.red);
 
 #if UNITY_EDITOR
