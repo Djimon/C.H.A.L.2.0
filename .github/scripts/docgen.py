@@ -45,6 +45,22 @@ def doc_path_for(src_path: str) -> pathlib.Path:
     # docs/<src_path>.md
     return OUT_DIR / f"{src_path}.md"
 
+def all_repo_files():
+    # alle getrackten Dateien mit passenden Endungen
+    paths = []
+    for p in pathlib.Path(".").rglob("*"):
+        if p.is_file() and p.suffix in DOC_EXTS and ".git" not in p.parts:
+            paths.append(str(p.as_posix()))
+    return paths
+
+def files_to_process():
+    # FULL_SCAN=true (oder 'True') -> alles
+    full = (os.getenv("FULL_SCAN","").lower() == "true")
+    if full:
+        return all_repo_files()
+    # sonst nur Änderungen seit letztem Commit
+    return changed_files_since_last_commit()
+
 # ----- LLM-Aufruf -----
 def llm_markdown_for(path: str, code: str) -> str:
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -60,7 +76,7 @@ def llm_markdown_for(path: str, code: str) -> str:
     return resp.choices[0].message.content.strip()
 
 def main():
-    files = changed_files_since_last_commit()
+    files = files_to_process()
     if not files:
         print("Keine relevanten Änderungen erkannt.")
         return
