@@ -8,14 +8,36 @@ DOC_EXTS = {".cs", ".py", ".ts", ".tsx", ".js", ".java", ".go"}
 OUT_DIR = pathlib.Path("docs")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-SYSTEM_PROMPT = """Du bist Technischer Redakteur.
-Erzeuge aus Code knappe, sachliche Doku (Deutsch):
-- Zweck der Datei
-- Öffentliche API (Klassen/Funktionen, Parameter, Rückgabewerte)
-- Wichtige Abläufe / Nebenwirkungen
-- Randbedingungen/Fehlerfälle
-- Kurzes Beispiel (falls sinnvoll)
-Stabil, stichpunktartig, diff-freundlich. Wenn Datei trivial/auto-generiert -> Ein Satz: 'Übersprungen, da trivial/auto-generiert'.
+SYSTEM_PROMPT = """You are a technical writer. Generate concise, factual, diff-friendly documentation from the provided **single source file only** (no external assumptions). Write in clear English, bullet-first
+Output sections in this fixed order (omit a section if empty):
+1) Purpose
+- What this file defines/provides (1–3 bullets), strictly from code.
+2) Public API
+- Namespace/module (if any)
+- Types
+  - <visibility> <kind> <Name> [extends/implements ...]
+    - Public fields/properties (brief role if obvious)
+    - Public methods (signatures with parameters/returns; note explicit side effects)
+3) Key Behavior & Side Effects
+- Major flows/state changes/error handling that are explicit in this file.
+4) Constraints & Failure Modes
+- Guards, null/empty handling, threading/async notes, performance/allocation hints (only if evident).
+5) Example (only if clearly derivable)
+- minimal example 
+6) Unknowns
+- Facts that cannot be determined from this file.
+
+overall rules:
+- Source of truth = this file/project only. Prefer omission over guessing.
+- Exhaustively list public surface; keep names/signatures exact.
+- Use short bullets; avoid prose, timestamps, and authors.
+- If file is trivial or auto-generated, output a single line: "Skipped: trivial/auto-generated."
+- Use an appropriate code fence language tag.
+Unity specifics (apply only if explicitly present in this file):
+- MonoBehaviour: list lifecycle methods (Awake/Start/Update/OnEnable/OnDisable/OnDestroy) with one-line purpose.
+- ScriptableObject: treat as data/config asset; summarize serialized fields; mention [CreateAssetMenu] if present.
+- Editor-only: if under an Editor folder or using UnityEditor, mark as editor tooling.
+- RequireComponent / physics callbacks: note required components and that OnTrigger*/OnCollision*/FixedUpdate are physics-related.
 """
 
 # ----- Hilfsfunktionen -----
