@@ -2,57 +2,30 @@
 
 _Automatisch generiert/aktualisiert._
 
-### Zweck der Datei
-Automatisierte Generierung von Dokumentation für Quellcodedateien in einem Git-Repository.
+```markdown
+# Purpose
+- Defines a script for generating documentation from source files in a Git repository.
+- Processes changed files or all files based on environment variable settings.
 
-### Öffentliche API
-- **Funktionen:**
-  - `changed_files_since_last_commit() -> List[str]`
-    - **Rückgabewert:** Liste der geänderten Dateien seit dem letzten Commit mit unterstützten Dateiendungen.
-  
-  - `read_text(path: str) -> str`
-    - **Parameter:** `path` - Pfad zur Datei.
-    - **Rückgabewert:** Inhalt der Datei als String.
-  
-  - `write_if_changed(path: pathlib.Path, content: str) -> bool`
-    - **Parameter:** 
-      - `path` - Pfad zur Zieldatei.
-      - `content` - Inhalt, der geschrieben werden soll.
-    - **Rückgabewert:** `True`, wenn die Datei geändert wurde, sonst `False`.
-  
-  - `doc_path_for(src_path: str) -> pathlib.Path`
-    - **Parameter:** `src_path` - Pfad zur Quellcodedatei.
-    - **Rückgabewert:** Pfad zur Dokumentationsdatei.
-  
-  - `all_repo_files() -> List[str]`
-    - **Rückgabewert:** Liste aller getrackten Dateien im Repository mit unterstützten Endungen.
-  
-  - `files_to_process() -> List[str]`
-    - **Rückgabewert:** Liste der Dateien, die verarbeitet werden sollen (entweder alle oder nur geänderte).
-  
-  - `llm_markdown_for(path: str, code: str) -> str`
-    - **Parameter:**
-      - `path` - Pfad zur Quellcodedatei.
-      - `code` - Quellcode als String.
-    - **Rückgabewert:** Generierte Markdown-Dokumentation als String.
-  
-  - `main()`
-    - **Rückgabewert:** Keine (führt die Hauptlogik aus).
+# Public API
+- Namespace/module: None
+- Types
+  - None
 
-### Wichtige Abläufe / Nebenwirkungen
-- Liest geänderte Dateien oder alle Dateien (je nach Umgebungsvariable).
-- Generiert Dokumentation mithilfe eines LLM (OpenAI).
-- Schreibt die generierte Dokumentation in Markdown-Dateien im `docs`-Verzeichnis.
-- Aktualisiert eine Indexdatei mit Links zu den generierten Dokumenten.
+# Key Behavior & Side Effects
+- Detects changed files since the last commit or all files if FULL_SCAN is set.
+- Reads source files and generates Markdown documentation using OpenAI's API.
+- Writes generated documentation to the `docs` directory, creating files if they do not exist.
 
-### Randbedingungen/Fehlerfälle
-- Fehler beim Zugriff auf das Git-Repository oder beim Lesen von Dateien werden ignoriert.
-- Bei fehlenden Änderungen wird eine entsprechende Nachricht ausgegeben.
-- Umgebungsvariable `FULL_SCAN` steuert, ob alle Dateien oder nur geänderte Dateien verarbeitet werden.
+# Constraints & Failure Modes
+- Handles file reading errors by ignoring them.
+- Only processes files with specific extensions defined in `DOC_EXTS`.
+- Uses environment variable `OPENAI_API_KEY` for API access; failure to provide this will result in an error.
 
-### Kurzes Beispiel
-```bash
-# Um alle Dateien zu scannen
-export FULL_SCAN=true
-python .github/scripts/docgen.py
+# Example
+- No clear example derivable from the code.
+
+# Unknowns
+- Specific behavior of the OpenAI API response handling.
+- The exact structure of the generated documentation is not defined in the code.
 ```
