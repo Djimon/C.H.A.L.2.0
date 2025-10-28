@@ -11,22 +11,22 @@ _Automatically generated/updated from `.github/scripts/docgen.py`._
 - Types: None
 
 # Key Behavior & Side Effects
-- Scans for changed files since the last commit or all files if FULL_SCAN is set.
+- Scans for changed files since the last commit or all files if `FULL_SCAN` is set.
 - Extracts namespaces and public types from the source code.
 - Generates markdown documentation for each public type or falls back to file-based documentation.
-- Writes documentation to the `docs` directory, creating necessary subdirectories.
+- Writes documentation to the `docs` directory, creating necessary directories.
 
 # Constraints & Failure Modes
-- Only processes files with specific extensions: `.cs`, `.py`, `.ts`, `.tsx`, `.js`, `.java`, `.go`.
-- Handles missing files gracefully by checking existence before processing.
+- Only processes files with specific extensions defined in `DOC_EXTS`.
+- Handles errors in reading files and writing documentation gracefully.
 - Uses OpenAI API for generating documentation; requires a valid API key.
 
 # Example
 ```python
-# Example usage of the script is not provided in the file.
+# Example usage of the script is not explicitly provided in the code.
 ```
 
 # Unknowns
-- The specific structure of the source files being processed is not defined.
-- The behavior of the OpenAI API response is not detailed.
+- Specific details about the structure of the source code files being processed.
+- Behavior of the OpenAI API response beyond the basic usage shown.
 

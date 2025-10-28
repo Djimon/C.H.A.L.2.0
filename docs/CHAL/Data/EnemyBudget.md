@@ -1,0 +1,133 @@
+# CHAL.Data.EnemyBudget
+
+_Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
+
+# Purpose
+- Defines a ScriptableObject for game balance configuration, including loot, waves, enemies, skills, and economy settings.
+
+# Public API
+- Namespace: `CHAL.Data`
+- Types:
+  - **public class GameBalanceConfig : ScriptableObject**
+    - **public LootSettings loot**: Configuration for loot settings.
+    - **public EnemySettings enemies**: Configuration for enemy settings.
+    - **public SkillRanges skillRanges**: Configuration for skill ranges.
+    - **public bool AllowFriendlyFire**: Indicates if friendly fire is allowed.
+    - **public EconomySettings economy**: Configuration for economy settings.
+    - **public float GetRangeValue(SkillRange range)**: Returns the range value for a given skill range.
+
+  - **public struct LootBudgetSettings**
+    - **public float levelFactor**
+    - **public float budgetVariance**
+    - **public float beta**
+
+  - **public struct LootFloorSettings**
+    - **public float rare**
+    - **public float epic**
+    - **public float legendary**
+    - **public float specials**
+
+  - **public struct LootUnluckySettings**
+    - **public float alphaRare**
+    - **public float alphaEpic**
+    - **public float alphaLegendary**
+    - **public float alphaSpecials**
+
+  - **public struct LootTrimSettings**
+    - **public float common**
+    - **public float uncommon**
+    - **public float rare**
+    - **public float epic**
+    - **public float legendary**
+
+  - **public struct LootRankMultipliers**
+    - **public int spawn**
+    - **public int normal**
+    - **public int magic**
+    - **public int elite**
+    - **public int boss**
+    - **public int champion**
+    - **public int GetMultiplier(EnemyRank rank)**: Returns the multiplier for a given enemy rank.
+
+  - **public struct LootSettings**
+    - **public LootBudgetSettings budget**
+    - **public LootFloorSettings floors**
+    - **public LootUnluckySettings unlucky**
+    - **public LootTrimSettings trim**
+    - **public LootRankMultipliers rankMultipliers**
+
+  - **public struct EnemyBudget**
+    - **public int spawn**
+    - **public int normal**
+    - **public int magic**
+    - **public int elite**
+    - **public int boss**
+    - **public int champion**
+
+  - **public struct EnemyScaling**
+    - **public float hpPerLevel**
+    - **public float dmgPerLevel**
+
+  - **public struct WaveSettings**
+    - **public EnemyBudget budgetPoints**
+    - **public EnemyScaling scaling**
+
+  - **public struct RankScaling**
+    - **public float hpMultiplier**
+    - **public float dmgMultiplier**
+    - **public float xpMultiplier**
+
+  - **public struct EnemyRankSettings**
+    - **public RankScaling spawn**
+    - **public RankScaling normal**
+    - **public RankScaling magic**
+    - **public RankScaling elite**
+    - **public RankScaling boss**
+    - **public RankScaling champion**
+    - **public RankScaling GetScaling(EnemyRank rank)**: Returns the scaling for a given enemy rank.
+
+  - **public struct EnemySettings**
+    - **public EnemyBudget budgetPoints**
+    - **public EnemyScaling scaling**
+    - **public EnemyRankSettings rankScaling**
+    - **public List<string> magicTagPool**
+    - **public int minEliteTags**
+
+  - **public struct SkillRanges**
+    - **public float selfRange**
+    - **public float meleeRange**
+    - **public float reachRange**
+    - **public float midDistanceRange**
+    - **public float farDistanceRange**
+
+  - **public struct CurrencySettings**
+    - **public int baseGoldReward**
+    - **public float goldPerLevel**
+
+  - **public struct XpSettings**
+    - **public int baseXpReward**
+    - **public float xpPerLevel**
+    - **public int baseLevelUpXp**
+    - **public int levelCurveFactor**
+
+  - **public struct EconomySettings**
+    - **public CurrencySettings currencies**
+    - **public XpSettings xp**
+
+# Key Behavior & Side Effects
+- Provides structured settings for loot, enemies, skills, and economy, which can be used to balance gameplay.
+- The `GetMultiplier` and `GetScaling` methods return specific multipliers and scaling values based on the provided enemy rank.
+
+# Constraints & Failure Modes
+- No explicit guards or null handling noted.
+- Assumes valid input for ranges and settings as defined by the struct properties.
+
+# Example
+```csharp
+GameBalanceConfig config = ScriptableObject.CreateInstance<GameBalanceConfig>();
+float meleeRange = config.GetRangeValue(SkillRange.Melee);
+```
+
+# Unknowns
+- The definition of `EnemyRank` and `SkillRange` types is not provided in this file.
+
