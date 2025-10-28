@@ -1,6 +1,6 @@
-# Automatische Doku
+# Automatic Documentation
 
-_Stand: 2025-10-28T22:10:33.537154Z_
+_Status: 2025-10-28T22:14:54.680529Z_
 
-Geänderte Dateien in diesem Lauf:
+Changed files:
 - [.github/scripts/docgen.py](.github/scripts/docgen.py.md) (neu)
