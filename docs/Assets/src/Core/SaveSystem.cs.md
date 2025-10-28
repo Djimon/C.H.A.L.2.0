@@ -2,7 +2,6 @@
 
 _Automatic generated/updated._
 
-```markdown
 # Purpose
 - Defines a static `SaveSystem` for managing player profiles and research data.
 - Provides methods for saving, loading, and deleting player profile and research data.
@@ -59,4 +58,4 @@ bool deleted = SaveSystem.DeleteProfileData("main");
 # Unknowns
 - The structure and contents of `PlayerProfile` and `ResearchSnapshot` are not defined in this file.
 - The implementation details of `SaveGame` and `DebugManager` are not provided.
-```
+
