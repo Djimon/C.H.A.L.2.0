@@ -1,4 +1,5 @@
 import os, pathlib
+import re
 from datetime import datetime
 from git import Repo
 from openai import OpenAI
@@ -53,6 +54,13 @@ def changed_files_since_last_commit():
     files = [f for f in files if pathlib.Path(f).suffix in DOC_EXTS and pathlib.Path(f).exists()]
     return files
 
+def strip_outer_markdown_fence(text: str) -> str:
+    # Entfernt genau einen äußeren ```markdown oder ```md Block, lässt innere Fences in Ruhe
+    m = re.match(r'^\s*```(?:markdown|md)\s*\n([\s\S]*?)\n```\s*$', text)
+    if m:
+        return m.group(1).rstrip() + "\n"
+    return text
+
 def read_text(path):
     return pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
 
@@ -96,7 +104,8 @@ def llm_markdown_for(path: str, code: str) -> str:
         ],
         temperature=0.1,
     )
-    return resp.choices[0].message.content.strip()
+    md = resp.choices[0].message.content.strip()
+    return strip_outer_markdown_fence(md)
 
 def main():
     files = files_to_process()
