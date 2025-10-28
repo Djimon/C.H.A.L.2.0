@@ -33,6 +33,7 @@ overall rules:
 - Use short bullets; avoid prose, timestamps, and authors.
 - If file is trivial or auto-generated, output a single line: "Skipped: trivial/auto-generated."
 - Use an appropriate code fence language tag.
+- Never use ```markdown or ```md fences (generated file already has the sufficient .md suffix) ; only use code fences for code examples with the correct language (e.g., csharp, python).
 Unity specifics (apply only if explicitly present in this file):
 - MonoBehaviour: list lifecycle methods (Awake/Start/Update/OnEnable/OnDisable/OnDestroy) with one-line purpose.
 - ScriptableObject: treat as data/config asset; summarize serialized fields; mention [CreateAssetMenu] if present.
