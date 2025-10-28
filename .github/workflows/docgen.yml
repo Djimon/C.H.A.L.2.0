@@ -2,9 +2,15 @@ name: DocGen
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      FULL_SCAN:
+        description: 'Scan entire repo (true/false)'
+        required: false
+        default: 'false'
 
 permissions:
   contents: write
@@ -31,6 +37,7 @@ jobs:
       - name: Run doc generator
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          FULL_SCAN: ${{ github.event.inputs.FULL_SCAN }}
         run: |
           python .github/scripts/docgen.py
 
