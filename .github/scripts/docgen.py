@@ -86,7 +86,7 @@ def files_to_process():
 # ----- LLM-Aufruf -----
 def llm_markdown_for(path: str, code: str) -> str:
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    message = f"Datei: {path}\n\n```\n{code[:120000]}\n```"
+    message = f"File: {path}\n\n```\n{code[:120000]}\n```"
     resp = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -100,22 +100,22 @@ def llm_markdown_for(path: str, code: str) -> str:
 def main():
     files = files_to_process()
     if not files:
-        print("Keine relevanten Änderungen erkannt.")
+        print("No relevant changes.")
         return
 
     index_lines = [
-        "# Automatische Doku",
+        "# Automatic Documentation",
         "",
-        f"_Stand: {datetime.utcnow().isoformat()}Z_",
+        f"_Status: {datetime.utcnow().isoformat()}Z_",
         "",
-        "Geänderte Dateien in diesem Lauf:",
+        "Changed files:",
     ]
 
     any_change = False
     for f in files:
         code = read_text(f)
         md = llm_markdown_for(f, code)
-        header = f"# {f}\n\n_Automatisch generiert/aktualisiert._\n\n"
+        header = f"# {f}\n\n_Automatic generated/updated._\n\n"
         out = header + md + "\n"
         out_path = doc_path_for(f)
         changed = write_if_changed(out_path, out)
@@ -123,7 +123,7 @@ def main():
         index_lines.append(f"- [{f}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
 
     write_if_changed(OUT_DIR / "INDEX.md", "\n".join(index_lines) + "\n")
-    print("Fertig. Änderungen:", any_change)
+    print("Complete. Changes:", any_change)
 
 if __name__ == "__main__":
     main()
