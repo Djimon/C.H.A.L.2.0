@@ -4,10 +4,18 @@ from datetime import datetime
 from git import Repo
 from openai import OpenAI
 
-# ----- Einstellungen (kannst du so lassen) -----
+# ----- Einstellungen -----
 DOC_EXTS = {".cs", ".py", ".ts", ".tsx", ".js", ".java", ".go"}
 OUT_DIR = pathlib.Path("docs")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+DOC_ROOT = OUT_DIR
+
+#regex einstellungen
+NS_RX = re.compile(r'^\s*namespace\s+([A-Za-z0-9_.]+)', re.MULTILINE)
+TYPE_RX = re.compile(
+    r'^\s*public\s+(class|struct|interface|enum)\s+([A-Za-z0-9_]+)',
+    re.MULTILINE
+)
 
 SYSTEM_PROMPT = """You are a technical writer. Generate concise, factual, diff-friendly documentation from the provided **single source file only** (no external assumptions). Write in clear English, bullet-first
 Output sections in this fixed order (omit a section if empty):
@@ -54,6 +62,12 @@ def changed_files_since_last_commit():
     files = [f for f in files if pathlib.Path(f).suffix in DOC_EXTS and pathlib.Path(f).exists()]
     return files
 
+def extract_namespace_and_public_types(code: str):
+    ns_match = NS_RX.search(code)
+    namespace = ns_match.group(1) if ns_match else "global"
+    types = [(m.group(1), m.group(2)) for m in TYPE_RX.finditer(code)]
+    return namespace, types
+
 def strip_outer_markdown_fence(text: str) -> str:
     # Entfernt genau einen äußeren ```markdown oder ```md Block, lässt innere Fences in Ruhe
     m = re.match(r'^\s*```(?:markdown|md)\s*\n([\s\S]*?)\n```\s*$', text)
@@ -75,6 +89,16 @@ def write_if_changed(path: pathlib.Path, content: str) -> bool:
 def doc_path_for(src_path: str) -> pathlib.Path:
     # docs/<src_path>.md
     return OUT_DIR / f"{src_path}.md"
+
+def paths_for(namespace: str, type_names: list[str], fallback_basename: str):
+    """
+    Ablage nach Namespace: docs/<Namespace/als/Ordner>/<Type>.md
+    Beispiel: docs/CHAL/Systems/Research/ResearchService.md
+    """
+    base = DOC_ROOT / namespace.replace('.', '/')
+    if type_names:
+        return [ base / f"{t}.md" for t in type_names ]
+    return [ base / f"{fallback_basename}.md" ]
 
 def all_repo_files():
     # alle getrackten Dateien mit passenden Endungen
@@ -124,13 +148,34 @@ def main():
     any_change = False
     for f in files:
         code = read_text(f)
-        md = llm_markdown_for(f, code)
-        header = f"# {f}\n\n_Automatic generated/updated._\n\n"
-        out = header + md + "\n"
-        out_path = doc_path_for(f)
-        changed = write_if_changed(out_path, out)
-        any_change |= changed
-        index_lines.append(f"- [{f}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
+
+        # Namespace + öffentliche Typen aus dem Code ziehen
+        namespace, pub_types = extract_namespace_and_public_types(code)
+        type_names = [name for _, name in pub_types]
+
+        # Zielpfade erzeugen (eine Datei je public Type, sonst Fallback auf Dateibasis)
+        fallback_basename = pathlib.Path(f).with_suffix("").name
+        targets = paths_for(namespace, type_names, fallback_basename)
+
+        if type_names:
+            for t, out_path in zip(type_names, targets):
+                fq = f"{namespace}.{t}" if namespace else t
+                md = llm_markdown_for(f, code)
+                header = f"# {fq}\n\n_Automatically generated/updated from `{f}`._\n\n"
+                out = header + md + "\n"
+                changed = write_if_changed(out_path, out)
+                any_change |= changed
+                index_lines.append(f"- [{fq}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
+        else:
+            # kein public type -> Datei unter docs/<Namespace>/<Dateiname>.md
+            out_path = targets[0]
+            fq = f"{namespace}.{fallback_basename}" if namespace else fallback_basename
+            md = llm_markdown_for(f, code)
+            header = f"# {fq}\n\n_Automatically generated/updated from `{f}`._\n\n"
+            out = header + md + "\n"
+            changed = write_if_changed(out_path, out)
+            any_change |= changed
+            index_lines.append(f"- [{fq}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
 
     write_if_changed(OUT_DIR / "INDEX.md", "\n".join(index_lines) + "\n")
     print("Complete. Changes:", any_change)
