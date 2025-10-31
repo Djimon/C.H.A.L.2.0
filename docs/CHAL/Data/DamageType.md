@@ -1,0 +1,33 @@
+# CHAL.Data.DamageType
+
+_Automatically generated/updated from `Assets/src/Data/Enums/DamageType.cs`._
+
+# Purpose
+- Defines an enumeration for different types of damage.
+
+# Public API
+- Namespace: `CHAL.Data`
+- Types:
+  - `public enum DamageType`
+    - Values:
+      - `Physical`
+      - `Fire`
+      - `Cold`
+      - `Poison`
+      - `Arcane`
+      - `Void`
+      - `Holy`
+
+# Key Behavior & Side Effects
+- No explicit behavior or side effects defined; serves as a simple enumeration.
+
+# Constraints & Failure Modes
+- No constraints or failure modes evident in the file.
+
+# Example
+```csharp
+DamageType damage = DamageType.Fire;
+```
+
+# Unknowns
+- No unknowns present; all information is derived from the file.

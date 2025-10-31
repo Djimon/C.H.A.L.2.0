@@ -1,21 +1,53 @@
 import os, pathlib
+import re
 from datetime import datetime
 from git import Repo
 from openai import OpenAI
 
-# ----- Einstellungen (kannst du so lassen) -----
+# ----- Einstellungen -----
 DOC_EXTS = {".cs", ".py", ".ts", ".tsx", ".js", ".java", ".go"}
 OUT_DIR = pathlib.Path("docs")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+DOC_ROOT = OUT_DIR
 
-SYSTEM_PROMPT = """Du bist Technischer Redakteur.
-Erzeuge aus Code knappe, sachliche Doku (Deutsch):
-- Zweck der Datei
-- Öffentliche API (Klassen/Funktionen, Parameter, Rückgabewerte)
-- Wichtige Abläufe / Nebenwirkungen
-- Randbedingungen/Fehlerfälle
-- Kurzes Beispiel (falls sinnvoll)
-Stabil, stichpunktartig, diff-freundlich. Wenn Datei trivial/auto-generiert -> Ein Satz: 'Übersprungen, da trivial/auto-generiert'.
+#regex einstellungen
+NS_RX = re.compile(r'^\s*namespace\s+([A-Za-z0-9_.]+)', re.MULTILINE)
+TYPE_RX = re.compile(
+    r'^\s*public\s+(class|struct|interface|enum)\s+([A-Za-z0-9_]+)',
+    re.MULTILINE
+)
+
+SYSTEM_PROMPT = """You are a technical writer. Generate concise, factual, diff-friendly documentation from the provided **single source file only** (no external assumptions). Write in clear English, bullet-first
+Output sections in this fixed order (omit a section if empty):
+1) Purpose
+- What this file defines/provides (1–3 bullets), strictly from code.
+2) Public API
+- Namespace/module (if any)
+- Types
+  - <visibility> <kind> <Name> [extends/implements ...]
+    - Public fields/properties (brief role if obvious)
+    - Public methods (signatures with parameters/returns; note explicit side effects)
+3) Key Behavior & Side Effects
+- Major flows/state changes/error handling that are explicit in this file.
+4) Constraints & Failure Modes
+- Guards, null/empty handling, threading/async notes, performance/allocation hints (only if evident).
+5) Example (only if clearly derivable)
+- minimal example 
+6) Unknowns
+- Facts that cannot be determined from this file.
+
+overall rules:
+- Source of truth = this file/project only. Prefer omission over guessing.
+- Exhaustively list public surface; keep names/signatures exact.
+- Use short bullets; avoid prose, timestamps, and authors.
+- If file is trivial or auto-generated, output a single line: "Skipped: trivial/auto-generated."
+- Use an appropriate code fence language tag.
+- Never use ```markdown or ```md fences (generated file already has the sufficient .md suffix) ; only use code fences for code examples with the correct language (e.g., csharp, python).
+Unity specifics (apply only if explicitly present in this file):
+- MonoBehaviour: list lifecycle methods (Awake/Start/Update/OnEnable/OnDisable/OnDestroy) with one-line purpose.
+- ScriptableObject: treat as data/config asset; summarize serialized fields; mention [CreateAssetMenu] if present.
+- Editor-only: if under an Editor folder or using UnityEditor, mark as editor tooling.
+- RequireComponent / physics callbacks: note required components and that OnTrigger*/OnCollision*/FixedUpdate are physics-related.
 """
 
 # ----- Hilfsfunktionen -----
@@ -29,6 +61,19 @@ def changed_files_since_last_commit():
     files = [f.strip() for f in diff.splitlines() if f.strip()]
     files = [f for f in files if pathlib.Path(f).suffix in DOC_EXTS and pathlib.Path(f).exists()]
     return files
+
+def extract_namespace_and_public_types(code: str):
+    ns_match = NS_RX.search(code)
+    namespace = ns_match.group(1) if ns_match else "global"
+    types = [(m.group(1), m.group(2)) for m in TYPE_RX.finditer(code)]
+    return namespace, types
+
+def strip_outer_markdown_fence(text: str) -> str:
+    # Entfernt genau einen äußeren ```markdown oder ```md Block, lässt innere Fences in Ruhe
+    m = re.match(r'^\s*```(?:markdown|md)\s*\n([\s\S]*?)\n```\s*$', text)
+    if m:
+        return m.group(1).rstrip() + "\n"
+    return text
 
 def read_text(path):
     return pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
@@ -44,6 +89,16 @@ def write_if_changed(path: pathlib.Path, content: str) -> bool:
 def doc_path_for(src_path: str) -> pathlib.Path:
     # docs/<src_path>.md
     return OUT_DIR / f"{src_path}.md"
+
+def paths_for(namespace: str, type_names: list[str], fallback_basename: str):
+    """
+    Ablage nach Namespace: docs/<Namespace/als/Ordner>/<Type>.md
+    Beispiel: docs/CHAL/Systems/Research/ResearchService.md
+    """
+    base = DOC_ROOT / namespace.replace('.', '/')
+    if type_names:
+        return [ base / f"{t}.md" for t in type_names ]
+    return [ base / f"{fallback_basename}.md" ]
 
 def all_repo_files():
     # alle getrackten Dateien mit passenden Endungen
@@ -64,44 +119,66 @@ def files_to_process():
 # ----- LLM-Aufruf -----
 def llm_markdown_for(path: str, code: str) -> str:
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    message = f"Datei: {path}\n\n```\n{code[:120000]}\n```"
+    message = f"File: {path}\n\n```\n{code[:120000]}\n```"
     resp = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5-nano",
         messages=[
             {"role":"system","content": SYSTEM_PROMPT},
             {"role":"user","content": message},
         ],
         temperature=0.1,
     )
-    return resp.choices[0].message.content.strip()
+    md = resp.choices[0].message.content.strip()
+    return strip_outer_markdown_fence(md)
 
 def main():
     files = files_to_process()
     if not files:
-        print("Keine relevanten Änderungen erkannt.")
+        print("No relevant changes.")
         return
 
     index_lines = [
-        "# Automatische Doku",
+        "# Automatic Documentation",
         "",
-        f"_Stand: {datetime.utcnow().isoformat()}Z_",
+        f"_Status: {datetime.utcnow().isoformat()}Z_",
         "",
-        "Geänderte Dateien in diesem Lauf:",
+        "Changed files:",
     ]
 
     any_change = False
     for f in files:
         code = read_text(f)
-        md = llm_markdown_for(f, code)
-        header = f"# {f}\n\n_Automatisch generiert/aktualisiert._\n\n"
-        out = header + md + "\n"
-        out_path = doc_path_for(f)
-        changed = write_if_changed(out_path, out)
-        any_change |= changed
-        index_lines.append(f"- [{f}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
+
+        # Namespace + öffentliche Typen aus dem Code ziehen
+        namespace, pub_types = extract_namespace_and_public_types(code)
+        type_names = [name for _, name in pub_types]
+
+        # Zielpfade erzeugen (eine Datei je public Type, sonst Fallback auf Dateibasis)
+        fallback_basename = pathlib.Path(f).with_suffix("").name
+        targets = paths_for(namespace, type_names, fallback_basename)
+
+        if type_names:
+            for t, out_path in zip(type_names, targets):
+                fq = f"{namespace}.{t}" if namespace else t
+                md = llm_markdown_for(f, code)
+                header = f"# {fq}\n\n_Automatically generated/updated from `{f}`._\n\n"
+                out = header + md + "\n"
+                changed = write_if_changed(out_path, out)
+                any_change |= changed
+                index_lines.append(f"- [{fq}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
+        else:
+            # kein public type -> Datei unter docs/<Namespace>/<Dateiname>.md
+            out_path = targets[0]
+            fq = f"{namespace}.{fallback_basename}" if namespace else fallback_basename
+            md = llm_markdown_for(f, code)
+            header = f"# {fq}\n\n_Automatically generated/updated from `{f}`._\n\n"
+            out = header + md + "\n"
+            changed = write_if_changed(out_path, out)
+            any_change |= changed
+            index_lines.append(f"- [{fq}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
 
     write_if_changed(OUT_DIR / "INDEX.md", "\n".join(index_lines) + "\n")
-    print("Fertig. Änderungen:", any_change)
+    print("Complete. Changes:", any_change)
 
 if __name__ == "__main__":
     main()
