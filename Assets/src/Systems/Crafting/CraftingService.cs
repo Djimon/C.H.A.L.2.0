@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using CHAL.Systems.Inventory; // IInventoryDomain, ItemStack
-using CHAL.Systems.Crafting;
-using CHAL.Systems.Economy;
-using UnityEngine;  // IWallet
+using UnityEngine;
+using CHAL.Core;  // IWallet
 
 namespace CHAL.Systems.Crafting
 {

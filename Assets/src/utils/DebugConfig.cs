@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 [CreateAssetMenu(fileName = "DebugConfig", menuName = "Config/DebugConfig")]
 public class DebugConfig : ScriptableObject
 {
@@ -16,7 +17,7 @@ public class DebugConfig : ScriptableObject
     public bool includeGameTimestamps = false;
 
     [Header("Color Mode (tag only vs. whole line")]
-    public bool colorWholeLine = false;  
+    public bool colorWholeLine = false;
 
     [System.Serializable]
     public class TagEntry
@@ -56,3 +57,4 @@ public class DebugConfig : ScriptableObject
     }
 #endif
 }
+

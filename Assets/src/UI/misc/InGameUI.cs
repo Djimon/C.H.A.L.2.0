@@ -1,20 +1,25 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public abstract class IngameUI : MonoBehaviour
+
+namespace CHAL.UI
 {
-    protected VisualElement root;
 
-    protected virtual void Awake()
+    public abstract class IngameUI : MonoBehaviour
     {
-        root = GetComponent<UIDocument>().rootVisualElement;
-        root.style.display = DisplayStyle.None; // start hidden
-    }
+        protected VisualElement root;
 
-    public virtual void Show(bool show)
-    {
-        root.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
-    }
+        protected virtual void Awake()
+        {
+            root = GetComponent<UIDocument>().rootVisualElement;
+            root.style.display = DisplayStyle.None; // start hidden
+        }
 
-    public bool IsVisible => root.style.display == DisplayStyle.Flex;
+        public virtual void Show(bool show)
+        {
+            root.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        public bool IsVisible => root.style.display == DisplayStyle.Flex;
+    }
 }

@@ -4,119 +4,122 @@ using CHAL.Systems.Skill;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class EffectReceiver
+namespace CHAL.Systems.Unit
 {
-    public float CurrentHP { get; protected set; }
-    public float MaxHP { get; protected set; }
-
-    public List<ActiveStatusEffect> ActiveEffects { get; private set; } = new();
-
-    public ModifierStack ActiveModifiers { get; private set; } = new ModifierStack();
-
-    public UnitTeam Team;
-
-    public virtual void ApplyStatusEffect(ActiveStatusEffect effect)
+    public abstract class EffectReceiver
     {
-        if (effect == null) return;
+        public float CurrentHP { get; protected set; }
+        public float MaxHP { get; protected set; }
 
-        var existing = ActiveEffects.Find(e => e.EffectId == effect.EffectId);
-        // — DoT-Case (bestehend): bleibt wie bei dir —
-        if (existing is DoTStatusEffect exDot && effect is DoTStatusEffect newDot)
+        public List<ActiveStatusEffect> ActiveEffects { get; private set; } = new();
+
+        public ModifierStack ActiveModifiers { get; private set; } = new ModifierStack();
+
+        public UnitTeam Team;
+
+        public virtual void ApplyStatusEffect(ActiveStatusEffect effect)
         {
-            exDot.TryAddStack(effect.source);
-            exDot.RemainingTime = Mathf.Max(exDot.RemainingTime, newDot.BaseDuration);
-            return;
-        }
+            if (effect == null) return;
 
-        // — Buff-Case: analog zu DoT —
-        if (existing is BuffStatusEffect exBuff && effect is BuffStatusEffect newBuff)
-        {
-            exBuff.TryAddStack(effect.source);
-            exBuff.RemainingTime = Mathf.Max(exBuff.RemainingTime, newBuff.BaseDuration);
-            return;
-        }
-
-        // — Neuer Effekt: beim Buff direkt Modifier aktivieren —
-        if (effect is BuffStatusEffect buff)
-        {
-            ActiveModifiers.AddModifier(buff.Modifier);
-            // (Kein doppeltes Add mehr bei Refresh, weil wir oben in den existing-Case gehen)
-        }
-
-        // Debuff
-        if (existing is DebuffStatusEffect exDeBuff && effect is DebuffStatusEffect newDeBuff)
-        {
-            exDeBuff.TryAddStack(effect.source);
-            exDeBuff.RemainingTime = Mathf.Max(exDeBuff.RemainingTime, newDeBuff.BaseDuration);
-            return;
-        }
-
-        // — Neuer Effekt: beim Debuff direkt Modifier aktivieren —
-        if (effect is DebuffStatusEffect debuff)
-        {
-            ActiveModifiers.AddModifier(debuff.Modifier);
-            // (Kein doppeltes Add mehr bei Refresh, weil wir oben in den existing-Case gehen)
-        }
-
-
-
-        ActiveEffects.Add(effect);
-    }
-
-    public virtual void RemoveEffect(ActiveStatusEffect effect)
-    {
-        ActiveEffects.Remove(effect);
-    }
-
-    public abstract void TakeDamage(float amount, DamageType type);
-
-    protected abstract void OnDeath();
-
-    public void UpdateEffects(float deltaTime)
-    {
-        for (int i = ActiveEffects.Count - 1; i >= 0; i--)
-        {
-            var effect = ActiveEffects[i];
-            effect.RemainingTime -= deltaTime;
-
-            if (effect is DoTStatusEffect dot)
+            var existing = ActiveEffects.Find(e => e.EffectId == effect.EffectId);
+            // — DoT-Case (bestehend): bleibt wie bei dir —
+            if (existing is DoTStatusEffect exDot && effect is DoTStatusEffect newDot)
             {
-                dot.internalTickTimer -= deltaTime;
-                if (dot.internalTickTimer <= 0f)
-                {
-                    float totalDamage = dot.DoTsettings.DamagePerTick * dot.CurrentStacks;
-                    TakeDamage(totalDamage, dot.DoTsettings.DamageType);
-                    dot.internalTickTimer = dot.DoTsettings.TickInterval;
-                }
+                exDot.TryAddStack(effect.source);
+                exDot.RemainingTime = Mathf.Max(exDot.RemainingTime, newDot.BaseDuration);
+                return;
             }
 
-            //Buffs
-            if (effect is BuffStatusEffect buff && buff.RemainingTime <= 0f)
+            // — Buff-Case: analog zu DoT —
+            if (existing is BuffStatusEffect exBuff && effect is BuffStatusEffect newBuff)
             {
-                if (buff.Modifier != null && buff.modifierApplied)
-                {
-                    ActiveModifiers.RemoveModifier(buff.Modifier);
-                    buff.modifierApplied = false;
-                }
+                exBuff.TryAddStack(effect.source);
+                exBuff.RemainingTime = Mathf.Max(exBuff.RemainingTime, newBuff.BaseDuration);
+                return;
             }
 
-            //Debuffs
-            if (effect is DebuffStatusEffect debuff && debuff.RemainingTime <= 0f)
+            // — Neuer Effekt: beim Buff direkt Modifier aktivieren —
+            if (effect is BuffStatusEffect buff)
             {
-                if (debuff.Modifier != null && debuff.modifierApplied)
-                {
-                    ActiveModifiers.RemoveModifier(debuff.Modifier);
-                    debuff.modifierApplied = false;
-                }
+                ActiveModifiers.AddModifier(buff.Modifier);
+                // (Kein doppeltes Add mehr bei Refresh, weil wir oben in den existing-Case gehen)
             }
 
-            if (effect.RemainingTime <= 0)
+            // Debuff
+            if (existing is DebuffStatusEffect exDeBuff && effect is DebuffStatusEffect newDeBuff)
             {
-                if (effect is BuffStatusEffect be && be.Modifier != null)
+                exDeBuff.TryAddStack(effect.source);
+                exDeBuff.RemainingTime = Mathf.Max(exDeBuff.RemainingTime, newDeBuff.BaseDuration);
+                return;
+            }
+
+            // — Neuer Effekt: beim Debuff direkt Modifier aktivieren —
+            if (effect is DebuffStatusEffect debuff)
+            {
+                ActiveModifiers.AddModifier(debuff.Modifier);
+                // (Kein doppeltes Add mehr bei Refresh, weil wir oben in den existing-Case gehen)
+            }
+
+
+
+            ActiveEffects.Add(effect);
+        }
+
+        public virtual void RemoveEffect(ActiveStatusEffect effect)
+        {
+            ActiveEffects.Remove(effect);
+        }
+
+        public abstract void TakeDamage(float amount, DamageType type);
+
+        protected abstract void OnDeath();
+
+        public void UpdateEffects(float deltaTime)
+        {
+            for (int i = ActiveEffects.Count - 1; i >= 0; i--)
+            {
+                var effect = ActiveEffects[i];
+                effect.RemainingTime -= deltaTime;
+
+                if (effect is DoTStatusEffect dot)
                 {
-                    ActiveModifiers.RemoveModifier(be.Modifier);
+                    dot.internalTickTimer -= deltaTime;
+                    if (dot.internalTickTimer <= 0f)
+                    {
+                        float totalDamage = dot.DoTsettings.DamagePerTick * dot.CurrentStacks;
+                        TakeDamage(totalDamage, dot.DoTsettings.DamageType);
+                        dot.internalTickTimer = dot.DoTsettings.TickInterval;
+                    }
                 }
-                RemoveEffect(effect);
+
+                //Buffs
+                if (effect is BuffStatusEffect buff && buff.RemainingTime <= 0f)
+                {
+                    if (buff.Modifier != null && buff.modifierApplied)
+                    {
+                        ActiveModifiers.RemoveModifier(buff.Modifier);
+                        buff.modifierApplied = false;
+                    }
+                }
+
+                //Debuffs
+                if (effect is DebuffStatusEffect debuff && debuff.RemainingTime <= 0f)
+                {
+                    if (debuff.Modifier != null && debuff.modifierApplied)
+                    {
+                        ActiveModifiers.RemoveModifier(debuff.Modifier);
+                        debuff.modifierApplied = false;
+                    }
+                }
+
+                if (effect.RemainingTime <= 0)
+                {
+                    if (effect is BuffStatusEffect be && be.Modifier != null)
+                    {
+                        ActiveModifiers.RemoveModifier(be.Modifier);
+                    }
+                    RemoveEffect(effect);
+                }
             }
         }
     }

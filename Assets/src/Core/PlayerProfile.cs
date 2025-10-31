@@ -1,5 +1,4 @@
 using CHAL.Core;
-using CHAL.Systems.Economy;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Research;
 using System;

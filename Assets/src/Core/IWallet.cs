@@ -1,4 +1,4 @@
-﻿namespace CHAL.Systems.Economy
+﻿namespace CHAL.Core
 {
 
     public interface IWallet

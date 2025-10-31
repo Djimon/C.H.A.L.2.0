@@ -1,4 +1,4 @@
-namespace CHAL.Systems
+namespace CHAL.Systems.Unit
 {
     public interface IUnitController
     {

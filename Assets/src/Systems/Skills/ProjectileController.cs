@@ -1,11 +1,6 @@
 using CHAL.Core;
-using CHAL.Data;
-using CHAL.Systems;
-using CHAL.Systems.Enemy;
-using CHAL.Systems.Hero;
-using CHAL.Systems.Skill;
+using CHAL.Systems.Unit;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace CHAL.Systems.Skill
 {

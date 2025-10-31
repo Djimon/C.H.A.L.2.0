@@ -4,57 +4,61 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class WaveRewardUI : IngameUI
+namespace CHAL.UI
 {
 
-    private Button btnRetry;
-    private Button btnNext;
-    private Button btnHideout;
-
-    private TextElement detailsText;
-
-    private MapManager mapManager;
-
-    protected override void Awake()
+    public class WaveRewardUI : IngameUI
     {
-        base.Awake();
-        root = GetComponent<UIDocument>().rootVisualElement;
 
-        btnRetry = root.Q<Button>("Retry");
-        btnRetry.clicked += OnRetryBtnClicked;
+        private Button btnRetry;
+        private Button btnNext;
+        private Button btnHideout;
 
-        btnNext = root.Q<Button>("Next");
-        btnNext.clicked += OnNexBtnClicked;
+        private TextElement detailsText;
 
-        btnHideout = root.Q<Button>("Hideout");
-        btnHideout.clicked += OnHideoutBtnClicked;
+        private MapManager mapManager;
 
-        detailsText = root.Q<Label>("WaveStatus");
+        protected override void Awake()
+        {
+            base.Awake();
+            root = GetComponent<UIDocument>().rootVisualElement;
 
-        mapManager = FindFirstObjectByType<MapManager>();
-    }
+            btnRetry = root.Q<Button>("Retry");
+            btnRetry.clicked += OnRetryBtnClicked;
 
-    public void populateText(bool succeded)
-    {
-        detailsText.text = succeded ? "Successful!" : "Failed!";
-        //failcolor: #9F0000 => 160,0,0
-        //sucesscolor: #FFD31C => 255,211,28
-        detailsText.style.color = succeded ? new Color(1f, 211f / 255, 28f / 255): new Color(160f / 255, 0f, 0f);
-        DebugManager.Log("Text updated");
-    }
+            btnNext = root.Q<Button>("Next");
+            btnNext.clicked += OnNexBtnClicked;
 
-    private void OnHideoutBtnClicked()
-    {
-        GameManager.Instance.ExitToHideout();
-    }
+            btnHideout = root.Q<Button>("Hideout");
+            btnHideout.clicked += OnHideoutBtnClicked;
 
-    private void OnNexBtnClicked()
-    {
-        mapManager.NextWave();
-    }
+            detailsText = root.Q<Label>("WaveStatus");
 
-    private void OnRetryBtnClicked()
-    {
-        mapManager.StartWave();
+            mapManager = FindFirstObjectByType<MapManager>();
+        }
+
+        public void populateText(bool succeded)
+        {
+            detailsText.text = succeded ? "Successful!" : "Failed!";
+            //failcolor: #9F0000 => 160,0,0
+            //sucesscolor: #FFD31C => 255,211,28
+            detailsText.style.color = succeded ? new Color(1f, 211f / 255, 28f / 255) : new Color(160f / 255, 0f, 0f);
+            DebugManager.Log("Text updated");
+        }
+
+        private void OnHideoutBtnClicked()
+        {
+            GameManager.Instance.ExitToHideout();
+        }
+
+        private void OnNexBtnClicked()
+        {
+            mapManager.NextWave();
+        }
+
+        private void OnRetryBtnClicked()
+        {
+            mapManager.StartWave();
+        }
     }
 }

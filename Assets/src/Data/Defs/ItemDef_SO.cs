@@ -59,8 +59,6 @@ namespace CHAL.Data
         }
     }
 
-
-
     [System.Serializable]
     public class RemainData
     {

@@ -1,13 +1,12 @@
 ﻿using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Items;
-using CHAL.Systems.Loot;
 using CHAL.Systems.Loot.Models;
 using CHAL.Systems.Wave;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static CHAL.Data.GameBalanceConfig;
+
 
 namespace CHAL.Systems.Loot
 {

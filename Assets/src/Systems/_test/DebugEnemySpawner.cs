@@ -1,5 +1,6 @@
 using CHAL.Data;
 using CHAL.Systems.Enemy;
+using CHAL.Systems.Unit;
 using UnityEngine;
 
 public class DebugEnemySpawner : MonoBehaviour

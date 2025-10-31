@@ -1,9 +1,12 @@
-public enum RuneColorType
+namespace CHAL.Data
 {
-    Snow,
-    Sun,
-    Verdant,
-    Sky,
-    Ignis,
-    Void
+    public enum RuneColorType
+    {
+        Snow,
+        Sun,
+        Verdant,
+        Sky,
+        Ignis,
+        Void
+    }
 }

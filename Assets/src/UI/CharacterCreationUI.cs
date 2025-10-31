@@ -5,51 +5,55 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
-public class CharacterCreationUI : MonoBehaviour
+namespace CHAL.UI
 {
 
-    [SerializeField]
-    private string _startSceneName;
-
-    private VisualElement root;
-
-    private Button btnNewGame;
-    private Button btnBack;
-    private TextField name_input;
-
-    private Color[] colors = new Color[1];
-
-
-    private void Awake()
-    {
-        root = GetComponent<UIDocument>().rootVisualElement;
-        colors[0] = new Color(50/255f,50/255f,180/255f);
-    }
-
-    private void OnEnable()
+    public class CharacterCreationUI : MonoBehaviour
     {
 
-        btnNewGame = root.Q<Button>("StartGame");
-        btnNewGame.clicked += OnNewGameBtnClicked;
+        [SerializeField]
+        private string _startSceneName;
 
-        btnBack = root.Q<Button>("Back");
-        btnBack.clicked += OnBackBtnClicked;
+        private VisualElement root;
 
-        name_input = root.Q<TextField>("InputName");
+        private Button btnNewGame;
+        private Button btnBack;
+        private TextField name_input;
 
-    }
+        private Color[] colors = new Color[1];
 
-    private void OnNewGameBtnClicked()
-    {
-        PlayerProfile profile = new PlayerProfile();
-        profile.InitializePlayer(name_input.text, colors);
 
-        GameManager.Instance.StartNewGame(profile);
+        private void Awake()
+        {
+            root = GetComponent<UIDocument>().rootVisualElement;
+            colors[0] = new Color(50 / 255f, 50 / 255f, 180 / 255f);
+        }
 
-    }
+        private void OnEnable()
+        {
 
-    private void OnBackBtnClicked()
-    {
-        gameObject.SetActive(false);
+            btnNewGame = root.Q<Button>("StartGame");
+            btnNewGame.clicked += OnNewGameBtnClicked;
+
+            btnBack = root.Q<Button>("Back");
+            btnBack.clicked += OnBackBtnClicked;
+
+            name_input = root.Q<TextField>("InputName");
+
+        }
+
+        private void OnNewGameBtnClicked()
+        {
+            PlayerProfile profile = new PlayerProfile();
+            profile.InitializePlayer(name_input.text, colors);
+
+            GameManager.Instance.StartNewGame(profile);
+
+        }
+
+        private void OnBackBtnClicked()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }

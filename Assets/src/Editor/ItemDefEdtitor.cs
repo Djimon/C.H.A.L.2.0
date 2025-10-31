@@ -3,88 +3,89 @@ using CHAL.Data;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(ItemDef))]
-public class ItemDefEditor : Editor
-{
-    public override void OnInspectorGUI()
+
+    [CustomEditor(typeof(ItemDef))]
+    public class ItemDefEditor : Editor
     {
-        var item = (ItemDef)target;
+        public override void OnInspectorGUI()
+        {
+            var item = (ItemDef)target;
 
-        // Basisfelder immer anzeigen
-        item.itemId = EditorGUILayout.TextField("Item ID", item.itemId);
-        //item.displayName = EditorGUILayout.TextField("Display Name", item.displayName);
-        item.icon = (Sprite)EditorGUILayout.ObjectField("Icon", item.icon, typeof(Sprite), false);
-        item.rarity = (Rarity)EditorGUILayout.EnumPopup("Rarity", item.rarity);
-        item.lootValue = EditorGUILayout.IntField("Loot Value", item.lootValue);
+            // Basisfelder immer anzeigen
+            item.itemId = EditorGUILayout.TextField("Item ID", item.itemId);
+            //item.displayName = EditorGUILayout.TextField("Display Name", item.displayName);
+            item.icon = (Sprite)EditorGUILayout.ObjectField("Icon", item.icon, typeof(Sprite), false);
+            item.rarity = (Rarity)EditorGUILayout.EnumPopup("Rarity", item.rarity);
+            item.lootValue = EditorGUILayout.IntField("Loot Value", item.lootValue);
 
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Type Specific", EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Type Specific", EditorStyles.boldLabel);
 
-        // Typ-spezifische Felder
-        if (item.itemId.StartsWith("remains:"))
-        {
-            Ensure(ref item.remainData);
-            item.remainData.remainType = EditorGUILayout.TextField("Remain Type", item.remainData.remainType);
-        }
-        else if (item.itemId.StartsWith("rune:"))
-        {
-            Ensure(ref item.runeData);
-            item.runeData.effectType = EditorGUILayout.TextField("Effect Type", item.runeData.effectType);
-            item.runeData.runeColortType = (RuneColorType)EditorGUILayout.EnumPopup("Rune Color", item.runeData.runeColortType);
-        }
-        else if (item.itemId.StartsWith("part:"))
-        {
-            Ensure(ref item.partData);
-            item.partData.dnaType = EditorGUILayout.TextField("DNA Type", item.partData.dnaType);
-            // (moduleFuel lässt du aktuell im Editor weg – kannst du später ergänzen)
-        }
-        else if (item.itemId.StartsWith("module:"))
-        {
-            Ensure(ref item.moduleData);
-            item.moduleData.modulePower = EditorGUILayout.FloatField("Base Power", item.moduleData.modulePower);
-            item.moduleData.effect = EditorGUILayout.TextField("Effect", item.moduleData.effect);
-        }
-        else if (item.itemId.StartsWith("gear:"))
-        {
-            Ensure(ref item.gearData);
-            item.gearData.slotType = (GearType)EditorGUILayout.EnumPopup("Slot Type", item.gearData.slotType);
-            DrawStringArray(ref item.gearData.tags, "Tag");
-            item.gearData.runeSocketType = (RuneColorType)EditorGUILayout.EnumPopup("Rune Socket", item.gearData.runeSocketType);
-        }
-        else
-        {
-            EditorGUILayout.HelpBox("Unbekannter Item-Prefix. Unterstützt: remains:, rune:, part:, module:, gear:", MessageType.Info);
-        }
-
-        // Änderungen speichern
-        if (GUI.changed)
-        {
-            EditorUtility.SetDirty(target);
-        }
-
-        // Hilfs-Funktionen
-        static void Ensure<T>(ref T field) where T : class, new()
-        {
-            if (field == null) field = new T();
-        }
-
-        void DrawStringArray(ref string[] arr, string label)
-        {
-            int size = Mathf.Max(0, EditorGUILayout.IntField($"{label} Count", arr?.Length ?? 0));
-            if (arr == null || arr.Length != size)
+            // Typ-spezifische Felder
+            if (item.itemId.StartsWith("remains:"))
             {
-                var newArr = new string[size];
-                if (arr != null)
-                {
-                    for (int i = 0; i < Mathf.Min(arr.Length, size); i++) newArr[i] = arr[i];
-                }
-                arr = newArr;
+                Ensure(ref item.remainData);
+                item.remainData.remainType = EditorGUILayout.TextField("Remain Type", item.remainData.remainType);
             }
-            EditorGUI.indentLevel++;
-            for (int i = 0; i < size; i++)
-                arr[i] = EditorGUILayout.TextField($"{label} [{i}]", arr[i]);
-            EditorGUI.indentLevel--;
+            else if (item.itemId.StartsWith("rune:"))
+            {
+                Ensure(ref item.runeData);
+                item.runeData.effectType = EditorGUILayout.TextField("Effect Type", item.runeData.effectType);
+                item.runeData.runeColortType = (RuneColorType)EditorGUILayout.EnumPopup("Rune Color", item.runeData.runeColortType);
+            }
+            else if (item.itemId.StartsWith("part:"))
+            {
+                Ensure(ref item.partData);
+                item.partData.dnaType = EditorGUILayout.TextField("DNA Type", item.partData.dnaType);
+                // (moduleFuel lässt du aktuell im Editor weg – kannst du später ergänzen)
+            }
+            else if (item.itemId.StartsWith("module:"))
+            {
+                Ensure(ref item.moduleData);
+                item.moduleData.modulePower = EditorGUILayout.FloatField("Base Power", item.moduleData.modulePower);
+                item.moduleData.effect = EditorGUILayout.TextField("Effect", item.moduleData.effect);
+            }
+            else if (item.itemId.StartsWith("gear:"))
+            {
+                Ensure(ref item.gearData);
+                item.gearData.slotType = (GearType)EditorGUILayout.EnumPopup("Slot Type", item.gearData.slotType);
+                DrawStringArray(ref item.gearData.tags, "Tag");
+                item.gearData.runeSocketType = (RuneColorType)EditorGUILayout.EnumPopup("Rune Socket", item.gearData.runeSocketType);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Unbekannter Item-Prefix. Unterstützt: remains:, rune:, part:, module:, gear:", MessageType.Info);
+            }
+
+            // Änderungen speichern
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(target);
+            }
+
+            // Hilfs-Funktionen
+            static void Ensure<T>(ref T field) where T : class, new()
+            {
+                if (field == null) field = new T();
+            }
+
+            void DrawStringArray(ref string[] arr, string label)
+            {
+                int size = Mathf.Max(0, EditorGUILayout.IntField($"{label} Count", arr?.Length ?? 0));
+                if (arr == null || arr.Length != size)
+                {
+                    var newArr = new string[size];
+                    if (arr != null)
+                    {
+                        for (int i = 0; i < Mathf.Min(arr.Length, size); i++) newArr[i] = arr[i];
+                    }
+                    arr = newArr;
+                }
+                EditorGUI.indentLevel++;
+                for (int i = 0; i < size; i++)
+                    arr[i] = EditorGUILayout.TextField($"{label} [{i}]", arr[i]);
+                EditorGUI.indentLevel--;
+            }
         }
     }
-}
 #endif

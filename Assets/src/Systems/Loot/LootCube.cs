@@ -1,56 +1,58 @@
 ﻿using CHAL.Data;
 using CHAL.Systems.Items;
-using CHAL.Systems.Wave;
 using UnityEngine;
 
-public class LootCube : MonoBehaviour
+namespace CHAL.Systems.Loot
 {
-    [SerializeField]
-    public string _itemId { get; private set; }
-    [SerializeField]
-    public int _quantity { get; private set; } = 1;
-
-    public void Init(string itemId, int quantity=1)
+    public class LootCube : MonoBehaviour
     {
-        _itemId = itemId;
-        _quantity = quantity;
+        [SerializeField]
+        public string _itemId { get; private set; }
+        [SerializeField]
+        public int _quantity { get; private set; } = 1;
 
-        var rarity = ItemRegistry.Instance.GetRarity(itemId);
-        var renderer = GetComponent<Renderer>();
-
-        renderer.material.color = RarityColors.Get(rarity);
-
-        
-    }
-
-    private void OnMouseDown()
-    {
-        float pickupRadius = 0.3f;
-        Collider[] hits = Physics.OverlapSphere(transform.position, pickupRadius);
-
-        foreach (var hit in hits)
+        public void Init(string itemId, int quantity = 1)
         {
-            var lc = hit.GetComponent<LootCube>();
-            if (lc != null)
+            _itemId = itemId;
+            _quantity = quantity;
+
+            var rarity = ItemRegistry.Instance.GetRarity(itemId);
+            var renderer = GetComponent<Renderer>();
+
+            renderer.material.color = RarityColors.Get(rarity);
+
+
+        }
+
+        private void OnMouseDown()
+        {
+            float pickupRadius = 0.3f;
+            Collider[] hits = Physics.OverlapSphere(transform.position, pickupRadius);
+
+            foreach (var hit in hits)
             {
-                OnLootCollected?.Invoke(lc._itemId, _quantity);
-                Destroy(lc.gameObject);
+                var lc = hit.GetComponent<LootCube>();
+                if (lc != null)
+                {
+                    OnLootCollected?.Invoke(lc._itemId, _quantity);
+                    Destroy(lc.gameObject);
+                }
             }
         }
-    }
 
-    public static event System.Action<string,int> OnLootCollected;
+        public static event System.Action<string, int> OnLootCollected;
 
-    //after loot dropped physically freeze it in place
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground")) // dein Plane sollte "Ground"-Tag haben
+        //after loot dropped physically freeze it in place
+        private void OnCollisionEnter(Collision collision)
         {
-            var rb = GetComponent<Rigidbody>();
-            if (rb != null) Destroy(rb);
+            if (collision.gameObject.CompareTag("Ground")) // dein Plane sollte "Ground"-Tag haben
+            {
+                var rb = GetComponent<Rigidbody>();
+                if (rb != null) Destroy(rb);
 
-            var col = GetComponent<Collider>();
-            if (col != null) col.isTrigger = true;
+                var col = GetComponent<Collider>();
+                if (col != null) col.isTrigger = true;
+            }
         }
     }
 }

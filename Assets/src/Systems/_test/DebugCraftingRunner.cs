@@ -2,9 +2,9 @@ using System.Text;
 using UnityEngine;
 using CHAL.Systems.Inventory;       // IInventoryDomain, ItemStack
 using CHAL.Systems.Crafting;        // RecipeDef
-using CHAL.Systems.Economy;
 using CHAL.Core;
-using CHAL.Data;         // IWallet
+using CHAL.Data;
+
 
 public sealed class CraftingDebugRunner : MonoBehaviour
 {

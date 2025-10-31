@@ -3,7 +3,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using CHAL.Core;   // DebugManager
-using CHAL.Data;   // ResearchTreeDef, ResearchUIThemeDef
+using CHAL.Data;
+using CHAL.UI;   // ResearchTreeDef, ResearchUIThemeDef
 // nutzt deinen ResearchTreeCompiler & ResearchService
 namespace CHAL.Systems.Research
 {

@@ -2,6 +2,7 @@
 using CHAL.Data;
 using CHAL.Systems.Hero;
 using CHAL.Systems.Wave;
+using CHAL.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

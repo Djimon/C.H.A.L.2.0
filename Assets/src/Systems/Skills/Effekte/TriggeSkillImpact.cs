@@ -1,4 +1,5 @@
-using CHAL.Systems.Hero;
+using CHAL.Data;
+using CHAL.Systems.Unit;
 using UnityEngine;
 
 namespace CHAL.Systems.Skill

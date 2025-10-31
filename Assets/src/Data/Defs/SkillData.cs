@@ -1,49 +1,52 @@
-using CHAL.Data;
 using CHAL.Systems.Skill;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SkilData", menuName = "Data/SkillData")]
-public class SkillData : ScriptableObject
+namespace CHAL.Data
 {
-    [Header("Identity")]
-    public string SkillId;
-    public string DisplayName;
-    public float BaseDamage = 1;
-    public List<DamageEntry> DamageTypes;
-    [Tooltip("Time in seconds to cast this skill. 0 = instant.")]
-    public float CastTime = 0f;
-    [Tooltip("Cooldown in seconds before this skill can be used again.")]
-    public float Cooldown = 2f;
 
-    [Header("SkillType")]
-    [Tooltip("Determines the main behavior of the skill: Melee, Projectile, Spell, or Summon.")]
-    public SkillType SkillType;
-    public bool isProjectile =false;
-    public bool isAoE = false;
-    public bool hasDuration = false;
+    [CreateAssetMenu(fileName = "SkilData", menuName = "Data/SkillData")]
+    public class SkillData : ScriptableObject
+    {
+        [Header("Identity")]
+        public string SkillId;
+        public string DisplayName;
+        public float BaseDamage = 1;
+        public List<DamageEntry> DamageTypes;
+        [Tooltip("Time in seconds to cast this skill. 0 = instant.")]
+        public float CastTime = 0f;
+        [Tooltip("Cooldown in seconds before this skill can be used again.")]
+        public float Cooldown = 2f;
 
-    [Header("Composition")]
-    public SkillRange Range = SkillRange.Melee;
-    [Tooltip("Duration in seconds for effects like buffs, debuffs, or DoTs.")]
-    public float Duration = 0f;
-    public float ProjectileSpeed = 0f;
-    public int ProjectileCount = 0;
-    public float AoERadius = 0f;
+        [Header("SkillType")]
+        [Tooltip("Determines the main behavior of the skill: Melee, Projectile, Spell, or Summon.")]
+        public SkillType SkillType;
+        public bool isProjectile = false;
+        public bool isAoE = false;
+        public bool hasDuration = false;
 
-    [Header("Hooks / Effects")]
-    [Tooltip("Effects applied immediately when the skill is cast.")]
-    public List<SkillImpactBase> OnCastImpactEffects;
-    [Tooltip("Effects applied when this skill successfully hits a target.")]
-    public List<SkillImpactBase> OnHitImpactEffects;
+        [Header("Composition")]
+        public SkillRange Range = SkillRange.Melee;
+        [Tooltip("Duration in seconds for effects like buffs, debuffs, or DoTs.")]
+        public float Duration = 0f;
+        public float ProjectileSpeed = 0f;
+        public int ProjectileCount = 0;
+        public float AoERadius = 0f;
 
-    [Header("Meta")]
-    public List<SkillTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
+        [Header("Hooks / Effects")]
+        [Tooltip("Effects applied immediately when the skill is cast.")]
+        public List<SkillImpactBase> OnCastImpactEffects;
+        [Tooltip("Effects applied when this skill successfully hits a target.")]
+        public List<SkillImpactBase> OnHitImpactEffects;
 
-    [Header("Presentation")]
-    [Tooltip("Prefab spawned when the skill effect is triggered (VFX, projectile, etc.).")]
-    public GameObject vfxPrefab; //which the Skilluser will spawn, when he finsihes his animation
-    [Tooltip("Animation type used when performing this skill.")]
-    public AnimationType animationType;
+        [Header("Meta")]
+        public List<SkillTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
 
+        [Header("Presentation")]
+        [Tooltip("Prefab spawned when the skill effect is triggered (VFX, projectile, etc.).")]
+        public GameObject vfxPrefab; //which the Skilluser will spawn, when he finsihes his animation
+        [Tooltip("Animation type used when performing this skill.")]
+        public AnimationType animationType;
+
+    }
 }
