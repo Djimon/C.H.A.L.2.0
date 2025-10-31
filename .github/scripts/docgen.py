@@ -121,7 +121,7 @@ def llm_markdown_for(path: str, code: str) -> str:
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     message = f"File: {path}\n\n```\n{code[:120000]}\n```"
     resp = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5-nano",
         messages=[
             {"role":"system","content": SYSTEM_PROMPT},
             {"role":"user","content": message},
