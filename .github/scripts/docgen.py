@@ -126,7 +126,7 @@ def llm_markdown_for(path: str, code: str) -> str:
             {"role":"system","content": SYSTEM_PROMPT},
             {"role":"user","content": message},
         ],
-        temperature=0.1,
+        temperature=1,
     )
     md = resp.choices[0].message.content.strip()
     return strip_outer_markdown_fence(md)
