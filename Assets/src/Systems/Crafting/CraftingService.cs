@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using CHAL.Systems.Inventory; // IInventoryDomain, ItemStack
 using CHAL.Systems.Crafting;
-using CHAL.Systems.Economy;  // IWallet
+using CHAL.Systems.Economy;
+using UnityEngine;  // IWallet
 
 namespace CHAL.Systems.Crafting
 {
@@ -25,79 +26,131 @@ namespace CHAL.Systems.Crafting
             public bool enough => playerAmount >= required;
         }
 
-        public struct RecipePreview
+        public readonly struct RecipePreview
         {
-            public List<MaterialLine> materials;
-            public List<CurrencyLine> currencies;
-            public bool canCraft;
+            public readonly bool canCraft;         // true nur wenn alle Guards ok
+            public readonly CraftBlocker blocker;  // erster harte Blockiergrund in Guard-Reihenfolge
+
+            // optionale Einzel-Flags (hilfreich fürs UI, ohne Listen):
+            public readonly bool outputOk;
+            public readonly bool materialsOk;
+            public readonly bool currencyOk;
+
+            public RecipePreview(bool canCraft, CraftBlocker blocker,
+                                 bool outputOk, bool materialsOk, bool currencyOk)
+            {
+                this.canCraft = canCraft;
+                this.blocker = blocker;
+                this.outputOk = outputOk;
+                this.materialsOk = materialsOk;
+                this.currencyOk = currencyOk;
+            }
         }
 
         // ---- PREVIEW ----
-        public static RecipePreview GetPreview(RecipeDef recipe, IInventoryDomain inv, string materialsInventoryId, IWallet wallet)
+        public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, string materialsInventoryId, IWallet wallet)
         {
-            var mats = new List<MaterialLine>(recipe.inputs?.Count ?? 0);
-            if (recipe.inputs != null)
+            var outStack = new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+
+            // --- lokale Helfer (nur Lesen) ---
+            bool OutputOk() => inv.CanAccept(outputInventoryId, outStack);
+
+            bool MaterialsOk()
             {
-                for (int i = 0; i < recipe.inputs.Count; i++)
+                var inst = inv.GetInstance(materialsInventoryId);
+                if (inst == null || inst.slots == null) return false;
+
+                // zählt total "have" je benötigter itemId
+                int CountInInv(string itemId)
                 {
-                    var c = recipe.inputs[i];
-                    int have = CountOf(inv, materialsInventoryId, c.itemId);
-                    mats.Add(new MaterialLine { itemId = c.itemId, required = c.qty, playerAmount = have });
+                    var total = 0;
+                    foreach (var slot in inst.slots)
+                        if (slot.stack.HasValue && slot.stack.Value.itemID == itemId)
+                            total += slot.stack.Value.count;
+                    return total;
                 }
+
+                foreach (var need in recipe.inputs)
+                {
+                    var have = CountInInv(need.itemId);
+                    if (have < Mathf.Max(1, need.qty)) return false;
+                }
+                return true;
             }
 
-            var curr = new List<CurrencyLine>(recipe.currencyCosts?.Count ?? 0);
-            if (recipe.currencyCosts != null)
+            int GoldNeed()
             {
-                for (int i = 0; i < recipe.currencyCosts.Count; i++)
-                {
-                    var c = recipe.currencyCosts[i];
-                    int have = wallet.GetCurrency(c.currencyId);
-                    curr.Add(new CurrencyLine { currencyId = c.currencyId, required = c.amount, playerAmount = have });
-                }
+                if (recipe.currencyCosts == null) return 0;
+                var sum = 0;
+                foreach (var c in recipe.currencyCosts)
+                    if (!string.IsNullOrEmpty(c.currencyId) && c.currencyId == "gold")
+                        sum += Mathf.Max(0, c.amount);
+                return sum;
             }
 
-            bool ok = true;
-            for (int i = 0; i < mats.Count; i++) if (!mats[i].enough) { ok = false; break; }
-            if (ok) for (int i = 0; i < curr.Count; i++) if (!curr[i].enough) { ok = false; break; }
-
-            return new RecipePreview
+            bool CurrencyOk()
             {
-                materials = mats,
-                currencies = curr,
-                canCraft = ok
-            };
+                var gold = GoldNeed();
+                return gold <= 0 || wallet.CanSpend("gold", gold);
+            }
+
+            // --- Guards & Blocker ---
+            var outputOk = OutputOk();
+            var materialsOk = outputOk && MaterialsOk();   // erst prüfen, wenn Output ok
+            var currencyOk = materialsOk && CurrencyOk();   // erst prüfen, wenn Mats ok
+
+            CraftBlocker blocker =
+                !outputOk ? CraftBlocker.OutputInventoryFull :
+                !materialsOk ? CraftBlocker.MissingMaterials :
+                !currencyOk ? CraftBlocker.NotEnoughCurrency :
+                               CraftBlocker.None;
+
+            var canCraft = outputOk && materialsOk && currencyOk;
+            return new RecipePreview(canCraft, blocker, outputOk, materialsOk, currencyOk);
         }
 
-        public static bool CanCraft(RecipeDef recipe, IInventoryDomain inv, string materialsInventoryId, IWallet wallet)
-            => GetPreview(recipe, inv, materialsInventoryId, wallet).canCraft;
+        public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, string materialsInventoryId, IWallet wallet)
+            => GetPreview(recipe,  outputInventoryId, inv, materialsInventoryId, wallet).canCraft;
 
         // ---- COMMIT (atomar) ----
-        public static bool TryCraftToInventory(RecipeDef recipe,
-                                               IInventoryDomain inv,
-                                               string materialsInventoryId,
-                                               IWallet wallet,
-                                               string outputInventoryId,                 // <— Ziel-Inventar
-                                               out string failReason)
+        public static bool TryCraftToInventory(
+    RecipeDef recipe,
+    InventoryDomain inv,
+    string materialsInventoryId,
+    IWallet wallet,
+    string outputInventoryId,
+    out string failReason)
         {
             failReason = null;
 
-            // 0) Vorab-Prüfung (wie bisher)
-            if (!CanCraft(recipe, inv, materialsInventoryId, wallet))
+            // [G0] Output-Kapazität vor allen Abzügen
+            var outStack = new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+            if (!inv.CanAccept(outputInventoryId, outStack))
+            {
+                failReason = $"Output inventory cannot accept: {outputInventoryId}";
+                return false;
+            }
+
+            // [G1] Anforderungen lesen (ohne Seiteneffekte): Materials + Currency
+            // Wenn du bereits ein CanCraft(...) hast, kannst du es hier belassen.
+            // Andernfalls identisch wie im Preview prüfen (Material- & Gold-Check).
+            if (!CanCraft(recipe, inv, outputInventoryId, materialsInventoryId, wallet))
             {
                 failReason = "Requirements not met.";
                 return false;
             }
 
-            // 1) Materials entfernen (wie bisher)
+            // ===== Commit-Phase (atomar, mit Rollback bei jedem Fail) =====
+            // 1) Materials entfernen
             var removed = new List<(int slot, ItemStack oldStack, int amount)>();
             if (!TryConsumeMaterials(recipe, inv, materialsInventoryId, removed, out failReason))
             {
+                // Sollte nichts entfernt haben, aber defensiv: Rollback
                 RollbackMaterials(inv, materialsInventoryId, removed);
                 return false;
             }
 
-            // 2) Currency abbuchen (wie bisher)
+            // 2) Currency abbuchen (i. d. R. nur gold)
             var spent = new List<(string id, int amt)>();
             if (!TrySpendCurrencies(recipe, wallet, spent, out failReason))
             {
@@ -106,18 +159,16 @@ namespace CHAL.Systems.Crafting
                 return false;
             }
 
-            // 3) Output ins Ziel-Inventar legen (atomar)
-            var outputStack = new ItemStack(recipe.outputItemId, recipe.outputCount);
-            if (!inv.TryAdd(outputInventoryId, outputStack, out var _))
+            // 3) Item erzeugen (hier ggf. später Refinement anwenden) & Add
+            if (!inv.TryAdd(outputInventoryId, outStack, out var addTx) || !addTx.success)
             {
-                // Kein Platz → alles zurück
+                // Vollständiger Rollback
                 RefundCurrencies(wallet, spent);
                 RollbackMaterials(inv, materialsInventoryId, removed);
                 failReason = $"Output inventory full: {outputInventoryId}";
                 return false;
             }
 
-            // Erfolg (optional Telemetry)
             return true;
         }
 
@@ -231,5 +282,16 @@ namespace CHAL.Systems.Crafting
             }
             spent.Clear();
         }
+    }
+
+    public enum CraftBlocker
+    {
+        None = 0,             // alles ok
+        LockedByResearch,      // UI/Controller setzt das, Service bleibt research-agnostisch
+        OutputInventoryFull,  // kein Platz / Filter blockt
+        MissingMaterials,     // mind. ein benötigtes Material zu wenig
+        NotEnoughCurrency,    // Gold (oder andere Currency) reicht nicht
+        InvalidRefinement,    // Slider/Material ungültig (nur wenn Feature aktiv)
+        UnknownError          // Fallback
     }
 }

@@ -21,7 +21,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
     public bool simulateCurrencyMissing = false;
     public int grantCrafts = 1;
 
-    private IInventoryDomain _inv;
+    private InventoryDomain _inv;
     private IWallet _wallet;
 
     void Awake()
@@ -52,7 +52,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
         Debug.Log($"[CraftTest] Recipe: {NameOf(recipe)}");
         PrintPreview(recipe);
 
-        if (CraftingService.TryCraftToInventory(recipe,_inv, materialsInventoryId, wallet: _wallet, outputInventoryId: outputInventoryId, out var reason))
+        if (CraftingService.TryCraftToInventory(recipe, _inv, materialsInventoryId, _wallet, outputInventoryId, out var reason))
         {
             Debug.Log($"[CraftTest] SUCCESS -> Output placed into '{outputInventoryId}'");
         }
@@ -69,55 +69,55 @@ public sealed class CraftingDebugRunner : MonoBehaviour
     public void GrantRequirements()
     {
         var recipe = catalog.recipes[recipeIndex];
-        var preview = CraftingService.GetPreview(recipe, _inv, materialsInventoryId, _wallet);
+        var preview = CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet);
 
         // 1) Materials auffüllen
-        foreach (var m in preview.materials)
-        {
-            int need = m.required * grantCrafts;
-            int missing = need - m.playerAmount;
-            if (missing <= 0) continue;
+        //foreach (var m in preview.materials)
+        //{
+        //    int need = m.required * grantCrafts;
+        //    int missing = need - m.playerAmount;
+        //    if (missing <= 0) continue;
 
-            var ok = _inv.TryAdd(materialsInventoryId, new ItemStack(m.itemId, missing), out var tx);
-            if (!ok)
-            {
-                Debug.LogWarning($"[Grant] TryAdd failed for {m.itemId} (missing={missing}).");
-            }
-            else
-            {
-                Debug.Log($"[Grant] +{missing} {m.itemId} (now >= {need}).");
-            }
-        }
+        //    var ok = _inv.TryAdd(materialsInventoryId, new ItemStack(m.itemId, missing), out var tx);
+        //    if (!ok)
+        //    {
+        //        Debug.LogWarning($"[Grant] TryAdd failed for {m.itemId} (missing={missing}).");
+        //    }
+        //    else
+        //    {
+        //        Debug.Log($"[Grant] +{missing} {m.itemId} (now >= {need}).");
+        //    }
+        //}
 
         // 2) Currency auffüllen
-        foreach (var c in preview.currencies)
-        {
-            int need = c.required * grantCrafts;
-            int missing = need - c.playerAmount;
-            if (missing <= 0) continue;
+        //foreach (var c in preview.currencies)
+        //{
+        //    int need = c.required * grantCrafts;
+        //    int missing = need - c.playerAmount;
+        //    if (missing <= 0) continue;
 
-            _wallet.Refund(c.currencyId, missing); // Debug: add currency via refund
-            Debug.Log($"[Grant] +{missing} {c.currencyId} (now >= {need}).");
-        }
+        //    _wallet.Refund(c.currencyId, missing); // Debug: add currency via refund
+        //    Debug.Log($"[Grant] +{missing} {c.currencyId} (now >= {need}).");
+        //}
 
         // 3) Kontrolle
-        var after = CraftingService.GetPreview(recipe, _inv, materialsInventoryId, _wallet);
+        var after = CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet);
         Debug.Log($"[Grant] canCraft={after.canCraft} for x{grantCrafts} crafts.");
     }
 
     private void PrintPreview(RecipeDef recipe)
     {
-        var prev = CraftingService.GetPreview(recipe, _inv, materialsInventoryId, _wallet);
+        var prev = CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet);
         var sb = new StringBuilder();
 
         sb.AppendLine($"[Preview] canCraft={prev.canCraft}");
         sb.AppendLine("  Materials:");
-        foreach (var m in prev.materials)
-            sb.AppendLine($"    - {m.itemId}: need {m.required} / have {m.playerAmount} {(m.enough ? "" : "<MISSING>")}");
+        //foreach (var m in prev.materials)
+        //    sb.AppendLine($"    - {m.itemId}: need {m.required} / have {m.playerAmount} {(m.enough ? "" : "<MISSING>")}");
 
         sb.AppendLine("  Currency:");
-        foreach (var c in prev.currencies)
-            sb.AppendLine($"    - {c.currencyId}: need {c.required} / have {c.playerAmount} {(c.enough ? "" : "<MISSING>")}");
+        //foreach (var c in prev.currencies)
+        //    sb.AppendLine($"    - {c.currencyId}: need {c.required} / have {c.playerAmount} {(c.enough ? "" : "<MISSING>")}");
 
         Debug.Log(sb.ToString());
     }

@@ -115,6 +115,41 @@ namespace CHAL.Systems.Inventory
         }
 
 
+        public bool CanAccept(string instanceId, in ItemStack stack)
+        {
+            if (!HasInstance(instanceId) || stack.count <= 0) return false;
+            var inv = GetInstance(instanceId);
+            var need = stack.count;
+            var itemId = stack.itemID;
+
+            // 1) erst vorhandene Stacks auffüllen (gleiche ItemID)
+            foreach (var slot in inv.slots)
+            {
+                if (slot.stack.HasValue && slot.stack.Value.itemID == itemId)
+                {
+                    if (!slot.Filter.Allows(itemId)) continue; // safety
+                    var free = slot.maxStack - slot.stack.Value.count;
+                    if (free > 0)
+                    {
+                        need -= free;
+                        if (need <= 0) return true;
+                    }
+                }
+            }
+
+            // 2) dann leere Slots nutzen (Filter beachten)
+            foreach (var slot in inv.slots)
+            {
+                if (!slot.stack.HasValue && slot.Filter.Allows(itemId))
+                {
+                    need -= slot.maxStack;
+                    if (need <= 0) return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool TryAdd(string instanceId, in ItemStack stack, out TransactionResult result)
         {
             result = new TransactionResult();

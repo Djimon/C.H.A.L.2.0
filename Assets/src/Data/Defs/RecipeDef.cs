@@ -1,3 +1,4 @@
+using CHAL.Data;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,8 @@ namespace CHAL.Systems.Crafting
         [Header("Anzeige")]
         public string displayKey;
         public Sprite icon;
+        public int tier = 1;
+        public GearType slotType;
 
         [Header("Kosten (Items)")]
         public List<MaterialCost> inputs = new();

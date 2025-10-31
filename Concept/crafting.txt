@@ -1,5 +1,4 @@
 Crafting – Gesamtentwurf (v0)
-
 Diese Doku fasst alle Crafting‐Bänke und Modi zusammen—klar strukturiert, mit Regeln, Inputs/Outputs und Beispielen. Ziel: Builds schnell umbauen, deterministische Kontrolle mit kleinem, fairen RNG dort, wo es Spaß macht.
 
 0) Grundbegriffe & Vorbedingungen
@@ -35,9 +34,8 @@ Recycling: zerstört Item; 50 % der Common Parts immer zurück, plus Guaranteed 
 
 Fantasie: „Ich schraube aus Parts ein Ausrüstungsteil zusammen.“
 
-Modi
-
-Craft Gear (nach Tier)
+Modi:
+1. Craft Gear (nach Tier)
 
 Input: Parts (+ kleines Gold). Hauptmaterial bestimmt Tier (T1/T2/T3).
 
@@ -45,13 +43,13 @@ Output: Gear mit slot‐typischen Implicits; Anzahl je Tier (1/2/3).
 
 Quality‐Slot (optional): Remains investieren, um die Start‐Bänder der Implicits anzuheben (Soft‐Floor für bessere Rolls, deterministisch).
 
-Tier Upgrade (T1 → T2 → T3)
+2. Tier Upgrade (T1 → T2 → T3)
 
 Input: zusätzliche Parts (Tier‐angemessen) + Gold.
 
 Output: gleiches Item, höhere Implicits‐Anzahl (bis 3) und Bänder pro Slot/Caps; Affixe bleiben erhalten.
 
-Disassemble (Recycling)
+3. Disassemble (Recycling)
 
 Output: 50 % Common Parts, plus T2: 1 Rare, T3: 2 Rare garantiert.
 Spezialwährung (falls verbaut) mit Chance (z. B. 20 % für 1 Void Crystal bei T3).

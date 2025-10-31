@@ -30,6 +30,7 @@ namespace CHAL.Data
         public RuneData runeData;
         public PartData partData;
         public ModuleData moduleData;
+        public GearData gearData;
 
         void OnValidate()
         {
@@ -44,33 +45,21 @@ namespace CHAL.Data
             if (lootValue < 0) lootValue = 0;
 
             //Erzwungene Type-Safety
-            if (itemId.StartsWith("remains:"))
-            {
-                runeData = null;
-                partData = null;
-                moduleData = null;
-            }
-            else if (itemId.StartsWith("rune:"))
-            {
-                remainData = null;
-                partData = null;
-                moduleData = null;
-            }
-            else if (itemId.StartsWith("part:"))
-            {
-                remainData = null;
-                runeData = null;
-                moduleData = null;
-            }
-            else if (itemId.StartsWith("module:"))
-            {
-                remainData = null;
-                runeData = null;
-                partData = null;
-            }
+            ClearTypeBlocksExcept(itemType);
+            
         }
 
+        private void ClearTypeBlocksExcept(ItemType keep)
+        {
+            if (keep != ItemType.Remains) remainData = null;
+            if (keep != ItemType.Rune) runeData = null;
+            if (keep != ItemType.Part) partData = null;
+            if (keep != ItemType.Module) moduleData = null;
+            if (keep != ItemType.Gear) gearData = null;
+        }
     }
+
+
 
     [System.Serializable]
     public class RemainData
@@ -80,11 +69,11 @@ namespace CHAL.Data
 
     public static class RuneColors
     {
-        public static readonly Color runeColorSun = new Color(255 /255, 215 /255, 0 /255);
-        public static readonly Color runeColorVerdant = new Color(0 /255, 128 /255, 0 /255);
-        public static readonly Color runeColorSky = new Color(50 /255, 50 /255, 255 /255);
-        public static readonly Color runeColorIgnis = new Color(200 /255, 0 /255, 0 /255);
-        public static readonly Color runeColorVoid = new Color(135 /255, 0 /255, 120 /255);
+        public static readonly Color runeColorSun = new Color(255f /255f, 215f /255f, 0 /255f);
+        public static readonly Color runeColorVerdant = new Color(0 /255f, 128f /255f, 0 /255f);
+        public static readonly Color runeColorSky = new Color(50 /255f, 50 /255f, 255 /255f);
+        public static readonly Color runeColorIgnis = new Color(200 /255f, 0 /255f, 0 /255f);
+        public static readonly Color runeColorVoid = new Color(135 /255f, 0 /255f, 120 /255f);
 
         public static Color Get(RuneColorType type) => type switch
         {
@@ -120,4 +109,16 @@ namespace CHAL.Data
         public string effect;
         public float modulePower;
     }
+
+    [System.Serializable]
+    public class GearData
+    {
+        public GearType slotType;         // Head/Chest/Gloves/Legs/Boots/Amulet …
+        public string[] tags;             // z.B. "gear","leather","light"
+
+        // optional/future: Sockeltyp (jetzt auf None lassen, Enum kannst du später ausbauen)
+        public RuneColorType runeSocketType;
+    }
+
+
 }
