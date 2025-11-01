@@ -459,7 +459,7 @@ namespace CHAL.Core
             if (colon <= 0) return false;
 
             var prefix = itemId.Substring(0, colon).Trim().ToLowerInvariant(); // exakt enumname lower
-            DebugManager.Log($"TEST: {prefix}");
+
             if (!_prefixToType.TryGetValue(prefix, out type))
                 return false;
 

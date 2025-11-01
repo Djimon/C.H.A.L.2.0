@@ -26,7 +26,6 @@ namespace CHAL.Systems.Crafting
         public RecipeDetailPanel detailPanel;
 
         [Header("Inventories")]
-        public string outputInventoryId = "player:gear";
         private HashSet<string> _relevantInvIds;
 
 
@@ -49,8 +48,8 @@ namespace CHAL.Systems.Crafting
         private void Awake()
         {
             _relevantInvIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (!string.IsNullOrEmpty(outputInventoryId))
-                _relevantInvIds.Add(outputInventoryId);
+            //if (!string.IsNullOrEmpty(outputInventoryId))
+            //    _relevantInvIds.Add(outputInventoryId);
         }
 
         private void Start()
@@ -144,7 +143,10 @@ namespace CHAL.Systems.Crafting
             {
                 foreach (var r in _visibleRecipes)
                 {
-                    var p = CraftingService.GetPreview(r, outputInventoryId, inv, _wallet);
+                    var outId = ResolveOutputInventoryId(r);
+                    var p = (outId == null)
+                        ? new CraftingService.RecipePreview(false, CraftBlocker.OutputInventoryFull, false, false, false)
+                        : CraftingService.GetPreview(r, outId, inv, _wallet);
                     craftableMap[r] = p.canCraft;
                 }
             }
@@ -163,13 +165,16 @@ namespace CHAL.Systems.Crafting
             }
 
             _relevantInvIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (!string.IsNullOrEmpty(outputInventoryId))
-                _relevantInvIds.Add(outputInventoryId);
 
             if (GameManager.Instance != null && _visibleRecipes != null)
             {
                 foreach (var r in _visibleRecipes)
                 {
+                    // Output-Instanz tracken
+                    var outId = ResolveOutputInventoryId(r);
+                    if (!string.IsNullOrEmpty(outId)) _relevantInvIds.Add(outId);
+
+                    // Input-Instanzen tracken
                     if (r?.inputs == null) continue;
                     foreach (var need in r.inputs)
                     {
@@ -195,7 +200,14 @@ namespace CHAL.Systems.Crafting
                 return;
             }
 
-            _preview = CraftingService.GetPreview(_selected, outputInventoryId, inv, _wallet);
+            var outId = ResolveOutputInventoryId(_selected);
+            if (string.IsNullOrEmpty(outId))
+            {
+                detailPanel?.ShowFail("Ziel-Inventar unbekannt.");
+                return;
+            }
+            _preview = CraftingService.GetPreview(_selected, outId, inv, _wallet);
+            DebugManager.Info($"crafting preview {_selected.displayKey}: {_preview.blocker}","Crafting");
             detailPanel?.ShowRecipeDetails(_selected, _preview, GetGoldNeed(_selected), _wallet.GetCurrency("gold"), CountMaterials(_selected));
         }
         #endregion
@@ -216,8 +228,15 @@ namespace CHAL.Systems.Crafting
                 return;
             }
 
+            var outId = ResolveOutputInventoryId(_selected);
+            if (string.IsNullOrEmpty(outId))
+            {
+                detailPanel?.ShowFail("Ziel-Inventar unbekannt.");
+                return;
+            }
+
             // Letzte Preview nutzen – Guard-Order ist im Service
-            var ok = CraftingService.TryCraftToInventory(_selected, inv, _wallet, outputInventoryId, out var reason);
+            var ok = CraftingService.TryCraftToInventory(_selected, inv, _wallet, outId, out var reason);
             if (!ok)
             {
                 DebugManager.Info($"Craft fail: {reason}",TAG);
@@ -229,7 +248,8 @@ namespace CHAL.Systems.Crafting
             DebugManager.Log($"Craft success: {_selected.outputItemId} x{_selected.outputCount}", DebugManager.EDebugLevel.Test, TAG);
             detailPanel?.ShowSuccess();
             RefreshPreviewAndDetail(); // Bestand geändert → UI updaten
-                                       // Optional: SFX/VFX triggern
+            
+            // TODO: SFX/VFX triggern
         }
 
         private void HandleSlotChanged(string instanceId, int slotIndex, ItemStack? newStack)
@@ -251,6 +271,22 @@ namespace CHAL.Systems.Crafting
                 if (!string.IsNullOrEmpty(c.currencyId) && c.currencyId == "gold")
                     sum += Mathf.Max(0, c.amount);
             return sum;
+        }
+
+        private string ResolveOutputInventoryId(RecipeDef r)
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || r == null) return null;
+
+            if (!gm.TryResolveByItemId(r.outputItemId, out var invType, out var instId) || string.IsNullOrEmpty(instId))
+            {
+                DebugManager.Error($"Crafting: Konnte Output-Inventory für '{r.outputItemId}' nicht auflösen.", "Crafting");
+                return null;
+            }
+
+            // stellt die Instanz sicher (Slots/Filter via InventoryDef)
+            gm.EnsureInstance(instId, invType);
+            return instId;
         }
 
         /// <summary>Ermittelt "have" je benötigtem MaterialId (für die Detailanzeige).</summary>

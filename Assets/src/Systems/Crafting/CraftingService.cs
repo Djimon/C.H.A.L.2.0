@@ -53,7 +53,13 @@ namespace CHAL.Systems.Crafting
         {
             var outStack = new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
 
-            bool OutputOk() => inv.CanAccept(outputInventoryId, outStack);
+            bool OutputOk()
+            {
+                var ok = inv.CanAccept(outputInventoryId, outStack);
+                if (!ok)
+                    DebugOutputReject(inv, outputInventoryId, outStack); // <— NEU: detailliertes Logging
+                return ok;
+            }
 
             bool MaterialsOk()
             {
@@ -107,6 +113,47 @@ namespace CHAL.Systems.Crafting
 
         public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, IWallet wallet)
             => GetPreview(recipe,  outputInventoryId, inv, wallet).canCraft;
+
+        private static void DebugOutputReject(InventoryDomain inv, string instanceId, ItemStack outStack)
+        {
+            // Existiert die Instanz?
+            bool hasInst = inv.HasInstance(instanceId);
+            int slotCount = hasInst ? inv.SlotCount(instanceId) : 0;
+
+            int empty = 0, sameItemStacks = 0, sameItemTotal = 0, filled = 0;
+            const int SAMPLE_MAX = 6; // kurze Stichprobe für Logs
+            var sample = new System.Text.StringBuilder();
+
+            if (hasInst && slotCount > 0)
+            {
+                for (int s = 0; s < slotCount; s++)
+                {
+                    var peek = inv.Peek(instanceId, s); // bereits in Helpers verwendet :contentReference[oaicite:3]{index=3}
+                    if (!peek.HasValue)
+                    {
+                        empty++;
+                        if (sample.Length < 1 && s < SAMPLE_MAX) sample.Append($"[{s}: empty] ");
+                        continue;
+                    }
+
+                    filled++;
+                    var st = peek.Value;
+                    if (s < SAMPLE_MAX) sample.Append($"[{s}: {st.itemID} x{st.count}] ");
+
+                    if (st.itemID == outStack.itemID)
+                    {
+                        sameItemStacks++;
+                        sameItemTotal += st.count;
+                    }
+                }
+            }
+
+            // Kompakte, action-able Logzeile
+            DebugManager.Log(
+                $"[Craft Preview] Output REJECT → inst='{instanceId}', item={outStack.itemID} x{outStack.count} | " +
+                $"exists={hasInst}, slots={slotCount}, empty={empty}, filled={filled}, sameItemStacks={sameItemStacks}, sameItemTotal={sameItemTotal} | sample: {sample}",
+                DebugManager.EDebugLevel.Test, "Crafting");
+        }
 
         private static bool TryGetMaterialsInventoryIdByConvention(string itemId, InventoryDomain inv, out string instanceId)
         {

@@ -948,7 +948,7 @@ MonoBehaviour:
   catalog: {fileID: 11400000, guid: 7f474a4eb5cf6144284c658d8e4a6beb, type: 2}
   listView: {fileID: 1078747227}
   detailPanel: {fileID: 1078747226}
-  outputInventoryId: player:gear
+  outputInventoryId: player_gear
 --- !u!114 &1078747226
 MonoBehaviour:
   m_ObjectHideFlags: 0

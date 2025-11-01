@@ -61,6 +61,9 @@ namespace CHAL.Data
             EnsureStarterHeroUnlocked(starterId);
             InitInventories();
 
+            AddCurrency("gold", 0);
+
+
             SaveSystem.Save(this);
         }
 

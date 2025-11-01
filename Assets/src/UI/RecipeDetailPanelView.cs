@@ -75,7 +75,8 @@ namespace CHAL.UI
             _baseStats.text = "";
             _icon.style.backgroundImage = StyleKeyword.None;
             _ingList?.Clear();
-            _goldLabel.text = "0 G";
+            _goldLabel.text = "0/0 G";
+            _goldLabel.style.opacity = 1f;
             _craftBtn.SetEnabled(false);
             _failLabel.text = "";
             _tooltip.style.display = DisplayStyle.None;
@@ -124,12 +125,39 @@ namespace CHAL.UI
 
             // Goldzeile
             _goldLabel.text = $"{needGold} G";
-            if (haveGold < needGold) _goldLabel.style.opacity = 0.7f; else _goldLabel.style.opacity = 1f;
+            _goldLabel.text = $"{haveGold}/{needGold} G";
 
+            bool hasAllIngs = true;
+            if (r.inputs != null && r.inputs.Count > 0)
+            {
+                foreach (var need in r.inputs)
+                {
+                    int needQty = Mathf.Max(1, need.qty); // UI zeigt auch min. 1
+                    int haveQty = (haveByItemId != null && haveByItemId.TryGetValue(need.itemId, out var h)) ? h : 0;
+                    if (haveQty < needQty) { hasAllIngs = false; break; }
+                }
+            }
+            bool hasGold = haveGold > needGold;
+            bool localCanCraft = hasAllIngs && hasGold;
+
+            // Optionaler Gate durch Preview (falls du zusätzliche Regeln zentral prüfen willst)
+            bool finalCanCraft = localCanCraft && preview.canCraft;
             // Craft-Button
-            _craftBtn.SetEnabled(preview.canCraft);
+            _craftBtn.SetEnabled(finalCanCraft);
+            //_craftBtn.SetEnabled(preview.canCraft);
+            if (!finalCanCraft)
+            {
+                if (!hasAllIngs) _failLabel.text = "Fehlende Zutaten.";
+                else if (!hasGold) _failLabel.text = "Zu wenig Gold.";
+                else _failLabel.text = preview.blocker.ToString();
+            }
+            else
+            {
+                _failLabel.text = "";
+            }
 
-            // (Refinement bleibt vorerst verborgen; Controller kann sie sichtbar schalten)
+
+            //TODO: (Refinement bleibt vorerst verborgen; Controller kann sie sichtbar schalten)
         }
 
         public void ShowFail(string message)
