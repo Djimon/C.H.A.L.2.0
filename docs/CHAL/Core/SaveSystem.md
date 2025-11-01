@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Core/SaveSystem.cs`._
 
-```text
 1) Purpose
 - Provide a static SaveSystem for saving/loading PlayerProfile data and ResearchSnapshot data via BayatGames.SaveGameFree.
 - Resolve per-profile file ids and per-profile research file ids; derive current profile id from file path when needed.
@@ -121,4 +120,4 @@ var loadedSnap = SaveSystem.LoadResearch("player1");
 - Implementation specifics of DebugManager.Log and its DebugLevel semantics.
 - The full contents and behavior of GameSaveConfig (ResolveFileIdRuntime, ShouldEncodeRuntime, encodePassword).
 - Any threading or async implications of SaveGame calls (not stated in this file).
-```
+
