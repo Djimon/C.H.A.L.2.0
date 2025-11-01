@@ -116,15 +116,15 @@ namespace CHAL.Systems.Crafting
             if (inv == null)
             {
                 detailPanel?.Clear();
-                listView?.SetData(Array.Empty<RecipeDef>());
+                listView?.SetData(Array.Empty<RecipeDef>(), new Dictionary<RecipeDef, bool>());
                 DebugManager.Warning("Crafting", "Rebuild skipped: InventoryDomain is null.");
                 return;
             }
 
             if (catalog == null || catalog.recipes == null)
             {
-                DebugManager.Warning(TAG, "Catalog is null/empty.");
-                listView?.SetData(Array.Empty<RecipeDef>());
+                DebugManager.Warning("Crafting", "Catalog is null/empty.");
+                listView?.SetData(Array.Empty<RecipeDef>(), new Dictionary<RecipeDef, bool>());
                 detailPanel?.Clear();
                 return;
             }
@@ -139,7 +139,18 @@ namespace CHAL.Systems.Crafting
                 _visibleRecipes.Add(r);
             }
 
-            listView?.SetData(_visibleRecipes);
+            var craftableMap = new Dictionary<RecipeDef, bool>();
+            if (inv != null && _wallet != null)
+            {
+                foreach (var r in _visibleRecipes)
+                {
+                    var p = CraftingService.GetPreview(r, outputInventoryId, inv, _wallet);
+                    craftableMap[r] = p.canCraft;
+                }
+            }
+
+            listView?.SetData(_visibleRecipes, craftableMap);
+
             if (_visibleRecipes.Count > 0)
             {
                 // Preselect erste Zeile

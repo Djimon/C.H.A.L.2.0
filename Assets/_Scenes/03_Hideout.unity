@@ -1035,10 +1035,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f532b7d22aa354d874f3adb0fad85b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  config: {fileID: 0}
+  config: {fileID: 11400000, guid: e86363c24b9927049802a6ed7ce88c65, type: 2}
   inputManager: {fileID: 0}
-  heroCatalog: {fileID: 0}
-  researchTree: {fileID: 0}
+  heroCatalog: {fileID: 11400000, guid: b0339df6de471254690437ae7760d56c, type: 2}
+  researchTree: {fileID: 11400000, guid: c3345df8e3b12a8418a76b89cc04dbbd, type: 2}
   researchNodes: []
 --- !u!4 &1266014327
 Transform:

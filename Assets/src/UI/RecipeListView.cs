@@ -22,14 +22,13 @@ namespace CHAL.UI
             _scroll = doc.rootVisualElement.Q<ScrollView>("list-scroll");
         }
 
-        public void SetData(IEnumerable<RecipeDef> recipes)
+        public void SetData(IEnumerable<RecipeDef> recipes, IDictionary<RecipeDef, bool> craftableMap)
         {
             _scroll?.Clear();
-            if (recipes == null) return;
+            if (_scroll == null || recipes == null) return;
 
-            // Gruppierung nach slotType; null/Default => "Misc"
             var groups = recipes
-                .GroupBy(r => r.slotType.ToString())
+                .GroupBy(r => (r != null ? r.slotType.ToString() : "Misc"))
                 .OrderBy(g => g.Key);
 
             foreach (var g in groups)
@@ -40,23 +39,25 @@ namespace CHAL.UI
 
                 foreach (var r in g)
                 {
+                    if (r == null) continue;
+
                     var row = new VisualElement();
                     row.AddToClassList("recipe-row");
 
-                    var btn = new Button(() => {
-                        OnSelect?.Invoke(r);
-                        Debug.Log($"[RecipeListView] Select: {r.name}");
-                    })
+                    var btn = new Button(() => OnSelect?.Invoke(r))
                     {
                         text = string.IsNullOrEmpty(r.displayKey) ? r.name : r.displayKey
                     };
+                    btn.AddToClassList("recipe-btn");
+                    btn.style.unityTextAlign = TextAnchor.MiddleLeft;
 
-                    // Row zusätzlich klickbar (falls Styles Button verdecken)
-                    row.RegisterCallback<ClickEvent>(_ => {
-                        OnSelect?.Invoke(r);
-                        Debug.Log($"[RecipeListView] RowClick: {r.name}");
-                    });
+                    // Klassen aus Map setzen (fehlt Eintrag => missing)
+                    var craftable = false;
+                    if (craftableMap != null) craftableMap.TryGetValue(r, out craftable);
+                    btn.EnableInClassList("is-craftable", craftable);
+                    btn.EnableInClassList("is-missing", !craftable);
 
+                    row.RegisterCallback<ClickEvent>(_ => OnSelect?.Invoke(r));
                     row.Add(btn);
                     fold.Add(row);
                 }

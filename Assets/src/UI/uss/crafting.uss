@@ -223,6 +223,22 @@
     font-size: 110%;
 }
 
+.craft-btn:disabled {
+    border-left-color: rgba(55, 108, 108, 0.71);
+    border-right-color: rgba(55, 108, 108, 0.71);
+    border-top-color: rgba(55, 108, 108, 0.71);
+    border-bottom-color: rgba(55, 108, 108, 0.71);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    color: rgba(55, 108, 108, 0.71);
+}
+
 .fail-label {
     color: rgb(255, 128, 128);
     margin-top: 6px;
@@ -250,4 +266,26 @@
 
 .exit-btn {
     align-self: flex-end;
+}
+
+.recipe-btn {
+    background-color: rgba(0, 0, 0, 0);
+    color: rgb(255, 255, 255);
+    font-size: 100%;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+}
+
+.recipe-btn:is-craftable {
+    color: rgb(11, 164, 0);
+}
+
+.recipe-btn:is-missing {
+    color: rgba(185, 0, 0, 0.71);
+}
+
+.recipe-btn:hover {
+    background-color: rgba(135, 135, 135, 0.49);
 }
