@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using CHAL.Core;  // IWallet
+using CHAL.Data;
 using CHAL.Systems.Inventory; // IInventoryDomain, ItemStack
+using CHAL.Systems.Items;
+using System.Collections.Generic;
 using UnityEngine;
-using CHAL.Core;  // IWallet
 
 namespace CHAL.Systems.Crafting
 {
@@ -47,31 +49,32 @@ namespace CHAL.Systems.Crafting
         }
 
         // ---- PREVIEW ----
-        public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, string materialsInventoryId, IWallet wallet)
+        public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, IWallet wallet)
         {
             var outStack = new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
 
-            // --- lokale Helfer (nur Lesen) ---
             bool OutputOk() => inv.CanAccept(outputInventoryId, outStack);
 
             bool MaterialsOk()
             {
-                var inst = inv.GetInstance(materialsInventoryId);
-                if (inst == null || inst.slots == null) return false;
-
-                // zählt total "have" je benötigter itemId
-                int CountInInv(string itemId)
-                {
-                    var total = 0;
-                    foreach (var slot in inst.slots)
-                        if (slot.stack.HasValue && slot.stack.Value.itemID == itemId)
-                            total += slot.stack.Value.count;
-                    return total;
-                }
+                if (recipe.inputs == null || recipe.inputs.Count == 0) return true;
 
                 foreach (var need in recipe.inputs)
                 {
-                    var have = CountInInv(need.itemId);
+                    if (!TryGetMaterialsInventoryIdByConvention(need.itemId, inv, out var instId))
+                        return false;
+
+                    var inst = inv.GetInstance(instId);
+                    if (inst == null || inst.slots == null) return false;
+
+                    var have = 0;
+                    for (int i = 0; i < inst.slots.Length; i++)
+                    {
+                        var st = inst.slots[i].stack;
+                        if (st.HasValue && st.Value.itemID == need.itemId)
+                            have += st.Value.count;
+                    }
+
                     if (have < Mathf.Max(1, need.qty)) return false;
                 }
                 return true;
@@ -87,83 +90,133 @@ namespace CHAL.Systems.Crafting
                 return sum;
             }
 
-            bool CurrencyOk()
-            {
-                var gold = GoldNeed();
-                return gold <= 0 || wallet.CanSpend("gold", gold);
-            }
+            bool CurrencyOk() { var g = GoldNeed(); return g <= 0 || wallet.CanSpend("gold", g); }
 
-            // --- Guards & Blocker ---
             var outputOk = OutputOk();
-            var materialsOk = outputOk && MaterialsOk();   // erst prüfen, wenn Output ok
-            var currencyOk = materialsOk && CurrencyOk();   // erst prüfen, wenn Mats ok
+            var materialsOk = outputOk && MaterialsOk();
+            var currencyOk = materialsOk && CurrencyOk();
 
-            CraftBlocker blocker =
+            var blocker =
                 !outputOk ? CraftBlocker.OutputInventoryFull :
                 !materialsOk ? CraftBlocker.MissingMaterials :
                 !currencyOk ? CraftBlocker.NotEnoughCurrency :
                                CraftBlocker.None;
 
-            var canCraft = outputOk && materialsOk && currencyOk;
-            return new RecipePreview(canCraft, blocker, outputOk, materialsOk, currencyOk);
+            return new RecipePreview(outputOk && materialsOk && currencyOk, blocker, outputOk, materialsOk, currencyOk);
         }
 
-        public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, string materialsInventoryId, IWallet wallet)
-            => GetPreview(recipe,  outputInventoryId, inv, materialsInventoryId, wallet).canCraft;
+        public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, IWallet wallet)
+            => GetPreview(recipe,  outputInventoryId, inv, wallet).canCraft;
+
+        private static bool TryGetMaterialsInventoryIdByConvention(string itemId, InventoryDomain inv, out string instanceId)
+        {
+            instanceId = null;
+            if (string.IsNullOrEmpty(itemId)) return false;
+
+            var t = ItemTypeUtils.FromId(itemId);
+            switch (t)
+            {
+                case ItemType.Remains: instanceId = "player_remains"; break;
+                case ItemType.Part: instanceId = "player_part"; break;
+                case ItemType.Rune: instanceId = "player_rune"; break;
+                case ItemType.Module: instanceId = "player_module"; break;
+                default: instanceId = null; break; // Gear/Unknown → kein Material-Inventar
+            }
+
+            return !string.IsNullOrEmpty(instanceId) && inv.HasInstance(instanceId);
+        }
 
         // ---- COMMIT (atomar) ----
-        public static bool TryCraftToInventory(
-    RecipeDef recipe,
-    InventoryDomain inv,
-    string materialsInventoryId,
-    IWallet wallet,
-    string outputInventoryId,
-    out string failReason)
+        public static bool TryCraftToInventory(RecipeDef recipe, InventoryDomain inv, IWallet wallet, string outputInventoryId, out string failReason)
         {
             failReason = null;
 
-            // [G0] Output-Kapazität vor allen Abzügen
             var outStack = new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+
+            // [G0] Output zuerst
             if (!inv.CanAccept(outputInventoryId, outStack))
             {
                 failReason = $"Output inventory cannot accept: {outputInventoryId}";
                 return false;
             }
 
-            // [G1] Anforderungen lesen (ohne Seiteneffekte): Materials + Currency
-            // Wenn du bereits ein CanCraft(...) hast, kannst du es hier belassen.
-            // Andernfalls identisch wie im Preview prüfen (Material- & Gold-Check).
-            if (!CanCraft(recipe, inv, outputInventoryId, materialsInventoryId, wallet))
+            // [G1] Guards read-only
+            var preview = GetPreview(recipe, outputInventoryId, inv, wallet);
+            if (!preview.canCraft)
             {
-                failReason = "Requirements not met.";
+                failReason = preview.blocker.ToString();
                 return false;
             }
 
-            // ===== Commit-Phase (atomar, mit Rollback bei jedem Fail) =====
-            // 1) Materials entfernen
-            var removed = new List<(int slot, ItemStack oldStack, int amount)>();
-            if (!TryConsumeMaterials(recipe, inv, materialsInventoryId, removed, out failReason))
+            // ===== Commit-Phase =====
+            var removed = new List<(string instId, int slot, ItemStack oldStack, int amount)>();
+
+            bool TryConsumeOne(string itemId, int qty)
             {
-                // Sollte nichts entfernt haben, aber defensiv: Rollback
-                RollbackMaterials(inv, materialsInventoryId, removed);
+                if (!TryGetMaterialsInventoryIdByConvention(itemId, inv, out var instId))
+                    return false;
+
+                var inst = inv.GetInstance(instId);
+                if (inst == null || inst.slots == null) return false;
+
+                var left = qty;
+                for (int i = 0; i < inst.slots.Length && left > 0; i++)
+                {
+                    var st = inst.slots[i].stack;
+                    if (!st.HasValue || st.Value.itemID != itemId) continue;
+
+                    var take = Mathf.Min(st.Value.count, left);
+                    if (take <= 0) continue;
+
+                    if (!inv.TryRemove(instId, i, take, out var tx) || !tx.success)
+                        return false;
+
+                    removed.Add((instId, i, st.Value, take));
+                    left -= take;
+                }
+                return left <= 0;
+            }
+
+            if (recipe.inputs != null)
+            {
+                foreach (var need in recipe.inputs)
+                {
+                    var want = Mathf.Max(1, need.qty);
+                    if (!TryConsumeOne(need.itemId, want))
+                    {
+                        // Rollback Mats
+                        foreach (var rem in removed)
+                            inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
+                        failReason = $"Missing materials: {need.itemId}";
+                        return false;
+                    }
+                }
+            }
+
+            // 2) Currency
+            var gold = 0;
+            if (recipe.currencyCosts != null)
+                foreach (var c in recipe.currencyCosts)
+                    if (!string.IsNullOrEmpty(c.currencyId) && c.currencyId == "gold")
+                        gold += Mathf.Max(0, c.amount);
+
+            if (gold > 0 && !wallet.SpendCurrency("gold", gold))
+            {
+                foreach (var rem in removed)
+                    inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
+                failReason = "Gold spend failed.";
                 return false;
             }
 
-            // 2) Currency abbuchen (i. d. R. nur gold)
-            var spent = new List<(string id, int amt)>();
-            if (!TrySpendCurrencies(recipe, wallet, spent, out failReason))
-            {
-                RefundCurrencies(wallet, spent);
-                RollbackMaterials(inv, materialsInventoryId, removed);
-                return false;
-            }
-
-            // 3) Item erzeugen (hier ggf. später Refinement anwenden) & Add
+            // 3) Output
             if (!inv.TryAdd(outputInventoryId, outStack, out var addTx) || !addTx.success)
             {
-                // Vollständiger Rollback
-                RefundCurrencies(wallet, spent);
-                RollbackMaterials(inv, materialsInventoryId, removed);
+                if (gold > 0) wallet.Refund("gold", gold);
+                foreach (var rem in removed)
+                    inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
                 failReason = $"Output inventory full: {outputInventoryId}";
                 return false;
             }

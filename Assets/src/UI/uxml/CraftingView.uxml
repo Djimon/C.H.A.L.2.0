@@ -1,0 +1,45 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/src/UI/uss/crafting.uss?fileID=7433441132597879392&amp;guid=8b07e91360515384cbd6622986ef5772&amp;type=3#crafting" />
+    <ui:VisualElement name="crafting-root" class="crafting-root" style="flex-direction: row;">
+        <ui:VisualElement name="left-pane" class="left-pane">
+            <ui:Label text="Rezepte" class="pane-title" />
+            <ui:ScrollView name="list-scroll" class="list-scroll" />
+        </ui:VisualElement>
+        <ui:VisualElement name="right-pane" class="right-pane">
+            <ui:VisualElement name="header" class="header">
+                <ui:VisualElement name="icon" class="item-icon" />
+                <ui:VisualElement class="header-text">
+                    <ui:Label name="item-name" text="Itemname" class="item-name" />
+                    <ui:Label name="base-stats" text="base stats" class="base-stats" />
+                    <ui:VisualElement class="implicit-row">
+                        <ui:Label name="implicit-info" text="+ 1 implicits" class="implicit-info" />
+                        <ui:Label name="implicit-help" text="(?)" class="implicit-help" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="implicits-tooltip" class="implicits-tooltip" style="display: none;">
+                    <ui:Label text="possible:" class="tooltip-title" />
+                    <ui:VisualElement name="implicits-list" class="tooltip-list" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="divider" />
+            <ui:VisualElement name="ingredients-section" class="ingredients-section">
+                <ui:Label text="Ingredients:" class="section-title" />
+                <ui:VisualElement name="ingredients-list" class="ingredients-list" />
+            </ui:VisualElement>
+            <ui:VisualElement name="refine-panel" class="refine-panel" style="display: none;">
+                <ui:Label text="veredeln" class="refine-title" />
+                <ui:VisualElement class="refine-body">
+                    <ui:Label text="choose:" class="refine-choose" />
+                    <ui:DropdownField name="refine-material" class="refine-material" />
+                    <ui:SliderInt name="refine-slider" high-value="250" low-value="0" class="refine-slider" />
+                    <ui:Label name="refine-value" text="0" class="refine-value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="action-row">
+                <ui:Label name="gold-label" text="0 G" class="gold-label" />
+                <ui:Button name="craft-btn" text="Craft" class="craft-btn" />
+            </ui:VisualElement>
+            <ui:Label name="fail-label" class="fail-label" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

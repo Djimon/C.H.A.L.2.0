@@ -1,0 +1,219 @@
+.crafting-root {
+    display: flex;
+    flex-direction: row;
+    width: 75%;
+    height: 75%;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    top: auto;
+    flex-basis: auto;
+    align-self: center;
+    align-items: stretch;
+    align-content: flex-start;
+    position: relative;
+    flex-shrink: 0;
+    flex-grow: 1;
+}
+
+.left-pane {
+    width: 280px;
+    flex-shrink: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-right-width: 1px;
+    border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+.pane-title {
+    font-size: 14px;
+    margin-bottom: 6px;
+    opacity: 0.85;
+}
+
+.list-scroll {
+    flex-grow: 1;
+}
+
+.right-pane {
+    flex-grow: 1;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.item-icon {
+    width: 96px;
+    height: 96px;
+    background-color: rgba(255, 255, 255, 0.06);
+    margin-right: 12px;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-name {
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+.base-stats {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: 2px;
+}
+
+.implicit-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.implicit-info {
+    margin-right: 4px;
+}
+
+.implicit-help {
+    opacity: 0.7;
+}
+
+.implicits-tooltip {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    min-width: 220px;
+}
+
+.tooltip-title {
+    margin-bottom: 4px;
+}
+
+.tooltip-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.divider {
+    height: 1px;
+    margin-top: 12px;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.ingredients-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.section-title {
+    margin-bottom: 4px;
+    opacity: 0.85;
+}
+
+.ingredients-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.ing-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.ing-icon {
+    width: 28px;
+    height: 28px;
+    background-color: rgba(255, 255, 255, 0.08);
+    margin-right: 10px;
+}
+
+.ing-text {
+    font-size: 12px;
+}
+
+.refine-panel {
+    margin-top: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.refine-title {
+    margin-bottom: 6px;
+}
+
+.refine-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.refine-slider {
+    margin-top: 4px;
+}
+
+.refine-value {
+    font-size: 12px;
+    opacity: 0.85;
+}
+
+.action-row {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.gold-label {
+    font-size: 14px;
+    margin-right: 12px;
+}
+
+.craft-btn {
+    width: 160px;
+    height: 36px;
+    margin-left: auto;
+}
+
+.fail-label {
+    color: rgb(255, 128, 128);
+    margin-top: 6px;
+    min-height: 18px;
+}
+
+.group-header {
+    margin-top: 8px;
+    margin-bottom: 4px;
+    opacity: 0.85;
+}
+
+.recipe-row {
+    height: 28px;
+    justify-content: center;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 2px;
+}
+
+.recipe-row__craftable {
+    border-width: 1px;
+    border-color: rgba(120, 255, 120, 0.35);
+}
