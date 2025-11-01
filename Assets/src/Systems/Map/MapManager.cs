@@ -105,11 +105,38 @@ namespace CHAL.Systems.Map
                 return;
             }
 
+            ResetHeroesForNewWave(_waveManager);
             SpawnSelectedHeroesAtSlots(_pendingSelectedHeroes, _waveManager);
 
             DebugManager.Log($"Starte Wave {CurrentWave}/{MaxWaves}", DebugManager.EDebugLevel.Test, "Map");
 
             _waveManager.StartWave(CurrentMap, CurrentWave, this);
+        }
+
+        private void ResetHeroesForNewWave(WaveManager waveMgr)
+        {
+            if (waveMgr == null) return;
+
+            // Destroy only heroes that belong to the active map instance to avoid touching editor objects or other scenes.
+            var existing = _mapInstancedPrefab != null
+                ? _mapInstancedPrefab.GetComponentsInChildren<HeroController>(true)
+                : Array.Empty<HeroController>();
+
+            int count = 0;
+            for (int i = 0; i < existing.Length; i++)
+            {
+                if (existing[i] != null && existing[i].gameObject != null)
+                {
+                    Destroy(existing[i].gameObject);
+                    count++;
+                }
+            }
+
+            DebugManager.Log($"ResetHeroesForNewWave: cleared {count} existing hero instance(s).",
+                DebugManager.EDebugLevel.Test, "Map");
+
+            // Fresh spawn at slots in the order of _pendingSelectedHeroes
+            SpawnSelectedHeroesAtSlots(_pendingSelectedHeroes, waveMgr);
         }
 
         private void SpawnSelectedHeroesAtSlots(List<string> heroIds, WaveManager waveMgr)
