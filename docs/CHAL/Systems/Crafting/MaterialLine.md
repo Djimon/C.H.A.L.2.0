@@ -2,114 +2,187 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingService.cs`._
 
-1) Purpose
-- Static crafting service: preview, validate, and commit-atomic crafting for recipes.
-- Data structures for material and currency previews, plus a recipe preview result.
-- Interacts with InventoryDomain, IWallet, and RecipeDef to determine feasibility and perform crafts.
+```text
+Purpose
+- Defines a static CraftingService in CHAL.Systems.Crafting.
+- Provides preview, guard checks, and atomic commit logic for crafting a recipe into a target inventory.
+- Exposes lightweight data types used for UI and decision logic: MaterialLine, CurrencyLine, RecipePreview, CraftBlocker.
+```
 
-2) Public API
+```csharp
+// Public API surface
+namespace CHAL.Systems.Crafting
+{
+    public static class CraftingService
+    {
+        // ---- Data types used by the API/UI ----
+
+        public struct MaterialLine
+        {
+            public string itemId;
+            public int required;
+            public int playerAmount;
+            public bool enough => playerAmount >= required;
+        }
+
+        public struct CurrencyLine
+        {
+            public string currencyId;
+            public int required;
+            public int playerAmount;
+            public bool enough => playerAmount >= required;
+        }
+
+        public readonly struct RecipePreview
+        {
+            public readonly bool canCraft;
+            public readonly CraftBlocker blocker;
+
+            // optional per-field flags for UI guidance
+            public readonly bool outputOk;
+            public readonly bool materialsOk;
+            public readonly bool currencyOk;
+
+            public RecipePreview(bool canCraft, CraftBlocker blocker,
+                                 bool outputOk, bool materialsOk, bool currencyOk)
+            {
+                this.canCraft = canCraft;
+                this.blocker = blocker;
+                this.outputOk = outputOk;
+                this.materialsOk = materialsOk;
+                this.currencyOk = currencyOk;
+            }
+        }
+
+        // ---- PREVIEW ----
+        public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, IWallet wallet)
+
+        public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, IWallet wallet)
+
+        // ---- COMMIT (atomar) ----
+        public static bool TryCraftToInventory(RecipeDef recipe, InventoryDomain inv, IWallet wallet, string outputInventoryId, out string failReason)
+    }
+
+    public enum CraftBlocker
+    {
+        None = 0,
+        LockedByResearch,
+        OutputInventoryFull,
+        MissingMaterials,
+        NotEnoughCurrency,
+        InvalidRefinement,
+        UnknownError
+    }
+}
+```
+
+```text
+Public API (surface details)
 - Namespace: CHAL.Systems.Crafting
-
-- Types
-
-  - public struct MaterialLine (fields)
+- Public types:
+  - public struct MaterialLine
     - public string itemId
     - public int required
     - public int playerAmount
-    - public bool enough
-      - enough is true when playerAmount >= required
-
-  - public struct CurrencyLine (fields)
+    - public bool enough => playerAmount >= required
+  - public struct CurrencyLine
     - public string currencyId
     - public int required
     - public int playerAmount
-    - public bool enough
-      - enough is true when playerAmount >= required
-
+    - public bool enough => playerAmount >= required
   - public readonly struct RecipePreview
     - public readonly bool canCraft
     - public readonly CraftBlocker blocker
     - public readonly bool outputOk
     - public readonly bool materialsOk
     - public readonly bool currencyOk
-    - Constructor RecipePreview(bool canCraft, CraftBlocker blocker, bool outputOk, bool materialsOk, bool currencyOk)
-
-- Public static methods
-
-  - public static RecipePreview GetPreview(
-      RecipeDef recipe,
-      string outputInventoryId,
-      InventoryDomain inv,
-      string materialsInventoryId,
-      IWallet wallet)
-
-  - public static bool CanCraft(
-      RecipeDef recipe,
-      InventoryDomain inv,
-      string outputInventoryId,
-      string materialsInventoryId,
-      IWallet wallet)
-
-  - public static bool TryCraftToInventory(
-      RecipeDef recipe,
-      InventoryDomain inv,
-      string materialsInventoryId,
-      IWallet wallet,
-      string outputInventoryId,
-      out string failReason)
-
-- Public enum
-
+    - public RecipePreview(bool canCraft, CraftBlocker blocker, bool outputOk, bool materialsOk, bool currencyOk)
+  - public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, IWallet wallet)
+  - public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, IWallet wallet)
+  - public static bool TryCraftToInventory(RecipeDef recipe, InventoryDomain inv, IWallet wallet, string outputInventoryId, out string failReason)
   - public enum CraftBlocker
-    - None = 0
-    - LockedByResearch
-    - OutputInventoryFull
-    - MissingMaterials
-    - NotEnoughCurrency
-    - InvalidRefinement
-    - UnknownError
+    - None, LockedByResearch, OutputInventoryFull, MissingMaterials, NotEnoughCurrency, InvalidRefinement, UnknownError
+```
 
-3) Key Behavior & Side Effects
-- GetPreview flow
-  - Builds an output stack: new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount)).
-  - OutputOk: checks if the outputInventory can accept the stack.
-  - MaterialsOk: reads the materials inventory instance; if missing or slots null, returns false; counts total have per needed itemId; requires at least need.qty (or 1 if at least 1) for every input.
-  - GoldNeed: sums currencyCosts entries where currencyId is "gold".
-  - CurrencyOk: wallet canSpend "gold" for the required amount (if any).
-  - Guards in order: outputOk -> materialsOk -> currencyOk; blocker is set to first failing guard; canCraft is true only if all three ok.
-  - Returns a RecipePreview describing feasibility and guard state.
+```text
+Key Behavior & Side Effects
+- Preview generation (GetPreview)
+  - Builds an output ItemStack from recipe.outputItemId and max(1, recipe.outputCount).
+  - OutputOk: checks if outputInventory can accept the output stack.
+  - MaterialsOk: for each input in recipe.inputs, maps itemId to a material inventory via convention, reads available counts across matching stacks, requires at least max(1, need.qty).
+  - GoldNeed: sums gold costs from recipe.currencyCosts where currencyId == "gold".
+  - CurrencyOk: true if gold needed <= 0 or wallet.CanSpend("gold", g) is true.
+  - Blocker: first failing guard in order: OutputInventoryFull -> MissingMaterials -> NotEnoughCurrency -> None.
+  - Returns a RecipePreview with canCraft, blocker, and per-condition flags (outputOk, materialsOk, currencyOk).
 
-- CanCraft flow
-  - Delegates to GetPreview and returns its canCraft.
+- Craft feasibility (CanCraft)
+  - Returns GetPreview(...).canCraft.
 
-- TryCraftToInventory flow (atomar/rollback-capable)
-  - Pre-check: output inventory capacity via CanAccept for the output stack; if false, fail with a message.
-  - Guard: if CanCraft(...) is false, fail with "Requirements not met."
-  - Commit phase (atomic with rollback on fail):
-    - 1) TryConsumeMaterials: remove required materials from materialsInventoryId; record removed slots for rollback.
-    - 2) TrySpendCurrencies: validate and spend currencies; record spent currencies for potential refund.
-    - 3) TryAdd output: add produced item into outputInventoryId; on failure, rollback currencies and materials, report output-full fail reason.
-  - On success, return true.
+- Atomic craft (TryCraftToInventory)
+  - G0: Output must be accepted by the target inventory; on failure, failReason set and false returned.
+  - G1: Guard check via GetPreview; if not craftable, failReason set to blocker.ToString() and false returned.
+  - Commit phase:
+    - Remove materials from their material inventories (per itemId) to fulfill recipe.inputs.
+    - Rolls back material removal if any input cannot be satisfied (restores previously removed materials) and sets failReason to "Missing materials: {itemId}".
+    - Currency deduction: computes total gold required; spends via wallet.SpendCurrency("gold", amount). Rolls back material removal and returns false on failure (failReason "Gold spend failed.").
+    - Output addition: tries to add the crafted stack to outputInventoryId; on failure, refunds gold (if any), rolls back material removal, and returns false (failReason "Output inventory full: {outputInventoryId}").
+  - On success: returns true (inventory and wallet updated atomically as far as possible within the function’s rollback moments).
 
-- Helper behavior (private API surface, not public)
-  - CountOf: sum of itemId occurrences in an inventory instance.
-  - TryConsumeMaterials: for each input, consume required quantity across slots with matching itemId; record (slot, oldStack, amount) for rollback.
-  - RollbackMaterials: re-add previously removed items to their original itemIds/amounts; clear removal log.
-  - TrySpendCurrencies: pre-checks all costs with wallet.CanSpend; then spends and records per-currency amounts; on failure, report reason.
-  - RefundCurrencies: refunds spent currencies to wallet; clear spent-log.
+- Material and currency handling
+  - Materials are consumed from inventories determined by itemId -> convention mapping (Remain/Part/Rune/Module -> specific player inventories).
+  - Gold is the only supported explicit currency in the preview and commit paths (true for currencyOk based on "gold" costs).
+  - Rollback strategies exist for materials and currency to restore prior state on failure.
 
-4) Constraints & Failure Modes
-- Output capacity guard: can only craft if output inventory can accept the resulting stack.
-- Material checks are readonly in preview but material consumption is atomic during craft; rollback exists for material and currency failures.
-- Currency handling is limited to costs defined in recipe.currencyCosts; gold is treated specially in GoldNeed and CurrencyOk.
-- MaterialsOk guards rely on non-null inventory instance and non-null slots; otherwise false.
-- Crafting is gated by sequential guards, ensuring deterministic blocker reason (OutputInventoryFull, MissingMaterials, NotEnoughCurrency, etc.).
-- Atomicity: if any step in commit fails, previously consumed materials and currencies are rolled back, and any added output is reverted if necessary.
+- Guard and error handling
+  - Null/empty recipe inputs are treated gracefully in materials checks.
+  - Output and currency checks drive explicit CraftBlocker states for UI guidance.
+  - Fail reasons are surfaced as strings from TryCraftToInventory (e.g., "Output inventory cannot accept: ...", "Missing materials: ...", "Gold spend failed.", "Output inventory full: ...").
 
-5) Example
-- Not derivable from this file; no usage example provided.
+```
 
-6) Unknowns
-- Definitions and behavior of RecipeDef, ItemStack, IInventoryDomain, and the exact semantics of InventoryDomain.GetInstance, Slot/Peek/TryRemove/TryAdd are not shown here.
-- Exact UI coupling with CraftBlocker values beyond their names is not specified.
-- Concurrency model, thread-safety, and how this integrates with other systems are not defined in this file.
+```text
+Constraints & Failure Modes
+- Null/empty handling
+  - If recipe.inputs is null or empty, MaterialsOk is true.
+  - If recipe.currencyCosts is null, Gold calculation yields 0.
+- Currency handling
+  - Only currencyId == "gold" is considered in gold-related checks and spending.
+  - CurrencySpend is attempted only if total gold > 0.
+  - On currency spend failure after material removal, materials are rolled back.
+- Inventory commitments
+  - Output must be able to accept the produced item stack before any changes.
+  - If output cannot be accepted, no materials are consumed.
+  - If output add fails after materials are consumed and currency spent, a partial rollback occurs (currency refund if spent; materials restored).
+- Material mapping
+  - Materials are resolved via convention-based mapping (itemId -> material inventory). If mapping fails or inventory instance is missing, materials cannot be consumed.
+- Concurrency and atomicity
+  - The commit is performed in a single method with in-function rollback logic; there is no cross-frame/async transactional support beyond in-method rollback.
+- Known blockers (UI-facing)
+  - CraftBlocker values indicate first gating reason: OutputInventoryFull, MissingMaterials, NotEnoughCurrency, None.
+
+```
+
+```text
+Example
+// Minimal usage example (syntax shows intended call pattern)
+RecipeDef recipe = /* obtain recipe definition */;
+InventoryDomain inv = /* obtain inventory domain for the player */;
+IWallet wallet = /* obtain wallet reference */;
+string outputInventoryId = "player_backpack";
+
+if (CraftingService.TryCraftToInventory(recipe, inv, wallet, outputInventoryId, out var reason))
+{
+    // Craft succeeded; items consumed and output placed in inventory.
+}
+else
+{
+    // Craft failed; reason contains a user-friendly explanation.
+}
+```
+
+```text
+Unknowns
+- Exact definitions of RecipeDef, InventoryDomain, IWallet, ItemStack, and related types are not provided here.
+- Internal conventions for itemId to material inventory mapping (TryGetMaterialsInventoryIdByConvention) are based on ItemTypeUtils.FromId and specific instance IDs (e.g., "player_remains", "player_part", "player_rune", "player_module"), but their broader semantics are not defined in this file.
+- Structure and contents of recipe.currencyCosts (beyond "gold" handling) are not shown.
+- Any behavior outside this file’s public surface (e.g., external UI bindings) is not specified.

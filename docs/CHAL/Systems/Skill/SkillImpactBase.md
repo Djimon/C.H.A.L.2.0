@@ -3,37 +3,36 @@
 _Automatically generated/updated from `Assets/src/Systems/Skills/SkillImpactBase.cs`._
 
 1) Purpose
-- Defines an abstract SkillImpactBase class deriving from ScriptableObject in CHAL.Systems.Skill.
-- Provides a serializable public field EffectId with a Tooltip for debugging or balancing.
-- Declares an abstract Apply method to execute an effect from a source to a target.
+- Defines an abstract ScriptableObject base for skill impact effects in the CHAL.Systems.Skill namespace.
+- Exposes a serializable public field EffectId (Tooltip: "Optional: unique identifier for debugging or balancing.").
+- Declares an abstract Apply method to be implemented by derived skill-impact classes.
 
 2) Public API
-- Namespace/Module: CHAL.Systems.Skill
+- Namespace/module
+  - CHAL.Systems.Skill
 - Types
   - public abstract class SkillImpactBase : ScriptableObject
     - Public fields/properties
-      - public string EffectId
-        - Tooltip: "Optional: unique identifier for debugging or balancing."
+      - public string EffectId; // Optional identifier for debugging/balancing
     - Public methods
-      - public abstract void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
-        - Executes the effect from source to target (as described by the method summary)
-        - No implementation in this base class
+      - public abstract void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target);
+        - Executes the effect from source to target (no implementation here; to be provided by derived classes)
 
 3) Key Behavior & Side Effects
-- This class provides no concrete behavior; derived classes must implement Apply.
-- Apply is documented to execute the effect from source to target, taking SkillInstance, source, and target as parameters.
+- No runtime behavior in this base class; only contract via abstract Apply.
+- Derived classes implement Apply to apply an effect from a source to a target using a given SkillInstance context.
+- EffectId is a metadata field intended for debugging or balancing; its usage is not defined in this file.
 
 4) Constraints & Failure Modes
-- No input validation or guards are defined in this base class.
-- Serialization is enabled via [Serializable] on the class; EffectId is a public field with a Tooltip attribute.
-- No threading, async, or performance hints are specified.
-- No default implementations; behavior depends on concrete subclasses.
+- EffectId is optional; no non-null enforcement in this class.
+- No guards or error handling provided; behavior determined by derived implementations.
+- This is a Unity ScriptableObject with [Serializable] attribute; relies on Unity serialization.
 
 5) Example
-- Not provided (no concrete implementation shown in this file).
+- Not provided in this file.
 
 6) Unknowns
-- Details of SkillInstance and EffectReceiver definitions (structure, members, nullability).
-- How concrete SkillImpactBase implementations are found/created and used at runtime.
-- Any additional constraints on EffectId (uniqueness, formatting) beyond the tooltip.
-- Whether there are derived classes or how they are authored/managed (assets, scriptable objects, etc.).
+- Definitions and namespaces of SkillInstance and EffectReceiver beyond their usage here.
+- Concrete derived implementations of SkillImpactBase and their exact effect semantics.
+- How EffectId is used at runtime (e.g., lookup, balancing, debugging workflows) since not defined here.
+- Any threading, async, or lifecycle considerations for Apply beyond the abstract contract.

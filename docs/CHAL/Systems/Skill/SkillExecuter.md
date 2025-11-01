@@ -3,125 +3,96 @@
 _Automatically generated/updated from `Assets/src/Systems/Skills/SkillExecuter.cs`._
 
 ```text
-sections: 1-6
-```
-
 1) Purpose
-- Defines a static helper SkillExecutor to run SkillInstance effects against a source and an optional target.
-- Orchestrates cast-time effects, per-skill-type behavior (Melee/Projectile/Spell/Summon), and damage application.
-- Exposes two public entry points: ExecuteSkill with optional source/target transforms, and a simpler overload without transforms.
+- Defines a static SkillExecutor to run skill logic end-to-end.
+- Handles cast-time signaling, per-skill-type behavior, and on-hit damage application.
+- Spawns projectile-based skills and applies on-hit impact effects.
 
 2) Public API
-- Namespace/Module
+- Namespace/module
   - CHAL.Systems.Skill
 
 - Types
   - public static class SkillExecutor
     - Public methods
       - public static void ExecuteSkill(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
-        - Executes the given skill instance from source to target, using optional source/target transforms.
-        - Side effects: logging, on-cast effects, cast-time hook, type-specific skill handling.
+        - Validates inputs; logs start; applies on-cast effects; simulates cast time; executes skill by type.
       - public static void ExecuteSkill(SkillInstance inst, EffectReceiver source, EffectReceiver target)
-        - Overload; calls ExecuteSkill(inst, source, null, target, null).
+        - Overload delegating to ExecuteSkill(inst, source, null, target, null)
 
 3) Key Behavior & Side Effects
-- ExecuteSkill(inst, source, sourceTr, targetTr, target)
-  - Validates inst and source non-null; logs error and returns otherwise.
-  - Logs start of cast: “[SkillExecutor] {source} starts casting {inst.Data.DisplayName}”.
-  - Do_OnCastImpactEffects(inst, source)
-  - Handle_CastTimeHook(inst, source)
-  - HandleSkillByType(inst, source, sourceTr, target, targetTr)
-
+- ExecuteSkill(inst, source, sourceTr, targetTr, targetTr)
+  - If inst == null or source == null: logs error and returns.
+  - Logs casting start: “[SkillExecutor] {source} starts casting {inst.Data.DisplayName}”.
+  - Do_OnCastImpactEffects(inst, source): applies OnCastImpactEffects if defined.
+  - Handle_CastTimeHook(inst, source): if CastTime > 0, logs cast time; no wait implemented.
+  - HandleSkillByType(inst, source, sourceTr, target, targetTr): routes to type-specific handlers.
 - HandleSkillByType
-  - Switches on inst.Data.SkillType:
-    - Melee: ApplyMelee(inst, source, target)
-    - Projectile: SpawnProjectile(inst, source, sourceTr, target, targetTr)
-    - Spell: ApplySpell(inst, source, target, targetTr)
-    - Summon: ApplySummon(inst, source)
-
+  - Melee: ApplyMelee(inst, source, target)
+  - Projectile: SpawnProjectile(inst, source, sourceTr, target, targetTr)
+  - Spell: ApplySpell(inst, source, target, targetTr)
+  - Summon: ApplySummon(inst, source)
 - Do_OnCastImpactEffects
-  - If inst.Data.OnCastImpactEffects != null, applies each effect with (inst, source, source).
-
-- Handle_CastTimeHook
-  - Reads inst.CastTime; if > 0, logs a dev message about casting duration.
-  - Intended hook for potential animation manager (not implemented here).
-
-- ApplyMelee / ApplySpell
-  - Both call ValidateFastReturnRules(source, target) (no-ops in practice)
-  - Logs appropriate action (hit or cast) with inst.Data.DisplayName and target/source.
-  - Call ApplyOnHit(inst, source, target)
-
-- ApplySummon
-  - Logs summoning action; placeholder for future summoning logic.
-
-- SpawnProjectile / ComputeSpawnAndDirection / CreateProjectile
-  - SpawnProjectile logs launch; requires sourceTr; warns if sourceTr is null and returns.
-  - ComputeSpawnAndDirection derives startPos from sourceTr and dir toward targetTr if available; otherwise uses sourceTr.forward; normalizes with a safe fallback.
-  - CreateProjectile constructs a new GameObject named Projectile_{DisplayName}, adds SphereCollider (isTrigger), Rigidbody (isKinematic), ProjectileController; initializes with (inst, source, target, dir, speed, life); logs spawn details.
-  - Important note: Do not apply OnHit effects inside projectile creation; OnHit effects are handled when the projectile hits.
-
+  - Iterates inst.Data.OnCastImpactEffects and applies each effect (self-target for buffs if provided).
+- SpawnProjectile
+  - Logs launch; requires non-null sourceTr; otherwise logs warning and returns.
+  - Computes startPos and direction via ComputeSpawnAndDirection(sourceTr, targetTr, out startPos, out dir).
+  - Creates projectile via CreateProjectile(inst, source, target, startPos, dir).
+- CreateProjectile
+  - Creates a new GameObject, adds SphereCollider (isTrigger), Rigidbody (isKinematic), ProjectileController.
+  - Initializes projectile with Init(inst, source, target, dir, speed, life).
+  - Logs spawned projectile details.
+- ComputeSpawnAndDirection
+  - startPos = sourceTr.position
+  - dir = targetTr.position - sourceTr.position if targetTr provided; otherwise sourceTr.forward
+  - Normalizes dir; if too small, uses sourceTr.forward
 - ApplyOnHit
-  - Validates skill, skill.Data, and target non-null; logs warning and returns if invalid.
+  - Validates skill, skill.Data, and target; logs and returns if any are null.
   - DoOnHitImpactEffects(skill, source, target)
   - baseDmg = max(0, skill.Data.BaseDamage)
   - DmgEntries = skill.Data.DamageTypes
-  - If DmgEntries null or empty -> FallbackDamage(skill, target, baseDmg, DmgEntries)
-  - Otherwise -> ApplyCompleteDamage(skill, target, baseDmg, DmgEntries)
-
+  - If DmgEntries is null or empty: FallbackDamage(skill, target, baseDmg, DmgEntries)
+  - ApplyCompleteDamage(skill, target, baseDmg, DmgEntries)
 - ApplyCompleteDamage
-  - Iterates DmgEntries; for each:
-    - m = max(0, e.DmgMultiplier); if m <= 0, skip
+  - For each entry in DmgEntries
+    - m = max(0, e.DmgMultiplier); skip if m <= 0
     - dmg = baseDmg * m; type = e.DmgType
-    - target.TakeDamage(dmg, type)
-    - Logs OnHit damage outcome
-
+    - target.TakeDamage(dmg, type); log per hit
 - FallbackDamage
-  - Applies baseDmg as Physical damage if no specific damage entries; logs result.
-
+  - Target takes baseDmg Physical
+  - Logs fallback damage
 - DoOnHitImpactEffects
-  - If OnHitImpactEffects present, applies each effect with (skill, source, target).
+  - If skill.Data.OnHitImpactEffects exists with items, applies each effect(skill, source, target)
 
 4) Constraints & Failure Modes
-- Null handling
-  - ExecuteSkill requires non-null inst and source; otherwise logs error and aborts.
-  - SpawnProjectile requires a non-null sourceTr; logs warning and aborts if missing.
-  - ApplyOnHit requires non-null skill, skill.Data, and target; otherwise logs and returns.
-- Shielded/guard logic
-  - ValidateFastReturnRules exists but does not return a boolean or block execution; effectively a no-op guard (potential logic gap).
-- Damage flow
-  - If no DamageTypes, falls back to BaseDamage with Physical type.
-  - Negative multipliers are ignored (m <= 0 skip).
-- Projectile lifecycle
-  - Projectiles are created as separate GameObjects with kinematic rigidbodies; no OnHit effects are applied within creation (handled by ProjectileController on hit).
-- Threading/async
-  - All behavior is synchronous within Unity’s main thread (no explicit async handling).
+- Null guards
+  - ExecuteSkill: aborts if inst or source is null.
+  - ExecuteSkill (overload): delegates to main method.
+  - SpawnProjectile: warns and aborts if sourceTr is null.
+  - ApplyOnHit: aborts if skill, skill.Data, or target is null.
+- Damage handling
+  - If no DamageTypes, falls back to base damage as Physical type.
+- Casting
+  - CastTime is simulated only via logging; no asynchronous wait or animation hook implemented here.
+- OnHit/OnCast effects
+  - Only applies if effect collections are non-null; null-safe.
+- ValidateFastReturnRules
+  - Called in melee/spell paths; has no effect on control flow (return/guard is internal to method, not exposed to caller).
 
 5) Example
-- Minimal usage (overload without transforms)
 ```csharp
-// Example usage: simple skill execution from source to target
-SkillInstance skill = /* obtain skill instance */;
-EffectReceiver source = /* obtain source */;
-EffectReceiver target = /* obtain target */;
-SkillExecutor.ExecuteSkill(skill, source, target);
-```
-- With explicit transforms
-```csharp
-SkillInstance skill = /* obtain skill instance */;
-EffectReceiver source = /* obtain source */;
-Transform sourceTr = source?.transform;
-EffectReceiver target = /* obtain target */;
-Transform targetTr = target?.transform;
+// Example: simple melee skill hit from caster to target
+SkillExecutor.ExecuteSkill(skillInstance, caster, casterTransform, target, targetTransform);
 
-SkillExecutor.ExecuteSkill(skill, source, sourceTr, target, targetTr);
+// Example: use overload without transforms
+SkillExecutor.ExecuteSkill(skillInstance, caster, target);
 ```
 
 6) Unknowns
-- Definitions and behavior of:
-  - SkillInstance, SkillData, EffectReceiver
-  - DebugManager, BalanceManager, DamageEntry, DamageType, SkillType
-  - ProjectileController and its hit handling
-- How OnCastImpactEffects and OnHitImpactEffects are structured (beyond their Apply method signatures)
-- Any external animation/visual systems referenced (AnimationManager placeholder in comment)
-
+- Definitions and behavior of SkillInstance, SkillData, EffectReceiver, DamageEntry, and DamageType beyond usage here.
+- Details of OnCastImpactEffects and OnHitImpactEffects implementations.
+- Behavior of BalanceManager and its config regarding friendly fire (beyond usage in code).
+- ProjectileController implementation and its collision/impact handling.
+- Any threading/async expectations or integration with animation systems beyond logging placeholders.
+- Exact structures of related types (e.g., SkillType, ProjectileSpeed, Range, DisplayName) are not defined in this file.
 ```

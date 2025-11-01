@@ -2,52 +2,45 @@
 
 _Automatically generated/updated from `Assets/src/UI/CharacterCreationUI.cs`._
 
-1) Purpose
-- Defines a Unity MonoBehaviour that handles the character creation UI.
-- Reads UI elements from a UIDocument root and initializes a PlayerProfile.
-- Triggers start-of-game flow or hides the UI when Back is pressed.
+Purpose
+- Defines a Unity MonoBehaviour CHAL.UI.CharacterCreationUI that manages the character creation UI.
+- Awake initializes the root VisualElement from UIDocument and sets the starting color in colors[0].
+- OnEnable binds UI elements (StartGame, Back, InputName) and subscribes to button click handlers to create a profile and start a new game or hide the UI.
 
-2) Public API
+Public API
 - Namespace/module: CHAL.UI
 - Types
   - public class CharacterCreationUI : MonoBehaviour
     - Public fields/properties: none
     - Public methods: none
 
-3) Key Behavior & Side Effects
-- Awake
-  - Finds the UIDocument root VisualElement and initializes colors[0] to a specific blue shade (Color(50/255f, 50/255f, 180/255f)).
-- OnEnable
-  - Queries UI elements by name:
-    - Start button: "StartGame" -> btnNewGame
-    - Back button: "Back" -> btnBack
-    - Name input: "InputName" -> name_input
-  - Subscribes to button click events:
-    - btnNewGame.clicked += OnNewGameBtnClicked
-    - btnBack.clicked += OnBackBtnClicked
+Key Behavior & Side Effects
+- Unity lifecycle
+  - Awake: obtains root VisualElement via GetComponent<UIDocument>().rootVisualElement; initializes colors[0] to a specific color (50/255f, 50/255f, 180/255f).
+  - OnEnable: queries UI elements and wires event handlers
+    - btnNewGame = root.Q<Button>("StartGame"); btnNewGame.clicked += OnNewGameBtnClicked;
+    - btnBack = root.Q<Button>("Back"); btnBack.clicked += OnBackBtnClicked;
+    - name_input = root.Q<TextField>("InputName");
 - OnNewGameBtnClicked
   - Creates a new PlayerProfile
   - Calls profile.InitializePlayer(name_input.text, colors)
   - Calls GameManager.Instance.StartNewGame(profile)
 - OnBackBtnClicked
-  - Deactivates this GameObject (hides the UI)
-- Side effects/notes
-  - OnEnable subscribes to button events each time the component is enabled; there is no corresponding OnDisable to unsubscribe, which can lead to multiple subscriptions if the UI is toggled on/off repeatedly.
-  - Relies on UI elements existing in the UIDocument with exact names StartGame, Back, and InputName; otherwise null references may occur.
+  - Deactivates the GameObject (gameObject.SetActive(false))
 
-4) Constraints & Failure Modes
-- Nullability guards are not present:
-  - If the UIDocument or root VisualElement is missing, Awake will fail.
-  - If StartGame/Back buttons or InputName TextField are not found, btnNewGame/btnBack may be null, causing NullReferenceException when subscribing to clicked.
-  - name_input may be null; OnNewGameBtnClicked uses name_input.text.
-- No OnDisable handling; potential multiple event subscriptions if the UI is enabled multiple times.
-- _startSceneName is serialized but unused within this file.
+Constraints & Failure Modes
+- Potential null references if UI elements are missing or misnamed (btnNewGame, btnBack, name_input); no null checks are present before subscribing or querying.
+- Subscribing to btnNewGame.clicked in OnEnable without corresponding unsubscribe can accumulate handlers if the object is enabled/disabled repeatedly.
+- _startSceneName is serialized but unused in this file; potential leftover data.
+- colors is length-1; only colors[0] is used; no handling for changes beyond initialization.
+- Behavior of PlayerProfile, InitializePlayer, and GameManager.Instance.StartNewGame is not defined here; relies on external implementations.
 
-5) Example
-- Not derivable from this file (no public API surface beyond the class). No code example included.
+Unknowns
+- Exact implementations and side effects of PlayerProfile.InitializePlayer and GameManager.Instance.StartNewGame.
+- Structure and contents of the UIDocument and the UIElements (IDs: StartGame, Back, InputName).
+- Any additional behavior triggered by StartNewGame beyond starting a new game (e.g., scene transitions, loading indicators).
+- What Replace or reset happens if the UI is reopened after being closed (state retention).
 
-6) Unknowns
-- Behavior of PlayerProfile.InitializePlayer (validation rules, defaults).
-- Semantics and side effects of GameManager.Instance.StartNewGame(profile).
-- Exact UI structure and how colors are used elsewhere.
-- Any external side effects from disabling/enabling this UI beyond the subscription behavior described.
+Unity lifecycle (summary)
+- Awake: initialize root VisualElement and color data.
+- OnEnable: bind UI elements and event handlers.

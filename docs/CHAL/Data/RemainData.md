@@ -2,81 +2,94 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 
-Purpose
-- Defines ItemDef as a ScriptableObject asset and related serializable data containers for item configuration.
-- Provides editor-time validation and automatic data-block management (derive type from ID, validate ID format, clamp lootValue, clear non-matching type data).
-- Includes a RuneColors helper and per-type data blocks: RemainData, RuneData, PartData, ModuleData, GearData.
+```text
+1) Purpose
+- Defines ItemDef as a Unity ScriptableObject that holds item metadata and per-type data blocks.
+- Provides serializable data containers: RemainData, RuneData, PartData, ModuleData, GearData.
+- Enforces simple editor-time validation and type-safety via OnValidate.
 
-Public API
+2) Public API
 - Namespace: CHAL.Data
-- public class ItemDef : ScriptableObject
-  - public string itemId
-  - public ItemType itemType
-  - public string description
-  - public Sprite icon
-  - public Rarity rarity
-  - public int lootValue
-  - public RemainData remainData
-  - public RuneData runeData
-  - public PartData partData
-  - public ModuleData moduleData
-  - public GearData gearData
-  - private void OnValidate()
-  - private void ClearTypeBlocksExcept(ItemType keep)
 
-- public class RemainData
-  - public string remainType
+- public class ItemDef : ScriptableObject
+  - [CreateAssetMenu(fileName = "ItemDef", menuName = "Data/ItemDef")]
+  - public string itemId; // Schema: category:item
+  - [HideInInspector] public ItemType itemType;
+  - [TextArea] public string description;
+  - public Sprite icon;
+  - public Rarity rarity = Rarity.Common;
+  - [Tooltip("Wert fr Softcap/Budget (empf.: Common 10, Rare 30, Epic 50, Legendary 80)")] public int lootValue = 10;
+  - [Tooltip("Type Specific Data")]
+  - public RemainData remainData;
+  - public RuneData runeData;
+  - public PartData partData;
+  - public ModuleData moduleData;
+  - public GearData gearData;
+
+- private void OnValidate() [not public API; editor lifecycle]
+  - (see Key Behavior & Side Effects)
+
+- private void ClearTypeBlocksExcept(ItemType keep) [not public API; internal helper]
+
+- public class RemainData : [System.Serializable]
+  - public string remainType; // Insect, Beast, etc.
 
 - public static class RuneColors
-  - public static readonly Color runeColorSun
-  - public static readonly Color runeColorVerdant
-  - public static readonly Color runeColorSky
-  - public static readonly Color runeColorIgnis
-  - public static readonly Color runeColorVoid
-  - public static Color Get(RuneColorType type)
+  - public static readonly Color runeColorSun = new Color(255f / 255f, 215f / 255f, 0 / 255f);
+  - public static readonly Color runeColorVerdant = new Color(0 / 255f, 128f / 255f, 0 / 255f);
+  - public static readonly Color runeColorSky = new Color(50 / 255f, 50 / 255f, 255 / 255f);
+  - public static readonly Color runeColorIgnis = new Color(200 / 255f, 0 / 255f, 0 / 255f);
+  - public static readonly Color runeColorVoid = new Color(135 / 255f, 0 / 255f, 120 / 255f);
+  - public static Color Get(RuneColorType type) => type switch
+    - Sun => runeColorSun
+    - Verdant => runeColorVerdant
+    - Sky => runeColorSky
+    - Ignis => runeColorIgnis
+    - Void => runeColorVoid
+    - _ => Color.white
 
-- public class RuneData
-  - public string effectType
-  - public RuneColorType runeColortType
-  - public Color runecolor
-    - public Color runecolor => RuneColors.Get(runeColortType)
+- public class RuneData : [System.Serializable]
+  - public string effectType;
+  - public RuneColorType runeColortType;
+  - public Color runecolor => RuneColors.Get(runeColortType);
 
-- public class PartData
-  - public string dnaType
-  - public List<ItemDef> moduleFuel
+- public class PartData : [System.Serializable]
+  - public string dnaType; // e.g. "Weapon", "Armor"
+  - public List<ItemDef> moduleFuel;
 
-- public class ModuleData
-  - public string effect
-  - public float modulePower
+- public class ModuleData : [System.Serializable]
+  - public string effect;
+  - public float modulePower;
 
-- public class GearData
-  - public GearType slotType
-  - public string[] tags
-  - public RuneColorType runeSocketType
+- public class GearData : [System.Serializable]
+  - public GearType slotType; // Head/Chest/Gloves/Legs/Boots/Amulet
+  - public string[] tags; // e.g. "gear","leather","light"
+  - public RuneColorType runeSocketType;
 
-Key Behavior & Side Effects
-- OnValidate (Unity editor callback)
-  - itemType = ItemTypeUtils.FromId(itemId)
-  - If ItemKey.TryParse(itemId, out _) fails -> log warning about invalid itemId
-  - lootValue clamped to 0 if negative
-  - ClearTypeBlocksExcept(itemType) to keep only the relevant data block for the item type
-- ClearTypeBlocksExcept(keep)
-  - remainData = null unless keep == ItemType.Remains
-  - runeData = null unless keep == ItemType.Rune
-  - partData = null unless keep == ItemType.Part
-  - moduleData = null unless keep == ItemType.Module
-  - gearData = null unless keep == ItemType.Gear
+3) Key Behavior & Side Effects
+- OnValidate():
+  - itemType = ItemTypeUtils.FromId(itemId);
+  - If ItemKey.TryParse(itemId, out _) fails -> log warning about invalid itemId (expects "category:item")
+  - If lootValue < 0 -> lootValue = 0
+  - ClearTypeBlocksExcept(itemType) to enforce type-specific data blocks
+- ClearTypeBlocksExcept(keep):
+  - remainData = null if keep != ItemType.Remains
+  - runeData = null if keep != ItemType.Rune
+  - partData = null if keep != ItemType.Part
+  - moduleData = null if keep != ItemType.Module
+  - gearData = null if keep != ItemType.Gear
 
-- RuneColors.Get(type)
-  - Maps RuneColorType to a specific Color constant
+4) Constraints & Failure Modes
+- itemId must parse via ItemKey.TryParse; invalid formats produce a warning (no exception)
+- lootValue cannot be negative; values below 0 are clamped to 0
+- Type-specific data blocks are cleared to maintain exclusive type data; possible data loss if misconfigured
+- itemType is public but not shown in Inspector (HideInInspector)
 
-Constraints & Failure Modes
-- OnValidate runs in the Unity editor (not necessarily in builds)
-- Invalid itemId triggers a warning; does not throw
-- lootValue is clamped to non-negative; negative values become 0
-- Data-blocks are cleared selectively based on itemType, potentially leading to null references if other code assumes non-null data
+5) Example
+- (none derivable from file; omitted)
 
-Unknowns
-- Definitions/locations of ItemType, ItemTypeUtils, ItemKey, Rarity, GearType, RuneColorType, and ItemKey.TryParse behavior
-- How ItemDef assets are created/consumed at runtime beyond this file
-- Any external localization or display behavior implied by itemId or description
+6) Unknowns
+- Definitions/behavior of ItemType, ItemTypeUtils, ItemKey, RuneColorType, GearType, Rarity, and how ItemDef is consumed at runtime (outside OnValidate)
+- Exact usage and validation semantics of RemainData, RuneData, PartData, ModuleData, GearData beyond their field definitions
+- Any multithreading/async considerations related to ScriptableObject usage in this project
+```

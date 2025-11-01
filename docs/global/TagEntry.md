@@ -4,83 +4,117 @@ _Automatically generated/updated from `Assets/src/utils/DebugConfig.cs`._
 
 ```text
 1) Purpose
-- Defines a Unity ScriptableObject type DebugConfig with debug/logging configuration fields, including a nested serializable TagEntry type and a public list of TagEntry.
-- Enables creation via Unity's asset menu (CreateAssetMenu) with fileName "DebugConfig" and menuName "Config/DebugConfig"; includes a comment noting an intended asset path.
-- Includes editor-only seed logic (OnValidate/EnsureTag) to populate default tags when the asset is created or edited in the Unity Editor.
+- Defines a ScriptableObject DebugConfig for configuring debug/logging behavior in Unity.
+- Exposes a serializable TagEntry list to describe tag metadata (name, color, active).
+- Provides global settings: debug level, productive mode, auto-add unknown tags flag, timestamps, and color mode (tag vs. whole line). Includes editor-created asset menu.
 
+```
+
+```text
 2) Public API
-- Namespace/module
-  - None defined at top level.
+- Namespace/module: none
 
 - Types
   - public class DebugConfig : ScriptableObject
     - public DebugManager.EDebugLevel level
-      - Public field indicating the debug level.
+      - Default: Debug
     - public bool productiveMode
-      - Public field; description inferred by name.
+      - Default: false
     - public bool autoAddUnknownTagsToAsset
-      - Public field; description inferred by name.
+      - Default: true
     - public bool includeGameTimestamps
-      - Public field; description inferred by name.
-    - [Header("Color Mode (tag only vs. whole line")]
-      - Public field in the grouped header:
-      - public bool colorWholeLine
-        - Public field; description inferred by name.
-    - public List<TagEntry> tags = new();
-      - Serialized list of TagEntry items.
-    - public class TagEntry
-      - [System.Serializable]
-      - public string name
-        - Tag name.
-      - public bool active = true
-        - Whether the tag is active.
-      - public Color color = Color.white
-        - Display/color for the tag.
-    - Note: TagEntry is a public nested type within DebugConfig; all fields are public.
+      - Default: false
+    - [Header("Color Mode (tag only vs. whole line")] public bool colorWholeLine
+      - Default: false
+    - public List<TagEntry> tags
+      - Default: empty list
 
-- Public methods
-  - None declared publicly. Editor-only methods exist under UNITY_EDITOR:
-    - private void OnValidate() [UNITY_EDITOR]
-    - private void EnsureTag(string name, Color color, bool active) [UNITY_EDITOR]
-  - (These editor-only members are not exposed in the public API surface.)
+  - public class TagEntry [System.Serializable]
+    - public string name
+    - public bool active
+      - Default: true
+    - public Color color
+      - Default: Color.white
 
+- Public API details
+  - DebugConfig
+    - level: DebugManager.EDebugLevel
+    - productiveMode: bool
+    - autoAddUnknownTagsToAsset: bool
+    - includeGameTimestamps: bool
+    - colorWholeLine: bool
+    - tags: List<TagEntry>
+  - TagEntry
+    - name: string
+    - active: bool
+    - color: Color
+
+- Editor-only helpers (not public)
+  - private bool _seeded
+  - private void OnValidate()
+  - private void EnsureTag(string name, Color color, bool active)
+  - Note: OnValidate/EnsureTag are compiled only under UNITY_EDITOR
+
+- Asset creation
+  - [CreateAssetMenu(fileName = "DebugConfig", menuName = "Config/DebugConfig")]
+  - Allows creating a DebugConfig asset via the Unity Editor menu
+
+```
+
+```text
 3) Key Behavior & Side Effects
-- Asset creation/editor setup
-  - A ScriptableObject asset of type DebugConfig is intended to be created via the editor (CreateAssetMenu) and can be saved under the implied path described in the comment.
-- Editor seed workflow (UNITY_EDITOR only)
-  - OnValidate runs when the asset is created or modified in the Unity Editor.
-  - If _seeded is false or tags is null/empty, OnValidate calls EnsureTag to populate defaults:
-    - "System" (Color.yellow, active)
-    - "Info" (Color(0.729, 0.808, 1.0), active)
-    - "Debug" (Color.white, active)
-    - "Warning" (Color(1.0, 0.64, 0.0), active) // orange
-    - "Error" (Color.red, active)
-  - After seeding, _seeded is set to true, the asset is marked dirty, and assets are saved via UnityEditor APIs.
-- TagEntry behavior
-  - EnsureTag adds a new TagEntry only if:
-    - name is non-empty, and
-    - no existing tag in tags has the same name.
-  - Added TagEntry uses provided color and active values.
-- Serialization/Editor scope
-  - Editor-only code is wrapped in #if UNITY_EDITOR, so these behaviors are not compiled into runtime builds.
+- OnValidate (editor only)
+  - If _seeded is false or tags is null/empty:
+    - Calls EnsureTag for default tags: "System" (yellow, active), "Info" (soft blue), "Debug" (white, active), "Warning" (orange), "Error" (red)
+    - Sets _seeded = true
+    - Marks the asset dirty and saves assets via UnityEditor.AssetDatabase
+- EnsureTag (editor only)
+  - If name is null/empty, returns
+  - If a tag with the same name already exists in tags, returns
+  - Otherwise adds a new TagEntry { name, color, active } to tags
+- Runtime implications
+  - autoAddUnknownTagsToAsset is documented as a behavior, but this file does not implement runtime behavior for that flag
+  - The data is stored in the ScriptableObject asset (fields and TagEntry list)
+- Editor-only considerations
+  - Code within #if UNITY_EDITOR blocks is excluded from builds
+  - Asset creation via CreateAssetMenu is editor-facing
 
+```
+
+```text
 4) Constraints & Failure Modes
-- UNITY_EDITOR gating
-  - OnValidate and EnsureTag are compiled only in the Unity Editor; they do not exist in runtime builds.
-- Null/empty handling
-  - EnsureTag ignores empty/null names and avoids duplicates.
-  - OnValidate relies on _seeded and tags; if tags is null/empty, default tags will be added.
-- Data persistence
-  - Uses UnityEditor.EditorUtility.SetDirty(this) and AssetDatabase.SaveAssets() to persist changes during editor operations.
-- Public surface stability
-  - Public fields are straightforward data carriers; no public methods are exposed to runtime behavior.
+- UNITY_EDITOR guards
+  - OnValidate and EnsureTag compile only in the editor
+- Tag initialization
+  - OnValidate seeds defaults only when _seeded is false or tags is null/empty
+  - Prevents duplicate default tags by checking existing names
+- Serialization
+  - TagEntry is [System.Serializable]; fields are public for Unity serialization
+- External references
+  - level uses DebugManager.EDebugLevel; depends on that enum being defined elsewhere
+- Colors
+  - Defaults rely on UnityEngine.Color values (e.g., Color.yellow, Color.white)
+- Potential side effects
+  - OnValidate calls AssetDatabase.SaveAssets; may trigger asset re-imports when edited in the UI
+- Runtime behavior
+  - No runtime methods to load or apply this config are defined in this file
+- Null handling
+  - EnsureTag guards against empty/null names
+- Asset location
+  - Comment suggests saving under Resources/config/DebugConfig.asset, but creation is via CreateAssetMenu; the actual path is not enforced by code
 
+```
+
+```text
 5) Example
-- Not applicable/derivable from code alone in a minimal example form.
+- Not derivable from this file: no runtime loading helper is defined; asset creation is editor-driven
 
+```
+
+```text
 6) Unknowns
-- How DebugManager.EDebugLevel is defined or used at runtime (not in this file).
-- Exact runtime loading/usage of DebugConfig (e.g., how/where the asset is consumed or accessed by code).
-- Any runtime implications of autoAddUnknownTagsToAsset, includeGameTimestamps, or colorWholeLine beyond their declarations.
-- The actual asset path resolution beyond the comment (the code does not enforce Resources/config/DebugConfig.asset; the CreateAssetMenu path is the source of creation in the editor).
+- How the project loads and consumes DebugConfig at runtime (no load/usage APIs in this file)
+- Exact runtime behavior of autoAddUnknownTagsToAsset
+- Interaction with DebugManager.EDebugLevel beyond the field name
+- Any other serialization or migration considerations when upgrading Unity versions
 ```

@@ -2,36 +2,34 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Serializers/ISaveGameSerializer.cs`._
 
-# Purpose
-- Defines an interface for Save Game Serializers.
+```text
+1) Purpose
+- Defines a contract for Save Game serializers.
+- Declares generic Serialize and Deserialize methods using Stream and Encoding.
+- Located in BayatGames.SaveGameFree.Serializers namespace.
 
-# Public API
-- Namespace: BayatGames.SaveGameFree.Serializers
+2) Public API
+- Namespace/module: BayatGames.SaveGameFree.Serializers
 - Types
   - public interface ISaveGameSerializer
-    - Public methods:
-      - void Serialize<T>(T obj, Stream stream, Encoding encoding)
-      - T Deserialize<T>(Stream stream, Encoding encoding)
+    - public methods
+      - void Serialize<T> ( T obj, Stream stream, Encoding encoding )
+        - Serialize the specified object to stream with encoding.
+      - T Deserialize<T> ( Stream stream, Encoding encoding )
+        - Deserialize the specified object from stream using encoding.
 
-# Key Behavior & Side Effects
-- Serialize method converts an object to a stream with specified encoding.
-- Deserialize method reconstructs an object from a stream using specified encoding.
+3) Key Behavior & Side Effects
+- No implementation or behavior provided in this file.
+- Implementations define serialization format and stream handling.
 
-# Constraints & Failure Modes
-- No explicit guards or null handling noted.
-- Assumes valid Stream and Encoding are provided.
+4) Constraints & Failure Modes
+- No constraints, null handling, or error handling defined in this file.
+- Parameters are Stream and Encoding; specific expectations not stated.
 
-# Example
-```csharp
-ISaveGameSerializer serializer = ...; // Implementation of ISaveGameSerializer
-using (MemoryStream stream = new MemoryStream())
-{
-    serializer.Serialize(myObject, stream, Encoding.UTF8);
-    stream.Position = 0; // Reset stream position for reading
-    var deserializedObject = serializer.Deserialize<MyObjectType>(stream, Encoding.UTF8);
-}
+5) Example
+- Not included (no derivable concrete example from this interface alone).
+
+6) Unknowns
+- Serialization format (binary, JSON, XML, etc.) is unspecified.
+- Null inputs, exceptions, threading behavior, and performance characteristics are unspecified.
 ```
-
-# Unknowns
-- Specific implementations of ISaveGameSerializer are not provided in this file.
-

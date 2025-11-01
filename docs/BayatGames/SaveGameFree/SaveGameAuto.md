@@ -2,73 +2,130 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/SaveGameAuto.cs`._
 
-# Purpose
-- Defines the `SaveGameAuto` class for automatically saving and loading game object transformations (position, rotation, scale).
+```text
+Section 1) Purpose
+- Defines a Unity MonoBehaviour (SaveGameAuto) that automatically saves and loads a GameObject's position, rotation, and/or scale.
+- Provides a SaveFormat enum to select the serialization format (XML, JSON, Binary).
+- Exposes configurable identifiers, encoding, serializer/encoder, path, and which transforms to save/load.
 
-# Public API
-- Namespace: `BayatGames.SaveGameFree`
-- Types
-  - **public class** `SaveGameAuto` [extends `MonoBehaviour`]
-    - **public string** `positionIdentifier` - Identifier for saving position.
-    - **public string** `rotationIdentifier` - Identifier for saving rotation.
-    - **public string** `scaleIdentifier` - Identifier for saving scale.
-    - **public bool** `encode` - Indicates if data should be encoded.
-    - **public string** `encodePassword` - Password for encoding.
-    - **public SaveFormat** `format` - Serialization format (XML, JSON, Binary).
-    - **public ISaveGameSerializer** `serializer` - Custom serializer.
-    - **public ISaveGameEncoder** `encoder` - Custom encoder.
-    - **public Encoding** `encoding` - Custom encoding.
-    - **public SaveGamePath** `savePath` - Path for saving data.
-    - **public bool** `resetBlanks` - Resets empty fields to default values.
-    - **public bool** `savePosition` - Flag to save position.
-    - **public bool** `saveRotation` - Flag to save rotation.
-    - **public bool** `saveScale` - Flag to save scale.
-    - **public Vector3** `defaultPosition` - Default position value.
-    - **public Vector3** `defaultRotation` - Default rotation value.
-    - **public Vector3** `defaultScale` - Default scale value.
-    - **public bool** `saveOnAwake` - Flag to save on Awake.
-    - **public bool** `saveOnStart` - Flag to save on Start.
-    - **public bool** `saveOnEnable` - Flag to save on OnEnable.
-    - **public bool** `saveOnDisable` - Flag to save on OnDisable.
-    - **public bool** `saveOnApplicationQuit` - Flag to save on application quit.
-    - **public bool** `saveOnApplicationPause` - Flag to save on application pause.
-    - **public bool** `loadOnAwake` - Flag to load on Awake.
-    - **public bool** `loadOnStart` - Flag to load on Start.
-    - **public bool** `loadOnEnable` - Flag to load on OnEnable.
-    - **public virtual void** `Save()` - Saves the object's position, rotation, and scale.
-    - **public virtual void** `Load()` - Loads the object's position, rotation, and scale.
+```
 
-# Key Behavior & Side Effects
-- On `Awake()`, initializes serializer based on the selected format and optionally loads or saves data.
-- On `Start()`, optionally loads or saves data.
-- On `OnEnable()`, optionally loads or saves data.
-- On `OnDisable()`, saves data if the flag is set.
-- On `OnApplicationQuit()`, saves data if the flag is set.
-- On `OnApplicationPause()`, saves data if the flag is set.
-- The `Save()` method saves the object's position, rotation, and scale based on the specified identifiers.
-- The `Load()` method loads the object's position, rotation, and scale, applying defaults if no saved data exists.
-
-# Constraints & Failure Modes
-- Requires valid identifiers for saving position, rotation, and scale.
-- If `resetBlanks` is true, empty fields are reset to default values on `Awake()`.
-- The `Load()` method uses default values if no saved data is found.
-
-# Example
 ```csharp
+// (No code here; this section documents the public surface only.)
+```
+
+Section 2) Public API
+- Namespace/module
+  - BayatGames.SaveGameFree
+
+- Types
+  - public class SaveGameAuto : MonoBehaviour
+    - public enum SaveFormat
+      - XML
+      - JSON
+      - Binary
+    - Public fields
+      - string positionIdentifier
+      - string rotationIdentifier
+      - string scaleIdentifier
+      - bool encode
+      - string encodePassword
+      - SaveFormat format
+      - ISaveGameSerializer serializer
+      - ISaveGameEncoder encoder
+      - Encoding encoding
+      - SaveGamePath savePath
+      - bool resetBlanks
+      - bool savePosition
+      - bool saveRotation
+      - bool saveScale
+      - Vector3 defaultPosition
+      - Vector3 defaultRotation
+      - Vector3 defaultScale
+      - bool saveOnAwake
+      - bool saveOnStart
+      - bool saveOnEnable
+      - bool saveOnDisable
+      - bool saveOnApplicationQuit
+      - bool saveOnApplicationPause
+      - bool loadOnAwake
+      - bool loadOnStart
+      - bool loadOnEnable
+    - Public methods
+      - public virtual void Save ()
+      - public virtual void Load ()
+
+Section 3) Key Behavior & Side Effects
+- Awake
+  - If resetBlanks is true:
+    - Fills encodePassword with SaveGame.EncodePassword if empty
+    - Fills serializer/encoder/encoding with SaveGame defaults if null
+  - Sets serializer based on format:
+    - Binary -> new SaveGameBinarySerializer()
+    - JSON -> new SaveGameJsonSerializer()
+    - XML -> new SaveGameXmlSerializer()
+  - If loadOnAwake is true -> Load()
+  - If saveOnAwake is true -> Save()
+
+- Start
+  - If loadOnStart is true -> Load()
+  - If saveOnStart is true -> Save()
+
+- OnEnable
+  - If loadOnEnable is true -> Load()
+  - If saveOnEnable is true -> Save()
+
+- OnDisable
+  - If saveOnDisable is true -> Save()
+
+- OnApplicationQuit
+  - If saveOnApplicationQuit is true -> Save()
+
+- OnApplicationPause
+  - If saveOnApplicationPause is true -> Save()
+
+- Save()
+  - If savePosition -> SaveGame.Save<Vector3Save>(positionIdentifier, transform.position, ...)
+  - If saveRotation -> SaveGame.Save<QuaternionSave>(rotationIdentifier, transform.rotation, ...)
+  - If saveScale -> SaveGame.Save<Vector3Save>(scaleIdentifier, transform.localScale, ...)
+
+- Load()
+  - If savePosition -> transform.position = SaveGame.Load<Vector3Save>(positionIdentifier, defaultPosition, ...)
+  - If saveRotation -> transform.rotation = SaveGame.Load<QuaternionSave>(rotationIdentifier, Quaternion.Euler(defaultRotation), ...)
+  - If saveScale -> transform.localScale = SaveGame.Load<Vector3Save>(scaleIdentifier, defaultScale, ...)
+
+Section 4) Constraints & Failure Modes
+- resetBlanks only affects defaults when true; otherwise serializer/encoder/encoding may remain null.
+- Null serializer/encoder/encoding are passed through to SaveGame.Save/Load; behavior depends on underlying SaveGame API (not shown here).
+- Identity strings (positionIdentifier, rotationIdentifier, scaleIdentifier) are user-supplied; empty/invalid values rely on external SaveGame behavior.
+- DefaultRotation is converted via Quaternion.Euler before use.
+- Save/Load flows are driven by Unity lifecycle events and the boolean flags (e.g., saveOnAwake, loadOnEnable); no explicit error handling shown in this file.
+- No threading/async logic is present here; all operations occur synchronously on the calling thread.
+
+Section 5) Example
+- Minimal usage (attach and configure in code):
+```csharp
+using UnityEngine;
+
 public class ExampleUsage : MonoBehaviour
 {
-    void Start()
+    void Awake()
     {
-        SaveGameAuto saveGameAuto = gameObject.AddComponent<SaveGameAuto>();
-        saveGameAuto.positionIdentifier = "playerPosition";
-        saveGameAuto.rotationIdentifier = "playerRotation";
-        saveGameAuto.scaleIdentifier = "playerScale";
-        saveGameAuto.Save();
+        var sga = gameObject.AddComponent<BayatGames.SaveGameFree.SaveGameAuto>();
+        sga.positionIdentifier = "player_pos";
+        sga.rotationIdentifier = "player_rot";
+        sga.scaleIdentifier = "player_scale";
+        sga.saveOnAwake = true;
+        sga.loadOnStart = true;
+        sga.savePosition = true;
+        sga.saveRotation = true;
+        sga.saveScale = true;
     }
 }
 ```
 
-# Unknowns
-- Specific implementations of `ISaveGameSerializer` and `ISaveGameEncoder` are not defined in this file.
-- The behavior of `SaveGame.Save<T>()` and `SaveGame.Load<T>()` methods is not detailed in this file.
-
+Section 6) Unknowns
+- Details of SaveGame.SaveGameFree classes (ISaveGameSerializer, ISaveGameEncoder, Encoding, SaveGamePath) are not defined in this file.
+- Exact behavior when identifiers are blank or null depends on the underlying SaveGame API.
+- Error handling, exceptional cases, and performance characteristics are not specified in this file.
+- Interaction with other SaveGameFree features or conflicting saves across multiple components is not described here.

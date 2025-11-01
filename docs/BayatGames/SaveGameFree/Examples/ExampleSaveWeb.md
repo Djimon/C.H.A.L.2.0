@@ -2,52 +2,66 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/Save Web/ExampleSaveWeb.cs`._
 
-# Purpose
-- Defines a Unity MonoBehaviour for saving and loading game state over the web.
+1) Purpose
+- Unity MonoBehaviour example demonstrating save/load via SaveGameWeb over HTTP.
+- Stores credentials, endpoint, and save identifier; uses active serializer for serialization.
+- Updates a target Transform from keyboard input and persists/restores its position through web requests.
 
-# Public API
-- Namespace: `BayatGames.SaveGameFree.Examples`
+2) Public API
+- Namespace/module
+  - BayatGames.SaveGameFree.Examples
 - Types
-  - public class `ExampleSaveWeb` [extends MonoBehaviour]
-    - Public fields/properties:
-      - `Transform target`: The target object to save/load position.
-      - `bool loadOnStart`: Indicates if loading should occur on start.
-      - `string identifier`: Identifier for the save data.
-      - `string username`: Username for web authentication.
-      - `string password`: Password for web authentication.
-      - `string url`: URL for the save/load web service.
-      - `bool encode`: Indicates if data should be encoded.
-      - `string encodePassword`: Password for encoding.
-    - Public methods:
-      - `void Load()`: Initiates the loading process.
-      - `void Save()`: Initiates the saving process.
+  - public class ExampleSaveWeb : MonoBehaviour
+    - Public fields
+      - public Transform target
+        - The transform whose position is read/written during save/load.
+      - public bool loadOnStart
+      - public string identifier
+        - Save key used for download/upload.
+      - public string username
+      - public string password
+      - public string url
+      - public bool encode
+      - public string encodePassword
+    - Public methods
+      - public void Load()
+        - Starts coroutine LoadEnumerator.
+      - public void Save()
+        - Starts coroutine SaveEnumerator.
 
-# Key Behavior & Side Effects
-- `Start()`: Calls `Load()` if `loadOnStart` is true.
-- `Update()`: Updates the position of `target` based on user input.
-- `LoadEnumerator()`: Downloads data from the web and updates `target.position`.
-- `SaveEnumerator()`: Uploads `target.position` to the web.
+3) Key Behavior & Side Effects
+- Start
+  - Invokes Load() unconditionally when the component starts.
+- Update
+  - Reads Input.GetAxis("Horizontal") and Input.GetAxis("Vertical") each frame.
+  - Modifies target.position accordingly (positions x and y components).
+- Load()
+  - Starts coroutine LoadEnumerator().
+- LoadEnumerator()
+  - Logs "Downloading...".
+  - Creates SaveGameWeb with credentials, url, encode options, and active serializer.
+  - Yields on web.Download(identifier) to perform asynchronous download.
+  - Sets target.position to the loaded Vector3Save value from web.Load<Vector3Save>(identifier, Vector3.zero).
+  - Logs "Download Done.".
+- Save()
+  - Starts coroutine SaveEnumerator().
+- SaveEnumerator()
+  - Logs "Uploading...".
+  - Creates SaveGameWeb with credentials, url, encode options, and active serializer.
+  - Yields on web.Save<Vector3Save>(identifier, target.position) to perform asynchronous save.
+  - Logs "Upload Done.".
 
-# Constraints & Failure Modes
-- Uses coroutines for asynchronous web operations.
-- Assumes valid URL and credentials for web service.
-- Handles position loading with a default value of `Vector3.zero` if not found.
+4) Constraints & Failure Modes
+- target must be assigned; otherwise NullReferenceException when accessing target.position.
+- loadOnStart exists but is not referenced in code (Start() always calls Load()).
+- No explicit error handling for web failures; behavior depends on SaveGameWeb implementation.
+- Uses Unity coroutines; game object must remain active while operations run.
+- Assumes Vector3Save is a serializable type compatible with web.Load<Vector3Save> and web.Save<Vector3Save>.
 
-# Example
-```csharp
-public class ExampleUsage : MonoBehaviour
-{
-    public ExampleSaveWeb exampleSaveWeb;
+5) Example
+- Not provided as a separate runnable snippet (the file itself serves as a runtime example).
 
-    void Start()
-    {
-        exampleSaveWeb.Save(); // Save the current position
-        exampleSaveWeb.Load(); // Load the position
-    }
-}
-```
-
-# Unknowns
-- Specific behavior of `SaveGameWeb` class and its methods.
-- Error handling for web requests is not detailed in this file.
-
+6) Unknowns
+- Exact behavior and error reporting of SaveGameWeb.Download/Save beyond the yielded coroutines.
+- The specifics of Vector3Save serialization and how it maps to Vector3 (beyond default Vector3.zero as fallback).
+- How loadOnStart is intended to control loading (not used by this file).

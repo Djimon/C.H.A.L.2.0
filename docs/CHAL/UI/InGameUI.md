@@ -3,63 +3,66 @@
 _Automatically generated/updated from `Assets/src/UI/misc/InGameUI.cs`._
 
 ```text
-1) Purpose
-- Defines an abstract MonoBehaviour IngameUI that manages a root VisualElement tied to a UIDocument on the same GameObject.
-- Hides the root VisualElement on Awake by default.
-- Provides Show(bool) to toggle visibility and IsVisible to query current visibility.
-```
+Purpose
+- Defines an abstract base class IngameUI for UIElements-based in-game UI in CHAL.UI.
+- On Awake, initializes root from the UIDocument and hides the UI (start hidden).
+- Provides a public surface to show/hide and query visibility.
 
-```text
-2) Public API
-- Namespace: CHAL.UI
+Public API
+- Namespace/module: CHAL.UI
+- Type
+  - public abstract class IngameUI : MonoBehaviour
+    - Public methods
+      - public virtual void Show(bool show)
+        - Sets root.style.display to DisplayStyle.Flex when true, or DisplayStyle.None when false.
+    - Public properties
+      - public bool IsVisible
+        - get: returns true if root.style.display == DisplayStyle.Flex
+    - Inherits from: MonoBehaviour
 
-- Type: Public abstract class IngameUI : MonoBehaviour
-  - Protected VisualElement root
-  - Protected virtual void Awake()
-    - root = GetComponent<UIDocument>().rootVisualElement
-    - root.style.display = DisplayStyle.None
-  - Public virtual void Show(bool show)
-    - root.style.display = show ? DisplayStyle.Flex : DisplayStyle.None
-  - Public bool IsVisible
-    - get: root.style.display == DisplayStyle.Flex
-```
-
-```text
-3) Key Behavior & Side Effects
-- Awake
-  - Retrieves rootVisualElement from the UIDocument component on the same GameObject and stores it in root.
-  - Sets root.style.display to DisplayStyle.None (start hidden).
-- Show(bool)
-  - Sets root.style.display to DisplayStyle.Flex when true, otherwise DisplayStyle.None.
+Key Behavior & Side Effects
+- Awake (Lifecycle)
+  - root = GetComponent<UIDocument>().rootVisualElement;
+  - root.style.display = DisplayStyle.None;
+  - Effect: UI starts hidden.
+- Show(bool show)
+  - Mutates the root VisualElement display style to show or hide.
+  - Effect: toggles visibility in the UI hierarchy.
 - IsVisible
-  - Returns true if root.style.display equals DisplayStyle.Flex; false otherwise.
-- Design note
-  - Requires a UIDocument component on the same GameObject; no null checks are performed, so missing UIDocument may throw a NullReferenceException during Awake.
-```
+  - Reads root.style.display to determine current visibility state.
+  - Effect: non-mutating query of visibility.
 
-```text
-4) Constraints & Failure Modes
-- Guarding: No guards for null UIDocument; potential crash if UIDocument is absent.
-- Threading: All UI updates occur on Unity's main thread (implicit).
-- Performance: Minimal, direct style toggling; no batching or async behavior.
-```
+Constraints & Failure Modes
+- Assumes a UIDocument component is present on the same GameObject; no null checks are performed.
+  - If UIDocument is missing, Awake will throw when accessing GetComponent<UIDocument>().rootVisualElement.
+- root is assigned in Awake; calling Show or IsVisible before Awake could lead to NullReference.
+- Abstract class; intended to be subclassed to implement concrete UI behavior.
 
-```text
-5) Example
+Example
 ```csharp
 using CHAL.UI;
+using UnityEngine;
 
-public class HUDUI : IngameUI { }
+public class PauseMenuUI : IngameUI
+{
+    void Start()
+    {
+        // Ensure it's hidden initially (base class already hides on Awake)
+        Show(false);
+    }
+    
+    // Example usage could toggle with a key, etc.
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Show(!IsVisible);
+        }
+    }
+}
+```
 
-// Usage (attach to a GameObject with a UIDocument):
-// HUDUI hud = GetComponent<HUDUI>();
-// hud.Show(true);  // show
-// bool visible = hud.IsVisible;
-```
-```
-
-```text
-6) Unknowns
-- Specific UI structure under rootVisualElement (child elements, styling, event handling) is not defined here.
-- Behavior when multiple IngameUI-derived components share or compete for the same root is not specified.
-```
+Unknowns
+- Specific UI content/layout for rootVisualElement is not defined here.
+- How this base class interacts with other UI systems or game state beyond Show/IsVisible is not specified.
+- Behavior if multiple UIDocuments or dynamic rootVisualElement changes are introduced is not covered.

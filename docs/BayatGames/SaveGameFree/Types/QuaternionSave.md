@@ -2,40 +2,77 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Types/QuaternionSave.cs`._
 
-# Purpose
-- Defines a `QuaternionSave` struct for representing rotations using quaternions.
+```txt
+Purpose
+- Defines a serializable value type QuaternionSave that stores quaternion components x, y, z, w.
+- Provides constructors to initialize with 1–4 components, defaulting missing components to 0.
+- Provides implicit conversions to/from UnityEngine.Quaternion for easy usage.
 
-# Public API
-- Namespace: `BayatGames.SaveGameFree.Types`
+Public API
+- Namespace/module
+  - BayatGames.SaveGameFree.Types
+
 - Types
-  - `struct QuaternionSave`
-    - Public fields/properties:
-      - `float x`: X component of the quaternion.
-      - `float y`: Y component of the quaternion.
-      - `float z`: Z component of the quaternion.
-      - `float w`: W component of the quaternion.
-    - Public methods:
-      - `QuaternionSave(float x)`: Initializes with x; y, z, w set to 0.
-      - `QuaternionSave(float x, float y)`: Initializes with x, y; z, w set to 0.
-      - `QuaternionSave(float x, float y, float z)`: Initializes with x, y, z; w set to 0.
-      - `QuaternionSave(float x, float y, float z, float w)`: Initializes with x, y, z, w.
-      - `QuaternionSave(Quaternion quaternion)`: Initializes from a Unity `Quaternion`.
-      - `static implicit operator QuaternionSave(Quaternion quaternion)`: Converts Unity `Quaternion` to `QuaternionSave`.
-      - `static implicit operator Quaternion(QuaternionSave quaternion)`: Converts `QuaternionSave` to Unity `Quaternion`.
+  - public struct QuaternionSave
+    - public float x
+      - Quaternion component x
+    - public float y
+      - Quaternion component y
+    - public float z
+      - Quaternion component z
+    - public float w
+      - Quaternion component w
 
-# Key Behavior & Side Effects
-- Implicit conversions allow seamless use between `Quaternion` and `QuaternionSave`.
+    - public QuaternionSave ( float x )
+      - Initializes x; y/z/w = 0
+    - public QuaternionSave ( float x, float y )
+      - Initializes x, y; z/w = 0
+    - public QuaternionSave ( float x, float y, float z )
+      - Initializes x, y, z; w = 0
+    - public QuaternionSave ( float x, float y, float z, float w )
+      - Initializes all components
+    - public QuaternionSave ( Quaternion quaternion )
+      - Initializes from UnityEngine.Quaternion components
 
-# Constraints & Failure Modes
-- No explicit guards or error handling present.
-- Assumes valid float values for quaternion components.
+    - public static implicit operator QuaternionSave ( Quaternion quaternion )
+      - Converts Quaternion to QuaternionSave
 
-# Example
+    - public static implicit operator Quaternion ( QuaternionSave quaternion )
+      - Converts QuaternionSave to Quaternion
+
+Key Behavior & Side Effects
+- Constructors assign provided component values; unspecified components are set to 0.
+- Implicit conversions create new instances without mutating input.
+- Serialization is enabled via [Serializable] attribute, enabling Unity serialization of the struct.
+- Performs direct field-to-field mapping between QuaternionSave and UnityEngine.Quaternion.
+
+Constraints & Failure Modes
+- Public fields are mutable; changes affect the stored representation.
+- No null handling (Quaternion is a value type; QuaternionSave is a struct).
+- Implicit conversions rely on UnityEngine types; requires UnityEngine reference.
+- No thread-safety or async specifics declared.
+
+Example
 ```csharp
-QuaternionSave qSave = new QuaternionSave(1.0f, 0.0f, 0.0f, 0.0f);
-Quaternion unityQuaternion = qSave; // Implicit conversion to Unity Quaternion
+using UnityEngine;
+using BayatGames.SaveGameFree.Types;
+
+public class QuaternionSaveExample
+{
+    void Demo()
+    {
+        Quaternion q = new Quaternion(0f, 0.7071f, 0f, 0.7071f);
+
+        // Implicit conversion from Quaternion to QuaternionSave
+        QuaternionSave qs = q;
+
+        // Implicit conversion back to Quaternion
+        Quaternion qRestored = qs;
+    }
+}
 ```
 
-# Unknowns
-- No information on performance characteristics or threading considerations.
-
+Unknowns
+- How this struct is used by the broader SaveGameFree framework (serialization/deserialization flow) is not defined in this file.
+- Performance characteristics and memory implications beyond the 4 floats are not specified.
+- Behavior with non-normalized quaternions or NaN/Inf values is not described here.

@@ -2,82 +2,62 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/SkillData.cs`._
 
-```csharp
-// (No code changes; documentation only)
-```
-
 Purpose
-- Defines a data asset type SkillData as a ScriptableObject for skill configuration.
-- Encapsulates identity, behavior, composition, effects, and presentation data for a skill.
-- Exposes editor-generated asset creation via CreateAssetMenu with fileName "SkilData" and menu path "Data/SkillData".
+- Defines SkillData as a Unity ScriptableObject in CHAL.Data to configure skills.
+- Groups identity, type, composition, effects, metadata, and presentation fields for a skill.
+- Exposes a Unity Editor asset menu entry via CreateAssetMenu.
 
 Public API
 - Namespace/Module: CHAL.Data
-- Types
+- Type
   - public class SkillData : ScriptableObject
-    - Public fields
-      - string SkillId
-        - Identity key for the skill
-      - string DisplayName
-        - UI name for display
-      - float BaseDamage
-        - Base damage value (default 1)
-      - List<DamageEntry> DamageTypes
-        - Damage breakdown/types used by the skill
-      - float CastTime
-        - Time in seconds to cast; 0 means instant (tooltip: "Time in seconds to cast this skill. 0 = instant.")
-      - float Cooldown
-        - Cooldown in seconds before this skill can be used again (tooltip: "Cooldown in seconds before this skill can be used again.")
-      - SkillType SkillType
-        - Main behavior category (e.g., Melee, Projectile, Spell, or Summon)
-      - bool isProjectile
-        - Indicates if the skill uses a projectile
-      - bool isAoE
-        - Indicates if the skill is area-of-effect
-      - bool hasDuration
-        - Indicates if the skill has a duration
-      - SkillRange Range
-        - Range category (default: SkillRange.Melee)
-      - float Duration
-        - Duration in seconds for effects like buffs/debuffs/DoTs
-      - float ProjectileSpeed
-        - Speed of projectile, if applicable
-      - int ProjectileCount
-        - Number of projectiles spawned, if applicable
-      - float AoERadius
-        - Radius for AoE effects, if applicable
-      - List<SkillImpactBase> OnCastImpactEffects
-        - Effects applied immediately when the skill is cast
-      - List<SkillImpactBase> OnHitImpactEffects
-        - Effects applied when the skill hits a target
-      - List<SkillTag> Tags
-        - Tags describing the skill (e.g., Projectile, Fire, DoT, Buff)
-      - GameObject vfxPrefab
-        - Prefab spawned when the skill effect is triggered
-      - AnimationType animationType
-        - Animation type used when performing this skill
+    - public string SkillId; (identity)
+    - public string DisplayName; (display name)
+    - public float BaseDamage; (base damage; default 1)
+    - public List<DamageEntry> DamageTypes; (damage composition by type)
+    - public float CastTime; (time in seconds to cast; 0 = instant; default 0)
+    - public float Cooldown; (cooldown in seconds; default 2)
+
+    - public SkillType SkillType; (main behavior: Melee, Projectile, Spell, or Summon)
+    - public bool isProjectile; (flag)
+    - public bool isAoE; (flag)
+    - public bool hasDuration; (flag)
+
+    - public SkillRange Range; (range category; default SkillRange.Melee)
+    - public float Duration; (duration for buffs/debuffs/DoTs; default 0)
+    - public float ProjectileSpeed; (speed of projectile; default 0)
+    - public int ProjectileCount; (projectile count; default 0)
+    - public float AoERadius; (AoE radius; default 0)
+
+    - public List<SkillImpactBase> OnCastImpactEffects; (immediate effects on cast)
+    - public List<SkillImpactBase> OnHitImpactEffects; (effects on hit)
+
+    - public List<SkillTag> Tags; (tags like Projectile, Fire, DoT, Buff, etc.)
+
+    - public GameObject vfxPrefab; (prefab spawned when skill is triggered)
+    - public AnimationType animationType; (animation type used when performing the skill)
+
+    - Attributes:
+      - [CreateAssetMenu(fileName = "SkilData", menuName = "Data/SkillData")]
 
 Key Behavior & Side Effects
-- No methods or runtime logic defined in this file; acts as a data container.
-- Asset is serialized by Unity; default field values are as specified in the code.
-- CreateAssetMenu annotation enables editor-based asset creation with the given fileName and menuPath.
+- None defined in this file. No methods or runtime logic.
+- Data container used by other systems to drive skill behavior.
 
 Constraints & Failure Modes
-- Nullability: List fields (DamageTypes, OnCastImpactEffects, OnHitImpactEffects, Tags) may be null if not assigned in the inspector.
-- Editor/runtime separation: Asset creation is editor-supported via CreateAssetMenu; runtime instantiation via ScriptableObject.CreateInstance is possible but assets from disk are separate.
-- External types: Depends on types defined elsewhere (DamageEntry, SkillImpactBase, SkillTag, SkillType, SkillRange, AnimationType, etc.).
-- Typo in asset name: fileName is "SkilData" (as defined) – note for asset creation/UI consistency.
-
-Example
-- Minimal runtime instantiation (not loading an asset from disk)
-```csharp
-// Runtime example: create a SkillData instance programmatically
-var skill = ScriptableObject.CreateInstance<CHAL.Data.SkillData>();
-skill.SkillId = "example_skill";
-skill.DisplayName = "Example Skill";
-```
+- Defaults present for some fields:
+  - BaseDamage = 1
+  - CastTime = 0f
+  - Cooldown = 2f
+  - Range = SkillRange.Melee
+  - Duration = 0f
+  - ProjectileSpeed = 0f
+  - ProjectileCount = 0
+  - AoERadius = 0f
+- Lists (DamageTypes, OnCastImpactEffects, OnHitImpactEffects, Tags) are public but not initialized in code; may be null if not assigned in Inspector or via code.
+- Asset creation is via Unity Editor; fileName for asset menu is "SkilData" (potential typo).
 
 Unknowns
-- Definitions and semantics of external types: DamageEntry, SkillImpactBase, SkillTag, SkillType, SkillRange, AnimationType.
-- How SkillData is consumed by other systems (combat, animation, etc.) beyond this file.
-- Whether any fields are mutually exclusive or require validation beyond what is shown here.
+- Definitions/behaviors of DamageEntry, SkillImpactBase, SkillTag, SkillType, SkillRange, AnimationType are not in this file.
+- How SkillData is consumed by runtime systems or which components rely on which fields.
+- Exact null-handling, serialization details, or default initialization behavior beyond explicit defaults.

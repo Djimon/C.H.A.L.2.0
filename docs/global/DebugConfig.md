@@ -4,93 +4,84 @@ _Automatically generated/updated from `Assets/src/utils/DebugConfig.cs`._
 
 ```text
 1) Purpose
-- Defines a ScriptableObject DebugConfig for centralizing debug-related settings.
-- Declares a serializable TagEntry and a public List<TagEntry> tags to configure per-tag color and activation.
-- Exposes CreateAssetMenu for editor asset creation and includes editor-only seed logic to populate defaults.
+- Defines a ScriptableObject type DebugConfig with CreateAssetMenu for Editor integration.
+- Exposes public debug/config fields: level, productiveMode, autoAddUnknownTagsToAsset, includeGameTimestamps, colorWholeLine, and a serializable TagEntry plus a public List<TagEntry> tags.
+- Includes an editor-only mechanism to seed default tag entries on asset creation/edit.
 
 2) Public API
-- Public class: DebugConfig : ScriptableObject
-  - Public fields
-    - DebugManager.EDebugLevel level = DebugManager.EDebugLevel.Debug
-      - Current global debug level
-    - bool productiveMode = false
-      - Flag for production-oriented behavior
-    - bool autoAddUnknownTagsToAsset = true
-      - If true: unknown tags logged for the first time are automatically added to the asset (color white, active)
-        - Note: described via comment; not implemented elsewhere in this file
-    - bool includeGameTimestamps = false
-      - Whether to include timestamps from the game context
-    - bool colorWholeLine = false
-      - Colorization scope: tag-only vs. whole line (under a header)
-  - List<TagEntry> tags = new()
-    - Collection of per-tag configurations (name, active, color)
+- Namespace/module
+  - Global namespace (no explicit namespace)
 
-- Public nested type: TagEntry [System.Serializable]
-  - Public fields
-    - string name
-      - Tag name
-    - bool active = true
-      - Whether the tag is active
-    - Color color = Color.white
-      - Color associated with the tag
+- Types
+  - public class DebugConfig : ScriptableObject
+    - Public fields
+      - public DebugManager.EDebugLevel level = DebugManager.EDebugLevel.Debug
+        - Default level for debug logging
+      - public bool productiveMode = false
+        - Flag for productive/run-time mode
+      - public bool autoAddUnknownTagsToAsset = true
+        - If true, unknown tags logged for the first time are auto-added to the asset (as per comment)
+      - public bool includeGameTimestamps = false
+        - Include timestamps in game-related logs
+      - [Header("Color Mode (tag only vs. whole line")]
+        - public bool colorWholeLine = false
+          - If true, color applies to the whole line; otherwise tag-only coloring
+      - public List<TagEntry> tags = new()
+        - Collection of tag entries used for logging/coloring
 
-- Public surface summary (no public methods defined)
-  - None beyond fields defined above (OnValidate/EnsureTag are private/editor-only)
+    - Nested types
+      - public class TagEntry
+        - public string name
+          - Tag name
+        - public bool active = true
+          - Whether this tag is active
+        - public Color color = Color.white
+          - Color associated with this tag
+- Public methods
+  - None declared (OnValidate is editor-only and private)
 
 3) Key Behavior & Side Effects
-- Asset creation UX
-  - The CreateAssetMenu attribute enables creating a DebugConfig asset via Unity editor menu (Assets -> Create -> Config -> DebugConfig).
-- Editor-only seed logic
-  - In UNITY_EDITOR, OnValidate runs when the asset is created or edited.
-  - If not _seeded or if tags is null or empty:
-    - EnsureTag is called to add default tags: System, Info, Debug, Warning, Error with predefined colors/active state.
-    - _seeded is set to true.
-    - Marks the asset dirty and saves assets via UnityEditor (SetDirty; SaveAssets).
-  - EnsureTag(string name, Color color, bool active) adds a TagEntry if name is non-empty and not already present.
-- Tag behavior hints
-  - The field autoAddUnknownTagsToAsset has a documented effect in a comment: unknown tags logged for the first time are automatically added to the asset (white color, active).
-  - The colorWholeLine flag controls colorization scope for tags/lines (actual usage beyond this file is not shown).
+- Editor-only seeding (UNITY_EDITOR)
+  - OnValidate(): runs when the asset is created/edited in the Unity Editor if not seeded or if tags is null/empty
+  - Seeds default tags via EnsureTag for:
+    - System (yellow, active)
+    - Info (custom light-blue, active)
+    - Debug (white, active)
+    - Warning (orange, active)
+    - Error (red, active)
+  - Sets _seeded = true; marks asset dirty; saves assets
+  - EnsureTag(name, color, active):
+    - No-op if name is null/empty
+    - No-op if a tag with the same name already exists
+    - Adds a new TagEntry { name, color, active } to tags
+- Asset creation/serialization
+  - AssetMenu integration enables creation via Editor menu
+  - tags is serialized; TagEntry is public and serializable
+- Runtime implications
+  - The auto-add behavior is described in a comment; no explicit runtime code here beyond field definition
+  - Color and active state of tags influence how logging is presented (per external usage of this config)
 
 4) Constraints & Failure Modes
-- Editor-only code
-  - OnValidate and tag seeding execute only within the Unity Editor; runtime builds will not run this logic.
-- Potential syntax issue in code
-  - The Header attribute is written as [Header("Color Mode (tag only vs. whole line"] which appears to have an unmatched quote; this could cause a compile-time error depending on exact parsing.
-- Asset-location note
-  - The comment suggests saving to Resources/config/DebugConfig.asset, but the code omits any hard path logic; asset location is not enforced by the file.
-- External type reference
-  - DebugManager.EDebugLevel is referenced but not defined in this file; its definition lives elsewhere.
+- Editor-only logic
+  - OnValidate and EnsureTag are wrapped in UNITY_EDITOR; not present in builds
+- Safety guards
+  - EnsureTag avoids null/empty names and duplicates
+  - OnValidate handles null tags by treating as empty
+- Serialization considerations
+  - _seeded is private and editor-only; persists via serialization but not part of public API
+- Performance
+  - Seed operation occurs at edit-time; frequent edits may trigger asset writes (per Unity editor behavior)
 
 5) Example
-- Minimal usage in Unity and code snippet:
-
-- In Unity Editor:
-  - Right-click in the Project window
-  - Choose Create -> Config -> DebugConfig
-  - Name the asset (default: DebugConfig)
-
-- Example usage in C#:
+- Runtime instantiation
 ```csharp
-using UnityEngine;
-
-public class DebugConfigUser : MonoBehaviour
-{
-    [SerializeField] private DebugConfig config;
-
-    void Start()
-    {
-        if (config != null)
-        {
-            Debug.Log("Debug level: " + config.level);
-        }
-    }
-}
+// Create an instance at runtime (not yet saved as asset)
+var cfg = ScriptableObject.CreateInstance<DebugConfig>();
 ```
 
 6) Unknowns
-- DebugManager.EDebugLevel type definition is not present in this file.
-- Runtime behavior for autoAddUnknownTagsToAsset is not implemented here; documented only by a comment.
-- The exact asset path for the created DebugConfig asset is not enforced by code (only described in a comment).
-- The Header attribute appears to have a syntax issue which could affect compilation.
-- Any runtime usage of includeGameTimestamps, colorWholeLine, or tags beyond data storage is not shown in this file.
+- Details of DebugManager.EDebugLevel values and behavior beyond default
+- Exact effect of autoAddUnknownTagsToAsset at runtime (comment describes intent; implementation not shown here)
+- Exact Unity asset path/location for the created asset beyond the comment
+- Any additional editor tooling or editor script integrations not present in this file
 ```

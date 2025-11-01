@@ -3,161 +3,154 @@
 _Automatically generated/updated from `Assets/src/Core/PlayerProfile.cs`._
 
 ```text
-1) Purpose
-- Serializable data model for a player's profile in CHAL.Data, including XP/level, currencies, hero unlocks, inventories, map progress, and research state.
-- Helpers to snapshot and restore inventories (InventorySnapshot) and to serialize/deserialize research progress.
-- High-level hooks for saving, initializing starter data, and integrating with other subsystems (GameManager, BalanceManager, DebugManager).
-
-2) Public API
-
-- Namespace/module
-  - CHAL.Data
-
-- Types
-  - public class PlayerProfile : IWallet
-    - Public fields
-      - public string profileId; // Unique identifier for the profile (constructed during initialization)
-      - public DateTime LastSaveTime; // Last autosave/debug timestamp
-      - public string playerName; // Display name chosen by the player
-      - public Color[] playerColors; // Character customization colors
-      - public int XP; // Total experience points
-      - public int Level; // Current level (may be derived from XP)
-      - public int XPInCurrentLevel; // XP accumulated within the current level
-      - public int XPToNextLevel; // XP required for the next level
-      - public int missingXP; // XP still needed to reach next level
-      - public float levelProgress; // 0..1 progress within the current level
-      - public List<string> UnlockedHeroes = new(); // IDs of unlocked heroes
-      - public Dictionary<string, int> Currencies = new(); // CurrencyStore: currencyId -> amount
-      - public Dictionary<int, int> MapProgress = new(); // MapProgress: mapNo -> highest difficulty achieved
-      - [NonSerialized] public List<Inventory> Inventories = new(); // Live inventories (not serialized by Unity)
-      - public List<InventorySnapshot> InventorySave = new(); // Persisted snapshot of inventories for save/load
-      - [NonSerialized] public ResearchState ResearchRuntime; // Runtime research state (not serialized)
-
-    - Public methods
-      - public void InitializePlayer(string name, Color[] colors)
-        - Initialize basic fields, derive profileId, ensure starter hero, initialize inventories, and trigger a save.
-      - public void InitInventories()
-        - Populate Inventories with: "remains", "part", "rune", "module", "gear".
-      - public int GetXP()
-        - Returns XP.
-      - public void AddXP(int amount)
-        - Adds amount to XP and calls RecalculateLevel().
-      - public int GetCurrency(string currencyId)
-        - Returns amount for currencyId or 0 if missing.
-      - public void AddCurrency(string currencyId, int amount)
-        - Adds amount to a currency; creates entry if missing; ignores non-positive amounts.
-      - public bool SpendCurrency(string currencyId, int amount)
-        - Deducts amount if possible; returns success; uses CanSpend.
-      - public bool CanSpend(string currencyId, int amount)
-        - Returns true if amount > 0 and currency balance >= amount.
-      - public void Refund(string currencyId, int amount)
-        - Increases currency by amount (positive only).
-      - public IReadOnlyList<string> GetUnlockedHeroes()
-        - Returns a read-only view of UnlockedHeroes.
-      - public bool IsHeroUnlocked(string heroId)
-        - True if heroId is non-empty and present in UnlockedHeroes.
-      - public bool UnlockHero(string heroId)
-        - Adds heroId to UnlockedHeroes if valid and not already unlocked; returns success.
-      - public bool LockHero(string heroId)
-        - Removes heroId from UnlockedHeroes if present; returns success.
-      - public bool EnsureStarterHeroUnlocked(string starterHeroId)
-        - Ensures starterHeroId is in UnlockedHeroes; returns true if added; false otherwise.
-      - public void SetMapProgress(int map, MapDifficulty difficulty)
-        - Stores difficulty (cast to int) for given map in MapProgress.
-      - public int GetMapProgress(int map)
-        - Returns highest difficulty for map or 0 if not present.
-      - private void RecalculateLevel()
-        - Recomputes Level, XPInCurrentLevel, XPToNextLevel, missingXP, levelProgress based on XP using BalanceManager.GetXpForLevel.
-      - public void PrepareInventorySnapshot()
-        - Builds InventorySave by converting each non-null Inventory to a dictionary snapshot (id + items).
-      - public void RestoreInventoriesFromSnapshot()
-        - Restores live Inventories from InventorySave; initializes inventories if needed.
-      - public ResearchSnapshot BuildResearchSnapshotFrom(ResearchState state)
-        - Creates a serializable ResearchSnapshot from a runtime ResearchState.
-      - public void RestoreResearchInto(ResearchState state, ResearchSnapshot snap)
-        - Applies data from a ResearchSnapshot back into a ResearchState.
-
-  - public struct InventorySnapshot
-    - public string id; // Inventory identifier (e.g., "remains", "part", "rune", "module", "gear")
-    - public Dictionary<string, int> items; // ItemId -> count
-
-3) Key Behavior & Side Effects
-
-- InitializePlayer
-  - Sets playerName and colors.
-  - Sets profileId to "p_" + name.
-  - Determines starterHeroId from GameManager.Instance.starterHero or "TestHero".
-  - Calls EnsureStarterHeroUnlocked(starterId).
-  - Calls InitInventories().
-  - Invokes SaveSystem.Save(this).
-
-- InitInventories
-  - Adds five Inventory instances with ids: "remains", "part", "rune", "module", "gear".
-
-- XP/Level
-  - AddXP increments XP and triggers RecalculateLevel() to update Level, XPInCurrentLevel, XPToNextLevel, missingXP, levelProgress.
-
-- Currency
-  - GetCurrency returns 0 when missing.
-  - AddCurrency creates currency entry if needed and increments amount (only for positive amounts).
-  - SpendCurrency validates amount > 0 and CanSpend; reduces balance on success.
-  - Refund delegates to AddCurrency.
-
-- Hero management
-  - UnlockHero/LockHero modify UnlockedHeroes with basic guards (non-empty, non-duplicate) and return success flags.
-  - EnsureStarterHeroUnlocked makes sure the starter hero is present.
-
-- Map progress
-  - SetMapProgress stores the numeric difficulty for a map.
-  - GetMapProgress returns 0 if no progress stored.
-
-- Inventory snapshot
-  - PrepareInventorySnapshot serializes live inventories to InventorySave via ToDictionary on each inventory.
-  - RestoreInventoriesFromSnapshot rebuilds live inventories from InventorySave via FromDictionary, initializing inventories if needed.
-
-- Research snapshot
-  - BuildResearchSnapshotFrom copies relevant runtime ResearchState into a serializable ResearchSnapshot, including node progress per node and progress details.
-  - RestoreResearchInto overwrites a ResearchState from a ResearchSnapshot, clearing existing progress and re-populating from the snapshot.
-
-4) Constraints & Failure Modes
-
-- Null/empty guards
-  - EnsureStarterHeroUnlocked returns false if starterHeroId is null/empty.
-  - UnlockHero/LockHero guard against null/empty heroId and duplicates/removals accordingly.
-  - SetMapProgress uses direct dictionary assignment; missing maps will be created.
-  - GetMapProgress returns 0 if map not present.
-  - BuildResearchSnapshotFrom returns a default/empty snapshot if input state is null.
-  - RestoreInventoriesFromSnapshot safely handles null InventorySave, initializes inventories if needed.
-
-- Serialization behavior
-  - Inventories is marked [NonSerialized], meaning Unity's serializer will skip it; InventorySave exists to persist snapshot data.
-  - ResearchRuntime is [NonSerialized], so runtime state is not saved as part of Unity serialization.
-
-- Currency handling
-  - AddCurrency ignores non-positive amounts.
-  - SpendCurrency and CanSpend guard against non-positive amounts and missing currencies.
-
-- External dependencies (not defined in this file)
-  - BalanceManager.GetXpForLevel, DebugManager.Log, GameManager.Instance, SaveSystem.Save, Inventory.ToDictionary/FromDictionary, Inventory.invID, and the research snapshot types (ResearchSnapshot, NodeProgressEntry, NodeProgressSave, MapRequirement, KillTagCount) come from other parts of the project.
-
-5) Example
-
-- Minimal usage
-```csharp
-// Example: create and initialize a new profile
-var profile = new CHAL.Data.PlayerProfile();
-profile.InitializePlayer("Alice", new UnityEngine.Color[] { UnityEngine.Color.Red, UnityEngine.Color.Blue });
+Purpose
+- Defines a serializable PlayerProfile class implementing IWallet to represent a player's data (identity, progression, currencies, inventories, and related state) in CHAL.
+- Encapsulates methods for initializing and mutating player state (XP, currencies, heroes, map progress, inventories, and research state).
+- Provides a nested InventorySnapshot struct for snapshotting inventories for save/load flows.
 ```
 
-6) Unknowns
+```text
+Public API
+- Namespace/Module: CHAL.Data
 
-- Details of IWallet interface implementation and any required interface members not shown here.
-- Exact behavior and structure of:
-  - Inventory, InventorySnapshot, Inventory.ToDictionary/FromDictionary
-  - GameManager, BalanceManager, DebugManager, SaveSystem
-  - ResearchState, ResearchSnapshot, NodeProgressEntry, NodeProgressSave, MapRequirement, KillTagCount
-- Any further persistence format or save file layout beyond SaveSystem.Save(this).
-- Thread-safety guarantees and potential race conditions around concurrent saves/loads.
-- Any additional side effects triggered by external systems during saves or state restoration.
+- Type: public class PlayerProfile : IWallet
+  - Public fields
+    - string profileId
+    - DateTime LastSaveTime
+    - string playerName
+    - Color[] playerColors
+    - int XP
+    - int Level
+    - int XPInCurrentLevel
+    - int XPToNextLevel
+    - int missingXP
+    - float levelProgress
+    - List<string> UnlockedHeroes = new()
+    - Dictionary<string, int> Currencies = new()
+    - Dictionary<int, int> MapProgress = new()
+    - [NonSerialized] public List<Inventory> Inventories = new()
+    - public List<InventorySnapshot> InventorySave = new()
+    - [NonSerialized] public ResearchState ResearchRuntime
 
+  - Public methods
+    - void InitializePlayer(string name, Color[] colors)
+    - void InitInventories()
+    - int GetXP()
+    - void AddXP(int amount)
+    - int GetCurrency(string currencyId)
+    - void AddCurrency(string currencyId, int amount)
+    - bool SpendCurrency(string currencyId, int amount)
+    - bool CanSpend(string currencyId, int amount)
+    - void Refund(string currencyId, int amount)
+    - IReadOnlyList<string> GetUnlockedHeroes()
+    - bool IsHeroUnlocked(string heroId)
+    - bool UnlockHero(string heroId)
+    - bool LockHero(string heroId)
+    - bool EnsureStarterHeroUnlocked(string starterHeroId)
+    - void SetMapProgress(int map, MapDifficulty difficulty)
+    - int GetMapProgress(int map)
+    - void PrepareInventorySnapshot()
+    - void RestoreInventoriesFromSnapshot()
+    - ResearchSnapshot BuildResearchSnapshotFrom(ResearchState state)
+    - void RestoreResearchInto(ResearchState state, ResearchSnapshot snap)
+
+- Type: public struct InventorySnapshot
+  - public string id
+  - public Dictionary<string, int> items
+
+```
+
+```text
+Key Behavior & Side Effects
+- InitializePlayer(string name, Color[] colors)
+  - Sets playerName, playerColors; profileId = "p_" + name
+  - Determines starterHeroId from GameManager.Instance.starterHero?.HeroId or "TestHero"
+  - Calls EnsureStarterHeroUnlocked(starterId) and InitInventories()
+  - Triggers SaveSystem.Save(this)
+
+- InitInventories()
+  - Adds inventories with IDs: "remains", "part", "rune", "module", "gear"
+
+- XP & Leveling
+  - AddXP(int amount): increments XP, calls RecalculateLevel()
+  - RecalculateLevel(): computes Level, XPInCurrentLevel, XPToNextLevel, missingXP, levelProgress using BalanceManager.GetXpForLevel; logs via DebugManager
+
+- Currency
+  - GetCurrency(string): returns amount or 0 if missing
+  - AddCurrency(string, int): ignores non-positive amounts; initializes missing key; increments
+  - SpendCurrency(string, int): validates amount > 0 and CanSpend; deducts amount on success
+  - CanSpend(string, int): checks amount > 0 and current balance via GetCurrency
+  - Refund(string, int): adds amount back (guarding non-positive)
+
+- Heroes
+  - GetUnlockedHeroes(): exposes UnlockedHeroes as IReadOnlyList
+  - IsHeroUnlocked(string): checks non-empty and presence in UnlockedHeroes
+  - UnlockHero(string): adds heroId if valid and not already unlocked
+  - LockHero(string): removes heroId if present
+  - EnsureStarterHeroUnlocked(string): ensures starter hero is in UnlockedHeroes; returns true if added
+
+- Map Progress
+  - SetMapProgress(int map, MapDifficulty difficulty): stores difficulty as int in MapProgress
+  - GetMapProgress(int map): returns stored value or 0 if absent
+
+- Inventory Snapshot
+  - PrepareInventorySnapshot(): builds InventorySave from Inventories by converting each to a dictionary
+  - RestoreInventoriesFromSnapshot(): applies InventorySave back to live Inventories (initializes Inventories if needed)
+
+- Research
+  - BuildResearchSnapshotFrom(ResearchState state): converts runtime ResearchState into a ResearchSnapshot
+  - RestoreResearchInto(ResearchState state, ResearchSnapshot snap): restores state from snapshot
+
+- Additional behavior
+  - Null/empty guards in several methods (e.g., empty or null strings, null maps)
+  - NonSerialized fields are excluded from Unity serialization (Inventories, ResearchRuntime)
+```
+
+```text
+Constraints & Failure Modes
+- Guarded inputs
+  - AddCurrency, SpendCurrency, CanSpend, and Refund guard non-positive amounts
+  - EnsureStarterHeroUnlocked guards null/empty starterHeroId and initializes list if needed
+  - GetMapProgress returns 0 if map not present
+- Inventory snapshot integrity
+  - PrepareInventorySnapshot uses Inventory.ToDictionary(); handles null invs gracefully
+  - RestoreInventoriesFromSnapshot matches inventories by invID; skips when missing
+- Research snapshot
+  - BuildResearchSnapshotFrom returns empty snapshot if state is null
+  - RestoreResearchInto exits early if state is null
+- Serialization/Runtime
+  - Inventories and ResearchRuntime are [NonSerialized], so not persisted by Unity serialization
+- Dependencies (external to file)
+  - IWallet, Inventory, InventorySnapshot (type), BalanceManager, DebugManager, SaveSystem, GameManager, ResearchState, ResearchSnapshot, MapDifficulty, and Unity types (Color) are defined elsewhere
+```
+
+```text
+Example
+// Minimal usage example (assuming appropriate using directives)
+using CHAL.Data;
+using UnityEngine;
+
+public class ExampleUsage
+{
+    public void CreateProfile()
+    {
+        var profile = new PlayerProfile();
+        profile.InitializePlayer("Alice", new Color[] { Color.red, Color.blue });
+        // Further interactions...
+    }
+}
+```
+
+```text
+Unknowns
+- Definitions and behavior of:
+  - IWallet interface
+  - Inventory class and its ToDictionary / FromDictionary implementations
+  - InventorySnapshot structure details beyond this file
+  - BalanceManager.GetXpForLevel, DebugManager.Log, SaveSystem.Save
+  - GameManager.Instance.starterHero and HeroId
+  - MapDifficulty enum
+  - ResearchState and ResearchSnapshot types
+  - Inventory.GetAllItems, Inventory.invID, and related inventory APIs
+- Any runtime guarantees beyond what is explicit in this file (threading, async behavior, or persistence guarantees)
 ```

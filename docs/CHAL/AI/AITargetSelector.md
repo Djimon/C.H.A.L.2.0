@@ -4,14 +4,15 @@ _Automatically generated/updated from `Assets/src/Systems/Unit/AiTargetSelector.
 
 ```text
 1) Purpose
-- Defines a simple AI target selector with:
-  - Public fields: currentTarget (EffectReceiver), prioMode (AITargetPrio), sightRange (float)
-  - Public methods: EnsureTarget(), InvalidateTarget()
-- Defines AITargetPrio enum used to select target prioritization:
-  - Nearest, HighestHP, LowestHP
-```
+- Defines AITargetSelector class and AITargetPrio enum within the CHAL.AI namespace.
+- Exposes public fields:
+  - EffectReceiver currentTarget
+  - AITargetPrio prioMode
+  - float sightRange
+- Declares two lifecycle-like methods with placeholder behavior:
+  - void EnsureTarget()
+  - void InvalidateTarget()
 
-```text
 2) Public API
 - Namespace/module
   - CHAL.AI
@@ -20,60 +21,44 @@ _Automatically generated/updated from `Assets/src/Systems/Unit/AiTargetSelector.
   - public class AITargetSelector
     - Public fields
       - public EffectReceiver currentTarget
-        - current target reference
+        - Target currently tracked/selected by AI (type from CHAL.Systems.Unit)
       - public AITargetPrio prioMode
-        - target prioritization mode
+        - Priority mode for target selection
       - public float sightRange
-        - sight detection range
+        - Maximum distance for target visibility
     - Public methods
       - public void EnsureTarget()
-        - no explicit behavior implemented; intended to "Lockin on target until dead or out of range/sight" (per comment)
+        - No parameters; intended to lock onto a target
+        - Side effect described in code comment: "Lockin on target until dead or out of range/sight"
       - public void InvalidateTarget()
-        - no explicit behavior implemented; intended to "reset currentTarget if Lost/dead" (per comment)
+        - No parameters; intended to clear current target
+        - Side effect described in code comment: "reset currenttarget if Lost/dead"
+
   - public enum AITargetPrio
     - Nearest
     - HighestHP
     - LowestHP
-```
 
-```text
 3) Key Behavior & Side Effects
-- EnsureTarget
-  - Intended effect: lock onto a target and retain it until the target is dead or out of range/sight (as per in-code comment)
-- InvalidateTarget
-  - Intended effect: reset currentTarget when the target is lost or dead (as per in-code comment)
-- Note: No implementation details are present beyond the comments; no automatic state changes are performed in this file.
-```
+- EnsureTarget()
+  - Intended to lock onto a target and maintain it until the target dies or is out of range/sight (per inline comment).
+- InvalidateTarget()
+  - Intended to reset currentTarget if the target is lost or dead (per inline comment).
+- No concrete implementation or runtime flows are provided in this file.
+- No explicit return values or exceptions are defined.
 
-```text
 4) Constraints & Failure Modes
-- No explicit guards, validation, or initialization in this file
-- Fields are public; no synchronization or threading notes
-- No runtime error handling or async behavior defined
-- EffectReceiver type is referenced but defined elsewhere (CHAL.Systems.Unit)
-```
+- No guards, null handling, or error handling implemented.
+- No threading or asynchronous considerations present.
+- No performance or allocation hints provided beyond the public fields.
 
-```text
 5) Example
-- Minimal usage (illustrative; no behavior guarantees since methods are unimplemented in this file)
-```csharp
-using CHAL.AI;
+- None derivable from the code as there is no implementation or usage example.
 
-var selector = new AITargetSelector
-{
-    sightRange = 50f,
-    prioMode = AITargetPrio.Nearest
-};
-
-// Adjust target according to its intended lifecycle (not implemented here)
-selector.EnsureTarget();
-```
-```
-
-```text
 6) Unknowns
-- Exact implementation details of EnsureTarget/InvalidateTarget (selection logic, target assignment, and release conditions)
-- How sightRange and prioMode influence target choice in practice
-- How EffectReceiver represents target status (alive/dead) and integration with this class
-- Whether AITargetSelector is instantiated via MonoBehaviour/ScriptableObject or another pattern
+- How EffectReceiver is defined and how it interacts with AITargetSelector.
+- How currentTarget is assigned or updated in practice.
+- How prioMode and sightRange influence target selection decisions.
+- Any Unity-specific lifecycle or update integration (not present in this file).
+- Any threading/async behavior related to target selection.
 ```

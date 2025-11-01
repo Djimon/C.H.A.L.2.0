@@ -2,53 +2,91 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Types/Vector4Save.cs`._
 
-# Purpose
-- Defines a structure for representing four-dimensional vectors (`Vector4Save`).
+```text
+1) Purpose
+- Serializable struct representing a four-dimensional vector with fields x, y, z, w.
+- Provides multiple constructors to initialize from scalar values or from Vector2/Vector3/Vector4 and their Save counterparts.
+- Defines implicit conversions to/from UnityEngine vectors (Vector2, Vector3, Vector4) and related Save types (Vector2Save, Vector3Save, Vector4Save).
 
-# Public API
-- Namespace: `BayatGames.SaveGameFree.Types`
+2) Public API
+- Namespace/module
+  - BayatGames.SaveGameFree.Types
+
 - Types
-  - `struct Vector4Save`
-    - Public fields/properties:
-      - `float x`: X component of the vector.
-      - `float y`: Y component of the vector.
-      - `float z`: Z component of the vector.
-      - `float w`: W component of the vector.
-    - Public methods:
-      - `Vector4Save(float x)`: Initializes with x; y, z, w set to 0.
-      - `Vector4Save(float x, float y)`: Initializes with x, y; z, w set to 0.
-      - `Vector4Save(float x, float y, float z)`: Initializes with x, y, z; w set to 0.
-      - `Vector4Save(float x, float y, float z, float w)`: Initializes with x, y, z, w.
-      - `Vector4Save(Vector2 vector)`: Initializes from a `Vector2`.
-      - `Vector4Save(Vector3 vector)`: Initializes from a `Vector3`.
-      - `Vector4Save(Vector4 vector)`: Initializes from a `Vector4`.
-      - `Vector4Save(Vector2Save vector)`: Initializes from a `Vector2Save`.
-      - `Vector4Save(Vector3Save vector)`: Initializes from a `Vector3Save`.
-      - `Vector4Save(Vector4Save vector)`: Initializes from another `Vector4Save`.
-      - `static implicit operator Vector4Save(Vector2 vector)`: Converts `Vector2` to `Vector4Save`.
-      - `static implicit operator Vector2(Vector4Save vector)`: Converts `Vector4Save` to `Vector2`.
-      - `static implicit operator Vector4Save(Vector3 vector)`: Converts `Vector3` to `Vector4Save`.
-      - `static implicit operator Vector3(Vector4Save vector)`: Converts `Vector4Save` to `Vector3`.
-      - `static implicit operator Vector4Save(Vector4 vector)`: Converts `Vector4` to `Vector4Save`.
-      - `static implicit operator Vector4(Vector4Save vector)`: Converts `Vector4Save` to `Vector4`.
-      - `static implicit operator Vector4Save(Vector2Save vector)`: Converts `Vector2Save` to `Vector4Save`.
-      - `static implicit operator Vector2Save(Vector4Save vector)`: Converts `Vector4Save` to `Vector2Save`.
-      - `static implicit operator Vector4Save(Vector3Save vector)`: Converts `Vector3Save` to `Vector4Save`.
-      - `static implicit operator Vector3Save(Vector4Save vector)`: Converts `Vector4Save` to `Vector3Save`.
+  - public struct Vector4Save
+    - Public fields
+      - public float x
+        - X component
+      - public float y
+        - Y component
+      - public float z
+        - Z component
+      - public float w
+        - W component
 
-# Key Behavior & Side Effects
-- Implicit conversions allow seamless transformation between `Vector4Save` and other vector types (`Vector2`, `Vector3`, `Vector4`, `Vector2Save`, `Vector3Save`).
+    - Constructors
+      - public Vector4Save ( float x )
+      - public Vector4Save ( float x, float y )
+      - public Vector4Save ( float x, float y, float z )
+      - public Vector4Save ( float x, float y, float z, float w )
+      - public Vector4Save ( Vector2 vector )
+      - public Vector4Save ( Vector3 vector )
+      - public Vector4Save ( Vector4 vector )
+      - public Vector4Save ( Vector2Save vector )
+      - public Vector4Save ( Vector3Save vector )
+      - public Vector4Save ( Vector4Save vector )
 
-# Constraints & Failure Modes
-- No explicit error handling or constraints are defined in the code.
-- Assumes valid input types for conversions.
+    - Implicit operators
+      - public static implicit operator Vector4Save ( Vector2 vector )
+      - public static implicit operator Vector2 ( Vector4Save vector )
+      - public static implicit operator Vector4Save ( Vector3 vector )
+      - public static implicit operator Vector3 ( Vector4Save vector )
+      - public static implicit operator Vector4Save ( Vector4 vector )
+      - public static implicit operator Vector4 ( Vector4Save vector )
+      - public static implicit operator Vector4Save ( Vector2Save vector )
+      - public static implicit operator Vector2Save ( Vector4Save vector )
+      - public static implicit operator Vector4Save ( Vector3Save vector )
+      - public static implicit operator Vector3Save ( Vector4Save vector )
 
-# Example
+3) Key Behavior & Side Effects
+- Field assignments occur only in constructors (no external I/O or side effects).
+- Conversions create new instances; round-trip conversions between Vector2/Vector3/Vector4 and Vector4Save are supported through implicit operators.
+- Default parameterless construction (via struct) yields zeros for all components.
+
+4) Constraints & Failure Modes
+- Public fields; no nullability concerns.
+- Struct type (value semantics); copies result in independent instances.
+- Uses UnityEngine types (Vector2, Vector3, Vector4) and related Save types (Vector2Save, Vector3Save, Vector4Save) defined elsewhere.
+- [Serializable] indicates Unity/serializer compatibility.
+
+5) Example
 ```csharp
-Vector4Save vector = new Vector4Save(1.0f, 2.0f, 3.0f, 4.0f);
-Vector2 vec2 = vector; // Implicit conversion to Vector2
+using BayatGames.SaveGameFree.Types;
+using UnityEngine;
+
+public class Example
+{
+    void Demo()
+    {
+        // Construct from scalars
+        Vector4Save v4s = new Vector4Save(1f, 2f, 3f, 4f);
+
+        // Convert to Unity types
+        Vector4 v4 = v4s;      // implicit
+        Vector3 v3 = v4s;      // implicit (drops w)
+        Vector2 v2 = v4s;      // implicit (drops z and w)
+
+        // Construct from Unity vectors
+        Vector3 unityVec = new Vector3(5f, 6f, 7f);
+        Vector4Save fromVec3 = new Vector4Save(unityVec);
+
+        // Convert back to Save types
+        Vector3Save vs3 = (Vector3Save)fromVec3;
+        Vector4Save toSave4 = (Vector4Save)unityVec;
+    }
+}
 ```
 
-# Unknowns
-- No information on the context or usage of `Vector2Save` and `Vector3Save` types.
-
+6) Unknowns
+- Definitions of Vector2Save, Vector3Save, and Vector2/Vector3/Vector4 are not shown in this file.
+- No other methods or behavior beyond constructors and implicit conversions are defined here.

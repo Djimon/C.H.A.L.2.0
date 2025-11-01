@@ -3,102 +3,106 @@
 _Automatically generated/updated from `Assets/src/Systems/Map/MapManager.cs`._
 
 1) Purpose
-- Defines MapManager (MonoBehaviour) responsible for map setup, wave progression, and hero spawning coordination.
-- Holds references to runtime UI elements (wave rewards, map rewards, hero selection) and the current map state.
-- Orchestrates map instantiation, hero spawning at spawn slots, wave start/completion, and reward UI transitions.
+- MapManager is a Unity MonoBehaviour that orchestrates map lifecycle: load current map, instantiate its prefab, manage waves, spawn selected heroes, and coordinate reward UI.
+- Exposes map and wave state (CurrentMap, CurrentWave, MaxWaves) and UI references (waveRewardUI, mapRewardUI, selectHeroUI) for wiring in the scene.
+- Coordinates with GameManager, HeroCatalogue, WaveManager, and UI components to drive map progression and rewards.
 
 2) Public API
 - Namespace/module: CHAL.Systems.Map
-- Types
-  - public class MapManager : MonoBehaviour
-    - Public fields/properties
-      - public MapDef CurrentMap { get; private set; }
-      - public GameObject waveRewardUI;
-      - public GameObject mapRewardUI;
-      - public GameObject selectHeroUI;
-      - public int CurrentWave { get; private set; } = 1;
-      - public int MaxWaves => CurrentMap != null ? CurrentMap.maxWaves : 0;
-    - Public methods
-      - public void HideUI()
-      - public void PrepareMap()
-      - public void ResetWave()
-      - [ContextMenu("Debug/StartWave")]
-        - public void StartWave()
-      - public void OnWaveCompleted(bool success, WaveRewards rewards)
-      - [ContextMenu("Debug/Start Next Wave")]
-        - public void NextWave()
-    - Internal methods
-      - internal void SetSelectedHeroes(List<string> heroIds)
-    - Private methods (surface not exposed publicly)
-      - private void SpawnSelectedHeroesAtSlots(List<string> heroIds, WaveManager waveMgr)
-      - private HeroDef ResolveHeroDef(string heroId)
-      - private GameObject GetHeroPrefab(HeroDef def)
-    - Private/Serialized fields (surface not exposed publicly)
-      - [SerializeField] private GameObject heroFallbackPrefab
-      - private Dictionary<string, HeroDef> _heroById
-      - private List<string> _pendingSelectedHeroes
-      - private GameObject _mapInstancedPrefab
-      - private WaveManager _waveManager
+- Type: public class MapManager : MonoBehaviour
+- Public properties
+  - public MapDef CurrentMap { get; private set; }
+  - public int CurrentWave { get; private set; }
+  - public int MaxWaves => CurrentMap != null ? CurrentMap.maxWaves : 0;
+- Public fields
+  - public GameObject waveRewardUI
+  - public GameObject mapRewardUI
+  - public GameObject selectHeroUI
+- Public methods
+  - public void HideUI()
+  - public void PrepareMap()
+  - public void ResetWave()
+  - public void StartWave()
+  - public void OnWaveCompleted(bool success, WaveRewards rewards)
+  - public void NextWave()
+- Internal methods (visibility in codebase)
+  - internal void SetSelectedHeroes(List<string> heroIds)
+- Note: There are also private methods (not part of the public API) used internally:
+  - SpawnSelectedHeroesAtSlots(List<string> heroIds, WaveManager waveMgr)
+  - ResolveHeroDef(string heroId)
+  - GetHeroPrefab(HeroDef def)
 
 3) Key Behavior & Side Effects
 - Awake
-  - Hides all UI via HideUI().
+  - Calls HideUI() to hide reward UI at startup.
 - Start
-  - Calls PrepareMap() to initialize current map and setup.
+  - Calls PrepareMap() to initialize the current map and select hero flow.
 - HideUI
-  - Disables visibility of WaveRewardUI and MapRewardUI components.
+  - waveRewardUI.GetComponent<WaveRewardUI>().Show(false)
+  - mapRewardUI.GetComponent<MapRewardUI>().Show(false)
 - PrepareMap
-  - Reads CurrentMap from GameManager.Instance.pendingMap and resets CurrentWave to 1.
-  - Destroys existing _mapInstancedPrefab if present.
-  - Instantiates CurrentMap.mapPrefab if provided; logs a warning if missing.
-  - Initializes and shows the hero selection UI (selectHeroUI) with this MapManager as context.
+  - CurrentMap = GameManager.Instance.pendingMap
+  - CurrentWave = 1
+  - Logs map start details
+  - Destroys existing _mapInstancedPrefab if present
+  - Instantiates CurrentMap.mapPrefab if available; otherwise logs a warning
+  - Initializes and shows HeroSelectionUI via selectHeroUI
 - ResetWave
-  - Sets CurrentWave to 1 and starts the wave via StartWave().
+  - Sets CurrentWave to 1 and starts the wave via StartWave()
 - StartWave
-  - Hides UI.
-  - Locates WaveManager via _mapInstancedPrefab.GetComponentInChildren<WaveManager>().
-  - If WaveManager not found, logs error, and exits to hero-hideout via GameManager.
-  - Spawns selected heroes at slots using _pendingSelectedHeroes via SpawnSelectedHeroesAtSlots.
-  - Logs the wave start and delegates to _waveManager.StartWave(CurrentMap, CurrentWave, this).
+  - Hides UI
+  - Locates WaveManager in the instantiated map
+  - If WaveManager not found: logs error, exits to hideout
+  - Spawns selected heroes at slots using _pendingSelectedHeroes
+  - Logs wave start
+  - Calls _waveManager.StartWave(CurrentMap, CurrentWave, this)
 - SpawnSelectedHeroesAtSlots
-  - If waveMgr is null, returns.
-  - Reads spawns from waveMgr.HeroSpawns; returns if null/empty.
-  - Spawns up to min(spawns.Count, heroIds.Count) heroes.
-  - For each heroId: resolves HeroDef, selects prefab (def.Prefab or fallback), logs warning if missing, instantiates at corresponding spawn point, initializes HeroController if present.
+  - Guards against null waveMgr
+  - Retrieves spawns from WaveManager.HeroSpawns
+  - Returns early if spawns null/empty
+  - Spawns up to min(spawns.Count, heroIds.Count)
+  - For each heroId:
+    - Resolves HeroDef via ResolveHeroDef
+    - Gets prefab via GetHeroPrefab(def); uses heroFallbackPrefab if needed
+    - Instantiates at corresponding spawn position/rotation
+    - If spawned object has HeroController, calls Init(def)
+    - Logs warning if no HeroController on the spawned hero
 - ResolveHeroDef
-  - Returns HeroDef from GameManager.Instance.HeroCatalogue.GetById(heroId) if catalogue exists.
+  - Returns GameManager.Instance.HeroCatalogue.GetById(heroId) or null
 - GetHeroPrefab
-  - Returns def.Prefab if available; otherwise returns heroFallbackPrefab.
+  - Uses def.Prefab if def != null; otherwise falls back to heroFallbackPrefab
 - SetSelectedHeroes
-  - Stores a copy of provided heroIds into _pendingSelectedHeroes (null-safe).
+  - Stores a copy of the provided list into _pendingSelectedHeroes (or null if input is null)
 - OnWaveCompleted
-  - If not success: set state to WaveReward, show and populate wave reward UI, return.
-  - If success and CurrentWave < MaxWaves: show WaveReward UI and populate; otherwise switch to MapReward and show/populate map reward UI.
+  - If success is false:
+    - Set game state to WaveReward
+    - Show waveRewardUI and call populateText(success)
+  - If success and CurrentWave < MaxWaves:
+    - Set state to WaveReward
+    - Show wave reward UI and populate text
+  - If success and on last wave:
+    - Set state to MapReward
+    - Show mapRewardUI and populate text
 - NextWave
-  - Increments CurrentWave, sets GameState to MapPhase, and starts the next wave via StartWave().
+  - Increments CurrentWave
+  - Sets game state to MapPhase
+  - Calls StartWave()
 
 4) Constraints & Failure Modes
-- Precondition dependencies (must be set externally)
-  - CurrentMap is sourced from GameManager.Instance.pendingMap (not null-guarded here).
-  - waveRewardUI, mapRewardUI, selectHeroUI must be assigned to avoid null reference on UI calls.
-  - _mapInstancedPrefab must be non-null when StartWave runs; otherwise GetComponentInChildren<WaveManager>() may fail.
-  - CurrentMap.mapPrefab may be null; code logs a warning but continues.
-- Potential null-ref / missing data risks
-  - HideUI assumes waveRewardUI/mapRewardUI are non-null.
-  - StartWave assumes _mapInstancedPrefab exists; no null-check before retrieving WaveManager.
-  - GetHeroPrefab may return null if both def.Prefab and heroFallbackPrefab are null; spawning will skip with a warning.
-  - OnWaveCompleted accesses rewards without null checks beyond the provided parameters; assumes rewards object is valid when called.
-- Performance/allocations
-  - SpawnSelectedHeroesAtSlots creates heroes iteratively; relies on provided spawn list and hero IDs.
+- Potential null access in StartWave if _mapInstancedPrefab is not set (no explicit null check before GetComponentInChildren)
+- StartWave assumes Current map prefab was instantiated; otherwise _mapInstancedPrefab could be null
+- HideUI and OnWaveCompleted unconditionally access waveRewardUI/mapRewardUI components; missing references could cause NREs
+- GetHeroPrefab may return null if both def.Prefab and heroFallbackPrefab are null; SpawnSelectedHeroesAtSlots handles this by logging a warning and skipping
+- MaxWaves returns 0 if CurrentMap is null; rely on external code to initialize CurrentMap
+- SpawnSelectedHeroesAtSlots depends on WaveManager.HeroSpawns being non-null; otherwise no spawning
+- OnWaveCompleted uses rewards parameter but only passes success to populateText; details depend on UI implementation
 
 5) Example
-- Not applicable: no derivable minimal usage snippet due to missing public singleton access and runtime setup details in this file.
+- Not provided (no self-contained usage example derivable without surrounding game context)
 
 6) Unknowns
-- Exact structure of MapDef, HeroDef, WaveManager, WaveRewards, MapRewardUI, WaveRewardUI beyond usage here.
-- How HeroDef.Prefab is defined (field name and type) beyond its usage.
-- Exact lifecycle guarantees for when PrepareMap is called relative to GameManager state.
-- How _heroById is populated (declared but unused in this file).
-- Whether heroFallbackPrefab is always assigned in the editor or potentially null.
-
-Note: This documentation reflects the public surface and explicit behavior visible in the provided MapManager.cs.
+- Exact definitions and members of external types (MapDef, HeroDef, WaveManager, WaveRewards, GameManager, HeroCatalogue, DebugManager, HeroSelectionUI, WaveRewardUI, MapRewardUI, HeroController)
+- How pendingMap is populated in GameManager, and when PrepareMap is typically called relative to Start
+- Behavior of WaveManager.StartWave and HeroController.Init
+- Serialized field expectations for heroFallbackPrefab.Prefab naming and availability
+- Threading model, if any, for these calls (Unity main thread assumed)
