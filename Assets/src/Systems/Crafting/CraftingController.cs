@@ -5,8 +5,10 @@ using CHAL.Systems.Items;
 using CHAL.Systems.Research;
 using CHAL.UI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static CHAL.Systems.Crafting.CraftingService;
 
 namespace CHAL.Systems.Crafting
@@ -24,8 +26,9 @@ namespace CHAL.Systems.Crafting
         public RecipeDetailPanel detailPanel;
 
         [Header("Inventories")]
-        public string materialsInventoryId = "player:materials";
         public string outputInventoryId = "player:gear";
+        private HashSet<string> _relevantInvIds;
+
 
         private IWallet _wallet;
 
@@ -40,14 +43,48 @@ namespace CHAL.Systems.Crafting
         #region Unity Lifecycle
         private void OnEnable()
         {
-            if (inv != null) inv.OnSlotChanged += HandleSlotChanged;
             WireUI();
-            RebuildRecipeList();
+        }
+
+        private void Awake()
+        {
+            _relevantInvIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (!string.IsNullOrEmpty(outputInventoryId))
+                _relevantInvIds.Add(outputInventoryId);
         }
 
         private void Start()
         {
-            _wallet = GameManager.Instance.Profile;
+            StartCoroutine(InitAfterOneFrame());
+
+        }
+
+        private IEnumerator InitAfterOneFrame()
+        {
+            yield return null;
+
+            _wallet = GameManager.Instance != null ? GameManager.Instance.Profile : null;
+
+            if (_wallet == null)
+            {
+                DebugManager.Warning("Wallet is null. Crafting UI will not initialize.", "Crafting");
+            }
+
+            if (inv == null && GameManager.Instance != null)
+            {
+                inv = GameManager.Instance.Inventory; // <-- dein zentrales Inv-System
+                DebugManager.Info(inv != null ? "InventoryDomain resolved from GameManager." : "InventoryDomain still null.", "Crafting");
+            }
+
+            if (inv == null)
+            {
+                DebugManager.Warning("InventoryDomain is null. Crafting UI will not initialize.", "Crafting");
+                yield break;
+            }
+
+            inv.OnSlotChanged += HandleSlotChanged;
+            RebuildRecipeList();
+            RefreshPreviewAndDetail();
         }
 
         private void OnDisable()
@@ -60,8 +97,8 @@ namespace CHAL.Systems.Crafting
         #region Wiring
         private void WireUI()
         {
-            if (listView != null) listView.OnSelect += HandleSelectRecipe;
-            if (detailPanel != null) detailPanel.OnCraftClicked += HandleCraftClicked;
+            if (listView != null) { listView.OnSelect += HandleSelectRecipe; DebugManager.Info("ListView wired", "Crafting"); }
+            if (detailPanel != null) { detailPanel.OnCraftClicked += HandleCraftClicked; DebugManager.Info("Detail wired", "Crafting"); }
         }
 
         private void UnwireUI()
@@ -75,6 +112,14 @@ namespace CHAL.Systems.Crafting
         private void RebuildRecipeList()
         {
             _visibleRecipes.Clear();
+
+            if (inv == null)
+            {
+                detailPanel?.Clear();
+                listView?.SetData(Array.Empty<RecipeDef>());
+                DebugManager.Warning("Crafting", "Rebuild skipped: InventoryDomain is null.");
+                return;
+            }
 
             if (catalog == null || catalog.recipes == null)
             {
@@ -105,6 +150,29 @@ namespace CHAL.Systems.Crafting
                 _selected = null;
                 detailPanel?.Clear();
             }
+
+            _relevantInvIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (!string.IsNullOrEmpty(outputInventoryId))
+                _relevantInvIds.Add(outputInventoryId);
+
+            if (GameManager.Instance != null && _visibleRecipes != null)
+            {
+                foreach (var r in _visibleRecipes)
+                {
+                    if (r?.inputs == null) continue;
+                    foreach (var need in r.inputs)
+                    {
+                        if (string.IsNullOrEmpty(need.itemId)) continue;
+                        if (GameManager.Instance.TryResolveByItemId(need.itemId, out var _type, out var instId)
+                            && !string.IsNullOrEmpty(instId))
+                        {
+                            _relevantInvIds.Add(instId);
+                        }
+                    }
+                }
+            }
+
+            DebugManager.Info( $"Visible recipes: {_visibleRecipes.Count}", "Crafting");
         }
 
         private void RefreshPreviewAndDetail()
@@ -112,11 +180,12 @@ namespace CHAL.Systems.Crafting
             if (_selected == null || inv == null || _wallet == null)
             {
                 detailPanel?.Clear();
+                DebugManager.Info($"null?: {_selected},{inv},{_wallet}", "Crafting");
                 return;
             }
 
             _preview = CraftingService.GetPreview(_selected, outputInventoryId, inv, _wallet);
-            detailPanel?.Show(_selected, _preview, GetGoldNeed(_selected), _wallet.GetCurrency("gold"), CountMaterials(_selected));
+            detailPanel?.ShowRecipeDetails(_selected, _preview, GetGoldNeed(_selected), _wallet.GetCurrency("gold"), CountMaterials(_selected));
         }
         #endregion
 
@@ -155,10 +224,9 @@ namespace CHAL.Systems.Crafting
         private void HandleSlotChanged(string instanceId, int slotIndex, ItemStack? newStack)
         {
             // Nur refreshen, wenn relevante Inventare betroffen sind
-            if (instanceId == materialsInventoryId || instanceId == outputInventoryId)
+            if (_relevantInvIds != null && _relevantInvIds.Contains(instanceId))
             {
                 RefreshPreviewAndDetail();
-                // Für Badges in der Liste könntest du hier auch Previews für sichtbare Rezepte nachziehen.
             }
         }
         #endregion

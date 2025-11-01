@@ -31,10 +31,13 @@
     font-size: 14px;
     margin-bottom: 6px;
     opacity: 0.85;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
 }
 
 .list-scroll {
     flex-grow: 1;
+    color: rgb(255, 255, 255);
 }
 
 .right-pane {
@@ -49,6 +52,8 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
 }
 
 .item-icon {
@@ -61,6 +66,7 @@
 .header-text {
     display: flex;
     flex-direction: column;
+    color: rgb(255, 255, 255);
 }
 
 .item-name {
@@ -77,6 +83,7 @@
 .implicit-row {
     display: flex;
     flex-direction: row;
+    color: rgb(255, 255, 255);
 }
 
 .implicit-info {
@@ -97,6 +104,7 @@
     padding-bottom: 8px;
     background-color: rgba(0, 0, 0, 0.6);
     min-width: 220px;
+    color: rgb(255, 255, 255);
 }
 
 .tooltip-title {
@@ -123,11 +131,14 @@
 .section-title {
     margin-bottom: 4px;
     opacity: 0.85;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
 }
 
 .ingredients-list {
     display: flex;
     flex-direction: column;
+    color: rgb(255, 255, 255);
 }
 
 .ing-row {
@@ -146,6 +157,7 @@
 
 .ing-text {
     font-size: 12px;
+    color: rgb(255, 255, 255);
 }
 
 .refine-panel {
@@ -155,6 +167,7 @@
     padding-top: 8px;
     padding-bottom: 8px;
     background-color: rgba(255, 255, 255, 0.04);
+    color: rgb(255, 255, 255);
 }
 
 .refine-title {
@@ -180,6 +193,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    color: rgb(255, 255, 255);
 }
 
 .gold-label {
@@ -191,6 +205,22 @@
     width: 160px;
     height: 36px;
     margin-left: auto;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-left-color: rgb(107, 245, 255);
+    border-right-color: rgb(107, 245, 255);
+    border-top-color: rgb(107, 245, 255);
+    border-bottom-color: rgb(107, 245, 255);
+    color: rgb(124, 255, 239);
+    background-color: rgba(0, 0, 0, 0);
+    -unity-font-style: bold;
+    font-size: 110%;
 }
 
 .fail-label {
@@ -216,4 +246,8 @@
 .recipe-row__craftable {
     border-width: 1px;
     border-color: rgba(120, 255, 120, 0.35);
+}
+
+.exit-btn {
+    align-self: flex-end;
 }

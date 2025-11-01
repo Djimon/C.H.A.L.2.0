@@ -1,11 +1,12 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/src/UI/uss/crafting.uss?fileID=7433441132597879392&amp;guid=8b07e91360515384cbd6622986ef5772&amp;type=3#crafting" />
-    <ui:VisualElement name="crafting-root" class="crafting-root" style="flex-direction: row;">
+    <ui:VisualElement name="crafting-root" class="crafting-root" style="flex-direction: row; background-color: rgba(0, 0, 0, 0.86);">
         <ui:VisualElement name="left-pane" class="left-pane">
             <ui:Label text="Rezepte" class="pane-title" />
             <ui:ScrollView name="list-scroll" class="list-scroll" />
         </ui:VisualElement>
         <ui:VisualElement name="right-pane" class="right-pane">
+            <ui:Button text="X" name="exit" class="exit-btn" />
             <ui:VisualElement name="header" class="header">
                 <ui:VisualElement name="icon" class="item-icon" />
                 <ui:VisualElement class="header-text">

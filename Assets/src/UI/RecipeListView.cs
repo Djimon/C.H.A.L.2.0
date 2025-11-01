@@ -27,21 +27,38 @@ namespace CHAL.UI
             _scroll?.Clear();
             if (recipes == null) return;
 
-            // Gruppierung nach slotType (GearType) – falls null, als "Misc" einsortieren
+            // Gruppierung nach slotType; null/Default => "Misc"
             var groups = recipes
                 .GroupBy(r => r.slotType.ToString())
                 .OrderBy(g => g.Key);
 
             foreach (var g in groups)
             {
-                var header = new Label(g.Key) { pickingMode = PickingMode.Ignore };
-                header.AddToClassList("group-header");
-                _scroll.Add(header);
+                var fold = new Foldout { text = g.Key, value = true };
+                fold.AddToClassList("group-foldout");
+                _scroll.Add(fold);
 
                 foreach (var r in g)
                 {
-                    var row = MakeRow(r);
-                    _scroll.Add(row);
+                    var row = new VisualElement();
+                    row.AddToClassList("recipe-row");
+
+                    var btn = new Button(() => {
+                        OnSelect?.Invoke(r);
+                        Debug.Log($"[RecipeListView] Select: {r.name}");
+                    })
+                    {
+                        text = string.IsNullOrEmpty(r.displayKey) ? r.name : r.displayKey
+                    };
+
+                    // Row zusätzlich klickbar (falls Styles Button verdecken)
+                    row.RegisterCallback<ClickEvent>(_ => {
+                        OnSelect?.Invoke(r);
+                        Debug.Log($"[RecipeListView] RowClick: {r.name}");
+                    });
+
+                    row.Add(btn);
+                    fold.Add(row);
                 }
             }
         }

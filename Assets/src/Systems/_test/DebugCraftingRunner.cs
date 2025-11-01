@@ -52,7 +52,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
         Debug.Log($"[CraftTest] Recipe: {NameOf(recipe)}");
         PrintPreview(recipe);
 
-        if (CraftingService.TryCraftToInventory(recipe, _inv, materialsInventoryId, _wallet, outputInventoryId, out var reason))
+        if (CraftingService.TryCraftToInventory(recipe, _inv,  _wallet, outputInventoryId, out var reason))
         {
             Debug.Log($"[CraftTest] SUCCESS -> Output placed into '{outputInventoryId}'");
         }
@@ -69,7 +69,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
     public void GrantRequirements()
     {
         var recipe = catalog.recipes[recipeIndex];
-        var preview = CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet);
+        var preview = CraftingService.GetPreview(recipe, outputInventoryId, _inv,  _wallet);
 
         // 1) Materials auffüllen
         //foreach (var m in preview.materials)
@@ -101,13 +101,13 @@ public sealed class CraftingDebugRunner : MonoBehaviour
         //}
 
         // 3) Kontrolle
-        var after = CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet);
+        var after = CraftingService.GetPreview(recipe, outputInventoryId, _inv,  _wallet);
         Debug.Log($"[Grant] canCraft={after.canCraft} for x{grantCrafts} crafts.");
     }
 
     private void PrintPreview(RecipeDef recipe)
     {
-        var prev = CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet);
+        var prev = CraftingService.GetPreview(recipe, outputInventoryId, _inv,  _wallet);
         var sb = new StringBuilder();
 
         sb.AppendLine($"[Preview] canCraft={prev.canCraft}");

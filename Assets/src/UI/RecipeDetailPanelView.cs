@@ -82,7 +82,7 @@ namespace CHAL.UI
             _refinePanel.style.display = DisplayStyle.None;
         }
 
-        public void Show(RecipeDef r,
+        public void ShowRecipeDetails(RecipeDef r,
                          CraftingService.RecipePreview preview,
                          int needGold, int haveGold,
                          Dictionary<string, int> haveByItemId)
