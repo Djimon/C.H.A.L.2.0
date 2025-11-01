@@ -4,80 +4,80 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/DoTStatusEffect
 
 ```text
 1) Purpose
-- Define a Damage-over-Time (DoT) status effect with stacking behavior.
-- Hold DoT configuration (DoTSettings) and runtime state (CurrentStacks, timer, etc.) for the effect.
+- Defines a Damage-over-Time (DoT) status effect (DoTStatusEffect) with stacking behavior.
+- Provides configuration for DoT via DoTSettings (serializable, public fields).
+- Implements stacking and duration refresh logic in TryAddStack.
 
 2) Public API
-- Namespace: CHAL.Systems.Skill
+- Namespace/module: CHAL.Systems.Skill
 
 - public class DoTStatusEffect : ActiveStatusEffect
-  - Public fields/properties
+  - Public fields
     - public DoTSettings DoTsettings
     - public int CurrentStacks
     - public float internalTickTimer
-    - public StackingMode Stacking = StackingMode.AddStacks
+    - public StackingMode Stacking
   - Public constructors
     - public DoTStatusEffect(DoTSettings settings)
   - Public methods
     - public void TryAddStack(EffectReceiver source)
 
-- [System.Serializable] public class DoTSettings
+- public class DoTSettings
+  - [System.Serializable]
   - Public fields
-    - public string EffectId = "DefaultDoT"
-    - public DamageType DamageType = DamageType.Poison
-    - public float DamagePerTick = 1f
-    - public float TickInterval = 1f
-    - public float BaseDuration = 5f
-    - public int BaseMaxStacks = 1
-    - public StackingMode Stacking = StackingMode.AddStacks
+    - public string EffectId
+    - public DamageType DamageType
+    - public float DamagePerTick
+    - public float TickInterval
+    - public float BaseDuration
+    - public int BaseMaxStacks
+    - public StackingMode Stacking
 
 3) Key Behavior & Side Effects
 - DoTStatusEffect constructor
   - Sets DoTsettings
-  - Sets EffectId from settings
-  - Sets RemainingTime from settings.BaseDuration
-  - Sets CurrentMaxStacks from settings.BaseMaxStacks
-  - Sets internalTickTimer from settings.TickInterval
-
+  - EffectId = settings.EffectId
+  - RemainingTime = settings.BaseDuration
+  - CurrentMaxStacks = settings.BaseMaxStacks
+  - internalTickTimer = settings.TickInterval
 - TryAddStack(EffectReceiver source)
-  - Recalculates bonusStacks via source.ActiveModifiers.Apply(ModifierTarget.DoTMaxStacks, 0, new List<SkillTag> { SkillTag.DoT })
+  - bonusStacks = source.ActiveModifiers.Apply(ModifierTarget.DoTMaxStacks, 0, [SkillTag.DoT])
   - CurrentMaxStacks = DoTsettings.BaseMaxStacks + bonusStacks
-  - CurrentStacks = Math.Min(CurrentStacks, CurrentMaxStacks)
-  - If CurrentStacks < CurrentMaxStacks: CurrentStacks++ (add a stack)
-  - Else: RemainingTime = BaseDuration (refresh/reassert duration)
-
-- Note: Stacking field exists (StackingMode) but the logic in this file uses an in-class default of AddStacks; no alternate stacking behavior is applied within TryAddStack.
+  - CurrentStacks = min(CurrentStacks, CurrentMaxStacks)
+  - If CurrentStacks < CurrentMaxStacks -> CurrentStacks++
+  - Else -> RemainingTime = BaseDuration
 
 4) Constraints & Failure Modes
-- Null handling: TryAddStack does not guard against null source; potential NullReferenceException if source is null.
-- External dependencies: Relies on ActiveStatusEffect, EffectReceiver, ActiveModifiers, ModifierTarget, SkillTag, DamageType, StackingMode (definitions not in this file).
-- Serialization: DoTSettings is marked [System.Serializable] for Unity/editor usage.
+- No explicit null checks in TryAddStack; relies on non-null source and source.ActiveModifiers.
+- Public fields are mutable; behavior depends on base class (ActiveStatusEffect) for fields like EffectId, RemainingTime, BaseDuration.
 
 5) Example
+- Minimal usage example (illustrative; assumes a valid source):
 ```csharp
-using CHAL.Systems.Skill;
+var settings = new DoTSettings
+{
+  EffectId = "DefaultDoT",
+  DamageType = DamageType.Poison,
+  DamagePerTick = 1f,
+  TickInterval = 1f,
+  BaseDuration = 5f,
+  BaseMaxStacks = 1,
+  Stacking = StackingMode.AddStacks
+};
 
-public class ExampleUsage {
-    public void CreateDoT() {
-        var settings = new DoTSettings
-        {
-            EffectId = "PoisonDoT",
-            DamageType = DamageType.Poison,
-            DamagePerTick = 2f,
-            TickInterval = 1f,
-            BaseDuration = 5f,
-            BaseMaxStacks = 3,
-            Stacking = StackingMode.AddStacks
-        };
+var dotEffect = new DoTStatusEffect(settings);
 
-        var dot = new DoTStatusEffect(settings);
-        // dot can later have TryAddStack called with an EffectReceiver
-    }
-}
+// Assuming 'source' is a valid EffectReceiver with ActiveModifiers
+dotEffect.TryAddStack(source);
 ```
 
 6) Unknowns
-- Details of ActiveStatusEffect (e.g., how RemainingTime/BaseDuration are updated over time).
-- The exact implementations/types of EffectReceiver, ActiveModifiers, ModifierTarget, SkillTag, DamageType, StackingMode beyond their usage here.
-- How DoT tick application is processed across ticks (not implemented in this snippet).
-- Whether and how DoTSettings.Stacking influences behavior beyond being stored.
+- Details of ActiveStatusEffect base class (fields like EffectId, RemainingTime, BaseDuration) and how they are used at runtime.
+- Definitions and behavior of:
+  - EffectReceiver
+  - ActiveModifiers and Apply(...) semantics
+  - ModifierTarget.DoTMaxStacks
+  - SkillTag.DoT and StackingMode semantics
+  - Damage application per tick (how TickInterval, DamagePerTick are applied over time)
+- DoT tick progression, timing, and interaction with other systems beyond this file.
+```

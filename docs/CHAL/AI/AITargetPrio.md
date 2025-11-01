@@ -2,52 +2,64 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Unit/AiTargetSelector.cs`._
 
-Purpose
-- Defines AITargetSelector and AITargetPrio within the CHAL.AI namespace.
-- Exposes public fields to hold target state: currentTarget (EffectReceiver), prioMode (AITargetPrio), sightRange (float).
-- Declares public methods to manage targeting: EnsureTarget() and InvalidateTarget().
+```text
+1) Purpose
+- Defines CHAL.AI.AITargetSelector: a placeholder target-selection helper for AI.
+- Stores currentTarget, priority mode, and sight range for targeting decisions.
+- Declares EnsureTarget() and InvalidateTarget() as public surface.
+- Defines CHAL.AI.AITargetPrio with Nearest, HighestHP, LowestHP.
 
-Public API
-- Namespace/module: CHAL.AI
+```
+
+```text
+2) Public API
+- Namespace/module
+  - CHAL.AI
 - Types
-  - public class AITargetSelector [no inheritance]
+  - public class AITargetSelector
     - Public fields
       - public EffectReceiver currentTarget
+        - currently targeted entity (role: target reference)
       - public AITargetPrio prioMode
+        - target selection priority mode
       - public float sightRange
+        - detection/engagement range
     - Public methods
       - public void EnsureTarget()
+        - No implementation provided; intended to lock onto a target until dead or out of range/sight (per code comment)
       - public void InvalidateTarget()
+        - No implementation provided; intended to reset currentTarget if Lost/dead (per code comment)
   - public enum AITargetPrio
     - Nearest
     - HighestHP
     - LowestHP
 
-Key Behavior & Side Effects
-- EnsureTarget(): intended to lock onto a target until the target is dead or out of range/sight (as described by comment in code).
-- InvalidateTarget(): intended to reset currentTarget when the target is lost or dead (as described by comment in code).
-- No concrete implementation present; behavior is described only via comments.
-
-Constraints & Failure Modes
-- No implemented logic; none of the methods contain executable code beyond comments.
-- currentTarget may be null if not set externally; no guards, validation, or initialization shown.
-- No threading, async, or performance considerations evident from this file.
-- Serialization/Unity-specific behavior not defined (no attributes, no MonoBehaviour, etc.).
-
-Example
-- Minimal usage illustrating surface shape and intended calls:
-```csharp
-var selector = new CHAL.AI.AITargetSelector();
-selector.prioMode = CHAL.AI.AITargetPrio.Nearest;
-selector.sightRange = 50f;
-selector.EnsureTarget();
-
-// Later, when target is lost or dead:
-selector.InvalidateTarget();
 ```
 
-Unknowns
-- How currentTarget is assigned or retrieved in practice.
-- What constitutes “dead” or “out of range” in this context beyond the comments.
-- Default values for fields if not explicitly set.
-- How this class interacts with the broader AI/world system (threading, update loops, etc.).
+```text
+3) Key Behavior & Side Effects
+- EnsureTarget()
+  - Intended behavior: lock onto a target until dead or out of range/sight (per comment).
+- InvalidateTarget()
+  - Intended behavior: reset currentTarget if Lost/dead (per comment).
+- Public surface only; no concrete logic implemented in this file.
+- currentTarget holds the currently selected EffectReceiver reference; updated by methods (implementation not provided).
+
+```
+
+```text
+4) Constraints & Failure Modes
+- No explicit null checks, validations, or error handling in this file.
+- No threading, async, or performance/debug notes.
+- All fields are public; no encapsulation or invariants documented.
+- No default values or constructor logic shown.
+
+```
+
+```text
+6) Unknowns
+- How EnsureTarget selects a target based on prioMode (algorithm not implemented).
+- How EffectReceiver defines dead state or range/sight checks.
+- How this integrates with Unity lifecycle (MonoBehaviour/ScriptableObject) since not specified.
+- Any side effects beyond updating currentTarget are not defined.
+```

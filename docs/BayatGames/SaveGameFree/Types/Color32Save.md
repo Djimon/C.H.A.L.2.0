@@ -2,37 +2,55 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Types/Color32Save.cs`._
 
-# Purpose
-- Defines a structure for representing RGBA colors in a 32-bit format.
+```text
+Purpose
+- Represent RGBA color in 32-bit format.
+- Be serializable by Unity ([Serializable]).
+- Provide implicit conversions between UnityEngine.Color32 and this struct.
 
-# Public API
-- Namespace: `BayatGames.SaveGameFree.Types`
+Public API
+- Namespace/Module: BayatGames.SaveGameFree.Types
 - Types
-  - `struct Color32Save`
-    - Public fields/properties:
-      - `byte r`: Red component of the color.
-      - `byte g`: Green component of the color.
-      - `byte b`: Blue component of the color.
-      - `byte a`: Alpha component of the color.
-    - Public methods:
-      - `Color32Save(Color32 color)`: Constructor that initializes the struct from a `Color32`.
-      - `static implicit operator Color32Save(Color32 color)`: Converts a `Color32` to `Color32Save`.
-      - `static implicit operator Color32(Color32Save color)`: Converts a `Color32Save` to `Color32`.
+  - public struct Color32Save [Serializable]
+    - Public fields:
+      - public byte r; // red channel
+      - public byte g; // green channel
+      - public byte b; // blue channel
+      - public byte a; // alpha channel
+    - Public constructors
+      - public Color32Save ( Color32 color )
+        - Initializes r, g, b, a from color.r, color.g, color.b, color.a
+    - Public operators
+      - public static implicit operator Color32Save ( Color32 color )
+        - Returns new Color32Save ( color )
+      - public static implicit operator Color32 ( Color32Save color )
+        - Returns new Color32 ( color.r, color.g, color.b, color.a )
 
-# Key Behavior & Side Effects
-- Implicit conversions allow seamless use between `Color32` and `Color32Save`.
+Key Behavior & Side Effects
+- Construction from Color32 copies r/g/b/a into the struct fields.
+- Implicit conversion Color32 -> Color32Save creates a new Color32Save.
+- Implicit conversion Color32Save -> Color32 creates a new UnityEngine.Color32 with stored channels.
+- No mutating methods; struct is a plain data holder with value-type semantics.
 
-# Constraints & Failure Modes
-- No explicit guards or null handling noted.
-- No threading or performance considerations evident.
+Constraints & Failure Modes
+- Public fields with no validation; bytes store 0–255 per channel.
+- Struct (value type); assignments/pass-by-value semantics apply.
+- No threading, asynchronous behavior, or side effects beyond conversions.
+- Serialization behavior relies on Unity's [Serializable] handling (not detailed here).
 
-# Example
+Example
+- Minimal usage derived from the file:
+
 ```csharp
-Color32 color = new Color32(255, 0, 0, 255); // Red color
-Color32Save colorSave = color; // Implicit conversion to Color32Save
-Color32 originalColor = colorSave; // Implicit conversion back to Color32
+Color32 someColor = new Color32(128, 64, 32, 255);
+Color32Save saved = someColor;      // implicit conversion to Color32Save
+Color32 restored = saved;            // implicit conversion back to Color32
 ```
 
-# Unknowns
-- No unknowns identified from the file.
+Unknowns
+- How this type is serialized by the surrounding SaveGameFree framework (beyond [Serializable]).
+- Any additional overloads or constructors not present in this file.
+- Performance implications of repeated implicit conversions.
+- Interaction with Unity version-specific serialization rules.
 
+```

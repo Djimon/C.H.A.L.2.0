@@ -2,66 +2,196 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/SaveGameWeb.cs`._
 
-# Purpose
-- Defines the `SaveGameWeb` class for saving and loading game data from a web server.
+```text
+1) Purpose
+- Defines SaveGameWeb class to save/load data to/from a web URL using HTTP POST.
+- Provides configurable defaults (credentials, URL, encoding, serializer, encoder).
+- Exposes instance properties to customize per-request behavior and supports Save/Load workflows via coroutines.
 
-# Public API
-- Namespace: `BayatGames.SaveGameFree`
-- Types:
-  - **public class SaveGameWeb**
-    - **Public Properties:**
-      - `static string DefaultUsername` - Gets or sets the default username.
-      - `static string DefaultPassword` - Gets or sets the default password.
-      - `static string DefaultURL` - Gets or sets the default URL.
-      - `static bool DefaultEncode` - Gets or sets the default encoding flag.
-      - `static string DefaultEncodePassword` - Gets or sets the default encode password.
-      - `static ISaveGameSerializer DefaultSerializer` - Gets or sets the default serializer.
-      - `static ISaveGameEncoder DefaultEncoder` - Gets or sets the default encoder.
-      - `static Encoding DefaultEncoding` - Gets or sets the default encoding.
-      - `virtual string Username` - Gets or sets the username.
-      - `virtual string Password` - Gets or sets the password.
-      - `virtual string URL` - Gets or sets the URL.
-      - `virtual bool Encode` - Gets or sets the encoding flag.
-      - `virtual string EncodePassword` - Gets or sets the encode password.
-      - `virtual ISaveGameSerializer Serializer` - Gets or sets the serializer.
-      - `virtual ISaveGameEncoder Encoder` - Gets or sets the encoder.
-      - `virtual Encoding Encoding` - Gets or sets the encoding.
-      - `virtual UnityWebRequest Request` - Gets the current web request.
-      - `virtual bool IsError` - Indicates if there was an error.
-      - `virtual string Error` - Gets the error message.
-    - **Public Methods:**
-      - `SaveGameWeb()` - Initializes with default username.
-      - `SaveGameWeb(string username)` - Initializes with specified username.
-      - `SaveGameWeb(string username, string password)` - Initializes with specified username and password.
-      - `SaveGameWeb(string username, string password, string url)` - Initializes with specified username, password, and URL.
-      - `SaveGameWeb(string username, string password, string url, bool encode)` - Initializes with specified username, password, URL, and encoding flag.
-      - `SaveGameWeb(string username, string password, string url, bool encode, string encodePassword)` - Initializes with specified parameters including encode password.
-      - `SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer)` - Initializes with specified parameters including serializer.
-      - `SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer, ISaveGameEncoder encoder)` - Initializes with specified parameters including encoder.
-      - `SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer, ISaveGameEncoder encoder, Encoding encoding)` - Initializes with all parameters.
-      - `IEnumerator Save<T>(string identifier, T obj)` - Saves the specified object.
-      - `IEnumerator Download(string identifier)` - Downloads data for the specified identifier.
-      - `T Load<T>(string identifier)` - Loads data for the specified identifier.
-      - `T Load<T>(string identifier, T defaultValue)` - Loads data with a default value.
-      - `IEnumerator Send(string identifier, string data, string action)` - Sends data to the server.
-
-# Key Behavior & Side Effects
-- `Save<T>` method serializes an object and sends it to the server.
-- `Download` method retrieves data from the server.
-- `Load<T>` methods deserialize data from the server response.
-- `Send` method handles the web request and checks for errors.
-
-# Constraints & Failure Modes
-- Handles null or empty values for identifiers and data.
-- Uses Unity's `UnityWebRequest` for network operations, which may fail due to network issues.
-- Error handling is done through `IsError` and `Error` properties.
-
-# Example
-```csharp
-SaveGameWeb saveGame = new SaveGameWeb("user", "pass", "http://www.example.com");
-yield return saveGame.Save("gameData", myGameObject);
 ```
 
-# Unknowns
-- Specific behavior of the server-side implementation is not defined in this file.
+```csharp
+2) Public API
+- Namespace/module
+  - BayatGames.SaveGameFree
 
+- Types
+  - public class SaveGameWeb
+    - Static members
+      - public static string DefaultUsername
+        - getter/setter for default username
+      - public static string DefaultPassword
+        - getter/setter for default password
+      - public static string DefaultURL
+        - getter/setter for default URL
+      - public static bool DefaultEncode
+        - getter/setter for default encode flag
+      - public static string DefaultEncodePassword
+        - getter/setter for default encode password
+      - public static ISaveGameSerializer DefaultSerializer
+        - getter/setter for default serializer; lazily initializes to SaveGameJsonSerializer
+      - public static ISaveGameEncoder DefaultEncoder
+        - getter/setter for default encoder; lazily initializes to SaveGameSimpleEncoder
+      - public static Encoding DefaultEncoding
+        - getter/setter for default text encoding; lazily initializes to UTF8
+
+    - Instance members
+      - protected string m_Username
+      - protected string m_Password
+      - protected string m_URL
+      - protected bool m_Encode
+      - protected string m_EncodePassword
+      - protected ISaveGameSerializer m_Serializer
+      - protected ISaveGameEncoder m_Encoder
+      - protected Encoding m_Encoding
+      - protected UnityWebRequest m_Request
+      - protected bool m_IsError
+      - protected string m_Error
+
+      - public virtual string Username { get; set; }
+        - Username used for authentication in requests
+
+      - public virtual string Password { get; set; }
+        - Password used for authentication in requests
+
+      - public virtual string URL { get; set; }
+        - URL to post to
+
+      - public virtual bool Encode { get; set; }
+        - If true, data is encoded before sending
+
+      - public virtual string EncodePassword { get; set; }
+        - Password used for encoding/decoding data
+
+      - public virtual ISaveGameSerializer Serializer { get; set; }
+        - Serializer used for (de)serialization; lazily initializes to SaveGameJsonSerializer
+
+      - public virtual ISaveGameEncoder Encoder { get; set; }
+        - Encoder used for (de)coding data; lazily initializes to SaveGameSimpleEncoder
+
+      - public virtual Encoding Encoding { get; set; }
+        - Text encoding for (de)serialization; lazily initializes to UTF8
+
+      - public virtual UnityWebRequest Request { get; }
+        - Access to the last UnityWebRequest
+
+      - public virtual bool IsError { get; }
+        - Indicates if the last operation produced an error
+
+      - public virtual string Error { get; }
+        - Error message from the last operation
+
+      - Constructors (overload chain)
+        - public SaveGameWeb() : this(DefaultUsername)
+        - public SaveGameWeb(string username)
+        - public SaveGameWeb(string username, string password)
+        - public SaveGameWeb(string username, string password, string url)
+        - public SaveGameWeb(string username, string password, string url, bool encode)
+        - public SaveGameWeb(string username, string password, string url, bool encode, string encodePassword)
+        - public SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer)
+        - public SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer, ISaveGameEncoder encoder)
+        - public SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer, ISaveGameEncoder encoder, Encoding encoding)
+        - Each constructor assigns the corresponding protected fields (username, password, url, encode, encodePassword, serializer, encoder, encoding)
+
+      - public virtual IEnumerator Save<T>(string identifier, T obj)
+        - Serialize obj to memory via Serializer using Encoding
+        - Optionally encode via Encoder using EncodePassword
+        - yield return Send(identifier, data, "save")
+        - Logs error or success
+
+      - public virtual IEnumerator Download(string identifier)
+        - yield return Send(identifier, null, "load")
+        - Logs error or success
+
+      - public virtual T Load<T>(string identifier)
+        - return Load<T>(identifier, default(T))
+
+      - public virtual T Load<T>(string identifier, T defaultValue)
+        - If not error and response text present
+        - Decode if Encode is true
+        - Deserialize via Serializer from a MemoryStream using Encoding
+        - Return result or defaultValue on error
+
+      - public virtual IEnumerator Send(string identifier, string data, string action)
+        - Build form with fields: identifier, action, username
+        - Optionally include data and password
+        - Post to URL via UnityWebRequest.Post
+        - Await SendWebRequest (Unity version dependent)
+        - Set IsError/Error based on UnityWebRequest status
+        - If response text starts with "Error", mark as error
+
+```
+
+```csharp
+3) Key Behavior & Side Effects
+- Default values are centralized in static fields; instance values can override per-call behavior.
+- Save<T> serializes an object to a memory stream using the configured Serializer and Encoding.
+- If Encode is true, Save<T> data is encoded with EncodePassword before sending.
+- Send builds an HTTP POST form with identifier, action, username, and optional data/password; stores the last UnityWebRequest in Request.
+- After a request, IsError/Error reflect success or failure; non-empty response text starting with "Error" is treated as an error.
+- Load<T> uses the last response (downloadHandler.text) as the source of data to deserialize; if decoding is needed, Decode is applied first.
+- Lazy initialization: Serializer, Encoder, Encoding default instances are created if not set by the user.
+
+```
+
+```csharp
+4) Constraints & Failure Modes
+- Unity version branches in Send:
+  - UNITY_2019_1_OR_NEWER: uses m_Request.result
+  - UNITY_2017_1_OR_NEWER: uses isNetworkError or isHttpError
+  - Older: uses isError
+- NULL/empty handling:
+  - If data is null/empty, it is not added to form fields.
+  - Password is added only if not null/empty.
+  - Encoding/Serializer/Encoder default lazily if not provided.
+- Error handling:
+  - If download text starts with "Error", treated as error.
+  - Network/HTTP errors surfaced via m_Error.
+- Performance/memory:
+  - MemoryStream used for (de)serialization; disposed after use in Load.
+  - Data is kept in memory between Save/Load calls; no persistent storage here.
+
+```
+
+```csharp
+5) Example
+- Minimal usage in a Unity coroutine:
+
+```csharp
+using System.Collections;
+using UnityEngine;
+using BayatGames.SaveGameFree;
+
+public class SaveExample : MonoBehaviour
+{
+    IEnumerator Start()
+    {
+        var saver = new SaveGameWeb(); // uses defaults or configured values
+        var obj = new { level = 5, score = 12345 };
+
+        // Save example
+        yield return saver.Save("player1", obj);
+        if (saver.IsError)
+        {
+            Debug.LogError("Save failed: " + saver.Error);
+        }
+
+        // Load example
+        var loaded = saver.Load<MyData>("player1", new MyData());
+        // Process loaded data...
+    }
+
+    // Example type matching the deserialized shape
+    private class MyData { public int level; public int score; }
+}
+```
+
+```
+
+```text
+6) Unknowns
+- Server-side API behavior and validation are outside this file.
+- Network reliability, retries, and timeouts are not implemented here.
+- Exact formats of serialized data (beyond using Serializer/Encoder) and how the server interprets fields are not defined in this file.
+- Threading guarantees beyond Unity coroutines are not specified.
+- Any side effects on external systems (e.g., authentication server) are not detailed.

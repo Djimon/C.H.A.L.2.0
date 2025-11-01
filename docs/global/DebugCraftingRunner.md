@@ -4,109 +4,116 @@ _Automatically generated/updated from `Assets/src/Systems/_test/DebugCraftingRun
 
 ```text
 1) Purpose
-- Unity MonoBehaviour debug runner for CraftingService workflows; allows running a recipe, previewing state, and logging results.
-- Exposes catalog, recipe index, and inventory IDs to configure which recipe to test and where to read/write materials and outputs.
-- Supports simulating missing currency via a wallet proxy to observe success/failure behavior and state rollback during crafting.
+- Defines CraftingDebugRunner, a Unity MonoBehaviour to run and inspect crafting flows against a catalog recipe.
+- Provides a private WalletProxyMissing helper to simulate currency-spend failure for testing.
+- Hooks into GameManager to initialize inventories and obtain InventoryDomain and IWallet references for crafting operations.
 
-```
-
-```text
 2) Public API
-- Namespace/module: global (no explicit namespace)
+- Namespace/module: global namespace (no explicit namespace in file)
+
 - Types
-  - public class CraftingDebugRunner : MonoBehaviour
-    - Public fields
-      - public CraftingCatalog catalog — source of recipes to test
-      - public int recipeIndex — index of the recipe within catalog.recipes
-      - public string materialsInventoryId — instanceId of the materials inventory
-      - public string outputInventoryId — target inventory for crafted output
-      - public bool runOnStart — whether to auto-run on Start
-      - public bool simulateCurrencyMissing — if true, simulate currency missing during crafting
-      - public int grantCrafts — used by GrantRequirements to determine how many crafts to simulate
-    - Public methods
-      - public void RunOnce() — executes one crafting attempt for the selected recipe; logs result and shows previews
-      - public void GrantRequirements() — computes a preview and (when enabled) would fill materials/currency to satisfy craft requirements; currently has disabled sections
-    - Notes on surface
-      - Awake/Start are Unity lifecycle methods (not public API surface here; they are private by default in this file)
-      - WalletProxyMissing is a private nested type (not part of public API)
-```
+  - public sealed class CraftingDebugRunner : MonoBehaviour
+    - Public fields (inspector-configurable):
+      - CraftingCatalog catalog
+        - Catalog of recipes used by the debug runner.
+      - int recipeIndex
+        - Index into catalog.recipes for the recipe to test.
+      - string materialsInventoryId
+        - Inventory instanceId for input materials (e.g., "player_parts").
+      - string outputInventoryId
+        - Inventory instanceId for craft output (e.g., "All_Inventory").
+      - bool runOnStart
+        - If true, RunOnce() is invoked automatically on Start().
+      - bool simulateCurrencyMissing
+        - If true, uses a wallet proxy that cannot spend currency (for failure testing).
+      - int grantCrafts
+        - Multiplier for how many crafts to simulate in GrantRequirements (used in preview/logs).
+    - Public methods:
+      - void RunOnce()
+        - Executes a craft for the configured recipe using the configured inventories and wallet; logs result and prints post-state preview.
+      - void GrantRequirements()
+        - Logs a preview after attempting to determine required resources; includes commented-out scaffolding to auto-grant materials/currency.
+    - Context:
+      - RunOnce and GrantRequirements are decorated with [ContextMenu] allowing editor menu invocation.
 
-```text
+- Nested/private API (not public surface)
+  - private sealed class WalletProxyMissing : IWallet
+    - Constructor WalletProxyMissing(IWallet inner)
+    - GetCurrency(string id): int
+    - CanSpend(string id, int amt): bool
+    - SpendCurrency(string id, int amt): bool
+    - Refund(string id, int amt): void
+    - Purpose: simulate currency spend failure by delegating refunds to inner wallet but blocking spends.
+
 3) Key Behavior & Side Effects
-- Awake()
-  - Calls GameManager.Instance.TestInitInventory()
-  - Caches _inv = GameManager.Instance.Inventory and _wallet = GameManager.Instance.Profile
-- Start()
-  - Ensures inventories exist/registered:
-    - "player_parts" with PlayerInventoryType.Part
-    - "All_Inventory" with PlayerInventoryType.all
-  - If runOnStart is true, invokes RunOnce()
-- RunOnce()
-  - Retrieves recipe = catalog.recipes[recipeIndex]
-  - Chooses wallet wrapper:
-    - If simulateCurrencyMissing is true, uses WalletProxyMissing(_wallet); else uses _wallet
-  - Logs the selected recipe name
-  - PrintPreview(recipe)
-  - Attempts crafting:
-    - CraftingService.TryCraftToInventory(recipe, _inv, materialsInventoryId, _wallet, outputInventoryId, out var reason)
-    - On success: logs success and destination
-    - On failure: logs failure with reason
-  - PrintPreview(recipe) to show post-state
-- GrantRequirements()
-  - Gets recipe and current preview: CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet)
-  - (Commented-out sections) would fill materials and currency to satisfy craft requirements (disabled)
-  - Recomputes after-state preview: after = CraftingService.GetPreview(...)
-  - Logs whether crafting would be possible for x grantCrafts crafts
-- PrintPreview(RecipeDef)
-  - Calls CraftingService.GetPreview(...) and logs canCraft
-  - Builds a small textual preview including Materials and Currency sections (actual lists are commented-out in this file)
-- NameOf(RecipeDef)
-  - Returns displayKey if present; otherwise r.name
-- WalletProxyMissing (private nested class)
-  - Implements IWallet
-  - GetCurrency(string id) => 0
-  - CanSpend(string id, int amt) => false
-  - SpendCurrency(string id, int amt) => false
-  - Refund(string id, int amt) delegates to inner wallet
-  - Effect: simulates currency missing so crafting attempts fail due to lack of funds
-```
+- Awake():
+  - Calls GameManager.Instance.TestInitInventory().
+  - Sets private fields _inv = GameManager.Instance.Inventory and _wallet = GameManager.Instance.Profile.
+- Start():
+  - Calls GameManager.Instance.EnsureInstance("player_parts", PlayerInventoryType.Part).
+  - Calls GameManager.Instance.EnsureInstance("All_Inventory", PlayerInventoryType.all).
+  - If runOnStart is true, invokes RunOnce().
+- RunOnce():
+  - Reads recipe = catalog.recipes[recipeIndex].
+  - Chooses wallet = simulateCurrencyMissing ? new WalletProxyMissing(_wallet) : _wallet.
+  - Logs the recipe being tested.
+  - Calls CraftingService.TryCraftToInventory(recipe, _inv, materialsInventoryId, _wallet, outputInventoryId, out var reason).
+  - On success: logs success and output placement.
+  - On failure: logs warning with reason.
+  - Calls PrintPreview(recipe) to show post-state.
+- GrantRequirements():
+  - Reads recipe = catalog.recipes[recipeIndex].
+  - Calls CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet) to capture current preview.
+  - (Commented out blocks show intended material/currency augmentation steps for testing.)
+  - Calls CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet) again to capture post-grant preview.
+  - Logs whether canCraft for x grantCrafts crafts.
+- PrintPreview(RecipeDef):
+  - Calls CraftingService.GetPreview(recipe, outputInventoryId, _inv, materialsInventoryId, _wallet).
+  - Builds and logs a small summary:
+    - canCraft flag
+    - Materials section (commented out in code)
+    - Currency section (commented out in code)
+- NameOf(RecipeDef):
+  - Returns r.displayKey if non-empty; otherwise r.name.
+- WalletProxyMissing (tests):
+  - When simulateCurrencyMissing is true, craft attempts may fail due to GetCurrency/CanSpend/SpendCurrency overrides to simulate missing currency.
 
-```text
 4) Constraints & Failure Modes
-- Preconditions
-  - catalog != null and catalog.recipes must be accessible; recipeIndex must be within bounds
-  - inventory IDs (materialsInventoryId, outputInventoryId) must correspond to existing inventories after Start (EnsureInstance calls)
-- Failure modes
-  - CraftingService.TryCraftToInventory can fail; reason is logged
-  - If simulateCurrencyMissing is true, currency spending is blocked via WalletProxyMissing, potentially causing craft to fail
-  - GrantRequirements relies on GetPreview; if preview data is invalid, logging may be misleading
-- Guards and handling
-  - No null checks shown for catalog or recipe; runtime exceptions could occur if misconfigured
-  - The materials/currency fill sections in GrantRequirements are currently commented out; no actual modification occurs during GrantRequirements
-- Performance/allocation hints
-  - Small, debug-oriented surface; uses string building for previews; no long-running operations on the main thread outside Unity updates
-```
+- Run outcomes depend on CraftingService.TryCraftToInventory result; on failure, reason is logged.
+- simulateCurrencyMissing flag switches to WalletProxyMissing, which causes currency spending to fail (spend attempts return false and GetCurrency returns 0).
+- Start requires that catalog and inventories are properly set up; EnsureInstance calls may create inventories if absent.
+- Editor-only controls:
+  - RunOnce and GrantRequirements can be invoked from the Unity editor via context menu.
+- No explicit threading or asynchronous behavior beyond Unity’s lifecycle; operations follow synchronous calls to CraftingService in this file.
 
-```text
 5) Example
-// Example: attach in a scene and run a single craft via script
-// (Assumes you have a CraftingCatalog instance available as 'catalogInstance')
-var go = new GameObject("CraftingDebugRunner");
-var runner = go.AddComponent<CraftingDebugRunner>();
-runner.catalog = catalogInstance;
-runner.recipeIndex = 0;
-runner.materialsInventoryId = "player_parts";
-runner.outputInventoryId = "All_Inventory";
-runner.runOnStart = false;
-runner.simulateCurrencyMissing = false;
-runner.RunOnce();
+- Minimal usage in Unity (inspector or programmatic setup)
+
+Programmatic setup example:
+```csharp
+// Example: attach and configure CraftingDebugRunner at runtime
+public class SetupExample : MonoBehaviour
+{
+    public CraftingCatalog catalog;
+
+    void Start()
+    {
+        var go = new GameObject("CraftingDebugRunner");
+        var runner = go.AddComponent<CraftingDebugRunner>();
+        runner.catalog = catalog;
+        runner.recipeIndex = 0;
+        runner.materialsInventoryId = "player_parts";
+        runner.outputInventoryId = "All_Inventory";
+        runner.runOnStart = true;
+        runner.simulateCurrencyMissing = false;
+        runner.grantCrafts = 1;
+    }
+}
 ```
 
-```text
 6) Unknowns
-- Details of CraftingCatalog, RecipeDef, and CraftingService implementations are not provided here
-- Behavior of GameManager, Inventory, Wallet, and related types beyond their usage in this file
-- Exact structure of CraftingService.GetPreview results and what constitutes canCraft beyond the boolean flag
-- Any side effects of EnsureInstance or TestInitInventory not visible in this file
-- Any threading implications or asynchronous behavior beyond Unity’s typical main-thread usage
-```
+- Exact structure and members of CraftingCatalog, RecipeDef, and the contents of CraftingService.GetPreview/TryCraftToInventory are not defined in this file.
+- Details of IWallet, Wallet implementations beyond the WalletProxyMissing behavior here are not shown.
+- Behavior of GameManager, InventoryDomain, and related inventory initialization are not defined in this file; their behavior is assumed from usage.
+- The precise format of the CraftingPreview data (materials, currencies) is not defined here; only usage surfaced through CraftingService.GetPreview.
+- Any side effects of CraftingService methods beyond what is logged are not described in this file.

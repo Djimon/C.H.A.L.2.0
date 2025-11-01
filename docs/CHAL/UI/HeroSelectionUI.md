@@ -2,118 +2,96 @@
 
 _Automatically generated/updated from `Assets/src/UI/HeroSelectionUI.cs`._
 
-```text
-1) Purpose
-- Defines HeroSelectionUI, a UI controller for selecting heroes into map slots during a game.
-- Maintains availableHeroes (unlocked heroes) and selectedHeroes (per-slot choices) based on the current map's heroSlots.
-- Interfaces with MapManager and GameManager to configure the map, start waves, and navigate to hideout.
-
+```csharp
+# Documentation: Assets/src/UI/HeroSelectionUI.cs
 ```
 
-```csharp
+1) Purpose
+- Defines a Unity UI component HeroSelectionUI for selecting heroes into map slots and starting waves.
+- Manages available vs. selected heroes, per-slot visuals, and pending hero details while interacting with MapManager and game state.
+- Wires up UI events (slot selection, hero picking, Start Wave, Hideout) and initializes slot visibility based on the map's heroSlots.
+
 2) Public API
-- Namespace: CHAL.UI
+- Namespace/module
+  - CHAL.UI
 - Types
   - public class HeroSelectionUI : IngameUI
     - Public fields/properties: none
-    - Public methods:
+    - Public methods
       - public void Init(MapManager mapMGR)
-```
 
-```text
 3) Key Behavior & Side Effects
-- Awake
-  - Obtains root VisualElement, ScrollView, and other UI elements via UI Toolkit queries.
-  - Wires button callbacks:
-    - ChooseHero -> OnChooseHeroClicked
-    - StartWave -> OnStartWaveClicked
-    - Hideout -> OnExitToHideoutClicked
-  - Hides the hero details root initially.
-
+- Awake (protected override)
+  - Binds UI elements from the UIDocument rootVisualElement.
+  - Hooks up event handlers:
+    - ChooseHero.clicked -> OnChooseHeroClicked
+    - BtnSlot1/2/3/4.clicked -> OnSlotSelectClicked(1/2/3/4)
+    - StartWave.clicked -> OnStartWaveClicked
+    - Hideout.clicked -> OnExitToHideoutClicked
+  - Hides the hero root details panel initially.
 - Init(MapManager mapMGR)
-  - Stores a reference to MapManager.
+  - Stores mapManager reference.
   - Sets maxSlots from mapManager.CurrentMap.heroSlots.
-  - Builds availableHeroes from the current profile's unlocked heroes (or empty).
-  - Initializes selectedHeroes to have length maxSlots.
-  - Toggles Slot1..Slot4 visibility based on maxSlots.
-
+  - Loads availableHeroes from the current profile (GetUnlockedHeroes) or empty if no profile.
+  - Initializes selectedHeroes to a new list sized to maxSlots.
+  - Shows/hides Slot1..Slot4 visuals based on maxSlots.
+- OnChooseHeroClicked()
+  - Requires a valid currentSlot (>0) and a non-empty _pendingHero.
+  - Ensures selectedHeroes is initialized to length maxSlots.
+  - If an old hero exists in the current slot and is not in availableHeroes, re-adds it to availableHeroes.
+  - Moves _pendingHero into the selected slot; removes it from availableHeroes.
+  - Updates the slot visual via UpdateSlotVisual.
+  - Clears _pendingHero and hides the hero detail panel.
+- UpdateSlotVisual(int slot, string hero)
+  - Updates the corresponding slot avatar (Slot1/2/3/4) visual.
+  - If hero is empty/null: shows a gray placeholder (backgroundColor) with no image.
+  - If hero is set: clears image and assigns a random colorful background (placeholder for future avatar).
+- FillHeroContainer()
+  - Clears heroContainer.
+  - Iterates availableHeroes to create a Button per hero; each button selects that hero (OnHeroSelected).
+  - Note: TODO to subtract already-selected heroes from availableHeroes (not implemented here).
+- OnExitToHideoutClicked()
+  - Triggers GameManager.Instance.ExitToHideout().
+- OnStartWaveClicked()
+  - Passes selectedHeroes to the map via mapManager.SetSelectedHeroes(selectedHeroes).
+  - Calls mapManager.StartWave() and hides this UI (Show(false)).
 - OnSlotSelectClicked(int slot)
   - Sets currentSlot to the chosen slot.
-  - Clears highlight on all slots and highlights the active one.
-  - Makes heroRoot visible and fills the hero container with available heroes.
-
-- FillHeroContainer()
-  - Clears the hero container.
-  - For each hero in availableHeroes, creates a Button labeled with the hero name.
-  - Wires button click to OnHeroSelected(h) for that hero.
-  - Adds the button to the hero container.
-
+  - Visually un-highlights all slots, then highlights the selected one.
+  - Shows the hero root panel and populates heroContainer with available heroes (FillHeroContainer).
 - OnHeroSelected(string h)
-  - Sets _pendingHero to the selected hero.
-  - Logs a debug message about showing details.
-  - Updates heroDetails with the selected hero name.
-
-- OnChooseHeroClicked()
-  - Requires a valid currentSlot and a non-empty _pendingHero; otherwise returns.
-  - Ensures selectedHeroes is initialized to length maxSlots.
-  - If there is an existing hero in the current slot, and it's not in availableHeroes, it is re-added to availableHeroes.
-  - Assigns the pending hero to selectedHeroes[currentSlot - 1].
-  - Removes the chosen hero from availableHeroes.
-  - Calls UpdateSlotVisual for the current slot with the chosen hero.
-  - Clears _pendingHero and hides heroRoot.
-
-- UpdateSlotVisual(int slot, string hero)
-  - Determines the target avatar element (Slot1-4 variants).
-  - If hero is null/empty: sets a gray placeholder (no image, gray background).
-  - If a hero is set: clears image and assigns a random color (colorful placeholder before real image).
-
-- OnExitToHideoutClicked()
-  - Calls GameManager.Instance.ExitToHideout().
-
-- OnStartWaveClicked()
-  - Passes selectedHeroes to mapManager via SetSelectedHeroes.
-  - Calls mapManager.StartWave().
-  - Hides this UI (Show(false)).
-
+  - Stores pending hero in _pendingHero.
+  - Logs a debug message.
+  - Updates heroDetails with the selected hero name (HeroName label).
 - HighlightSlot(int slot, bool active)
-  - Updates border colors on the appropriate avatar to indicate selection.
+  - Applies a colored border to the corresponding slot avatar (left/right/top/bottom colors).
+  - Active = true uses a yellowish highlight; false uses gray.
 
-```
-
-```text
 4) Constraints & Failure Modes
-- Init must be called before use to populate maxSlots, availableHeroes, and selectedHeroes; otherwise mapManager references or lists may be null.
-- OnChooseHeroClicked guards against:
-  - currentSlot <= 0
-  - _pendingHero null/empty
-- UpdateSlotVisual guards against invalid slot indices (target null) and handles empty vs. filled hero visuals.
-- OnStartWaveClicked assumes mapManager is non-null; otherwise may throw.
-- FillHeroContainer depends on availableHeroes; if empty, the container will be cleared with no buttons.
-- Slot visibility is determined by maxSlots; slots beyond maxSlots are hidden.
-- Closures in FillHeroContainer capture loop variable safely per foreach usage.
+- Init(MapManager) must be called before usage to populate mapManager, maxSlots, and available/selected heroes.
+- Access to mapManager or mapManager.CurrentMap.heroSlots may throw if mapManager or its current map is null.
+- UI element lookups (root.Q<...>("name")) assume UI elements exist; mismatches return nulls and can cause null refs when used.
+- selectedHeroes is reinitialized in OnChooseHeroClicked() only if null or too-short; may lead to unexpected state if maxSlots changes or Init not called first.
+- FillHeroContainer() currently does not subtract already-selected heroes from availableHeroes (TODO in code).
+- OnStartWaveClicked() assumes mapManager is initialized; otherwise NullReferenceException.
+- Random color usage in UpdateSlotVisual() is a placeholder; no actual avatar imagery is provided.
+- Threading: all UI operations occur on Unity main thread as typical.
 
-```
-
-```text
 5) Example
-```csharp
-// Example: initialize UI for a given MapManager
-// assuming 'mapManager' is a valid MapManager instance in scope
-var heroUI = FindObjectOfType<CHAL.UI.HeroSelectionUI>();
-if (heroUI != null)
-{
-    heroUI.Init(mapManager);
-}
-```
+- Minimal usage (derivable from Init and public API):
+  - var heroUI = FindObjectOfType<CHAL.UI.HeroSelectionUI>();
+  - heroUI.Init(myMapManager);
 
-```
-
-```text
 6) Unknowns
-- Details of IngameUI base class behavior.
-- The exact structure and sources of MapManager.CurrentMap.heroSlots.
-- How MapManager.SetSelectedHeroes and StartWave affect game state beyond this file.
-- The full behavior/shape of availableHeroes population (localization, persistence).
-- Visual assets for heroes (currently using color placeholders; real images not implemented here).
-- Threading considerations beyond Unity's main thread (none evident in this file).
-```
+- Details of IngameUI base class behavior (Show/Hide, lifecycle).
+- Implementations of MapManager, GameManager, DebugManager, and how they expose Profile, CurrentMap, and StartWave/ExitToHideout.
+- How hero avatars/images are to be populated beyond the placeholder color logic.
+- Exact UI structure and the resolution of UI element names in the Unity editor (names assumed by root.Q calls).
+- Any external side effects from selecting heroes beyond SetSelectedHeroes and StartWave.
+
+Code references (surface summarized, exact names preserved):
+- Class: HeroSelectionUI : IngameUI
+- Public API: Init(MapManager mapMGR)
+- Internal state: availableHeroes, selectedHeroes, _pendingHero, currentSlot, maxSlots
+- Slots/visuals: Slot1-4, imgSlot1Avatar-4, btnSlot1-4Select, btnStartWave, btnExitToHideout
+- Key methods: Awake, Init, OnChooseHeroClicked, UpdateSlotVisual, FillHeroContainer, OnExitToHideoutClicked, OnStartWaveClicked, OnSlotSelectClicked, OnHeroSelected, HighlightSlot

@@ -2,11 +2,11 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Inventory/InvDnDProvider.cs`._
 
-```text
 1) Purpose
-- Defines a MonoBehaviour that holds an IInventoryDomain reference for a drag-and-drop domain.
-- Lazily exposes a DragDropService via the Service property, creating it on first access when a domain is present.
-- Rebuilds the DragDropService in the editor when domain is assigned and the service is not yet created (OnValidate).
+- Defines a Unity MonoBehaviour InvDnDProvider in the CHAL.Systems.Inventory namespace.
+- Exposes a public IInventoryDomain domain reference (to be set in Inspector/bootstrap).
+- Lazily creates and caches a DragDropService tied to the domain; exposes it via the Service property.
+- Ensures the service can be rebuilt when the domain is updated in the editor (OnValidate).
 
 2) Public API
 - Namespace/module
@@ -14,44 +14,37 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/InvDnDProvid
 - Types
   - public class InvDnDProvider : MonoBehaviour
     - Public fields/properties
-      - public IInventoryDomain domain; // per Inspector/Bootstrap setzen
-      - public DragDropService Service { get; } 
-        - Getter returns the DragDropService instance; may create it if _service is null and domain != null
+      - public IInventoryDomain domain
+        - Domain to use for the drag-and-drop provider (set in Inspector/bootstrap)
+      - public DragDropService Service
+        - Getter-only property; returns the cached _service or constructs a new DragDropService(domain) if needed
     - Public methods
-      - (none)
-    - Private fields
-      - private DragDropService _service;
-- Notes on surface
-  - Service is read-only from outside; access triggers lazy initialization.
-  - DragDropService(domain) is called to construct the service.
+      - none
 
 3) Key Behavior & Side Effects
 - Lazy initialization
-  - Accessing Service creates a new DragDropService(domain) if _service is null and domain is not null.
-- Editor-time rebind
-  - OnValidate ensures _service is constructed when domain is set in the editor and _service is null.
-- Access pattern
-  - Service getter may return null if domain is null and no prior initialization occurred.
-  - No automatic rebind if domain changes at runtime after _service creation.
+  - Accessing Service will create a new DragDropService(domain) if _service is null and domain != null; then returns _service.
+- Editor-time rebuild
+  - OnValidate creates a new DragDropService(domain) if domain != null and _service is null.
+- State/caching
+  - _service is cached and reused once created.
+- Domain coupling
+  - Service depends on the current domain reference; changes to domain at runtime are not auto-handled outside OnValidate.
 
 4) Constraints & Failure Modes
-- Null handling
-  - If domain is null, Service getter will not instantiate and may return null.
-- Runtime domain changes
-  - Changing domain after _service has been created does not automatically update the service to the new domain.
-- Threading
-  - All behavior occurs on Unity main thread (no explicit threading here).
-- Dependencies
-  - DragDropService construction relies on the IInventoryDomain provided by domain.
+- Null domain handling
+  - If domain is null, Service will remain null until domain is set and Service is accessed.
+- Editor-only behavior
+  - OnValidate runs in the editor to rebuild the service; runtime domain changes may not trigger a rebuild automatically.
+- Threading/perf
+  - No explicit thread-safety; service is created on-demand and cached.
+- Cleanup
+  - No disposal logic present for _service.
 
 5) Example
-```csharp
-// Usage example (assumes domain is set via Inspector or at runtime)
-var provider = GetComponent<CHAL.Systems.Inventory.InvDnDProvider>();
-var service = provider.Service; // may instantiate DragDropService if domain != null
-```
+- Not derivable from the file alone; no explicit usage example provided.
 
 6) Unknowns
-- Details of IInventoryDomain and DragDropService implementations (behavior, lifecycle, side effects).
-- Whether domain changes at runtime should trigger a service rebuild (not handled beyond editor OnValidate).
-```
+- Details of DragDropService constructor beyond accepting IInventoryDomain.
+- Definition and members of IInventoryDomain.
+- How and when domain is assigned in runtime versus editor bootstrap beyond the given comment.

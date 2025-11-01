@@ -4,120 +4,95 @@ _Automatically generated/updated from `Assets/src/Systems/Heroes/HeroInstance.cs
 
 ```text
 1) Purpose
-- Defines public class HeroInstance within CHAL.Systems.Hero that derives from EffectReceiver.
-- Represents a runtime hero instance linked to a HeroDef; manages level, attributes, growth accumulators, skills, and life state.
-- Provides basic damage handling, movement speed/damage base accessors, stat initialization, and level-up growth logic.
-
-```
+- Defines the HeroInstance class that represents a single hero with stats, growth, HP, and basic combat interactions.
+- Encapsulates growth logic (attribute progression) and death handling, including a Died event for external listeners.
+- Renders an API surface for interaction (damage, movement speed, damage output, level-up, and stat initialization).
 
 2) Public API
-- Namespace/module
-  - CHAL.Systems.Hero
+- Namespace/module: CHAL.Systems.Hero
 
-- Types
-  - public class HeroInstance : EffectReceiver
-    - Public fields/properties
-      - HeroDef heroDef
-        - The hero definition data backing this instance.
-      - ArchetypeDef Archetype => heroDef.Archetype
-        - Convenience access to the archetype from the hero definition.
-      - int Level
-        - Current hero level (initially 1).
-      - Dictionary<HeroAttribs, int> attributes
-        - Current attribute points per attribute (e.g., STR, DEX, CON, INT, WIL).
-      - List<SkillInstance> Skills
-        - Skill instances available to this hero.
-      - GameObject currentTarget
-        - Currently targeted object (if any).
-    - Public methods
-      - HeroInstance(HeroDef def)
-        - Constructor. Initializes heroDef, applies signature passive if present, initializes stats, and sets HP from heroDef.BaseHealth.
-      - void TakeDamage(float amount, DamageType type)
-        - Applies damage; ignores if already dead; reduces CurrentHP; triggers OnDeath when HP falls below zero.
-      - float GetEffectiveMovementSpeed()
-        - Returns base movement speed from heroDef (no active modifiers applied here).
-      - void LevelUp()
-        - Increments Level (up to 100), allocates attribute points proportionally to growth shares, resolves point distribution when accumulators cross integer thresholds, and logs new attribute state.
-      - float GetEffectiveBaseDamage()
-        - Returns BaseDamage from heroDef (no modifiers applied here).
-      - void OnDeath()  // overrides EffectReceiver
-        - Death handler (idempotent): marks as dead, zeros CurrentHP, logs death, and fires Died event.
-    - Public events
-      - event Action<HeroInstance> Died
-        - Invoked when the hero dies; subscribers are notified with this instance.
-
-- Note on lifecycle/side effects
-  - Constructor applies Archetype.SignaturePassive (if present) via ActiveModifiers.AddModifier.
-  - LevelUp distributes points across attributes using a proportional accumulator model driven by GrowthPattern and GrowthConfig in Archetype.
-
-```
+- Type: public class HeroInstance : EffectReceiver
+  - Fields
+    - public HeroDef heroDef; // hero definition backing this instance
+    - public int Level = 1; // current hero level
+    - public Dictionary<HeroAttribs, int> attributes = new(); // current attribute values
+    - public List<SkillInstance> Skills; // skills associated with the hero
+    - public GameObject currentTarget; // current target (UI/game logic reference)
+  - Properties
+    - public ArchetypeDef Archetype => heroDef.Archetype; // archetype of the hero
+  - Events
+    - public event Action<HeroInstance> Died; // invoked when hero dies
+  - Constructors
+    - public HeroInstance(HeroDef def)
+  - Methods
+    - public override void TakeDamage(float amount, DamageType type)
+      - Applies damage; if not already dead, reduces CurrentHP and triggers OnDeath when HP < 0
+    - public float GetEffectiveMovementSpeed()
+      - Returns base movement speed (no modifiers applied in this file)
+    - public float GetEffectiveBaseDamage()
+      - Returns base damage (no active modifiers applied in this file)
+    - [ContextMenu("Debug/LevelUP")] public void LevelUp()
+      - Increases Level (up to 100), distributes attribute points based on growth targets and accumulators, and logs new attribute values
+  - Protected/private
+    - protected override void OnDeath()
+      - Idempotent death handling: marks as dead, sets HP to 0, logs death, raises Died event
+  - Notes
+    - private fields exist for internal state (e.g., _accumulator, _goals, _totalGrowth) but are not part of the public API surface
 
 3) Key Behavior & Side Effects
-- Initialization flow (constructor)
-  - Stores heroDef.
-  - Logs error if Archetype (heroDef.Archetype) is null.
-  - If Archetype.SignaturePassive exists, adds its modifier data to ActiveModifiers.
-  - Calls InitStats to prepare growth-based attributes.
-  - Sets MaxHP = heroDef.BaseHealth and CurrentHP = MaxHP.
-- Damage handling (TakeDamage)
-  - If _isDead, ignores damage.
-  - Subtracts amount from CurrentHP.
-  - If CurrentHP < 0, calls OnDeath().
-- Death handling (OnDeath)
-  - Guards against multiple invocations with _isDead.
-  - Sets _isDead = true and CurrentHP = 0.
-  - Logs death and raises Died event.
-- Stats initialization (InitStats)
-  - Builds startMap (initial values per LevelGrowthRole).
-  - Builds targetMap from Archetype.GrowthConfig.*Target values.
-  - Defines the stat order via slots (Core, Secondary1, Secondary2, Tertiary, Edge).
-  - Initializes _accumulator for all HeroAttribs to 0.
-  - For each growth priority slot, assigns initial attributes and computes _goals as target - start.
-  - Computes _totalGrowth as the sum of all goal values.
-- Base damage and movement speed accessors
-  - GetEffectiveBaseDamage returns heroDef.BaseDamage.
-  - GetEffectiveMovementSpeed returns heroDef.BaseMovementSpeed (no modifiers applied here).
-- Level up (LevelUp)
-  - If Level >= 100, exit.
-  - Level++ and log level up.
-  - Determine ptsThisLevel (5 points on multiples of 5, otherwise 4).
-  - For each stat, compute share = kv.Value / _totalGrowth and increase _accumulator by share * ptsThisLevel.
-  - While any accumulator >= 1.0, pick the next stat by highest accumulator (random tiebreak), increment that attribute by 1, and reduce its accumulator by 1.0.
-  - Logs the new attribute distribution after leveling.
-
-```
+- Construction
+  - Stores heroDef; logs error if Archetype is null
+  - If Archetype.SignaturePassive exists, adds its modifier to ActiveModifiers
+  - Calls InitStats()
+  - Sets MaxHP to heroDef.BaseHealth and CurrentHP to MaxHP
+- Damage handling
+  - If already dead (_isDead), ignores damage
+  - Reduces CurrentHP by amount; if CurrentHP < 0, calls OnDeath()
+- Death handling
+  - OnDeath(); ensures idempotent behavior
+  - Sets _isDead = true and CurrentHP = 0
+  - Logs death and notifies subscribers via Died
+- Leveling up
+  - Increments Level up to a max of 100
+  - Determines ptsThisLevel = 5 every 5 levels, otherwise 4
+  - Distributes ptsThisLevel across attributes proportionally to _goals using _accumulator
+  - While any accumulator >= 1.0, selects the highest accumulator (randomized tie-break) to increment the corresponding attribute by 1, then reduces that accumulator by 1.0
+  - Logs current attribute values after level-up
+- Stats initialization
+  - Builds startMap and targetMap from fixed starting values and Archetype.GrowthConfig targets
+  - Uses GrowthPattern.growthPriority to map Core/Secondary/Tertiary/Edge to actual HeroAttribs in a defined order
+  - Initializes _accumulator for all HeroAttribs
+  - Sets attributes and _goals for each stat in the order defined by Archetype
+  - Computes _totalGrowth as the sum of all _goals
+- Movement and damage output
+  - GetEffectiveMovementSpeed returns heroDef.BaseMovementSpeed
+  - GetEffectiveBaseDamage returns heroDef.BaseDamage
 
 4) Constraints & Failure Modes
 - Archetype null handling
-  - If Archetype is null, constructor logs an error but subsequent code may dereference Archetype, potentially leading to exceptions (e.g., InitStats, GrowthConfig access).
-- Death/state guards
-  - Damage is ignored after _isDead becomes true.
-  - OnDeath is idempotent via _isDead guard.
+  - If Archetype is null, an error is logged but constructor continues; later access may cause null references
+- Growth division edge case
+  - LevelUp distributes points using share = kv.Value / _totalGrowth; if _totalGrowth == 0, division by zero occurs (not guarded)
 - Level cap
-  - LevelUp is gated at Level >= 100.
-- Growth logic assumptions
-  - InitStats relies on Archetype.GrowthConfig.GrowthPattern and GrowthConfig.Target values; null references are not guarded, so missing config could raise exceptions.
-- Random tie-break in LevelUp
-  - Uses Guid.NewGuid() for randomization when accumulators tie.
-
-```
+  - LevelUp stops increasing Level at 100
+- State assumptions
+  - Skills is not initialized in the constructor (may be null unless set elsewhere)
+  - CurrentHP/MaxHP rely on heroDef having BaseHealth; methods assume heroDef is populated
+- Threading/async
+  - No explicit threading or async handling; use is single-threaded within Unity game loop
+- Side effects
+  - LevelUp produces log output and may trigger random tie-breaks during attribute distribution
 
 5) Example
-- Minimal usage (assuming valid HeroDef and supporting systems exist)
-
-```csharp
-// Assuming heroDef is a valid HeroDef instance in scope
-var hero = new CHAL.Systems.Hero.HeroInstance(heroDef);
-hero.LevelUp();
-```
-
-```
+- Not derivable from this file due to unknown HeroDef structure and surrounding types; omitted.
 
 6) Unknowns
-- Details of EffectReceiver base class (HP management, modifiers system) beyond usage in this file.
-- Implementations and semantics of:
-  - HeroDef, ArchetypeDef, LevelGrowthRole, GrowthConfig, LevelGrowthConfig, HeroAttribs.
-  - DebugManager, ActiveModifiers, and ToModifierData behavior.
-  - SkillInstance type and how Skills interact with this class.
-- Multithreading/async behavior and Unity execution order beyond [ContextMenu] usage.
-- How currentTarget is used elsewhere (targeting/AI integration) beyond its declaration.
+- Definitions/structures of:
+  - HeroDef, ArchetypeDef, LevelGrowthRole, GrowthConfig, GrowthPattern, HeroAttribs, DamageType
+  - Archetype.SignaturePassive.ToModifierData() return type and ActiveModifiers
+  - DebugManager, its Log/Error usage and log levels
+  - SkillInstance, EffectReceiver, and how Skills are initialized/used
+  - GameObject integration and CurrentHP/MaxHP fields (likely in a base class)
+- Exact contents of Archetype.GrowthConfig and GrowthPattern.growthPriority
+- Any external lifecycle methods or Unity-specific behavior beyond what's shown
+```

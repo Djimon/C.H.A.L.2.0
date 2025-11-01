@@ -2,74 +2,111 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ResearchRequirement.cs`._
 
+```text
 1) Purpose
-- Defines data structures for describing research requirements in CHAL.Systems.Research.
-- Provides validation and emptiness checks for the research requirements data.
-- Implements serializable data types used by the Unity editor (fields with Min attributes, lists of sub-entries).
+- Defines data structures for research requirements in CHAL.Systems.Research.
+- Exposes ResearchRequirement (with thresholds and per-tag kill counts) and supporting types KillTagCount and MapRequirement.
+- Provides simple validation and emptiness-check utilities for research requirements.
+```
 
+```text
 2) Public API
 - Namespace/module
   - CHAL.Systems.Research
 
 - Types
-  - public class ResearchRequirement : [Serializable]
+  - public class ResearchRequirement
     - Public fields
-      - [Min(0)] public int waves;
-      - [Min(0)] public int maps;
-      - public List<MapRequirement> mapRequirements = new List<MapRequirement>();
-      - [Min(0)] public int killsGeneral;
-      - public List<KillTagCount> killsByTag = new List<KillTagCount>();
-      - [Min(0)] public int eliteCount;
-      - [Min(0)] public int bossCount;
-      - [Min(0)] public int championCount;
+      - [Min(0)] public int waves
+      - [Min(0)] public int maps
+      - public List<MapRequirement> mapRequirements = new List<MapRequirement>()
+      - [Min(0)] public int killsGeneral
+      - public List<KillTagCount> killsByTag = new List<KillTagCount>()
+      - [Min(0)] public int eliteCount
+      - [Min(0)] public int bossCount
+      - [Min(0)] public int championCount
     - Public methods
       - public void ValidateSoft(Action<string> warn, string ctx)
-        - Validates non-negative counters; emits warnings via warn with German messages.
-        - If killsByTag is non-null, iterates entries and warns on null entries, empty enemyTag, or negative count.
+        - Emits warnings through warn for negative numeric fields and for issues within killsByTag entries
+        - Rules:
+          - Warn if waves, maps, killsGeneral, eliteCount, bossCount, or championCount are negative
+          - If killsByTag is non-null, iterate and:
+            - Warn if element is null
+            - Warn if enemyTag is null/empty/whitespace
+            - Warn if count is negative
       - public bool IsEmpty()
-        - Returns true if all top-level counters are <= 0 and no killsByTag entry has a positive count; otherwise false.
+        - Returns true if all numeric thresholds are not positive (<= 0) and no killsByTag entry has count > 0
+        - Otherwise returns false
+
   - public sealed class KillTagCount
     - Public fields
-      - public string enemyTag;
-      - public int count;
+      - public string enemyTag
+      - public int count
+
   - public struct MapRequirement
     - Public fields
-      - public MapDifficulty difficulty;
-      - public int amount;
-
-3) Key Behavior & Side Effects
-- ValidateSoft(warn, ctx)
-  - Checks: waves, maps, killsGeneral, eliteCount, bossCount for negative values; warns with $"{ctx}: Negative Anforderungen sind nicht erlaubt."
-  - If killsByTag != null, for each entry:
-    - If entry is null: warn $"{ctx}: killsByTag[{i}] ist null."
-    - If enemyTag is null/empty/whitespace: warn $"{ctx}: killsByTag[{i}] hat leeren Tag."
-    - If count < 0: warn $"{ctx}: killsByTag[{i}] hat negativen Count."
-- IsEmpty()
-  - Returns false if any of waves, maps, killsGeneral, eliteCount, bossCount, championCount > 0.
-  - If killsByTag contains any non-null entry with count > 0, returns false.
-  - Otherwise returns true.
-- Data initialization
-  - mapRequirements and killsByTag are initialized to empty lists.
-- Attributes
-  - [Min(0)] constraints indicate non-negative values enforced by Unity editor on those fields.
-  - [Serializable] on types enables Unity serialization.
-
-4) Constraints & Failure Modes
-- Guards and null handling
-  - ValidateSoft guards against negative numeric fields; uses a null-safe warn delegate.
-  - KillsByTag iteration handles null entries gracefully.
-- Non-atomic state changes
-  - No state mutation occurs in validation or emptiness checks.
-- Performance
-  - Linear scans over small lists; no heavy async/threading behavior evident.
-
-5) Example
-```csharp
-var req = new CHAL.Systems.Research.ResearchRequirement { waves = 1 };
-bool empty = req.IsEmpty(); // false
-req.ValidateSoft(s => System.Console.WriteLine(s), "Req"); // may emit warnings if fields are invalid
+      - public MapDifficulty difficulty
+      - public int amount
 ```
 
+```text
+3) Key Behavior & Side Effects
+- ValidateSoft
+  - Performs defensive validation without throwing exceptions.
+  - Uses the provided warn delegate to report:
+    - Negative values for waves, maps, killsGeneral, eliteCount, bossCount, championCount
+    - For each non-null entry in killsByTag:
+      - Null entries generate a warning
+      - Empty or whitespace enemyTag generate a warning
+      - Negative count generates a warning
+- IsEmpty
+  - Checks whether any of the numeric thresholds are > 0; if so, returns false.
+  - If numeric thresholds are not positive, iterates killsByTag (if not null) and returns false if any non-null entry has count > 0.
+  - Otherwise returns true.
+- MapRequirements list is initialized to an empty list by default.
+```
+
+```text
+4) Constraints & Failure Modes
+- Field constraints
+  - [Min(0)] attributes indicate non-negative expectations for: waves, maps, killsGeneral, eliteCount, bossCount, championCount.
+- Null handling
+  - killsByTag may be null; ValidateSoft guards against null entries and reports issues for null elements.
+- Dependency on external types
+  - MapDifficulty is referenced but not defined in this file.
+- Side effects
+  - ValidateSoft emits warnings via the provided callback; does not throw.
+```
+
+```text
+5) Example
+```csharp
+using CHAL.Systems.Research;
+using System;
+
+public class Example
+{
+    public void Run()
+    {
+        var r = new ResearchRequirement();
+        r.waves = 1;
+        r.maps = 0;
+        r.mapRequirements.Add(new MapRequirement { difficulty = default(MapDifficulty), amount = 1 });
+        r.killsGeneral = 5;
+        r.killsByTag.Add(new KillTagCount { enemyTag = "Zombie", count = 3 });
+
+        bool empty = r.IsEmpty(); // false
+
+        r.ValidateSoft(Console.WriteLine, "Example");
+    }
+}
+```
+Note: MapDifficulty is defined elsewhere in the project; usage with default(MapDifficulty) demonstrates structure without assuming specific values.
+```
+
+```text
 6) Unknowns
-- MapDifficulty type definition and possible values are not defined in this file.
-- How ResearchRequirement is consumed elsewhere in the project (no usage shown here).
+- Definition and possible values of MapDifficulty (external to this file).
+- How ResearchRequirement is consumed by other systems (e.g., interpretation of thresholds) beyond this file.
+- Any runtime behavior tied to Unity’s serialization or inspector beyond the included Min attributes.
+```

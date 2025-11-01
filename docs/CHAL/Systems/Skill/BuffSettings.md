@@ -2,90 +2,91 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/BuffStatusEffect.cs`._
 
+1) Purpose
+- Defines BuffStatusEffect class representing a buff-type, stackable status effect with duration handling, derived from ActiveStatusEffect.
+- Provides TryAddStack(source) to apply/reapply stacks according to stacking mode, refreshing duration as needed.
+- Defines BuffSettings (serializable) to configure a BuffStatusEffect (ID, duration, max stacks, stacking behavior, and modifier).
+
+2) Public API
+- Namespace: CHAL.Systems.Skill
+
+- Types
+  - public class BuffStatusEffect : ActiveStatusEffect
+    - public BuffSettings Settings
+      - configuration for this buff (EffectId, Modifier, duration, max stacks, stacking mode)
+    - public int CurrentStacks
+      - current number of active stacks
+    - public StackingMode Stacking
+      - stacking behavior mode (e.g., RefreshDuration, AddStacks)
+    - public bool modifierApplied
+      - flag (purpose not fully defined in this file)
+    - public BuffStatusEffect(BuffSettings settings)
+      - constructor; initializes from settings
+        - sets EffectId, BaseDuration, RemainingTime, Modifier
+        - calculates CurrentMaxStacks = Max(1, settings.BaseMaxStacks)
+        - sets Stacking and Kind = StatusType.Buff
+    - public void TryAddStack(EffectReceiver source)
+      - reapply logic for stacking
+        - clamps CurrentStacks to CurrentMaxStacks
+        - if Stacking == StackingMode.AddStacks
+          - if CurrentStacks < CurrentMaxStacks -> CurrentStacks++
+          - RemainingTime = BaseDuration
+        - else if Stacking == StackingMode.RefreshDuration
+          - RemainingTime = BaseDuration
+        - note: dynamic max-stacks via mods is commented out
+        - note: IgnoreIfActive/Replace handling is centralized in EffectReceiver.ApplyEffect (not in this file)
+
+  - [System.Serializable]
+    public class BuffSettings
+      - public string EffectId = "DefaultBuff"
+      - public ModifierData Modifier
+        - stat changes during uptime
+      - public float BaseDuration = 5f
+      - public int BaseMaxStacks = 1
+      - public StackingMode Stacking = StackingMode.RefreshDuration
+
+3) Key Behavior & Side Effects
+- Construction
+  - BuffStatusEffect(settings) wires properties from settings:
+    - EffectId, BaseDuration, RemainingTime, Modifier
+    - CurrentMaxStacks = max(1, settings.BaseMaxStacks)
+    - Stacking = settings.Stacking
+    - Kind = StatusType.Buff
+- Stacking behavior (TryAddStack)
+  - Ensures CurrentStacks does not exceed CurrentMaxStacks
+  - If StackingMode.AddStacks:
+    - increment CurrentStacks if not at max
+    - refresh RemainingTime to BaseDuration
+  - If StackingMode.RefreshDuration:
+    - refresh RemainingTime to BaseDuration
+  - Note: other stacking modes have no effect in this method
+  - Comment indicates dynamic max-stacks via mods is possible but disabled; central handling for IgnoreIfActive/Replace is done elsewhere
+
+4) Constraints & Failure Modes
+- CurrentMaxStacks is clamped to at least 1 during construction
+- CurrentStacks is clamped to CurrentMaxStacks at the start of TryAddStack
+- No null checks for Settings/Modifier in this file; relies on external initialization
+- Only two stacking modes are explicitly handled in TryAddStack (AddStacks and RefreshDuration)
+- BuffSettings is serializable, enabling Unity inspector usage
+
+5) Example
 ```csharp
-- Purpose
-  - Defines BuffStatusEffect: a buff-type status effect with stacking and duration behavior.
-  - Defines BuffSettings: a serializable configuration container for BuffStatusEffect.
-  - Integrates with existing status-system types (ActiveStatusEffect, StatusType, StackingMode, ModifierData).
+// Minimal usage example
+var settings = new BuffSettings
+{
+    EffectId = "PowerUp",
+    BaseDuration = 10f,
+    BaseMaxStacks = 3,
+    Stacking = StackingMode.AddStacks,
+    Modifier = null // provide a valid ModifierData if needed
+};
 
-- Public API
-  - Namespace/module: CHAL.Systems.Skill
-  - Types
-    - public class BuffStatusEffect : ActiveStatusEffect
-      - Public fields
-        - public BuffSettings Settings; // configuration for this buff
-        - public int CurrentStacks; // current number of active stacks
-        - private int CurrentMaxStacks = 1; // maximum allowed stacks (clamped at 1)
-        - public StackingMode Stacking = StackingMode.RefreshDuration; // stacking behavior
-        - public bool modifierApplied = false; // (flag, usage not shown in this file)
-      - Public constructor
-        - BuffStatusEffect(BuffSettings settings)
-          - Sets Settings = settings
-          - EffectId = settings.EffectId
-          - BaseDuration = settings.BaseDuration
-          - RemainingTime = settings.BaseDuration
-          - Modifier = settings.Modifier
-          - CurrentMaxStacks = Mathf.Max(1, settings.BaseMaxStacks)
-          - Stacking = settings.Stacking
-          - Kind = StatusType.Buff
-      - Public methods
-        - public void TryAddStack(EffectReceiver source)
-          - Reapplies/extends stacks according to StackingMode
-          - Clamps CurrentStacks to CurrentMaxStacks: CurrentStacks = Mathf.Min(CurrentStacks, CurrentMaxStacks)
-          - If Stacking == StackingMode.AddStacks
-            - If CurrentStacks < CurrentMaxStacks, increment CurrentStacks
-            - Refresh remaining duration: RemainingTime = BaseDuration
-          - Else if Stacking == StackingMode.RefreshDuration
-            - Refresh remaining duration: RemainingTime = BaseDuration
-          - Note: IgnoreIfActive / Replace is handled centrally in EffectReceiver.ApplyEffect
-    - public class BuffSettings
-      - [System.Serializable]
-      - public string EffectId = "DefaultBuff"; // identifier for the buff effect
-      - public ModifierData Modifier; // stat changes during runtime
-      - public float BaseDuration = 5f; // base duration in seconds
-      - public int BaseMaxStacks = 1; // base maximum stacks
-      - public StackingMode Stacking = StackingMode.RefreshDuration; // stacking behavior
-
-- Key Behavior & Side Effects
-  - Initialization (BuffStatusEffect constructor)
-    - Applies settings to internal fields
-    - Ensures CurrentMaxStacks is at least 1
-    - Sets Buff Kind
-  - TryAddStack flow
-    - Optional: dynamic max stacks logic is present as commented code (not active)
-    - Clamps CurrentStacks to CurrentMaxStacks
-    - If StackingMode.AddStacks and not at cap, increments CurrentStacks
-    - In both AddStacks and RefreshDuration, updates RemainingTime to BaseDuration
-    - If StackingMode.RefreshDuration, only duration is refreshed
-  - External note
-    - IgnoreIfActive / Replace behavior is managed in EffectReceiver.ApplyEffect, not here
-
-- Constraints & Failure Modes
-  - Guard: CurrentMaxStacks is initialized with Mathf.Max(1, BaseMaxStacks) to avoid <1
-  - Clamp: CurrentStacks is clamped via Mathf.Min(CurrentStacks, CurrentMaxStacks)
-  - Null handling: BuffSettings and related fields are public; no null checks shown in this file
-  - Threading/async: None explicit; Unity-related data used on main thread
-
-- Example
-  ```csharp
-  // Example: create a buff with stacking and apply a stack
-  var settings = new BuffSettings
-  {
-      EffectId = "PowerBoost",
-      BaseDuration = 8f,
-      BaseMaxStacks = 3,
-      Stacking = StackingMode.AddStacks
-      // Modifier can be provided if available
-  };
-
-  var buff = new BuffStatusEffect(settings);
-  buff.TryAddStack(null); // stack or refresh depending on stacking mode
-  ```
-
-- Unknowns
-  - Definitions and members of: ActiveStatusEffect, EffectReceiver, StackingMode, StatusType, ModifierData
-  - How Modifier interacts with runtime (other than being assigned)
-  - Details of how buffs are applied/removed elsewhere in the system
-  - Any additional behavior of CurrentStacks initialization (default is 0 unless set elsewhere)
-
+var buff = new BuffStatusEffect(settings);
 ```
+
+6) Unknowns
+- Details of ActiveStatusEffect base class (fields like EffectId, BaseDuration, RemainingTime, Modifier, Kind) are not defined in this file.
+- Definition and values of StackingMode enum beyond those referenced (e.g., other modes).
+- Definition of EffectReceiver and how ApplyEffect interacts with IgnoreIfActive/Replace (comment references).
+- Definition and usage of ModifierData and how modifierApplied is intended to be used.
+- Behaviour of BuffStatusEffect outside TryAddStack (e.g., how and when it is updated elsewhere).

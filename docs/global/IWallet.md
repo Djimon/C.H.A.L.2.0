@@ -3,9 +3,9 @@
 _Automatically generated/updated from `Assets/src/Core/IWallet.cs`._
 
 1) Purpose
-- Defines public interface IWallet in CHAL.Core.
-- Declares currency-related operations: get balance, check spend feasibility, spend, and refund.
-- Provides no implementation; serves as a contract.
+- Defines public interface IWallet in the CHAL.Core namespace
+- Declares currency-related operations (query, spend check, spend, refund)
+- Provides no implementation; acts as a contract for wallet-like components
 
 2) Public API
 - Namespace/module: CHAL.Core
@@ -17,32 +17,19 @@ _Automatically generated/updated from `Assets/src/Core/IWallet.cs`._
     - void Refund(string currencyId, int amount)
 
 3) Key Behavior & Side Effects
-- No implementations in this file; behavior defined by implementers.
-- GetCurrency(string) returns an int (no semantics defined here).
-- CanSpend(string, int) indicates feasibility (true/false).
-- SpendCurrency(string, int) indicates success/failure via return value.
-- Refund(string, int) returns void (no side effects defined here).
+- None specified (no implementation or behavior defined in this file)
 
 4) Constraints & Failure Modes
-- No constraints or guards defined in this file.
-- Null/empty handling, threading, and async behavior are not specified.
-- No performance/allocation hints.
+- None specified (no guards, validation, or threading/asynchrony details provided)
 
 5) Example
-```csharp
-using CHAL.Core;
-
-public class DemoWallet : IWallet
-{
-    public int GetCurrency(string currencyId) => 0;
-    public bool CanSpend(string currencyId, int amount) => false;
-    public bool SpendCurrency(string currencyId, int amount) => false;
-    public void Refund(string currencyId, int amount) { }
-}
-```
+- (none derivable from this file)
 
 6) Unknowns
-- Semantics of currencyId and currency units.
-- Exact thread-safety guarantees.
-- Persistence, synchronization, and error details for failures.
-- Any additional constraints imposed by implementers.
+- Exact semantics of currencyId (valid values, case sensitivity, existence checks)
+- Mapping between currencies and their balances
+- How GetCurrency determines the returned amount
+- Behavior when currencies are invalid or insufficient funds
+- Thread-safety, synchronization, and potential side effects on calls
+- Error handling and exception semantics for invalid inputs or failed operations
+- Any persistence or lifecycle considerations for implementations

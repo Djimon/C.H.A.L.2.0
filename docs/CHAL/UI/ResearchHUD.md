@@ -2,81 +2,119 @@
 
 _Automatically generated/updated from `Assets/src/UI/ResearchHUD.cs`._
 
+```text
 1) Purpose
-- Unity MonoBehaviour that binds to a UIDocument UI to display current active research and its details.
-- Exposes API to initialize with a ResearchService and UI theme, refresh the active node, and show/hide node details.
-- Provides formatting helpers for unlocks and requirements via a public helper class.
+- Unity UI HUD component for research: binds to UI elements, shows active research and a detail panel.
+- Public API for initialization and UI updates: Init(service, theme), RefreshActive(), ShowDetails(nodeId), HideDetails(), IsPointerOverUI(screenPos).
+- Formatting helpers: ResearchUIFormat.FormatUnlocks and ResearchUIFormat.FormatRequirements.
 
+```
+
+```text
 2) Public API
-- Namespace/module: CHAL.UI
+- Namespace/module
+  - CHAL.UI
 
 - Types
   - public sealed class ResearchHUD : MonoBehaviour
     - Public properties
       - public ResearchService Service { get; private set; }
+        - External refs assigned (see Init)
       - public ResearchUIThemeDef Theme { get; private set; }
+        - External refs assigned (see Init)
     - Public methods
       - public void Init(ResearchService service, ResearchUIThemeDef theme)
       - public void RefreshActive()
       - public void ShowDetails(string nodeId)
       - public void HideDetails()
       - public bool IsPointerOverUI(Vector2 screenPos)
+    - (Private/internal members and methods exist but are not part of the public API surface)
 
   - public static class ResearchUIFormat
-    - Public static methods
-      - public static string FormatUnlocks(ResearchNodeDef def)
-      - public static string FormatRequirements(ResearchNodeDef def)
+    - public static string FormatUnlocks(ResearchNodeDef def)
+    - public static string FormatRequirements(ResearchNodeDef def)
 
-3) Key Behavior & Side Effects
-- Awake lifecycle (Unity)
-  - Binds to UIDocument, queries UI elements, and calls HideDetails() to start hidden.
-- Init(ResearchService, ResearchUIThemeDef)
-  - Stores references and triggers RefreshActive().
-- RefreshActive()
-  - If Service is null, no-op.
-  - Gets active node id; if empty, shows "Keine aktive Forschung" and "0%".
-  - If active id exists but def not found, logs a warning and exits.
-  - Updates _activeName to node title or id; updates _activePercent to percentage (rounded).
-  - If Theme and nodeIconDefault exist, applies as background image to _activeIcon.
-- ShowDetails(string nodeId)
-  - Stores _selectedNodeId; guards against null Service or empty nodeId.
-  - Fetches node def; hides when missing.
-  - Enables _detailPanel (if present) and populates:
-    - _detailTitle, _detailFlavor, _detailUnlocks, _detailCosts
-  - Configures _runButton:
-    - Enables if node is available, not completed, and not currently active.
-    - Safely unsubscribes and re-subscribes to OnRunClicked to avoid duplicates.
-  - Makes detail panel visible (DisplayStyle.Flex) if present.
-- HideDetails()
-  - Hides the detail panel (DisplayStyle.None) and clears _selectedNodeId.
-- OnRunClicked()
-  - If Service or _selectedNodeId invalid, no-op.
-  - Calls Service.SetActive(_selectedNodeId); on success, RefreshActive() and ShowDetails(_selectedNodeId) to refresh state.
-- IsPointerOverUI(Vector2 screenPos)
-  - Converts screen coordinates to panel coordinates.
-  - If detail panel is visible and contains the point, returns true.
-  - If active box contains the point, returns true.
-  - Otherwise, returns false.
-- Helper formatting
-  - FormatUnlocks and FormatRequirements are used to build detail strings for UI, based on the node definition.
+- Unity lifecycle (MonoBehaviour)
+  - Awake(): Bind UI elements from UIDocument and hide details initially.
 
-4) Constraints & Failure Modes
-- Guards nulls/empties in public paths (Service, nodeId, def) to avoid exceptions.
-- Safe UI access with null checks on UI elements before acting.
-- Run button event wiring: unsubscribes before subscribing to avoid multiple handlers.
-- String-building for details uses StringBuilder; returns "—" when there is no data.
-- Theme/icon usage guarded by Theme and nodeIconDefault presence.
-
-5) Example
-```csharp
-// Example usage (in some setup script or another component)
-var hud = GetComponent<CHAL.UI.ResearchHUD>();
-hud.Init(serviceInstance, themeDef);
-hud.ShowDetails("node_fighters");
 ```
 
+```text
+3) Key Behavior & Side Effects
+- Awake
+  - Binds UIDocument and queries key VisualElements/Labels/Buttons.
+  - Calls HideDetails() to ensure detail panel starts hidden.
+- Init(ResearchService, ResearchUIThemeDef)
+  - Stores references to external service and theme.
+  - Calls RefreshActive() to reflect current active node.
+- RefreshActive()
+  - If Service is null, no-op.
+  - Retrieves active node ID; if empty, shows:
+    - activeName = "Keine aktive Forschung"
+    - activePercent = "0%"
+  - If an active node exists:
+    - Retrieves node definition; if missing, logs a developer warning and returns.
+    - Sets activeName to def.title or the node ID.
+    - Computes progress (0..1) via GetNodeProgress01(id) and formats as percentage.
+    - Optionally applies Theme.nodeIconDefault as the active icon background image if available.
+- ShowDetails(string nodeId)
+  - Stores _selectedNodeId; returns early with HideDetails() if Service is null or nodeId invalid.
+  - Retrieves node def; returns early with HideDetails() if null.
+  - Enables detailPanel, fills detail fields:
+    - detailTitle from def.title or nodeId
+    - detailFlavor from def.desc
+    - detailUnlocks via ResearchUIFormat.FormatUnlocks(def)
+    - detailCosts via ResearchUIFormat.FormatRequirements(def)
+  - Configures run button (if present):
+    - canRun = Service.IsNodeAvailable(nodeId) && !Service.IsCompleted(nodeId) && active node is not this node
+    - Sets button enabled state; safely rebinds OnRunClicked (unsubscribes then subscribes)
+  - Ensures detail panel is visible (DisplayStyle.Flex)
+- HideDetails()
+  - Hides detail panel (DisplayStyle.None) and clears _selectedNodeId.
+- OnRunClicked()
+  - If Service is null or no selected node, no-op.
+  - If Service.SetActive(_selectedNodeId) succeeds:
+    - RefreshActive()
+    - ShowDetails(_selectedNodeId) to refresh (button state, etc.)
+- IsPointerOverUI(Vector2 screenPos)
+  - Converts screen coordinates to panel coordinates.
+  - If detail panel is visible and contains the position, returns true.
+  - If active box contains the position, returns true.
+  - Otherwise, returns false.
+
+```
+
+```text
+4) Constraints & Failure Modes
+- Null guards
+  - RefreshActive exits early if Service is null.
+  - ShowDetails exits/hides if nodeId is null/empty or if def is null.
+  - Many UI elements (detailPanel, _runButton, etc.) are checked for null before use.
+- Logging
+  - If the active node definition cannot be found, logs a warning via DebugManager.Log.
+- UI state handling
+  - _detailPanel.display toggled between Flex and None; relies on DisplayStyle.Flex for visible state.
+  - _runButton enabled state derived from multiple service checks; safely (un)binds click handler.
+- Theme/asset assumptions
+  - Optional: if Theme.nodeIconDefault exists, its texture is used for activeIcon background.
+- Performance
+  - Formatting relies on ResearchUIFormat methods which build strings only when details are shown.
+- Threading/async
+  - All UI access occurs on the main thread; no explicit async behavior present.
+
+```
+
+```text
+5) Example
+- Not derivable from this file in a minimal example form without involving ResearchService/Def types; no standalone runnable example is provided.
+
+```
+
+```text
 6) Unknowns
-- Definitions of ResearchService, ResearchUIThemeDef, and ResearchNodeDef are not provided in this file.
-- Exact UI layout and GUIDs beyond the queried element names (root, activeBox, activeIcon, detailPanel, detailTitle, detailFlavor, detailUnlocks, detailCosts, runButton).
-- Behavior of DebugManager.Log path and how logs are reported in the editor/runtime.
-- Any side effects of ResearchService.GetNodeDef/IsNodeAvailable/SetActive beyond what is used here.
+- Definitions of ResearchService, ResearchNodeDef, and ResearchUIThemeDef (structure, fields, behavior) are not shown here.
+- Exact contents and types of def.title, def.desc, def.unlocks, and def.requirements are assumed from usage.
+- Details of DebugManager.Log, and how the theme texture is provided, are not specified beyond usage.
+- Any broader game flow interactions (e.g., persisting active node across scenes) are not present in this file.
+
+```

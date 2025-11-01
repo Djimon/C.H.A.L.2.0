@@ -2,70 +2,66 @@
 
 _Automatically generated/updated from `Assets/src/UI/MapSelectionIUI.cs`._
 
-```text
-1) Purpose
-- Defines a UI component MapSelectionUI for selecting and starting a map, and exiting the menu.
-- Builds a list of map selection buttons from availableMaps and shows map details when selected.
-- Delegates map-start action to GameManager and hides itself on exit.
+Purpose
+- Defines a Unity UI component MapSelectionUI for selecting and starting a map.
+- Dynamically builds a list of map selection buttons from availableMaps in Awake.
+- Bridges UI interactions to game logic (start map, exit menu) and updates details display.
 
-2) Public API
+Public API
 - Namespace/module: CHAL.UI
 - Types
-  - protected override void Awake()
-    - Purpose: initialize UI, build map list from availableMaps, wire up button events, and locate UI elements.
-  - private void OnExitMenuBtnClicked()
-    - Purpose: hide the UI by calling Show(false).
-  - private void OnMapSelected(MapDef map)
-    - Parameters: MapDef map
-    - Purpose: set _selectedMap and update detailsText to show the selected map name and monster level.
-  - private void OnStartMapBtnClicked()
-    - Purpose: start the selected map via GameManager if one is selected; otherwise log a warning.
-- Fields
-  - [SerializeField] private string mapSceneName = "04_Map"
-    - Scene name to load when starting a map.
-  - [SerializeField] private List<MapDef> availableMaps
-    - Source data for map buttons (each MapDef becomes a button).
-  - private MapDef _selectedMap
-    - Currently selected map (null if none selected).
-  - private Button btnStartMap
-    - Reference to the StartMap button.
-  - private Button btnExitMenu
-    - Reference to the Exit button.
-  - private TextElement detailsText
-    - UI text element showing details of the selected map.
+  - public class MapSelectionUI : IngameUI
+    - Public fields/properties: none
+    - Public methods: none
 
-3) Key Behavior & Side Effects
-- Awake
-  - Retrieves root VisualElement via UIDocument.
-  - Clears the MapList container and creates a Button per item in availableMaps.
-  - Each generated Button wires its click to OnMapSelected(map).
-  - Locates StartMap and Exit buttons and wires their events.
-  - Locates Details text element.
-- OnMapSelected
-  - Updates _selectedMap and detailsText to show the map’s displayNameKey and baseLevel.
-- OnStartMapBtnClicked
-  - If no map is selected: logs a warning via DebugManager and returns.
-  - Otherwise calls GameManager.Instance.StartMap(mapSceneName, _selectedMap).
+Key Behavior & Side Effects
+- Awake (Unity lifecycle)
+  - Calls base.Awake().
+  - Retrieves root VisualElement from the UIDocument on this GameObject.
+  - Locates the MapList container, clears it, and creates a Button per item in availableMaps.
+  - Each map button sets up a click handler to OnMapSelected(map).
+  - Locates StartMap and Exit buttons and wires their click handlers to OnStartMapBtnClicked and OnExitMenuBtnClicked.
+  - Locates the Details label for showing selected map info.
 - OnExitMenuBtnClicked
-  - Hides the UI by calling Show(false).
+  - Hides the UI via Show(false).
+- OnMapSelected(MapDef map)
+  - Sets _selectedMap to the chosen map.
+  - Updates detailsText to show the map name and base monster level.
+- OnStartMapBtnClicked
+  - If no map is selected (_selectedMap is null), logs a warning via DebugManager.Warning("No map selected!", "UI") and returns.
+  - Otherwise, calls GameManager.Instance.StartMap(mapSceneName, _selectedMap) to start the map (centralized start logic).
+- Note: mapSceneName defaults to "04_Map" and is passed along with the selected map to the start logic.
 
-4) Constraints & Failure Modes
-- Nullability/guards
-  - No null checks for availableMaps, root, detailsText, btnStartMap, btnExitMenu; potential NullReferenceException if UI wiring or data is missing.
-  - If _selectedMap is null, Start path is blocked with a warning.
-- Threading
-  - All operations assumed to run on Unity main thread (UI and game manager interactions).
-- Data dependencies
-  - MapDef must expose at least displayNameKey and baseLevel for UI and details text.
-  - GameManager.StartMap must be callable with (string, MapDef).
-- Serialization
-  - mapSceneName and availableMaps must be serialized/assigned in the Unity Editor for proper behavior.
+Constraints & Failure Modes
+- Potential null/reference risks
+  - availableMaps is not null before iteration; there is no guard, so null leads to NullReferenceException in Awake.
+  - root = GetComponent<UIDocument>() may fail if UIDocument is missing; then rootVisualElement access will fail.
+  - container = root.Q<VisualElement>("MapList"); if not found, container is null and container.Clear() would throw.
+  - btnStartMap = root.Q<Button>("StartMap"); if not found, btnStartMap is null and adding a listener will throw.
+  - btnExitMenu = root.Q<Button>("Exit"); if not found, same null risk.
+  - detailsText = root.Q<Label>("Details"); if not found, detailsText is null and later access causes NRE.
+- External dependencies
+  - Display names rely on map.displayNameKey (string) being meaningful; actual localization is noted as a TODO in code.
+  - GameManager.Instance.StartMap(mapSceneName, _selectedMap) is external to this file; behavior depends on GameManager.
+  - Show(false) relies on IngameUI implementation for hiding UI.
+- Runtime assumptions
+  - Awake runs on initialization and UI root exists.
+  - UIElements API (Q, Button, Label) is available and matches the queried names.
+- Performance/allocation
+  - Creates a Button per availableMaps item at startup; no per-frame allocations noted.
 
-5) Example
-- Not derivable from this file alone; usage is through Unity Editor and runtime when this component is attached.
+Unknowns
+- MapDef type details (structure of displayNameKey, baseLevel, etc.) are not defined in this file.
+- Exact behavior of GameManager.StartMap and what scene loading entails.
+- Exact behavior of DebugManager.Warning and any UI blocking during startup.
+- Whether availableMaps can be null or modified at runtime after Awake.
+- Localization specifics (how displayNameKey maps to text) are not defined here.
+- The type relationship and exact nature of IngameUI (base class) and Show(bool) behavior.
 
-6) Unknowns
-- The full structure of MapDef (beyond displayNameKey and baseLevel) is not defined here.
-- The exact behavior of GameManager.StartMap and DebugManager.Warning is not shown.
-- Whether UI elements (MapList container, StartMap/Exit buttons, Details label) exist in all scenes or require specific UI structure.
-```
+Example
+- Not provided, as surface usage relies on project-wide types (MapDef, GameManager, DebugManager) and Unity scene setup not shown in this file.
+
+Unknowns (quick reference)
+- MapDef members: displayNameKey, baseLevel (as used here).
+- GameManager.StartMap implementation details.
+- UIDocument existence and specific UI element names (MapList, StartMap, Exit, Details) in the scene.

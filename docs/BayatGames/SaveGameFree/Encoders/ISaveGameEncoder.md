@@ -2,40 +2,49 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Encoders/ISaveGameEncoder.cs`._
 
-# Purpose
-- Defines an interface for Save Game Encoders.
+1) Purpose
+- Defines the ISaveGameEncoder interface in the BayatGames.SaveGameFree.Encoders namespace.
+- Declares methods to encode and decode strings using a password.
 
-# Public API
-- Namespace: `BayatGames.SaveGameFree.Encoders`
+2) Public API
+- Namespace: BayatGames.SaveGameFree.Encoders
 - Types
-  - `public interface ISaveGameEncoder`
-    - Public methods:
-      - `string Encode(string input, string password);`
-      - `string Decode(string input, string password);`
+  - public interface ISaveGameEncoder
+    - public string Encode ( string input, string password )
+      - Encodes the input string using the provided password.
+    - public string Decode ( string input, string password )
+      - Decodes the input string using the provided password.
 
-# Key Behavior & Side Effects
-- `Encode` method: Encodes the input string using the provided password.
-- `Decode` method: Decodes the input string using the provided password.
+3) Key Behavior & Side Effects
+- Implementations define the actual encoding/decoding logic; the interface only specifies inputs and return types.
+- Both methods take input and password as strings and return a string result.
+- No default behavior or side effects are defined in this file.
 
-# Constraints & Failure Modes
-- No explicit guards or error handling noted in the interface.
+4) Constraints & Failure Modes
+- No constraints, null-handling, or error handling are defined here.
+- Behavior on invalid input or exceptions is determined by concrete implementations.
 
-# Example
+5) Example
 ```csharp
-public class MyEncoder : ISaveGameEncoder
+using BayatGames.SaveGameFree.Encoders;
+
+public class SimplePassThroughEncoder : ISaveGameEncoder
 {
     public string Encode(string input, string password)
     {
-        // Implementation here
+        // Simple placeholder implementation
+        return input;
     }
 
     public string Decode(string input, string password)
     {
-        // Implementation here
+        // Simple placeholder implementation
+        return input;
     }
 }
 ```
 
-# Unknowns
-- Implementation details of the encoding and decoding processes are not provided.
-
+6) Unknowns
+- How encoders are selected or wired into the SaveGameFree system.
+- Any specific encoding algorithms, performance characteristics, or security guarantees.
+- Handling of null values, exceptions, or async usage in concrete implementations.

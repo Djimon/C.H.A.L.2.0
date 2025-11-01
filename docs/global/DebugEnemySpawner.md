@@ -2,63 +2,45 @@
 
 _Automatically generated/updated from `Assets/src/Systems/_test/DebugEnemySpawner.cs`._
 
-Purpose
-- MonoBehaviour that spawns a configured enemy on Start().
-- Looks up an enemy definition by ID via UnitRegistry; logs an error and aborts if not found.
-- Instantiates the provided enemy prefab at the spawn point and initializes its EnemyController with a constructed EnemyStruct.
-- Default enemyId = "debug_rat"; prefab is expected to contain an EnemyController.
+1) Purpose
+- MonoBehaviour that spawns a debug enemy on Start using a configured prefab and spawn point.
+- Constructs an EnemyStruct with preset values and initializes the spawned EnemyController.
+- Logs an error and aborts if the requested enemy definition cannot be found in UnitRegistry.
 
-Public API
-- Namespace/module: none (global)
-- Types
-  - public class DebugEnemySpawner : MonoBehaviour
-    - Public fields
-      - GameObject enemyPrefab; // Prefab mit EnemyController
-      - Transform spawnPoint;
-      - string enemyId = "debug_rat";
-    - Public methods
-      - private void Start()
-        - Flow: look up enemy def; on null, log error and return; otherwise construct EnemyStruct, instantiate prefab at spawnPoint, get EnemyController, call Init(data).
+2) Public API
+- Class: public class DebugEnemySpawner : MonoBehaviour
+  - Public fields:
+    - GameObject enemyPrefab — Prefab containing EnemyController
+    - Transform spawnPoint
+    - string enemyId — ID used to lookup enemy definition; default "debug_rat"
 
-Key Behavior & Side Effects
-- Start() flow
-  - def = UnitRegistry.Instance.GetEnemyByID(enemyId)
-  - if def == null -> DebugManager.Error($"EnemyDef {enemyId} not found!"); return
-  - data = new EnemyStruct
+3) Key Behavior & Side Effects
+- Start workflow:
+  - var def = UnitRegistry.Instance.GetEnemyByID(enemyId)
+  - if (def == null) DebugManager.Error($"EnemyDef {enemyId} not found!"); return;
+  - EnemyStruct data = new EnemyStruct
     - EnemyId = enemyId
     - Count = 10
-    - bonusTags = ["swarm"]
+    - bonusTags = new System.Collections.Generic.List<string> { "swarm" }
     - Rank = EnemyRank.Normal
-  - go = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity)
-  - ctrl = go.GetComponent<EnemyController>()
+  - var go = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity)
+  - var ctrl = go.GetComponent<EnemyController>()
   - ctrl.Init(data)
-- Side effects
-  - Potential in-scene instantiation of a new enemy instance
-  - Logging via DebugManager when enemy def is not found
-  - EnemyController initialization with the provided data
 
-Constraints & Failure Modes
-- Guard
-  - If enemy definition is not found, logs error and does not spawn.
-- Potential null references (not guarded in code)
-  - enemyPrefab, spawnPoint, or the EnemyController component on the instantiated object may be null, which could lead to exceptions at runtime (e.g., ctrl being null or calling Init on a null reference).
-- Assumptions
-  - enemyPrefab contains an EnemyController component (since GetComponent<EnemyController>() is used).
-  - Spawn uses spawnPoint.position and Quaternion.identity (no rotation offset).
-  - The code relies on external types (EnemyStruct, EnemyRank, EnemyController, UnitRegistry, DebugManager) whose definitions are not in this file.
+4) Constraints & Failure Modes
+- Guards:
+  - If enemy definition is not found, logs error and aborts.
+- Potential issues not guarded in code:
+  - If enemyPrefab or spawnPoint is null, Instantiate may fail.
+  - If the instantiated prefab lacks an EnemyController component, ctrl will be null and ctrl.Init(data) may throw.
+- Assumes existence of enemyId in UnitRegistry and a valid EnemyController on the prefab.
 
-Example
-```csharp
-// Example usage in Unity
-// Attach DebugEnemySpawner to a scene GameObject.
-// Assign a prefab that has an EnemyController component to 'enemyPrefab'.
-// Assign a Transform in the scene to 'spawnPoint'.
-// Optionally set 'enemyId' to a different value (default "debug_rat").
-```
+5) Example
+- Not applicable (no derivable code example beyond the file itself).
 
-Unknowns
-- Definitions of EnemyStruct, EnemyRank, and their exact fields beyond those set here.
-- Behavior of UnitRegistry.Instance.GetEnemyByID and what IDs are valid beyond this example.
-- Implementation details of DebugManager.Error.
-- Exact expectations for the EnemyController.Init(data) method and how data is consumed.
-- Whether enemyPrefab is guaranteed to include an EnemyController component; no null checks for the component are present in this file.
+6) Unknowns
+- Exact structures and behavior of:
+  - EnemyStruct, EnemyRank, EnemyController.Init
+  - UnitRegistry.GetEnemyByID
+  - DebugManager.Error
+- Any runtime constraints (e.g., multiple spawns, threading) beyond this file.

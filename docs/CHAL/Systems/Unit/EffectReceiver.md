@@ -3,12 +3,12 @@
 _Automatically generated/updated from `Assets/src/Systems/Unit/EffectReceiver.cs`._
 
 ```text
-Purpose
-- Defines an abstract base class for units that receive and manage status effects.
-- Tracks HP, active status effects, and active modifiers; provides hooks for taking damage and death.
-- Provides flow for applying, removing, and updating status effects over time.
+1) Purpose
+- Defines an abstract base class EffectReceiver for unit-like entities that manage health, status effects, and modifiers.
+- Provides HP properties, team association, and containers for active status effects and active modifiers.
+- Encapsulates application/removal of status effects and periodic updates (DoT ticks, buff/debuff expirations) with required overrides for damage and death behavior.
 
-Public API
+2) Public API
 - Namespace/module
   - CHAL.Systems.Unit
 
@@ -16,90 +16,74 @@ Public API
   - public abstract class EffectReceiver
     - Public fields/properties
       - public float CurrentHP { get; protected set; }
-        - Current hit points of the unit
       - public float MaxHP { get; protected set; }
-        - Maximum hit points of the unit
       - public List<ActiveStatusEffect> ActiveEffects { get; private set; } = new();
-        - List of currently active status effects
       - public ModifierStack ActiveModifiers { get; private set; } = new ModifierStack();
-        - Modifier stack currently applied to the unit
       - public UnitTeam Team;
-        - Team affiliation of the unit
-
-    - Public methods
+    - Public methods (signatures; side effects)
       - public virtual void ApplyStatusEffect(ActiveStatusEffect effect)
-        - Applies or refreshes a status effect
-        - Returns early if effect is null
-        - DoT-Case: if existing DoTStatusEffect and incoming DoTStatusEffect, stacks and refreshes duration
-        - Buff-Case: if existing BuffStatusEffect and incoming BuffStatusEffect, stacks and refreshes duration
-        - Neuer Buff: if effect is BuffStatusEffect, activates its Modifier immediately
-        - Debuff-Case: if existing DebuffStatusEffect and incoming DebuffStatusEffect, stacks and refreshes duration
-        - Neuer Debuff: if effect is DebuffStatusEffect, activates its Modifier immediately
-        - Adds new effect to ActiveEffects otherwise
-
       - public virtual void RemoveEffect(ActiveStatusEffect effect)
-        - Removes effect from ActiveEffects
-
       - public abstract void TakeDamage(float amount, DamageType type)
-        - Apply damage to the unit (implementation provided by subclass)
-
       - protected abstract void OnDeath()
-        - Hook for death handling (implementation provided by subclass)
-
       - public void UpdateEffects(float deltaTime)
-        - Advances effect timers and handles per-effect behavior
-        - Decrements RemainingTime for all ActiveEffects
-        - DoT: ticks based on internalTickTimer and applies DoT damage
-        - Buff: removes modifier when RemainingTime <= 0 and modifierApplied
-        - Debuff: removes modifier when RemainingTime <= 0 and modifierApplied
-        - On effect expiration: removes associated modifier (if any) and removes the effect
 
-Key Behavior & Side Effects
-- ApplyStatusEffect
-  - Handles stacking for DoT, Buff, and Debuff via TryAddStack(effect.source)
-  - Keeps RemainingTime as the max of existing and new duration (per type)
-  - Applies modifiers on initial Buff/Debuff addition
-  - Adds new effects to ActiveEffects when not handled by existing-case logic
+3) Key Behavior & Side Effects
+- ApplyStatusEffect(ActiveStatusEffect effect)
+  - If effect is null: no-op.
+  - If an existing effect with the same EffectId exists:
+    - DoTStatusEffect existing and DoTStatusEffect new: exDot.TryAddStack(effect.source); exDot.RemainingTime = max(exDot.RemainingTime, newDot.BaseDuration); return;
+    - BuffStatusEffect existing and BuffStatusEffect new: exBuff.TryAddStack(effect.source); exBuff.RemainingTime = max(exBuff.RemainingTime, newBuff.BaseDuration); return;
+    - DebuffStatusEffect existing and DebuffStatusEffect new: exDeBuff.TryAddStack(effect.source); exDeBuff.RemainingTime = max(exDeBuff.RemainingTime, newDeBuff.BaseDuration); return;
+  - New BuffStatusEffect: add its modifier to ActiveModifiers (prevents double-add on refresh due to above path).
+  - New DebuffStatusEffect: add its modifier to ActiveModifiers (prevents double-add on refresh due to above path).
+  - Final: add effect to ActiveEffects if not already returned from above.
 
-- UpdateEffects
-  - DoT effects: damage applied at intervals: DamagePerTick * CurrentStacks
-  - DoT: internalTickTimer decremented; on zero or below, damage applied and timer reset
-  - Buffs/Debuffs: modifiers removed when RemainingTime <= 0
-  - Expired buffs/debuffs cause modifier removal and final effect removal
-  - Expiration path: if RemainingTime <= 0, remove associated modifier (if any) and RemoveEffect(effect)
+- RemoveEffect(ActiveStatusEffect effect)
+  - Removes effect from ActiveEffects.
 
-- RemoveEffect
-  - Simply removes the effect from the ActiveEffects list
+- TakeDamage(float amount, DamageType type)
+  - Abstract; implemented by derived types.
 
-- TakeDamage / OnDeath
-  - Abstracts: concrete unit types must implement damage handling and death behavior
+- OnDeath()
+  - Abstract; implemented by derived types.
 
-Constraints & Failure Modes
-- Null handling
-  - ApplyStatusEffect exits early if effect is null
+- UpdateEffects(float deltaTime)
+  - Iterates ActiveEffects from end to start.
+  - Decrements effect.RemainingTime by deltaTime.
+  - DoT handling:
+    - If effect is DoTStatusEffect: decrement internalTickTimer; when <= 0, deal DoT periodic damage (DoTsettings.DamagePerTick * CurrentStacks) of DoTsettings.DamageType; reset internalTickTimer to DoTsettings.TickInterval.
+  - Buff handling:
+    - If buff.RemainingTime <= 0: if buff.Modifier != null && buff.modifierApplied, remove modifier and mark modifierApplied = false.
+  - Debuff handling:
+    - If debuff.RemainingTime <= 0: if debuff.Modifier != null && debuff.modifierApplied, remove modifier and mark modifierApplied = false.
+  - Expiration/removal:
+    - If effect.RemainingTime <= 0: if effect is BuffStatusEffect be with Modifier, remove modifier; then RemoveEffect(effect).
 
-- Time/Update semantics
-  - UpdateEffects(deltaTime) assumes positive deltaTime; negative values are not handled explicitly
+4) Constraints & Failure Modes
+- Defensive checks
+  - ApplyStatusEffect silently ignores null effects.
+- Safe collection modification
+  - UpdateEffects iterates in reverse to safely remove effects during iteration.
+- DoT/Buff/Debuff state dependencies
+  - DoT and buff/debuff stacking and duration logic depend on specific fields (e.g., base duration, internalTickTimer, modifier references) defined in derived status effect types.
+- Damage/death contract
+  - TakeDamage and OnDeath are abstract; behavior defined by concrete subclasses.
+- Modifiers
+  - Buffs/debuffs add/remove modifiers when created/expired; ensures modifiers are not double-applied on refresh paths.
+- Threading
+  - No explicit threading safeguards; UpdateEffects is a synchronous, per-entity update.
 
-- Modifier lifecycle
-  - Modifiers are added on Buff/Debuff application and removed when corresponding effect expires or is cleared
+5) Example
+- Not derivable from this file alone (no concrete subclass or status definitions provided).
 
-- Iteration safety
-  - UpdateEffects iterates from end to start to safely remove effects during iteration
-
-- Surface coupling
-  - Depends on external types: ActiveStatusEffect, DoTStatusEffect, BuffStatusEffect, DebuffStatusEffect, ModifierStack, UnitTeam, DamageType, and effect-specific fields/members (e.g., DoTsettings, RemainingTime, modifierApplied)
-
-Example
-- Not derivable from this file alone; no runnable usage snippet provided.
-
-Unknowns
-- Definitions and structures of:
-  - ActiveStatusEffect and all derived types (DoTStatusEffect, BuffStatusEffect, DebuffStatusEffect)
-  - DoTStatusEffect internals (internalTickTimer, DoTsettings, DamagePerTick, TickInterval, CurrentStacks, etc.)
-  - BuffStatusEffect and DebuffStatusEffect fields (Modifier, modifierApplied, RemainingTime)
-  - ModifierStack.AddModifier/RemoveModifier behavior and side effects
-  - Effect identifiers (EffectId) and effect.source usage
-  - DamageType enum and its integration with TakeDamage
-  - UnitTeam type and its semantics in game logic
+6) Unknowns
+- Definitions and members of:
+  - ActiveStatusEffect and its derived types (DoTStatusEffect, BuffStatusEffect, DebuffStatusEffect)
+  - DoTStatusEffect fields (e.g., EffectId, source, BaseDuration, RemainingTime, internalTickTimer, DoTsettings)
+  - BuffStatusEffect and DebuffStatusEffect fields (e.g., Modifier, modifierApplied, RemainingTime)
+  - ActiveStatusEffect.EffectId, ActiveStatusEffect.source
+  - DoTSettings structure (DamagePerTick, TickInterval, DamageType)
+  - ModifierStack implementation and Modifier type
+  - UnitTeam enum/class
+- Exact interactions beyond this file (e.g., how HP interacts with other systems, death handling timing) are not specified here.
 ```

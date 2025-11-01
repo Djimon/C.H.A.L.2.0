@@ -2,34 +2,28 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/ActiveStatusEffect.cs`._
 
-```text
 1) Purpose
-- Defines a serializable data container ActiveStatusEffect representing an active status effect instance with identity, duration, timing, and modifiers.
-  - Public fields: EffectId (string), Kind (StatusType), source (EffectReceiver), target (EffectReceiver), BaseDuration (float), RemainingTime (float), Modifier (ModifierData).
-- Defines stacking behavior options via public enum StackingMode.
-  - Members: RefreshDuration, AddStacks, IgnoreIfActive, Replace.
-- Defines status categorization via public enum StatusType.
-  - Members: DoT, Buff, Debuff, Aura.
-
-```
+- Defines a serializable data container for an active status effect (ActiveStatusEffect).
+- Defines stacking behavior (StackingMode) for status effects.
+- Defines status categorization (StatusType) for status effects.
 
 2) Public API
 - Namespace/module: CHAL.Systems.Skill
 - Types
   - public class ActiveStatusEffect [Serializable]
     - Public fields
-      - string EffectId
-      - StatusType Kind
-      - EffectReceiver source
-      - EffectReceiver target
-      - float BaseDuration
-      - float RemainingTime
-      - ModifierData Modifier
+      - string EffectId — identifier of the effect
+      - StatusType Kind — category of the status (DoT/Buff/Debuff/Aura)
+      - EffectReceiver source — origin of the effect
+      - EffectReceiver target — recipient of the effect
+      - float BaseDuration — base duration of the effect
+      - float RemainingTime — remaining time of the effect
+      - ModifierData Modifier — modifier data applied by this effect
   - public enum StackingMode
-    - RefreshDuration
-    - AddStacks
-    - IgnoreIfActive
-    - Replace
+    - RefreshDuration — Dauer erneuern, keine Stacks erhheben
+    - AddStacks — Stack++ bis MaxStacks, Dauer erneuern
+    - IgnoreIfActive — wenn vorhanden -> ignorieren
+    - Replace — vorhandenen Effekt ersetzen
   - public enum StatusType
     - DoT
     - Buff
@@ -37,19 +31,30 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ActiveStatusEff
     - Aura
 
 3) Key Behavior & Side Effects
-- No methods or runtime logic are defined in this file.
-- All behavior related to how ActiveStatusEffect is updated, stacked, or consumed must be implemented elsewhere; this file only defines data structures and enums.
+- No behavior or logic is implemented; this file contains only data definitions with no methods.
+- All fields are public and have no constructors defined; default values apply.
 
 4) Constraints & Failure Modes
-- No validation or guards are defined; fields are public and can be set arbitrarily.
-- The class is marked [Serializable], implying it is intended for serialization (e.g., Unity serialization).
+- Public reference fields (source, target, Modifier) default to null if not assigned.
+- Floating fields (BaseDuration, RemainingTime) default to 0f if not assigned.
+- The class is marked [Serializable], indicating intended serialization support.
 
 5) Example
-- Not derivable from this file (no usage/example code provided).
+- Minimal usage example (instantiation of the data container):
+
+```csharp
+var effect = new CHAL.Systems.Skill.ActiveStatusEffect
+{
+    EffectId = "burn",
+    Kind = CHAL.Systems.Skill.StatusType.DoT,
+    BaseDuration = 5f,
+    RemainingTime = 5f
+    // source/target/Modifier can be assigned as available
+};
+```
 
 6) Unknowns
-- Definitions and semantics of:
-  - EffectReceiver (type of source/target) and ModifierData (modifier details) are not present in this file.
-  - The exact behavior implied by each StackingMode value (how stacking is applied) is not defined here.
-- How ActiveStatusEffect instances are created, updated each frame, or integrated into systems is not shown.
-- Any Unity-specific serialization nuances beyond [Serializable] are not specified in this file.
+- What EffectReceiver exactamente represents (definitions located elsewhere).
+- What ModifierData contains or how it applies (definitions located elsewhere).
+- How ActiveStatusEffect is consumed by systems (flows, updates, or persistence) beyond this file.
+- Any runtime validation or lifecycle management (constructors, methods) not present in this file.

@@ -2,43 +2,66 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/Save Custom/ExampleSaveCustom.cs`._
 
-# Purpose
-- Defines a Unity MonoBehaviour for saving and loading custom game data.
+```text
+1) Purpose
+- Defines a Unity MonoBehaviour example (ExampleSaveCustom) that demonstrates saving and loading a custom data structure using SaveGameFree.
+- Declares serializable nested types Level (struct) and CustomData (class) to model the saved data.
+- Exposes public fields for inspector wiring (customData, loadOnStart, scoreInputField, highScoreInputField, identifier) and implements Start/SetScore/SetHighScore/Save/Load to manage persistence and UI.
 
-# Public API
-- Namespace: `BayatGames.SaveGameFree.Examples`
+2) Public API
+- Namespace: BayatGames.SaveGameFree.Examples
 - Types
-  - `public class ExampleSaveCustom : MonoBehaviour`
-    - Public fields/properties:
-      - `CustomData customData`: Holds the custom game data.
-      - `bool loadOnStart`: Indicates if data should be loaded on start.
-      - `InputField scoreInputField`: Input field for score.
-      - `InputField highScoreInputField`: Input field for high score.
-      - `string identifier`: Identifier for saving/loading data.
-    - Public methods:
-      - `void SetScore(string score)`: Sets the score from input.
-      - `void SetHighScore(string highScore)`: Sets the high score from input.
-      - `void Save()`: Saves the custom data using the specified identifier.
-      - `void Load()`: Loads the custom data and updates input fields.
+  - public class ExampleSaveCustom : MonoBehaviour
+    - Public fields
+      - public CustomData customData
+      - public bool loadOnStart
+      - public UnityEngine.UI.InputField scoreInputField
+      - public UnityEngine.UI.InputField highScoreInputField
+      - public string identifier
+    - Public methods
+      - public void Start()
+      - public void SetScore(string score)
+      - public void SetHighScore(string highScore)
+      - public void Save()
+      - public void Load()
+  - public struct Level
+    - public Level(bool unlocked, bool completed)
+      - (initializes level state)
+  - public class CustomData
+    - public int score
+    - public int highScore
+    - public List<Level> levels
+    - public CustomData()
+      - initializes default values and dummy levels
 
-# Key Behavior & Side Effects
-- On `Start()`, if `loadOnStart` is true, it calls `Load()` to initialize data.
-- `Load()` updates the `scoreInputField` and `highScoreInputField` with loaded values.
+3) Key Behavior & Side Effects
+- Start()
+  - If loadOnStart is true, calls Load().
+- SetScore(string score)
+  - Parses string to int and assigns to customData.score.
+- SetHighScore(string highScore)
+  - Parses string to int and assigns to customData.highScore.
+- Save()
+  - Calls SaveGame.Save<CustomData>(identifier, customData, SerializerDropdown.Singleton.ActiveSerializer).
+- Load()
+  - Loads into customData via SaveGame.Load<CustomData>(identifier, new CustomData(), SerializerDropdown.Singleton.ActiveSerializer).
+  - Updates scoreInputField.text with customData.score and highScoreInputField.text with customData.highScore.
 
-# Constraints & Failure Modes
-- Assumes valid integer input for `SetScore` and `SetHighScore`; no error handling for parsing.
-- Uses a default `CustomData` instance when loading if no saved data exists.
+4) Constraints & Failure Modes
+- Null references
+  - scoreInputField, highScoreInputField, identifier, or customData may be null if not wired/initialized; operations like setting text or accessing customData will throw.
+- Parsing errors
+  - SetScore/SetHighScore use int.Parse; throws on non-integer input.
+- Assumptions
+  - Uses SerializerDropdown.Singleton.ActiveSerializer; behavior depends on external configuration.
+- Threading
+  - All operations run on Unity main thread; no async behavior shown.
 
-# Example
-```csharp
-ExampleSaveCustom example = new ExampleSaveCustom();
-example.SetScore("100");
-example.SetHighScore("200");
-example.Save();
-example.Load();
+5) Example
+- Not provided (not clearly derivable as a standalone minimal usage snippet from this file).
+
+6) Unknowns
+- Implementation details of SaveGame.Save/Load and SerializerDropdown behavior.
+- Exact serialization semantics for nested types Level and CustomData beyond what's shown.
+- Impact of missing or invalid saved data beyond default CustomData constructor.
 ```
-
-# Unknowns
-- No information on the implementation details of `SaveGame.Save` and `SaveGame.Load`.
-- No details on the `SerializerDropdown.Singleton.ActiveSerializer`.
-

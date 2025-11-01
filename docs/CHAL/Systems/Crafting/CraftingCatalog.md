@@ -3,34 +3,46 @@
 _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingCatalog.cs`._
 
 ```text
-Purpose
-- Defines a Unity ScriptableObject asset to hold crafting recipes.
-- Exposes a public list of RecipeDef named recipes to store recipe definitions.
-- Enables Editor asset creation via CreateAssetMenu (CraftingCatalog) under Data/CraftingCatalog.
+1) Purpose
+- Defines CraftingCatalog as a ScriptableObject in CHAL.Systems.Crafting.
+- Exposes a public List<RecipeDef> named recipes to hold crafting recipe definitions.
+- Enables Unity Editor asset creation via CreateAssetMenu (CraftingCatalog).
 
-Public API
-- Namespace: CHAL.Systems.Crafting
+2) Public API
+- Namespace/module
+  - CHAL.Systems.Crafting
 - Types
   - public class CraftingCatalog : ScriptableObject
-    - public List<RecipeDef> recipes
-      - Serialized field; holds recipe definitions (initialized to empty by default)
+    - Attributes
+      - [CreateAssetMenu(fileName = "CraftingCatalog", menuName = "Data/CraftingCatalog")]
+    - Public fields/properties
+      - public List<RecipeDef> recipes = new();
+        - Role: stores the crafting recipes; serialized by Unity
+    - Public methods
+      - None
 
-Notes: No methods are defined in this type.
+3) Key Behavior & Side Effects
+- Editor behavior
+  - CreateAssetMenu enables creating a CraftingCatalog asset from the Unity editor (Assets > Create > Data > CraftingCatalog).
+- Data behavior
+  - recipes is initialized to an empty list by default.
+  - The asset acts as a data container for RecipeDef items; no runtime methods defined in this file.
 
-Key Behavior & Side Effects
-- Initialization: recipes is initialized to an empty List<RecipeDef> by default (new()).
-- Editor integration: Creates an asset via Unity Editor menu Data/CraftingCatalog with default fileName CraftingCatalog.
-- Serialization: The recipes list is serialized as part of the asset.
+4) Constraints & Failure Modes
+- Serialization
+  - public List<RecipeDef> recipes is serialized by Unity; no explicit null guards in this file.
+- Validation
+  - No in-file validation or guards for nulls, duplicates, or constraints on the list.
+- Concurrency/async
+  - Not applicable within this file.
 
-Constraints & Failure Modes
-- recipes is non-null by default; runtime null handling is not defined here.
-- No runtime logic or methods; behavior is limited to asset creation and serialization.
-- RecipeDef type is not defined in this file; its structure and serialization are defined elsewhere.
-- Loading/usage at runtime (e.g., how the catalog is accessed) is not specified.
+5) Example
+- Unity editor usage:
+  - Create a CraftingCatalog asset via Assets > Create > Data > CraftingCatalog.
+  - In the inspector, populate the recipes list with RecipeDef entries as needed.
 
-Unknowns
-- Definition and structure of RecipeDef.
-- How CraftingCatalog is consumed at runtime (loading paths, references).
-- Any editor tooling beyond CreateAssetMenu (custom inspectors, editors).
-
+6) Unknowns
+- Definition and structure of RecipeDef (not present in this file).
+- How CraftingCatalog is consumed by systems at runtime.
+- Any additional fields or methods that may be added in other parts of the project.
 ```
