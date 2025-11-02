@@ -200,8 +200,10 @@ def main():
         "",
         "Changed files:",
     ]
-
+    
     any_change = False
+    # tracke für den Index, welche Dateien in DIESEM Lauf neu/aktualisiert wurden
+    changed_map = {}  # rel_path (str) -> True/False
     for f in files:
         code = read_text(f)
 
@@ -231,6 +233,8 @@ def main():
                 out = header + md_body + "\n"
 
                 changed = write_if_changed(out_path, out)
+                rel_for_index = out_path.relative_to(OUT_DIR).as_posix()
+                changed_map[rel_for_index] = changed
                 any_change |= changed
 
                 index_lines.append(
@@ -253,6 +257,8 @@ def main():
             out = header + md_body + "\n"
 
             changed = write_if_changed(out_path, out)
+            rel_for_index = out_path.relative_to(OUT_DIR).as_posix()
+            changed_map[rel_for_index] = changed
             any_change |= changed
 
             index_lines.append(
@@ -260,30 +266,63 @@ def main():
                 f"{' (new)' if changed else ''}"
             )
 
-    all_doc_links = []
+    # kompletten docs/-Baum neu indexieren
+    # wir lesen ALLE .md außer INDEX.md
+    # und gruppieren nach Namespace (= Ordnerstruktur unter docs/, mit / -> .)
+    namespace_map = {}  # ns -> list of (type_name, rel_path, mtime_str, is_new)
+
     for p in OUT_DIR.rglob("*.md"):
         if p.name == "INDEX.md":
             continue
-        rel = p.relative_to(OUT_DIR).as_posix()
-        # Titel = Pfad ohne .md
-        title = rel[:-3]
-        all_doc_links.append((title, rel))
 
-    all_doc_links.sort()
+        rel = p.relative_to(OUT_DIR).as_posix()  # z.B. "CHAL/Systems/Research/ResearchService.md"
+        if "/" in rel:
+            ns_path, filename = rel.rsplit("/", 1)
+            # Namespace "CHAL/Systems/Research" -> "CHAL.Systems.Research"
+            namespace_key = ns_path.replace("/", ".")
+        else:
+            # Datei liegt direkt unter docs/, kein Unterordner
+            filename = rel  # e.g. "global_something.md"
+            namespace_key = "global"
 
-    full_index_lines = [
-        "# Automatic Documentation",
-        "",
-        f"_Status: {datetime.utcnow().isoformat()}Z_",
-        "",
-        "All documented types/files:",
-        "",
-    ]
-    for title, rel in all_doc_links:
-        full_index_lines.append(f"- [{title}]({rel})")
-    full_index_lines.append("")
+        # Typ-/Klassename aus Dateiname ohne .md
+        type_name = filename[:-3] if filename.lower().endswith(".md") else filename
 
-    write_if_changed(OUT_DIR / "INDEX.md", "\n".join(full_index_lines) + "\n")
+        # Änderungsinfo:
+        # - falls diese Datei in diesem Lauf geändert wurde: "(new)"
+        # - sonst: letztes mtime-Datum im Format YYYY-MM-DD
+        is_new = changed_map.get(rel, False)
+        if is_new:
+            stamp = "new"
+        else:
+            ts = datetime.fromtimestamp(p.stat().st_mtime)
+            stamp = ts.strftime("%Y-%m-%d")
+
+        namespace_map.setdefault(namespace_key, []).append(
+            (type_name, rel, stamp, is_new)
+        )
+
+    # Jetzt bauen wir die Markdown-Struktur:
+    # - Namespaces alphabetisch sortiert
+    # - Innerhalb jedes Namespaces alphabetisch nach type_name
+    index_lines = []
+    index_lines.append("# Automatic Documentation")
+    index_lines.append("")
+    index_lines.append("All documented namespaces and types.")
+    index_lines.append("")
+    # Kein globaler Timestamp hier → weniger Diff-Noise
+
+    for ns in sorted(namespace_map.keys()):
+        index_lines.append(f"## {ns}")
+        entries = sorted(namespace_map[ns], key=lambda x: x[0].lower())
+        for (type_name, rel, stamp, is_new) in entries:
+            # Beispielzeile:
+            # - ResearchService (new)
+            # - InventoryManager (2025-11-02)
+            index_lines.append(f"- [{type_name}]({rel}) ({stamp})")
+        index_lines.append("")
+
+    write_if_changed(OUT_DIR / "INDEX.md", "\n".join(index_lines) + "\n")
 
     print("Complete. Changes:", any_change)
 
