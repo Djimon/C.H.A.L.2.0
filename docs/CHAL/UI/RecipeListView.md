@@ -2,83 +2,82 @@
 
 _Automatically generated/updated from `Assets/src/UI/RecipeListView.cs`._
 
-```text
 1) Purpose
-- Defines a sealed Unity MonoBehaviour RecipeListView in namespace CHAL.UI.
-- Exposes public event OnSelect to notify when a RecipeDef is selected.
-- Provides SetData to render a grouped, scrollable list of recipes using UIElements; applies craftable/missing styling based on a provided map.
-```
+- Defines a Unity MonoBehaviour RecipeListView in the CHAL.UI namespace.
+- Presents a grouped, scrollable list of RecipeDef entries with craftability status.
+- Exposes OnSelect event to notify listeners when a recipe is chosen; provides SetData to populate UI.
 
-```text
 2) Public API
-- Namespace/module
-  - CHAL.UI
+- Namespace/module: CHAL.UI
 
 - Types
   - public sealed class RecipeListView : MonoBehaviour
-    - Public fields/properties
-      - public event Action<RecipeDef> OnSelect
-    - Public methods
-      - public void SetData(IEnumerable<RecipeDef> recipes, IDictionary<RecipeDef, bool> craftableMap)
-        - Builds UI: groups by recipe.slotType (string key) or "Misc" for nulls; sorts groups by key; creates foldouts and recipe rows.
-```
+    - public event Action<RecipeDef> OnSelect
+    - public void SetData(IEnumerable<RecipeDef> recipes, IDictionary<RecipeDef, bool> craftableMap)
+      - Populates UI with recipes grouped by slotType.ToString() (or "Misc" for nulls); adds foldouts per group; creates rows with craftability status; wires row/button clicks to OnSelect.
+    - private VisualElement MakeRow(RecipeDef r)
+      - Builds a single row UI element containing a left-aligned button for the given recipe and wires selection; returns the row.
 
-```text
 3) Key Behavior & Side Effects
-- Awake behavior
-  - If doc is null, assigns doc = GetComponent<UIDocument>().
-  - Finds the ScrollView named "list-scroll" from doc.rootVisualElement and stores in _scroll.
-- SetData behavior
-  - Clears existing contents of _scroll via _scroll?.Clear().
-  - If _scroll is null or recipes is null, exits early.
-  - Groups recipes (ignoring nulls) by (r.slotType.ToString() if r != null, else "Misc"), then orders groups by key.
+- Awake
+  - Resolves UIDocument: if doc is null, uses GetComponent<UIDocument>(); finds ScrollView named "list-scroll" from root VisualElement.
+- SetData
+  - Clears existing _scroll contents.
+  - If _scroll is null or recipes is null, returns early.
+  - Groups recipes by slotType.ToString() (or "Misc" for nulls); sorts groups by key.
   - For each group:
-    - Creates a Foldout with text = group key, value = true; adds class "group-foldout"; adds to _scroll.
-    - For each recipe r in the group (skips nulls):
-      - Creates a row VisualElement with class "recipe-row".
-      - Creates a Button with:
-        - Click handler invoking OnSelect?.Invoke(r)
-        - Text set to r.displayKey if non-empty, else r.name
-        - Class "recipe-btn"; text-aligned left.
-      - Determines craftable via craftableMap (if not null, uses TryGetValue(r, out craftable); default false).
-      - Applies classes: "is-craftable" if craftable; "is-missing" if not craftable.
-      - Registers a ClickEvent on the row to invoke OnSelect?.Invoke(r) (in addition to the Button handler).
-      - Adds the Button to the row, then the row to the foldout.
-- MakeRow behavior
-  - private VisualElement MakeRow(RecipeDef r) creates a row with a single Button for r; returns the row (not used by SetData).
-```
+    - Creates a Foldout labeled with the group key; expanded by default; adds CSS class "group-foldout".
+    - For each recipe in the group (skipping nulls):
+      - Creates a row VisualElement with CSS class "recipe-row".
+      - Determines craftable from craftableMap (null-safe).
+      - Chooses display text: r.displayKey if present, otherwise r.name.
+      - Appends status text: " (craftable)" or " (missing mats)".
+      - Creates a Button with text "<baseText><status>"; wires button click to OnSelect(r).
+      - Aligns button text to the left; registers row click callback to OnSelect(r); adds button to row; adds row to foldout.
+- MakeRow
+  - Builds a single row with a Button labeled by r.displayKey or r.name; wires OnSelect; returns the row.
+  - Note: MakeRow is defined but not used by SetData in this file.
 
-```text
 4) Constraints & Failure Modes
 - Null handling
-  - SetData gracefully handles null _scroll or null recipes by early return after clearing when possible.
-  - craftableMap being null results in all recipes treated as not craftable.
-- Awake risk
-  - If doc remains null after Awake (no UIDocument attached), _scroll assignment will access null and throw.
-- Duplicate invocation risk
-  - Each recipe row wires:
-    - Button(click) -> OnSelect?.Invoke(r)
-    - Row ClickEvent -> OnSelect?.Invoke(r)
-    This can cause OnSelect to be invoked twice per user action.
-- Performance
-  - SetData rebuilds the entire list; no virtualization or incremental updates.
-```
+  - If doc is missing or _scroll cannot be found, SetData exits safely after initial guards.
+  - craftableMap can be null; craftable defaults to false.
+  - Individual recipes or their fields (displayKey, name) may be null; null recipes are skipped during rendering.
+- Event invocation
+  - OnSelect is invoked via both the row's ClickEvent callback and the Button's click handler; potential multiple triggers if both fire per interaction.
+  - OnSelect invocation uses null-conditional to avoid exceptions if no subscribers.
+- Threading
+  - UI modifications occur on Unity main thread as part of standard MonoBehaviour lifecycle.
 
-```text
 5) Example
 ```csharp
-// Example usage
-var view = FindObjectOfType<CHAL.UI.RecipeListView>();
-view.OnSelect += recipe => Debug.Log("Selected: " + recipe?.name);
-view.SetData(allRecipes, craftableMap);
-```
+// Example usage: subscribe to selection and populate data
+using System.Collections.Generic;
+using UnityEngine;
+using CHAL.UI;
+
+public class RecipeListExample : MonoBehaviour
+{
+    [SerializeField] private RecipeListView listView;
+
+    void Start()
+    {
+        if (listView != null)
+        {
+            listView.OnSelect += r => Debug.Log("Selected recipe: " + r?.name);
+            var recipes = new List<RecipeDef>
+            {
+                // populate with actual RecipeDef instances
+            };
+            var craftMap = new Dictionary<RecipeDef, bool>();
+            listView.SetData(recipes, craftMap);
+        }
+    }
+}
 ```
 
-```text
 6) Unknowns
-- Exact structure of RecipeDef beyond what is used here (slotType, displayKey, name) is not defined in this file.
-- The concrete type/contents of r.slotType (likely an enum) and how it maps to UI text are not specified beyond ToString().
-- The intended CSS/class responsibilities (e.g., styling for "is-craftable" vs "is-missing") are not defined here.
-- Whether OnSelect may be invoked twice per click due to both Button and row ClickEvent handlers is not resolved from this file alone.
-- MakeRow is defined but unused by SetData; its intended future use is not specified.
-```
+- Definition details of RecipeDef (properties like name, displayKey, slotType) beyond usage in this file.
+- Exact semantics of slotType values and how Foldout grouping visually renders in the target UI.
+- Behavior and styling of UIElements (Foldout, ScrollView, VisualElement) beyond class names used here.
+- Any external effects of OnSelect beyond this file (consumers’ side effects).

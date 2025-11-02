@@ -3,14 +3,12 @@
 _Automatically generated/updated from `Assets/src/Core/GameManager.cs`._
 
 1) Purpose
-- Defines GameState enum and GameManager singleton that coordinates global game flow, state transitions, scene loading, and persistence.
-- Bridges between domain models (inventory, profile, map, research) and Unity lifecycle, including inventory routing, map loading, and research initialization.
-- Provides public surface to access and manipulate core systems (inventory, profile, research) and to drive high-level game actions (start, continue, save, quit).
+- Defines GameState enum and a central GameManager (Unity MonoBehaviour) that coordinates core game systems (inventory, profile, scene flow, and research).
+- Provides helper APIs for inventory templates/instances, profile-domain mapping, and starting/continuing games.
+- Bridges scene navigation with game state, save/load, and runtime research setup.
 
 2) Public API
-- Namespace/Module
-  - CHAL.Core
-
+- Namespace: CHAL.Core
 - Types
   - public enum GameState
     - MainMenu
@@ -18,98 +16,126 @@ _Automatically generated/updated from `Assets/src/Core/GameManager.cs`._
     - WaveReward
     - MapReward
     - Hideout
-
   - public class GameManager : MonoBehaviour
-    - Public fields/properties
-      - public GameBalanceConfig Config { get; }
+    - Public surface
       - public static GameManager Instance { get; private set; }
       - public PlayerProfile Profile { get; private set; }
       - public UnluckyProtection Unlucky { get; private set; }
       - public MapDef pendingMap { get; private set; }
       - public InventoryDomain Inventory { get; private set; }
       - public bool InventoryReady { get; private set; }
-      - public HeroDef starterHero { get; private set; }
       - public HeroCatalog HeroCatalogue => heroCatalog;
+      - public HeroDef starterHero { get; private set; }
       - public ResearchService researchService { get; private set; }
       - public ResearchUnlockRegistry ResearchUnlocks { get; private set; }
       - public ResearchEventBridge ResearchBridge { get; private set; }
-
-    - Public methods
+      - public GameBalanceConfig Config
+        - Getter loads from Resources if needed; returns the config
+      - public GameState CurrentState { get; private set; } // initial value: GameState.MainMenu
+    - Internal/public methods
+      - internal void StartNewGame(PlayerProfile profile)
+      - internal void StartMap(string sceneName, MapDef selectedMap)
+      - internal void ContinueGame()
+      - internal static void Quit()
+      - internal GameManager() (implicit constructor; not shown)
+      - public void SaveGame()
+      - public void ResetProfile()
+      - public void SetState(GameState newState)
+      - public void GoToMainMenu()
+      - public void ExitToHideout()
+      - public void TestInitInventory()
       - public InventoryDef GetTemplate(PlayerInventoryType typeId)
       - public InventoryInstance EnsureInstance(string instanceId, PlayerInventoryType templateTypeId)
       - public void MapDomainToProfile()
       - public void MapProfileToDomain()
+      - public bool TryResolveByItemId(string itemId, out PlayerInventoryType type, out string instanceId)
       - public string InstanceIdFor(PlayerInventoryType t)
       - public void InitResearch(bool loadExisting)
-      - public void SaveGame()
-      - public void ResetProfile()
-      - public void GoToMainMenu()
-      - public void ExitToHideout()
-      - public void ContinueGame()
-      - public void TestInitInventory()
-      - public void StartMap(string sceneName, MapDef selectedMap)
-      - public void StartNewGame(PlayerProfile profile) [internal]
-      - public InventoryInstance? (via EnsureInstance) and related inventory surface are exposed through EnsureInstance
-      (Note: methods marked internal/private in code are omitted from the public API section.)
+    - Unity lifecycle (non-public)
+      - private void Awake() // singleton setup, profile load, input manager creation, Unlucky protection
+      - private void Start() // preload registries
+      - private void OnApplicationQuit() // persist profile and research snapshot
+  - Notes
+    - The file uses a number of internal/private helpers (not exposed in the Public API section) for inventory and research wiring.
 
 3) Key Behavior & Side Effects
-- Lifecycle and initialization
-  - Awake: enforces singleton, persists GameObject, loads profile (SaveSystem.Load), logs XP per level, ensures InputManager exists (creates if missing), initializes UnluckyProtection.
-  - Start: preloads item registries via ItemRegistry.Instance.TriggerInstance().
-- Saving and profile management
-  - SaveGame: maps domain inventories to profile, then saves profile via SaveSystem.Save.
-  - ResetProfile: preserves old name/colors, resets Profile to a new PlayerProfile and reinitializes basic attributes.
-  - Quit path (static): saves profile, then exits play mode (Editor) or quits application.
-- State and scene management
-  - SetState(GameState): updates CurrentState and logs transition.
-  - GoToMainMenu / ExitToHideout / ContinueGame / StartMap: perform state updates and load corresponding scenes.
-  - OnApplicationQuit: persists profile and research snapshot if present.
-- Inventory management
-  - BuildPlayerInventoriesFromFolder: loads all InventoryDef assets from data/Inventory, creates and registers per-type instances (excluding type all).
-  - GetTemplate: lazy-loads templates from resources into _inventoryTemplates.
-  - EnsureInstance: creates and registers an inventory instance if missing, using a template def.
-  - MapDomainToProfile / MapProfileToDomain: convert between Profile inventories and InventoryDomain, using instance IDs (player_<type>).
-  - ReadDomainAsDict / TryFillDomainFrom: helpers to convert between domain stacks and dictionary representations; supports on-demand instance creation if needed.
-  - BuildInventoryRoutingMaps: builds maps between prefix -> type and type -> instanceId for routing.
-  - TryResolveByItemId: resolves an itemId like "<prefix>:<id>" to a type and instanceId.
-  - InstanceIdFor: returns or computes the instanceId for a given inventory type.
-- Inventory/Domain synchronization flows
-  - Construct inventories from folder, then map to domain, then mark InventoryReady when setup complete.
-  - During mapping, inventory slots are cleared and refilled from source dictionaries.
-- Research initialization
-  - InitResearch(loadExisting): ensures runtime container, creates services (ResearchService, ResearchUnlockRegistry, ResearchEventBridge), loads existing snapshot or resets progress, initializes tree/registry, and wires an event to persist research on node completion.
-  - EnsureResearchDefsLoaded: loads research tree and nodes from Resources if not already loaded.
-- Risky/exception paths
-  - GetTemplate/Get/EnsureInstance guard against nulls; logs errors when templates not found or instance creation fails.
-  - TryFillDomainFrom may auto-create an instance if slots are missing, parsing suffix from instanceId to derive inventory type.
-  - Preprocessor guard for Quit: uses Editor quit path in Unity Editor.
-  - Dependencies on Resources.Load/LoadAll; missing assets lead to null returns or empty collections.
-
-- Unity lifecycle (explicit in this file)
-  - Awake: singleton enforcement, initialization, and object setup.
-  - Start: preloads registries.
+- Awake
+  - Enforces singleton: destroys duplicates, assigns Instance, marks DontDestroyOnLoad.
+  - Loads PlayerProfile save if available.
+  - Logs XP-per-level from Config.
+  - Ensures an InputManager exists (searches for one; creates if missing).
+  - Initializes UnluckyProtection if not present.
+- Start
+  - Triggers ItemRegistry to preload.
+- StartNewGame(profile)
+  - Sets Profile to the provided profile.
+  - Ensures Inventory domain exists.
+  - Builds inventories from folder resources, builds routing maps, maps profile to domain.
+  - Sets InventoryReady = true.
+  - Initializes research (loadExisting = false).
+  - Saves game, sets state to Hideout, loads the Hideout scene.
+- ContinueGame()
+  - Requires a non-null Profile; otherwise logs a warning and aborts.
+  - Rebuilds inventories from folder, routing maps; maps profile to domain.
+  - Sets InventoryReady = true.
+  - Initializes research (loadExisting = true).
+  - Ensures starter hero is unlocked, then goes to Hideout scene.
+- SaveGame()
+  - Persists domain inventory state to the profile, then saves the profile.
+- MapDomainToProfile()
+  - Transfers current domain inventories into the profile by reading domain slots and converting to a dictionary per inventory.
+- MapProfileToDomain()
+  - Applies profile inventories into the domain by converting profile data to dictionaries and filling domain state.
+- GetTemplate(typeId)
+  - Retrieves InventoryDef template for a given typeId; caches results; loads from Resources if needed.
+- EnsureInstance(instanceId, templateTypeId)
+  - Creates an InventoryInstance on demand if missing, using the template; returns null on invalid inputs.
+- TryResolveByItemId(itemId, out type, out instanceId)
+  - Parses a colon-delimited itemId; resolves a prefix to a PlayerInventoryType and computes the corresponding instanceId.
+- InstanceIdFor(t)
+  - Returns the instanceId for a given inventory type, creating it if missing.
+- InitResearch(loadExisting)
+  - Ensures research defs are loaded; ensures a ResearchRuntime exists; instantiates services/bridges; loads existing snapshot or resets runtime state; wires events for unlocks and saving.
+- StartMap(sceneName, selectedMap)
+  - Sets pendingMap, updates state to MapPhase, and loads the specified scene.
+- OnApplicationQuit
+  - Saves profile; if research runtime exists, builds and saves a research snapshot.
+- BuildPlayerInventoriesFromFolder
+  - Loads InventoryDef assets from data/Inventory, creates per-type instances (excluding type all), and registers them into the Inventory domain.
+- BuildInventoryRoutingMaps
+  - Populates mappings from inventory type prefixes (lowercase) to enum values and from types to default instanceIds ("player_<type>").
+- ReadDomainAsDict(instanceId)
+  - Reads current domain slots for an instance and builds a dictionary of itemId -> count for non-empty stacks.
+- TryFillDomainFrom(source, instanceId)
+  - Clears existing domain slots; ensures an instance exists (creating on-demand if possible); refills from source using Inventory.TryAdd.
+- StartMap
+  - See StartMap above (internal).
+- Other side effects
+  - Debug/Logging calls throughout for state transitions, inventory actions, and research events.
+  - SceneManagement.LoadScene calls trigger navigation between MainMenu, Hideout, MapPhase, etc.
 
 4) Constraints & Failure Modes
-- Null and existence guards
-  - Many methods early-return if Inventory or Profile is null.
-  - GetTemplate/EnsureInstance guard against missing data and log errors.
-- Resource loading
-  - Uses Resources.Load and Resources.LoadAll; absence leads to nulls or empty collections; explicit fallbacks/logs provided.
-- Threading/async
-  - No asynchronous operations in this file.
-- On-demand creation
-  - On missing slots, TryFillDomainFrom may attempt to create an instance on the fly using enum parsing; relies on naming convention and enum values.
-- Editor vs runtime behavior
-  - Quit path uses UnityEditor.EditorApplication.isPlaying in the editor vs Application.Quit at runtime.
-- Performance hints
-  - BuildPlayerInventoriesFromFolder uses Resources.LoadAll; may incur startup cost.
-- Side effects
-  - StartNewGame triggers scene load to Hideout and saves progress; ContinueGame includes saving starter state and unlocking starter hero.
+- Null checks and guards:
+  - Profile can be null in several flows (ContinueGame warns and aborts).
+  - GetTemplate/logging when template not found; returns null.
+  - EnsureInstance returns null on invalid input or missing domain.
+  - TryResolveByItemId returns false for empty/invalid IDs.
+- Resource dependency:
+  - Config and templates loaded from Resources; missing assets may cause nulls or errors.
+- Threading/async:
+  - No explicit async/threading; operations are synchronous in Unity main thread.
+- Scene loading:
+  - Scene names are hard-coded (e.g., "03_Hideout", "01_MainMenu"); no error handling shown if scene is missing.
+- Persistence:
+  - Quit path and OnApplicationQuit attempt to save; exceptions in Quit are caught in the public Quit path, but not everywhere.
+- Performance:
+  - On-demand instance creation via EnsureInstance and TryFillDomainFrom may trigger runtime template lookups.
 
 5) Example
-- Not derivable from this file in a self-contained minimal example without broader project context.
+- Not derivable from this file in a minimal, self-contained example. (No explicit code example provided.)
 
 6) Unknowns
-- Exact implementations and behaviors of InventoryDomain, InventoryDef, InventoryInstance, ItemStack, SaveSystem, Profile structures, and the specific contents of data/Inventory and data/Research assets.
-- Details of scene content (03_Hideout, 01_MainMenu) and exact UI interactions.
-- How StarterHero unlocking affects gameplay beyond the surface calls (e.g., race conditions, ordering with inventory/research).
+- External types and their behavior (e.g., InventoryDomain, InventoryDef, InventoryInstance, PlayerInventoryType, MapDef, ResearchTreeDef, ResearchNodeDef, etc.) are referenced but not defined in this file.
+- Details of SaveSystem, DebugManager, ItemStack, and the various manager/services (ResearchService, ResearchUnlockRegistry, ResearchEventBridge) are not shown here.
+- Exact serialization format, resource layout, and the full lifecycle of inventory/research data beyond what is shown.
+- Any side effects from other components not visible in this file (e.g., UI updates, event bus behavior, or additional scene initialization).

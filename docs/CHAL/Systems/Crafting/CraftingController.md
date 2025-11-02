@@ -2,102 +2,92 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingController.cs`._
 
-1) Purpose
-- Defines a Unity MonoBehaviour that wires crafting UI to catalogs, inventory, and unlocks, and coordinates previews and execution of crafts.
-- Builds and refreshes the visible recipe list, including gating by unlocked recipes and computing craftability previews.
-- Responds to inventory changes, resolves target output inventories, and updates preview/detail UI accordingly.
+Purpose
+- Defines a Unity MonoBehaviour that coordinates crafting UI, data, and interactions.
+- Maintains visible recipes (filtered by unlocks) and preview/detail state.
+- Interfaces with CraftingService to compute previews and perform crafting, and wires UI events.
 
-2) Public API
-- Namespace/module
-  - CHAL.Systems.Crafting
+Public API
+- Namespace: CHAL.Systems.Crafting
 - Types
   - public class CraftingController : MonoBehaviour
     - Public fields
-      - public CraftingCatalog catalog; // recipe catalog
-      - public InventoryDomain inv; // current inventory domain used for crafting
-      - public ResearchUnlockRegistry unlocks; // unlock gating for recipes
-      - public RecipeListView listView; // UI: list of recipes
-      - public RecipeDetailPanel detailPanel; // UI: recipe details
+      - CraftingCatalog catalog
+        - Catalog of recipes exposed to crafting UI.
+      - InventoryDomain inv
+        - Central inventory system used for crafting inputs/outputs.
+      - ResearchUnlockRegistry unlocks
+        - Registry used to filter recipes by unlocks.
+      - RecipeListView listView
+        - UI list component; raises OnSelect when a recipe is chosen.
+      - RecipeDetailPanel detailPanel
+        - UI detail panel; raises OnCraftClicked for crafting attempts.
     - Public methods
-      - None (Unity lifecycle methods are declared with private visibility; public surface consists of the public fields above)
+      - None
 
-3) Key Behavior & Side Effects
-- Unity lifecycle and wiring
-  - OnEnable: WireUI() (connects UI events)
-  - Awake: initializes _relevantInvIds as an empty set
-  - Start: starts InitAfterOneFrame coroutine
-  - InitAfterOneFrame (coroutine): after one frame
-    - _wallet = GameManager.Instance?.Profile
-    - Warns if wallet is null
-    - If inv is null and GameManager exists, assigns inv from GameManager and logs status
-    - If inv remains null, warns and stops initialization
-    - Subscribes to inv.OnSlotChanged
-    - Calls RebuildRecipeList()
-    - Calls RefreshPreviewAndDetail()
-  - OnDisable: unsubscribes from OnSlotChanged and calls UnwireUI
+Key Behavior & Side Effects
+- Initialization and wiring
+  - OnEnable: wires UI handlers via WireUI.
+  - Awake: initializes _relevantInvIds (case-insensitive set).
+  - Start: starts InitAfterOneFrame coroutine.
+  - InitAfterOneFrame (coroutine)
+    - Resolves _wallet from GameManager.Instance.Profile if available; logs warning if null.
+    - Resolves unlocks from GameManager.Instance.ResearchUnlocks; logs warning if null.
+    - If inv is null and GameManager is available, resolves inv from GameManager.Inventory; logs status.
+    - If inv remains null, logs warning and aborts initialization.
+    - Subscribes to inv.OnSlotChanged with HandleSlotChanged.
+    - Calls RebuildRecipeList and RefreshPreviewAndDetail to initialize UI.
+- Rebuild and refresh
+  - RebuildRecipeList
+    - Clears _visibleRecipes; handles null checks for inv, catalog, and catalog.recipes.
+    - Warns if unlocks is null; filters catalog.recipes by unlocked status via unlocks.IsUnlockedRecipe.
+    - Builds _visibleRecipes with unlocked recipes.
+    - Builds craftableMap by computing previews (via CraftingService.GetPreview) when inv and wallet are available; stores per-recipe canCraft.
+    - Updates listView data with visible recipes and craftableMap.
+    - Preselects first recipe if any; otherwise clears selection and detail panel.
+    - Rebuilds _relevantInvIds with the target output inventory and material input inventories for visible recipes.
+  - RefreshPreviewAndDetail
+    - If no selection or missing inv/wallet, clears detail panel and logs state.
+    - Resolves output inventory id for the selected recipe.
+    - If output id is missing, shows failure in detail panel.
+    - Computes _preview via CraftingService.GetPreview; updates detail panel with recipe details, gold cost, and material counts.
+- UI and event handling
+  - HandleSelectRecipe: updates _selected and refreshes preview/detail.
+  - HandleCraftClicked: attempts crafting via CraftingService.TryCraftToInventory; on failure shows mapped blocker reason and refreshes preview/detail; on success shows success state and refreshes preview/detail.
+  - HandleSlotChanged: refreshes preview/detail only if the changed slot belongs to a relevant inventory id (_relevantInvIds).
+- Helpers (read-only)
+  - GetGoldNeed(RecipeDef r)
+    - Sums gold costs from r.currencyCosts (only items with currencyId "gold").
+  - ResolveOutputInventoryId(RecipeDef r)
+    - Uses GameManager to resolve the outputItemId to an inventory type and instance; ensures the instance exists via EnsureInstance; returns the instance id or null on failure.
+  - CountMaterials(RecipeDef r)
+    - For each input itemId, determines a conventional instance id (e.g., player_remains, player_part, player_rune, player_module) based on ItemTypeUtils.FromId.
+    - If a valid instance exists, sums counts across its slots for that itemId; returns a map of itemId -> total owned count.
+  - MapBlockerToText(CraftBlocker blocker, string fallback)
+    - Converts blocker values to user-facing messages, with fallback if provided.
 
-- Wiring
-  - WireUI: subscribes listView.OnSelect to HandleSelectRecipe; subscribes detailPanel.OnCraftClicked to HandleCraftClicked
-  - UnwireUI: unsubscribes those events
+Constraints & Failure Modes
+- Null checks and guarded flows
+  - Many early returns if inv, wallet, or catalog data are missing; warnings logged to DebugManager.
+- Lifecycle and event management
+  - OnDisable unsubscribes from inv.OnSlotChanged and unwires UI to avoid leaks.
+  - InitAfterOneFrame uses a frame-delay to resolve dependencies reliably.
+- UI/state coupling
+  - If output inventory resolution fails, detail panel shows a failure message.
+  - Crafting attempts propagate failure reason to the UI and refresh state accordingly.
+- Performance
+  - RebuildRecipeList iterates catalog recipes and constructs per-recipe previews when wallet/inv are available; reasonable for typical recipe counts.
 
-- Build & refresh flow
-  - RebuildRecipeList:
-    - Clears _visibleRecipes
-    - If inv is null → clear detailPanel and listView data; log warning; return
-    - If catalog or catalog.recipes is null → log warning; clear UI; return
-    - Iterates catalog.recipes; skips null entries; if unlocks exists and IsUnlockedRecipe(r.name) is false, skip
-    - Adds remaining recipes to _visibleRecipes
-    - Builds craftableMap: for each visible recipe, resolves output inventory id; if null, uses a default non-craftable preview; otherwise uses CraftingService.GetPreview(r, outId, inv, _wallet) and stores p.canCraft
-    - Applies data to listView.SetData(_visibleRecipes, craftableMap)
-    - If there are visible recipes: preselect first via HandleSelectRecipe(_visibleRecipes[0]); else clear _selected and detailPanel
-    - Rebuilds _relevantInvIds with outputs and required inputs (via GameManager.ResolveByItemId and instantiation checks)
-    - Logs the count of visible recipes
+Unknowns
+- Exact shapes of types and data structures:
+  - RecipeDef, RecipePreview, CraftBlocker, RecipeListView, RecipeDetailPanel, CraftingCatalog, InventoryDomain, ResearchUnlockRegistry, IWallet, and CraftingService behavior.
+  - Details of CurrencyCosts structure (fields like currencyId, amount).
+- Behavior of GameManager methods:
+  - TryResolveByItemId, EnsureInstance, and overall inventory instantiation semantics.
+- UI behavior specifics:
+  - How detailPanel.ShowRecipeDetails and ShowFail/ShowSuccess render in the actual UI.
+- Any external side effects not explicit in this file:
+  - Additional listeners or side effects triggered by inventory changes beyond HandleSlotChanged.
 
-- Preview & detail update
-  - RefreshPreviewAndDetail:
-    - If _selected is null or inv or _wallet is null → detailPanel.Clear and log null-state; return
-    - Resolves outId for _selected; if unresolved → detailPanel.ShowFail("Ziel-Inventar unbekannt."); return
-    - _preview = CraftingService.GetPreview(_selected, outId, inv, _wallet)
-    - detailPanel.ShowRecipeDetails(_selected, _preview, GetGoldNeed(_selected), _wallet.GetCurrency("gold"), CountMaterials(_selected))
-
-- Crafting & slot-change handling
-  - HandleSelectRecipe(RecipeDef recipe): sets _selected and RefreshPreviewAndDetail()
-  - HandleCraftClicked():
-    - If _selected is null → return
-    - If inv or _wallet is null → detailPanel.ShowFail("Systeme nicht initialisiert."); return
-    - Resolve output inventory; if unresolved → detailPanel.ShowFail("Ziel-Inventar unbekannt."); return
-    - ok = CraftingService.TryCraftToInventory(_selected, inv, _wallet, outId, out var reason)
-    - If !ok: log craft fail, show failure via MapBlockerToText(_preview.blocker, reason), RefreshPreviewAndDetail()
-    - If ok: log craft success, detailPanel.ShowSuccess(), RefreshPreviewAndDetail()
-  - HandleSlotChanged(string instanceId, int slotIndex, ItemStack? newStack):
-    - If instanceId is in _relevantInvIds, then RefreshPreviewAndDetail()
-
-4) Constraints & Failure Modes
-- Null safety
-  - Handles null catalog/inv/wallet gracefully with warnings and UI resets
-  - Validates output inventory resolution; shows user-facing failures when unresolved
-- Dependency boundaries
-  - Relies on external services/classes (CraftingService, GameManager, DebugManager, etc.) defined elsewhere
-  - Unlock gating uses unlocks.IsUnlockedRecipe; absence of unlock registry is tolerated
-- Async behavior
-  - Initialization is deferred to the next frame via InitAfterOneFrame coroutine
-- UI coupling
-  - UI wiring is optional (null-checked) and safely detached on disable
-- Localization/messages
-  - German strings used for user-facing feedback (e.g., Ziel-Inventar unbekannt, Kein Platz im Zielinventar)
-
-5) Example
-- Not derivable from this file alone (no self-contained usage example provided)
-
-6) Unknowns
-- External type definitions not present in this file (CraftingCatalog, InventoryDomain, RecipeListView, RecipeDetailPanel, CraftingService, RecipeDef, CraftBlocker, ItemStack, ItemTypeUtils, etc.)
-- Exact behavior of CraftingService.GetPreview, CraftingService.TryCraftToInventory, and CraftingService.RecipePreview
-- How inventory structures (slots, stacks) are implemented beyond usage here
-- Any side effects of GameManager.ResolveByItemId, EnsureInstance, or DebugManager specifics beyond their usage
-- Any UI specifics of RecipeListView and RecipeDetailPanel beyond exposed events and assumed methods
-
-Code references (for quick cross-check)
-- Unity lifecycle: OnEnable, Awake, Start, OnDisable
-- Events: inv.OnSlotChanged, listView.OnSelect, detailPanel.OnCraftClicked
-- Helper methods: ResolveOutputInventoryId, GetGoldNeed, CountMaterials, MapBlockerToText
-- Fabric: Guard clauses and null checks throughout RebuildRecipeList and RefreshPreviewAndDetail
+Example
+- Not applicable (no code examples visible beyond this file).

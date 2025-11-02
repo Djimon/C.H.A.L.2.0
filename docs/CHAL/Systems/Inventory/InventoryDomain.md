@@ -2,96 +2,94 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Inventory/core/InventoryDomain.cs`._
 
-Purpose
-- Defines InventoryDomain, a concrete implementation of IInventoryDomain that manages per-instance inventories.
-- Exposes optional item-info hooks (ItemExists, ItemHasTag) to influence inventory logic.
-- Emits OnSlotChanged events and provides core inventory operations (peek, add, move, remove, and slot management).
+1) Purpose
+- Defines InventoryDomain, a domain service managing InventoryInstance objects by ID.
+- Provides optional adapters for item existence and tags via ItemExists and ItemHasTag.
+- Emits OnSlotChanged when a slot's stack changes.
 
-Public API
-- Namespace: CHAL.Systems.Inventory
-- Types
-  - public sealed class InventoryDomain : IInventoryDomain
+2) Public API
+- Namespace/module: CHAL.Systems.Inventory
+- Type: public sealed class InventoryDomain : IInventoryDomain
+  - Public fields/properties
     - public Func<string, bool> ItemExists
-      - Hook for querying whether an itemId exists
     - public Func<string, string, bool> ItemHasTag
-      - Hook: (itemId, tag) => true/false
+  - Public events
     - public event Action<string, int, ItemStack?> OnSlotChanged
-      - Invoked when a slot changes: (instanceId, slotIndex, newStack)
+  - Public methods
     - public bool HasInstance(string instanceId)
-      - Returns false if instanceId is null/empty or not present
     - public InventoryInstance GetInstance(string instanceId)
-      - Returns the InventoryInstance or null if not found/invalid
     - public void RegisterInstance(InventoryInstance inst)
-      - Registers or updates the given instance in the internal map
     - public ItemStack? Peek(string instanceId, int slotIndex)
-      - Returns the stack at slotIndex or null if invalid/missing
     - public int SlotCount(string instanceId)
-      - Returns number of slots for the given instance or 0 if not found
     - public void ClearAllSlots(string instanceId)
-      - Clears all slot stacks for the instance, emitting OnSlotChanged per slot
     - public bool CanAccept(string instanceId, in ItemStack stack)
-      - Checks if the given stack can be accepted by the inventory (considers existing stacks and empty slots, with filtering)
     - public bool TryAdd(string instanceId, in ItemStack stack, out TransactionResult result)
-      - Attempts to add items into the inventory, updating slots and emitting OnSlotChanged
-      - Fails with result.reason "InstanceNotFound" if missing
     - public bool TryMove(in MoveRequest req, out TransactionResult result)
-      - Moves items between inventories according to MoveRequest
-      - Multiple move modes (Move, Split, Merge, Swap) with filtering and slot logic
-      - Emits OnSlotChanged for affected slots and records SlotDeltas
     - public bool TryRemove(string instanceId, int slotIndex, int amount, out TransactionResult result)
-      - Removes items from a slot, updating slot and emitting OnSlotChanged
-internal/private helpers (not public API surface)
-- private static bool PassesFilter(Slot slot, string itemId)
-  - Applies slot.Filter rules:
-    - BlockedItemIds: fails if itemId is blocked
-    - AllowedItemIds: requires itemId to be in the allowed list
-    - BlockedItemTypes / AllowedItemTypes: validates item type via ItemTypeUtils.FromId
-    - Note: includes debug logging via DebugManager for failures
+    - internal bool TryGetInstance(string inventoryID, out InventoryInstance inst)
 
-Key Behavior & Side Effects
-- Instance management
-  - RegisterInstance adds/updates entries in _instances by inst.instanceID
-  - HasInstance/GetInstance return status or instance/null for invalid IDs
-- Slot change notifications
-  - OnSlotChanged is invoked after any slot mutation (add, move, remove, or swap)
-  - ClearAllSlots emits OnSlotChanged for every slot set to null
-- Filtering and validation
-  - PassesFilter enforces block/allow lists and type constraints for a slot and item
-  - CanAccept uses PassesFilter to decide if existing stacks can be filled or empty slots used
-- Add/move/remove semantics
-  - TryAdd fills existing stacks of matching itemID first, then fills empty slots, all respecting slot filters
-  - TryMove supports:
-    - Auto-target selection when toInventory.slot < 0
-    - Move: swap/merge behavior with filter checks and max stack enforcement
-    - Merge: combines stacks if same itemID and space remains
-    - Swap: exchanges stacks if both pass filter checks
-  - TryRemove reduces stack counts up to requested amount and updates the source slot
-- Logging
-  - Uses DebugManager.Log to emit debug messages for filter failures and inventory actions
+3) Key Behavior & Side Effects
+- HasInstance
+  - Returns false if instanceId is null/empty; otherwise checks internal store.
+- GetInstance
+  - Returns null if instanceId is null/empty; otherwise retrieves from store.
+- RegisterInstance
+  - Stores/overwrites the given InventoryInstance by its instanceID.
+- Peek
+  - Returns null if instance not found or slotIndex out of range; otherwise returns the slot's stack.
+- SlotCount
+  - Returns 0 if instance not found; otherwise returns number of slots in the inventory.
+- ClearAllSlots
+  - For each slot in the instance, sets stack to null and raises OnSlotChanged(instanceId, i, null).
+- PassesFilter (private)
+  - Evaluates a Slot's Filter against an itemId:
+    - Denies if itemId is in BlockedItemIds.
+    - Denies if itemId not in AllowedItemIds (when any AllowedItemIds provided).
+    - Evaluates BlockedItemTypes and AllowedItemTypes against ItemTypeUtils.FromId(itemId).
+    - Logs filter failures via DebugManager.
+- CanAccept
+  - Returns false if instance missing or stack.count <= 0.
+  - Tries to fill existing same-item stacks (respecting slot.Filter) and then empty slots (respecting filters) to fit the entire stack.
+- TryAdd
+  - If instance not found, returns false with reason "InstanceNotFound".
+  - Phase 1: Fill existing stacks with same itemID if possible (respecting PassesFilter and maxStack).
+  - Phase 2: Fill empty slots that pass the filter (respecting maxStack).
+  - Updates slot stacks, records deltas, logs, and invokes OnSlotChanged for affected slots.
+  - Returns true only if entire stack was placed; otherwise sets result.reason to "NoSpace".
+- TryMove
+  - Validates source and destination instances; returns "InstanceNotFound" if missing.
+  - If toInventory.slot < 0, searches for a fitting target slot in destination (empty or same-item with space), recursively calling TryMove when a candidate is found.
+  - Otherwise moves between specific slots:
+    - Gathers moving amount (supports Split and Move modes).
+    - Applies PassesFilter on target and source as applicable.
+    - Move: can swap or place into empty slot; handles merging into same-item stacks and swapping when permitted.
+    - Merge: requires same item and available space; aggregates counts up to maxStack.
+    - Swap: exchanges stacks if both pass filters.
+  - Emits OnSlotChanged for affected slots and records SlotDeltas.
+  - Returns success only when a valid operation completes; otherwise sets appropriate reason (e.g., FilterFailed, TargetOccupied, MaxStackReached, etc.).
+- TryRemove
+  - Validates instance and slot index; checks for existing stack and positive amount.
+  - Reduces or clears the source stack by the requested amount.
+  - Emits OnSlotChanged and records SlotDeltas on removal.
+- TryGetInstance
+  - Internal helper: returns false if inventoryID is null/empty; otherwise looks up instance in the dictionary.
 
-Constraints & Failure Modes
-- Defensive checks
-  - HasInstance/GetInstance return early on null/empty IDs
-  - Peek/SlotCount return safe defaults when instance is absent
-  - TryAdd/Move/Remove return success/failure with a populated TransactionResult
-- Thread-safety
-  - Internal _instances dictionary is not synchronized; concurrent access is not protected
-- Error signaling
-  - Several operations set result.reason (e.g., InstanceNotFound, NoSpace, FilterFailed, TargetOccupied, etc.)
-  - On failures, actions may partially mutate state (e.g., partial fills) depending on flow
-- Filtering behavior
-  - PassesFilter may cause actions to fail even when a later operation could succeed if filters were relaxed
+4) Constraints & Failure Modes
+- Guards
+  - HasInstance/GetInstance explicitly handle null/empty IDs.
+  - TryAdd/TryMove/TryRemove return explicit failure reasons in result when the operation cannot proceed (e.g., InstanceNotFound, NoSpace, SourceEmpty, InvalidAmount, TargetOccupied, FilterFailed, etc.).
+- Null/empty handling
+  - Peek, GetInstance, TryGetInstance guard against null or empty inputs; 0-slot inventories are handled gracefully.
+- Threading/async
+  - No explicit threading/async semantics; all operations are synchronous and rely on shared state in _instances.
+- Logging/Debug
+  - Uses DebugManager for filter and notable flow messages; side effects depend on DebugManager configuration.
 
-Unknowns
-- Definitions and semantics of:
-  - InventoryInstance (structure of slots, Slot type, and their fields)
-  - ItemStack (itemID, count, WithCount, and nullable handling)
-  - Slot type (Filter, maxStack, and its properties)
-  - MoveRequest, MoveMode, TransactionResult, and related fields (SlotDeltas, success flag, reason)
-  - IInventoryDomain interface (contract and expected usage)
-  - Move/Filter related classes (DebugManager, ItemTypeUtils, etc.)
-- Exact contents of related types (InventoryInstance.slots, Slot.Filter, etc.)
-- Behavior of ItemExists, ItemHasTag hooks in Unity integration or external adapters
+5) Example
+- Not provided (not clearly derivable from the file alone without additional type definitions).
 
-Notes
-- This file is the single source of truth for InventoryDomain’s public surface as shown; external project parts define related types and runtime behavior.
+6) Unknowns
+- Definitions and public surface of:
+  - InventoryInstance, ItemStack, MoveRequest, TransactionResult, Slot, Filter, MoveMode, MoveTarget, ItemTypeUtils, DebugManager, and IInventoryDomain.
+- Exact shapes of InventoryInstance.slots, Slot.Filter, ItemStack fields (itemID, count, maxStack), and how Create/Instantiate InventoryInstance objects should be constructed.
+- Any external effects of ItemExists/ItemHasTag beyond being declared; their runtime usage is not shown here.

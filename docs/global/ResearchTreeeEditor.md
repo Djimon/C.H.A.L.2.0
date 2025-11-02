@@ -2,71 +2,102 @@
 
 _Automatically generated/updated from `Assets/src/Editor/ResearchTreeeEditor.cs`._
 
-```text
-1) Purpose
-- Unity Editor extension: CustomEditor for CHAL.Data.ResearchTreeDef to edit the visual lanes and the tree lanes, including stages and nodes.
-- Provides UI to synchronize Tree Lanes from Visual Lanes, create new node assets, and to compile/validate the research tree.
-- Manages nested ReorderableList UI for stages per lane and node lists per stage, with dynamic height calculations and parent relationships.
+```csharp
+- Purpose
+  - Unity Editor extension for CHAL.Data.ResearchTreeDef (CustomEditor).
+  - Render and manage visual tree structure: lanes, stages, and nodes using ReorderableLists.
+  - Support syncing Tree Lanes from Visual Lanes, creating new node assets, validating IDs, and compiling the tree.
 
-2) Public API
-- Namespace/module: global (no explicit namespace)
-- Types
-  - public sealed class ResearchTreeDefEditor : Editor
-    - Public fields/properties: none
-    - Public methods:
-      - public override void OnInspectorGUI()
+- Public API
+  - Namespace/module
+    - Unity Editor extension (uses UnityEditor, UnityEditorInternal)
+  - Types
+    - public sealed class ResearchTreeDefEditor : Editor
+      - Public methods
+        - public override void OnInspectorGUI()
+          - Main inspector UI entry point (renders and handles interactions)
+      - Inherited/implicit surface (not redefined here)
+        - Unity's Editor lifecycle methods (OnEnable, etc. are private in this file)
+      - Notes
+        - This class is bound to CHAL.Data.ResearchTreeDef via [CustomEditor(typeof(CHAL.Data.ResearchTreeDef))]
 
-3) Key Behavior & Side Effects
-- OnEnable
-  - Caches target as _tree (ResearchTreeDef) and builds all stage and node lists via BuildAllStageAndNodeLists().
-- Editor UI flow (OnInspectorGUI)
-  - Updates serialized properties, renders sections for visual config, layout constants, and the actual research tree.
-  - Draws lane tabs based on researchTreeLanes; enables Sync button when visual lanes exist.
-  - Renders the active lane’s stages and nodes using ReorderableLists; supports adding stages and nodes, and node editing with parent reference management.
-- Staging & node lists
-  - BuildAllStageAndNodeLists creates and caches ReorderableList instances per lane (stages) and per (lane, stage) (nodes).
-  - Heights for stages and nodes are computed to ensure proper layout; dynamic recalculation occurs when lists change.
-- Node creation
-  - In “Create Node” button, determines a laneName, opens a Save File dialog, creates a new ResearchNodeDef asset with a unique id, pings the object, and opens ResearchNodeEditorWindow.
-- Parent management
-  - Provides an inline “Parents” area per node, allowing adding/removing parent references with Undo support.
-  - ShowParentPickerMenu builds a context menu from earlier nodes in the same lane; assigns selected parent references to the node.
-- Sync Tree Lanes from Visual Lanes
-  - Syncs laneName and laneColor from visual lanes; expands/shrinks tree lanes to match visual lanes; leaves stages unchanged.
-  - After syncing, re-builds lists and clamps the active tab; refreshes the editor state.
-- Compile / Validate
-  - RunCompile calls ResearchTreeCompiler.Compile(_tree); reports counts (lanes, stages, nodes, parent links) via DebugManager and a dialog.
-  - If no nodes exist, logs a note; on exception, logs error and shows an error dialog.
-- Misc
-  - Add Stage (+ Stage) is disabled when no tree lanes exist.
-  - CreateNodeAsset uses a helper to sanitize IDs and ensures uniqueness against existing nodes.
-  - Uses DebugManager for diagnostic logging and Editor dialogs for user feedback.
+- Key Behavior & Side Effects
+  - Editor initialization
+    - OnEnable: casts target to ResearchTreeDef and builds all stage/node lists.
+  - UI & layout
+    - Renders and manages:
+      - Visual lane configuration (researchLanes)
+      - Layout constants (nodeWidth, nodeHeight, stageStepY, topMarginY, laneBaseX, defaultGateGlyph)
+      - AlwaysUnlocked IDs (with a Validate button)
+      - Real-time "Actual Research Tree" tabs for tree lanes
+      - Active lane editor: shows stages and per-stage node sublists
+  - ReorderableLists
+    - Stages per lane: one ReorderableList per lane (stagesProp)
+      - Header: "Stages in Tree Lane {laneIdx}"
+      - Height driven by CalcStageHeight
+      - Elements render stage header and a nested Nodes sublist
+      - Add: creates a new stage with 0 nodes
+      - Change: applies and rebuilds all lists
+    - Nodes per stage: per-stage ReorderableList (nodesProp)
+      - Header: "Nodes" with a Create Node button
+      - Elements render:
+        - Node reference (node field)
+        - Parents management UI (Add/Remove/Inline list)
+      - Add: creates a new Node element; initializes node+parents
+      - Change: applies and updates serialized state
+  - Node creation
+    - Create Node: opens a Save File panel, creates a ResearchNodeDef asset with a heuristic ID (laneName + node file name, sanitized), pings and opens ResearchNodeEditorWindow
+    - If user cancels, logs a debug message and aborts
+  - Parents management
+    - ShowParentPickerMenu: builds a list of candidate parent nodes from earlier stages in the same lane
+    - Adds selected parent with Undo support; applies/updates serialized state
+    - Clear removes all parents in that node entry
+  - Syncing lanes
+    - SyncTreeLanesFromVisual: mirrors visual lanes into tree lanes
+      - Shortens tree lanes if visual has fewer lanes
+      - Extends tree lanes with empty stages if visual has more lanes
+      - Copies laneName and laneColor from visual to tree lanes (stages left intact)
+      - Rebuilds internal lists after syncing
+  - Validation & compile
+    - ValidateAlwaysUnlockedIds: collects non-empty IDs, deduplicates, checks for overlaps with node unlock targets, shows dialog, logs warnings if overlaps exist
+    - CollectNodeTargetIds: utility to gather all node unlock target IDs from the tree
+    - RunCompile: calls ResearchTreeCompiler.Compile(_tree), logs counts (lanes, stages, nodes, parent links), shows a diagnostic dialog, and warns if no nodes found
+  - Node/ID utilities
+    - CreateNewNodeAsset uses SanitizeIdPart to produce stable IDs
+    - CollectExistingNodeIds prevents ID collisions when creating new nodes
+  - Editor state & refresh
+    - After Sync or structural changes, rebuilds lists and clamps _activeLane
+    - Uses serializedObject.ApplyModifiedProperties/Update to synchronize Unity's serialized state
+  - Debug/logging
+    - Uses CHAL.Core.DebugManager for internal logs
+    - Logs include creation, syncing, compilation results, and errors
 
-4) Constraints & Failure Modes
-- Guard clauses
-  - BuildAllStageAndNodeLists returns early if _tree.researchTreeLanes is null.
-  - ShowParentPickerMenu guards against no lanes, invalid lane, and no stages in the chosen lane.
-- Serialized state assumptions
-  - Relies on the presence and structure of serialized properties researchTreeLanes and their nested members (stages, nodes, etc.); mismatches may cause null references.
-- UI/state management
-  - After major edits (sync, add stage), the code updates serialized properties and rebuilds internal lists; may require GUI exit to avoid stale handles in some paths.
-- Asset creation
-  - CreateNewNodeAsset can be canceled by the user; method returns null and logs a warning.
-  - Unique IDs are generated by sanitizing lane and file names and ensuring non-collision with existing node IDs.
-- External dependencies
-  - ResearchTreeCompiler, DebugManager, ResearchNodeEditorWindow, and ResearchNodeDef are used but defined outside this file; their exact behavior is assumed based on usage here.
-- Performance
-  - Rebuilds and height calculations occur on changes; heavy trees may incur UI overhead due to dynamic height calculations per stage/node.
+- Constraints & Failure Modes
+  - Guarding and null checks
+    - Many early returns when tree or lanes are null or indices are out of range
+    - Uses Mathf.Clamp to guard lane/stage indices
+  - Editor-only behavior
+    - Entire file is wrapped in UNITY_EDITOR; editor tooling may not run in builds
+  - Asset creation flow
+    - CreateNewNodeAsset relies on a valid baseDir and a user-specified path; cancellation aborts asset creation
+  - Synchronization caveats
+    - Sync does not rewrite stage content; only lane-level metadata (name/color) and lane list size
+    - After syncing, internal lists are rebuilt; active tab is re-clamped
+  - External dependencies
+    - ResearchTreeDef, ResearchLane, ResearchTreeLane, ResearchNodeDef, ResearchTreeCompiler, DebugManager, and ResearchNodeEditorWindow are external types not defined in this file
+  - Performance considerations
+    - Dynamic rebuild of nested ReorderableLists and height calculations per frame while UI is open
 
-5) Example
-- Not applicable: no directly derivable minimal usage snippet beyond the in-editor UI interactions described above.
+- Example
+  - Not applicable / not clearly derivable from this file
 
-6) Unknowns
-- Full definitions and members of:
-  - CHAL.Data.ResearchTreeDef, CHAL.Data.ResearchLane, CHAL.Data.ResearchTreeLane, and their exact fields beyond those referenced here.
-  - ResearchNodeDef (beyond id/title/ default fields as used here) and its serialization behavior.
-  - ResearchTreeCompiler.Compile result types (nodesById, parentsById) and their exact structures.
-  - DebugManager API surface and how its logging affects runtime behavior.
-  - ResearchNodeEditorWindow.ShowFor behavior and any side effects when opening editors.
-- Any runtime side effects of asset creation beyond what is visible (e.g., asset import settings, event hooks) are not specified in this file.
+- Unknowns
+  - Exact behavior and structure of:
+    - CHAL.Data.ResearchTreeDef, ResearchLane, ResearchTreeLane
+    - ResearchNodeDef, ResearchTreeCompiler
+    - ResearchNodeEditorWindow
+    - CHAL.Core.DebugManager
+  - Details of ResearchTreeDef’s data contracts beyond what this editor relies on
+  - Runtime impact of syncing vs. manual edits on validation/compile outcomes
+
 ```
