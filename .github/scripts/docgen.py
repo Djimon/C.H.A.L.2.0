@@ -72,10 +72,47 @@ def extract_namespace_and_public_types(code: str):
 
 def strip_outer_markdown_fence(text: str) -> str:
     # Entfernt genau einen äußeren ```markdown oder ```md Block, lässt innere Fences in Ruhe
-    m = re.match(r'^\s*```(?:markdown|md)\s*\n([\s\S]*?)\n```\s*$', text)
+    m = re.match(r'^\s*```(?:markdown|md|text)\s*\n([\s\S]*?)\n```\s*$', text)
     if m:
         return m.group(1).rstrip() + "\n"
     return text
+
+def load_existing_doc_body(path: pathlib.Path) -> str | None:
+    """
+    Liest die bestehende .md, entfernt den Auto-Header (# FQN / _Automatically generated..._),
+    gibt nur den eigentlichen fachlichen Body zurück.
+    Wenn Datei nicht existiert -> None.
+    """
+    if not path.exists():
+        return None
+
+    raw = path.read_text(encoding="utf-8", errors="ignore").strip()
+
+    # Wir haben aktuell Header in der Form:
+    #   # <fq>
+    #
+    #   _Automatically generated/updated from `...`._
+    #
+    #   <rest...>
+
+    lines = raw.splitlines()
+    # Heuristik: schmeiß die ersten leerzeilen / headerzeilen weg bis wir beim "echten" Content sind.
+    cleaned = []
+    skipping = True
+    for line in lines:
+        if skipping:
+            # Wir skippen solange Zeilen anfangen mit "# " oder "_" oder leer sind.
+            if line.startswith("# "):
+                continue
+            if line.strip().startswith("_Automatically"):
+                continue
+            if line.strip() == "":
+                continue
+            # ab hier erster "echter" Inhalt
+            skipping = False
+        cleaned.append(line)
+    body = "\n".join(cleaned).strip()
+    return body if body else None
 
 def read_text(path):
     return pathlib.Path(path).read_text(encoding="utf-8", errors="ignore")
@@ -119,16 +156,33 @@ def files_to_process():
     return changed_files_since_last_commit()
 
 # ----- LLM-Aufruf -----
-def llm_markdown_for(path: str, code: str) -> str:
+def llm_markdown_for(path: str, code: str, old_body: str | None) -> str:
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    message = f"File: {path}\n\n```\n{code[:120000]}\n```"
+
+    # Wir bauen die User-Message:
+    # - file path
+    # - previous doc (falls da)
+    # - full source code
+    parts = [f"File: {path}"]
+
+    if old_body:
+        parts.append("Previous documentation (to update, not to discard):")
+        parts.append(old_body)
+
+    parts.append("Source code:")
+    parts.append("```")
+    parts.append(code[:120000])
+    parts.append("```")
+
+    message = "\n\n".join(parts)
+
     resp = client.chat.completions.create(
-        model="gpt-5-nano",
+        model="gpt-4o-mini",
         messages=[
             {"role":"system","content": SYSTEM_PROMPT},
             {"role":"user","content": message},
         ],
-        temperature=1,
+        temperature=0.1,
     )
     md = resp.choices[0].message.content.strip()
     return strip_outer_markdown_fence(md)
@@ -160,26 +214,77 @@ def main():
         targets = paths_for(namespace, type_names, fallback_basename)
 
         if type_names:
+            # eine Datei pro public type
             for t, out_path in zip(type_names, targets):
                 fq = f"{namespace}.{t}" if namespace else t
-                md = llm_markdown_for(f, code)
-                header = f"# {fq}\n\n_Automatically generated/updated from `{f}`._\n\n"
-                out = header + md + "\n"
+
+                # Bestehende Body-Doku (ohne Header) laden
+                old_body = load_existing_doc_body(out_path)
+
+                # Neue/aktualisierte Doku vom Modell holen
+                md_body = llm_markdown_for(f, code, old_body)
+
+                header = (
+                    f"# {fq}\n\n"
+                    f"_Automatically generated/updated from `{f}`._\n\n"
+                )
+                out = header + md_body + "\n"
+
                 changed = write_if_changed(out_path, out)
                 any_change |= changed
-                index_lines.append(f"- [{fq}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
+
+                index_lines.append(
+                    f"- [{fq}]({out_path.relative_to(OUT_DIR).as_posix()})"
+                    f"{' (new)' if changed else ''}"
+                )
+
         else:
             # kein public type -> Datei unter docs/<Namespace>/<Dateiname>.md
             out_path = targets[0]
             fq = f"{namespace}.{fallback_basename}" if namespace else fallback_basename
-            md = llm_markdown_for(f, code)
-            header = f"# {fq}\n\n_Automatically generated/updated from `{f}`._\n\n"
-            out = header + md + "\n"
+
+            old_body = load_existing_doc_body(out_path)
+            md_body = llm_markdown_for(f, code, old_body)
+
+            header = (
+                f"# {fq}\n\n"
+                f"_Automatically generated/updated from `{f}`._\n\n"
+            )
+            out = header + md_body + "\n"
+
             changed = write_if_changed(out_path, out)
             any_change |= changed
-            index_lines.append(f"- [{fq}]({out_path.relative_to(OUT_DIR).as_posix()}){' (neu)' if changed else ''}")
 
-    write_if_changed(OUT_DIR / "INDEX.md", "\n".join(index_lines) + "\n")
+            index_lines.append(
+                f"- [{fq}]({out_path.relative_to(OUT_DIR).as_posix()})"
+                f"{' (new)' if changed else ''}"
+            )
+
+    all_doc_links = []
+    for p in OUT_DIR.rglob("*.md"):
+        if p.name == "INDEX.md":
+            continue
+        rel = p.relative_to(OUT_DIR).as_posix()
+        # Titel = Pfad ohne .md
+        title = rel[:-3]
+        all_doc_links.append((title, rel))
+
+    all_doc_links.sort()
+
+    full_index_lines = [
+        "# Automatic Documentation",
+        "",
+        f"_Status: {datetime.utcnow().isoformat()}Z_",
+        "",
+        "All documented types/files:",
+        "",
+    ]
+    for title, rel in all_doc_links:
+        full_index_lines.append(f"- [{title}]({rel})")
+    full_index_lines.append("")
+
+    write_if_changed(OUT_DIR / "INDEX.md", "\n".join(full_index_lines) + "\n")
+
     print("Complete. Changes:", any_change)
 
 if __name__ == "__main__":
