@@ -23,6 +23,9 @@ namespace CHAL.Data
         [Header("View (Chips/Gates)")]
         public Sprite defaultGateGlyph;
 
+        [Header("Initial unlocks")]
+        public List<string> alwaysUnlockedIds = new List<string>();
+
         [Header("Actual research Tree")]
         public List<ResearchTreeLane>   researchTreeLanes = new List<ResearchTreeLane>();
 

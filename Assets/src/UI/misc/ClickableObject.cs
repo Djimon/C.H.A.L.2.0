@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using CHAL.Core;
+using CHAL.Systems.Research;
+using UnityEngine;
 
 namespace CHAL.UI
 {
@@ -38,7 +40,11 @@ namespace CHAL.UI
             if (menuUI != null)
             {
                 var ui = menuUI.GetComponent<IngameUI>();
-                if (ui != null)
+                var unlocked = true;
+                if (ui.requiredFeatureID != "none")
+                    unlocked = GameManager.Instance.ResearchUnlocks.IsUnlockedCraftingFeature(ui.requiredFeatureID);
+
+                if (ui != null && unlocked)
                     ui.Show(true);
 
                 SetShimmer(false);

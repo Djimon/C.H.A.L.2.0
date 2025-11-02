@@ -8,6 +8,7 @@ namespace CHAL.UI
     public abstract class IngameUI : MonoBehaviour
     {
         protected VisualElement root;
+        public string requiredFeatureID = "none";
 
         protected virtual void Awake()
         {

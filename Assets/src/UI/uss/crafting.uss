@@ -278,14 +278,6 @@
     border-bottom-color: rgba(0, 0, 0, 0);
 }
 
-.recipe-btn:is-craftable {
-    color: rgb(11, 164, 0);
-}
-
-.recipe-btn:is-missing {
-    color: rgba(185, 0, 0, 0.71);
-}
-
 .recipe-btn:hover {
     background-color: rgba(135, 135, 135, 0.49);
 }

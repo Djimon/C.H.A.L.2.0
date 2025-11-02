@@ -37,9 +37,11 @@ namespace CHAL.Systems.Research
 
         // Event: Wenn ein Knoten abgeschlossen wurde (für UnlockRegistry)
         public event Action<string, IReadOnlyList<ResearchUnlock>> OnNodeCompleted;
+        // Event: wird nach InitFromTree mit den Always-Unlocked-IDs gefeuert
+        public event Action<IReadOnlyList<string>> OnAlwaysUnlockedReady;
 
         // ------------------ Init ------------------
-      
+
         public void InitFromTree(ResearchTreeDef treeDef, ResearchState state)
         {
             _treeDef = treeDef;
@@ -78,7 +80,20 @@ namespace CHAL.Systems.Research
             // Save: parents werden künftig NICHT aus NodeDef gelesen.
             _compiledParents = compiled.parentsById; // -> Feld hinzufügen: Dictionary<string,List<string>> _compiledParents;
 
-            DebugManager.Log($"ResearchService.InitFromTree: Nodes={_nodesById.Count}", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
+            DebugManager.Log($"ResearchService.InitFromTree: Nodes={_nodesById.Count}", DebugManager.EDebugLevel.Dev, "Research");
+
+            var always = (_treeDef?.alwaysUnlockedIds ?? new List<string>())
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .Select(s => s.Trim())
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .ToList();
+
+            if (always.Count > 0)
+            {
+                OnAlwaysUnlockedReady?.Invoke(always);
+                DebugManager.Log($"ResearchService: AlwaysUnlocked ready ({always.Count} IDs).",
+                    DebugManager.EDebugLevel.Dev, "Research");
+            }
         }
 
         // Änderung in IsNodeAvailable: NICHT mehr def.parents nutzen

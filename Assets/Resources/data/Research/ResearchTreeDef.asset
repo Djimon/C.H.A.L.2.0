@@ -25,6 +25,9 @@ MonoBehaviour:
   laneBaseX: 2c010000bc0200004c040000dc050000
   topMarginY: 120
   defaultGateGlyph: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  alwaysUnlockedIds:
+  - recipe_chitin_chest
+  - recipe_test
   researchTreeLanes:
   - laneName: World
     laneColor: {r: 0.48584908, g: 0.6563681, b: 1, a: 0}

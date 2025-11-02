@@ -44,18 +44,19 @@ namespace CHAL.UI
                     var row = new VisualElement();
                     row.AddToClassList("recipe-row");
 
-                    var btn = new Button(() => OnSelect?.Invoke(r))
-                    {
-                        text = string.IsNullOrEmpty(r.displayKey) ? r.name : r.displayKey
-                    };
-                    btn.AddToClassList("recipe-btn");
-                    btn.style.unityTextAlign = TextAnchor.MiddleLeft;
-
                     // Klassen aus Map setzen (fehlt Eintrag => missing)
                     var craftable = false;
                     if (craftableMap != null) craftableMap.TryGetValue(r, out craftable);
-                    btn.EnableInClassList("is-craftable", craftable);
-                    btn.EnableInClassList("is-missing", !craftable);
+
+                    var baseText = string.IsNullOrEmpty(r.displayKey) ? r.name : r.displayKey;
+                    var status = craftable ? " (craftable)" : " (missing mats)";
+
+                    var btn = new Button(() => OnSelect?.Invoke(r))
+                    {
+                        text = baseText + status
+                    };
+                    btn.AddToClassList("recipe-btn");
+                    btn.style.unityTextAlign = TextAnchor.MiddleLeft;                  
 
                     row.RegisterCallback<ClickEvent>(_ => OnSelect?.Invoke(r));
                     row.Add(btn);

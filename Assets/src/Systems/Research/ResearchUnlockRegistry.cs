@@ -142,19 +142,71 @@ namespace CHAL.Systems.Research
             if (log) DebugManager.Log($"UnlockRegistry: Node '{nodeId}' Effekte angewandt ({unlocks.Count}),  catalog +{catalogChanged} freigeschaltet.", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
         }
 
+        public void ApplyAlwaysUnlocked(IEnumerable<string> ids)
+        {
+            if (ids == null) return;
+
+            int changed = 0;
+            foreach (var raw in ids)
+            {
+                var id = string.IsNullOrWhiteSpace(raw) ? null : raw.Trim();
+                if (string.IsNullOrEmpty(id)) continue;
+
+                if (!_catalog.ContainsKey(id))
+                    _catalog.Add(id, true);
+                else if (_catalog[id] == false)
+                {
+                    _catalog[id] = true;
+                    changed++;
+                }
+
+                // Wichtig: Gates laufen über _catalog → typ-spezifische Sets müssen wir hier NICHT füllen.
+                // (IsUnlocked* liest bereits aus _catalog; GetUnlocked*()-Aufzählungen bleiben optional separat.)
+            }
+
+            if (changed > 0)
+                DebugManager.Log($"UnlockRegistry: AlwaysUnlocked applied, +{changed} IDs gesetzt.", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
+        }
+
         // -------------------- Query-API (andere Systeme lesen hier) --------------------
 
-        public bool IsUnlockedWorldTier(string tierId) => !string.IsNullOrWhiteSpace(tierId) && _worldTiers.Contains(tierId);
-        public bool IsUnlockedCraftingFeature(string feature) => !string.IsNullOrWhiteSpace(feature) && _craftingFeatures.Contains(feature);
-        public bool IsUnlockedRecipe(string recipeId) => !string.IsNullOrWhiteSpace(recipeId) && _recipes.Contains(recipeId);
-        public bool IsUnlockedSkillBranch(string branchId) => !string.IsNullOrWhiteSpace(branchId) && _skillBranches.Contains(branchId);
-        public bool IsUnlockedHero(string heroId) => !string.IsNullOrWhiteSpace(heroId) && _heroes.Contains(heroId);
+        public bool IsUnlockedWorldTier(string tierId)
+        {
+            if (string.IsNullOrWhiteSpace(tierId)) return false;
+            return _catalog.TryGetValue(tierId, out var flag) && flag;
+        }
 
+        public bool IsUnlockedCraftingFeature(string feature)
+        {
+            if (string.IsNullOrWhiteSpace(feature)) return false;
+            return _catalog.TryGetValue(feature, out var flag) && flag;
+        }
+
+        public bool IsUnlockedRecipe(string recipeId)
+        {
+            if (string.IsNullOrWhiteSpace(recipeId)) return false;
+            return _catalog.TryGetValue(recipeId, out var flag) && flag;
+        }
+
+        public bool IsUnlockedSkillBranch(string branchId)
+        {
+            if (string.IsNullOrWhiteSpace(branchId)) return false;
+            return _catalog.TryGetValue(branchId, out var flag) && flag;
+        }
+
+        public bool IsUnlockedHero(string heroId)
+        {
+            if (string.IsNullOrWhiteSpace(heroId)) return false;
+            return _catalog.TryGetValue(heroId, out var flag) && flag;
+        }
+
+        // Generisch bleibt unverändert – ist jetzt identisch zur obigen Logik
         public bool IsUnlocked(string targetId)
         {
             if (string.IsNullOrWhiteSpace(targetId)) return false;
             return _catalog.TryGetValue(targetId, out var flag) && flag;
         }
+
 
         public List<string> GetUnlockedIds()
         {

@@ -510,10 +510,8 @@ namespace CHAL.Core
                 SaveSystem.SaveResearch(Profile.profileId, Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime));
             }
 
-            // Service + Registry richtig initialisieren
-            researchService.InitFromTree(researchTree, Profile.ResearchRuntime);
-            ResearchUnlocks.RebuildFrom(researchNodes, Profile.ResearchRuntime.completedNodeIds);
 
+            researchService.OnAlwaysUnlockedReady += ids => ResearchUnlocks.ApplyAlwaysUnlocked(ids);
             // Speichern beim Abschluss & Registry pflegen
             researchService.OnNodeCompleted += (nodeId, unlocks) =>
             {
@@ -521,6 +519,13 @@ namespace CHAL.Core
                 var snapNow = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
                 SaveSystem.SaveResearch(Profile.profileId, snapNow);
             };
+
+            // Service + Registry richtig initialisieren
+            researchService.InitFromTree(researchTree, Profile.ResearchRuntime);
+            ResearchUnlocks.RebuildFrom(researchNodes, Profile.ResearchRuntime.completedNodeIds);
+            ResearchUnlocks.ApplyAlwaysUnlocked(researchTree.alwaysUnlockedIds);
+
+
         }
 
         private void EnsureResearchDefsLoaded()

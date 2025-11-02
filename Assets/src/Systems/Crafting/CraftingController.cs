@@ -62,12 +62,17 @@ namespace CHAL.Systems.Crafting
         {
             yield return null;
 
-            _wallet = GameManager.Instance != null ? GameManager.Instance.Profile : null;
+            _wallet = GameManager.Instance != null ? GameManager.Instance.Profile : null;  
 
             if (_wallet == null)
             {
                 DebugManager.Warning("Wallet is null. Crafting UI will not initialize.", "Crafting");
             }
+
+            unlocks = GameManager.Instance.ResearchUnlocks;
+
+            if( unlocks == null )
+                DebugManager.Warning("No UnlockRegistry!", "Crafting");
 
             if (inv == null && GameManager.Instance != null)
             {
@@ -131,9 +136,19 @@ namespace CHAL.Systems.Crafting
             foreach (var r in catalog.recipes)
             {
                 if (r == null) continue;
+
+                if (unlocks == null)
+                    DebugManager.Warning("No UnlockRegistry!", "Crafting");
+
+                DebugManager.Log($"{r.Id} unlokced? {unlocks.IsUnlockedRecipe(r.Id)}", DebugManager.EDebugLevel.Debug, "Crafting");
                 // Research-Gate: nur freigeschaltete Rezepte anzeigen
-                if (unlocks != null && !unlocks.IsUnlockedRecipe(r.name)) // Annahme: recipeId == name oder passe hier auf deine ID an
+                if (unlocks != null && !unlocks.IsUnlockedRecipe(r.Id))
+                {   
                     continue;
+                }
+
+                
+
 
                 _visibleRecipes.Add(r);
             }
@@ -148,6 +163,7 @@ namespace CHAL.Systems.Crafting
                         ? new CraftingService.RecipePreview(false, CraftBlocker.OutputInventoryFull, false, false, false)
                         : CraftingService.GetPreview(r, outId, inv, _wallet);
                     craftableMap[r] = p.canCraft;
+                    DebugManager.DebugLog($"recipe: {r} can be crafted: {p.canCraft} (reason: {p.blocker})","Crafting");
                 }
             }
 

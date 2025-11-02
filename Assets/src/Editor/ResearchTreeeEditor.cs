@@ -2,6 +2,7 @@
 using CHAL.Core;                    // DebugManager
 using CHAL.Data;
 using CHAL.Systems.Research;        // ResearchTreeCompiler
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -333,6 +334,26 @@ public sealed class ResearchTreeDefEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("defaultGateGlyph"));
 
         EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Always Unlocked (IDs, sofort aktiv)", EditorStyles.boldLabel);
+        var alwaysProp = serializedObject.FindProperty("alwaysUnlockedIds");
+        if (alwaysProp != null)
+        {
+            EditorGUILayout.PropertyField(alwaysProp, includeChildren: true);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Validate Always Unlocked IDs", GUILayout.Width(240)))
+                {
+                    ValidateAlwaysUnlockedIds(alwaysProp);
+                }
+            }
+        }
+        else
+        {
+            EditorGUILayout.HelpBox("Feld 'alwaysUnlockedIds' fehlt in ResearchTreeDef.", MessageType.Info);
+        }
+
+        EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("Actual Research Tree", EditorStyles.boldLabel);
 
         // Tabs basieren auf researchTreeLanes; wenn leer → Init aus Visual-Lanes anbieten
@@ -366,10 +387,73 @@ public sealed class ResearchTreeDefEditor : Editor
         EditorGUILayout.Space(12);
         if (GUILayout.Button("Validate / Compile Tree", GUILayout.Height(28)))
         {
+            if (alwaysProp != null)
+                ValidateAlwaysUnlockedIds(alwaysProp);
             RunCompile();
         }
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    private void ValidateAlwaysUnlockedIds(SerializedProperty alwaysProp)
+    {
+        // aktuelle Werte aus dem SerializedProperty lesen (ohne zu schreiben)
+        var ids = Enumerable.Range(0, alwaysProp.arraySize)
+                            .Select(i => alwaysProp.GetArrayElementAtIndex(i).stringValue)
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .Select(s => s.Trim())
+                            .ToList();
+
+        // Dedupe rein für die Anzeige (wir mutieren NICHT)
+        var seen = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+        var dedup = ids.Where(s => seen.Add(s)).ToList();
+
+        // Node-Targets einsammeln
+        var nodeIds = CollectNodeTargetIds(_tree);
+
+        // Überschneidungen
+        var overlaps = dedup.Where(id => nodeIds.Contains(id)).ToList();
+
+        // Feedback
+        var msg =
+            $"IDs eingetragen: {dedup.Count}\n" +
+            $"(Leer/duplikate Einträge werden ignoriert)\n\n" +
+            (overlaps.Count > 0
+                ? "Überschneidungen mit Node-Unlocks:\n- " + string.Join("\n- ", overlaps)
+                : "Keine Überschneidungen mit Node-Unlocks gefunden.");
+
+        EditorUtility.DisplayDialog("Validate Always Unlocked IDs", msg, "OK");
+
+        if (overlaps.Count > 0)
+        {
+            Debug.LogWarning($"[ResearchTree] AlwaysUnlocked überschneiden sich mit Nodes: {string.Join(", ", overlaps)}", _tree);
+        }
+    }
+
+    private static HashSet<string> CollectNodeTargetIds(ResearchTreeDef tree)
+    {
+        var set = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+        if (tree?.researchTreeLanes == null) return set;
+
+        foreach (var lane in tree.researchTreeLanes)
+        {
+            if (lane?.stages == null) continue;
+            foreach (var stage in lane.stages)
+            {
+                if (stage?.nodes == null) continue;
+                foreach (var nref in stage.nodes)
+                {
+                    var node = nref?.node;
+                    if (node?.unlocks == null) continue;
+                    foreach (var u in node.unlocks)
+                    {
+                        if (!string.IsNullOrWhiteSpace(u.targetId))
+                            set.Add(u.targetId.Trim());
+                    }
+                }
+            }
+        }
+        return set;
     }
 
     private void DrawLaneTabs()
