@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63874592312614f4e8b6bfb961a6f5db, type: 3}
   m_Name: TestCrafting_0
   m_EditorClassIdentifier: 
+  Id: recipe:test
   displayKey: Test Crafting Head
   icon: {fileID: 21300000, guid: e716a58bdf015844485cbbd238efbc77, type: 3}
   tier: 1

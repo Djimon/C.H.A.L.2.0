@@ -391,12 +391,10 @@ namespace CHAL.Systems.Enemy
             return sqr < (min * min);
         }
 
-
-        private void OnMouseDown()
-        {
-            EnemyInstance.TakeDamage(999, DamageType.Physical);
-        }
-
+        //private void OnMouseDown()
+        //{
+        //    EnemyInstance.TakeDamage(999, DamageType.Physical);
+        //}
 
         public EffectReceiver GetEffectReceiver()
         {

@@ -8,6 +8,7 @@ namespace CHAL.Systems.Crafting
     [CreateAssetMenu(fileName = "CraftingRecipe", menuName = "Data/Crafting Recipe")]
     public class RecipeDef : ScriptableObject
     {
+        public string Id;
      
         [Header("Anzeige")]
         public string displayKey;
