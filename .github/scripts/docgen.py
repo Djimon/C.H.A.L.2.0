@@ -17,7 +17,9 @@ TYPE_RX = re.compile(
     re.MULTILINE
 )
 
-SYSTEM_PROMPT = """You are a technical writer. Generate concise, factual, diff-friendly documentation from the provided **single source file only** (no external assumptions). Write in clear English, bullet-first
+SYSTEM_PROMPT = """You are a technical writer. Generate concise, factual, diff-friendly documentation from the provided **single source file only** (no external assumptions). 
+If previous documentation is provided, treat it as the baseline. Reuse bullets that are still accurate. Update or add/remove bullets only where the code changed. Keep section order and names stable. Do not duplicate sections.
+If previous documentation is not provided, create full documentation fresh. Write in clear English, bullet-first
 Output sections in this fixed order (omit a section if empty):
 1) Purpose
 - What this file defines/provides (1–3 bullets), strictly from code.
@@ -37,7 +39,7 @@ Output sections in this fixed order (omit a section if empty):
 - Facts that cannot be determined from this file.
 
 overall rules:
-- Source of truth = this file/project only. Prefer omission over guessing.
+- Source of truth = this project only. Prefer omission over guessing.
 - Exhaustively list public surface; keep names/signatures exact.
 - Use short bullets; avoid prose, timestamps, and authors.
 - If file is trivial or auto-generated, output a single line: "Skipped: trivial/auto-generated."
