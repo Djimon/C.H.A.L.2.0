@@ -2,122 +2,92 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingService.cs`._
 
-```text
 1) Purpose
-- Defines a static CraftingService with preview and atomic commit logic for crafting recipes.
-- Provides data structures for previewing craft requirements (MaterialLine, CurrencyLine, RecipePreview).
-- Exposes high-level API: GetPreview, CanCraft, TryCraftToInventory; plus a public CraftBlocker enum to categorize blockers.
+- Central crafting service for previewing and committing CraftingRecipe operations against inventory and wallet.
+- Exposes lightweight UI-friendly preview data (RecipePreview, with per-field flags) and public craft-check API.
+- Implements atomic commit of materials, currency, and output with rollback on failure; includes internal helpers for material/currency handling.
 
-```
-
-```csharp
 2) Public API
-- Namespace/module
-  - CHAL.Systems.Crafting
+- Namespace: CHAL.Systems.Crafting
 
-- Types
-  - public struct CraftingService.MaterialLine
+- public static class CraftingService
+  - public struct MaterialLine
     - public string itemId
     - public int required
     - public int playerAmount
     - public bool enough => playerAmount >= required
-
-  - public struct CraftingService.CurrencyLine
+  - public struct CurrencyLine
     - public string currencyId
     - public int required
     - public int playerAmount
     - public bool enough => playerAmount >= required
-
-  - public readonly struct CraftingService.RecipePreview
+  - public readonly struct RecipePreview
     - public readonly bool canCraft
     - public readonly CraftBlocker blocker
     - public readonly bool outputOk
     - public readonly bool materialsOk
     - public readonly bool currencyOk
     - public RecipePreview(bool canCraft, CraftBlocker blocker, bool outputOk, bool materialsOk, bool currencyOk)
-
-- Public methods
   - public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, IWallet wallet)
-
   - public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, IWallet wallet)
-
   - public static bool TryCraftToInventory(RecipeDef recipe, InventoryDomain inv, IWallet wallet, string outputInventoryId, out string failReason)
 
-- Enum (public)
-  - CraftBlocker
-    - None
-    - LockedByResearch
-    - OutputInventoryFull
-    - MissingMaterials
-    - NotEnoughCurrency
-    - InvalidRefinement
-    - UnknownError
+- public enum CraftBlocker
+  - None
+  - LockedByResearch
+  - OutputInventoryFull
+  - MissingMaterials
+  - NotEnoughCurrency
+  - InvalidRefinement
+  - UnknownError
 
-```
-
-```text
 3) Key Behavior & Side Effects
-- GetPreview
-  - Builds an output ItemStack from recipe.outputItemId and recipe.outputCount (minimum 1).
-  - OutputOk: checks if outputInventoryId can accept the output stack.
-  - MaterialsOk: for each input in recipe.inputs, maps itemId to a materials inventory via convention, verifies instance exists, sums counts across slots, requires at least max(1, qty).
-  - CurrencyOk: sums gold costs from recipe.currencyCosts; requires wallet.CanSpend("gold", amount) if gold cost > 0.
-  - Overall canCraft = OutputOk && MaterialsOk && CurrencyOk.
-  - Blocker set in priority: OutputInventoryFull -> MissingMaterials -> NotEnoughCurrency -> None.
-  - Returns RecipePreview(canCraft, blocker, outputOk, materialsOk, currencyOk) without mutating state.
+- Preview flow (GetPreview)
+  - Builds expected output ItemStack (at least 1, with recipe.outputCount)
+  - OutputOk: checks inv.CanAccept for the output slot; logs detailed rejection via DebugOutputReject on failure
+  - MaterialsOk: if inputs exist, verifies presence of materials by convention (TryGetMaterialsInventoryIdByConvention) and counts in inventory instances
+  - CurrencyOk: sums gold costs; checks wallet.CanSpend("gold", amount)
+  - Blocker resolution: OutputInventoryFull > MissingMaterials > NotEnoughCurrency > None
+  - Returns RecipePreview with canCraft (overall), blocker, and per-group flags (outputOk, materialsOk, currencyOk)
 
-- CanCraft
-  - Returns GetPreview(...).canCraft.
+- Commit flow (TryCraftToInventory)
+  - Output guard: requires inv.CanAccept(outputInventoryId, outStack)
+  - Build preview; if not preview.canCraft, fail with blocker.ToString()
+  - Collect removals for materials as a list (removed)
+  - Consume materials per input using TryConsumeOne (which uses TryGetMaterialsInventoryIdByConvention)
+  - If any material consumption fails, rollback removed materials to inventory, set failReason, return false
+  - Currency handling: compute gold total; if >0, spend via wallet.SpendCurrency("gold", amount); on failure rollback materials and fail
+  - Output: attempt to add output to inventory; on failure, refund gold (if spent) and rollback materials; fail with Output failure reason
+  - On success, return true
 
-- TryCraftToInventory (atomic commit)
-  - Validates output inventory acceptance first; on failure, failReason set and false.
-  - Builds preview; if not preview.canCraft, failReason = blocker and return false.
-  - Commit phase:
-    - Consume materials from inventories (per material convention); records removed materials for rollback.
-    - If any material consumption fails, roll back previously removed materials; failReason = "Missing materials: <itemId>".
-    - Calculate required gold; attempt wallet.SpendCurrency("gold", amount); on failure, roll back materials; failReason = "Gold spend failed.".
-    - Attempt to add output to outputInventoryId; on failure, refund spent gold and roll back materials; failReason = "Output inventory full: <id>".
-  - On success, return true (state mutated: materials removed, currency spent, output added).
+- Debugging helpers
+  - DebugOutputReject invoked when output cannot be accepted to log detailed per-slot state for debugging
 
-- Helpers (usage/behavior observed in code)
-  - TryGetMaterialsInventoryIdByConvention: maps item types (Remains→player_remains, Part→player_part, Rune→player_rune, Module→player_module) to an inventory instance; requires inv.HasInstance(instanceId).
-  - TrySpendCurrencies: pre-checks wallet.CanSpend for each currency cost; then spends each amount via wallet.SpendCurrency; records spent currencies.
-  - RollbackMaterials: re-adds previously removed materials to their original slots as new stacks with the same counts.
-  - RefundCurrencies: refunds previously spent currencies via wallet.Refund.
+- Internal material/currency helpers
+  - TryGetMaterialsInventoryIdByConvention maps material item types to player inventory IDs (Remains/Part/Rune/Module) and checks existence
+  - CountOf, TryConsumeMaterials, RollbackMaterials, TrySpendCurrencies, RefundCurrencies support internal accounting/rollback flows (not public)
 
-```
-
-```text
 4) Constraints & Failure Modes
-- Null/empty materials: recipe.inputs null or empty => materials check passes.
-- Currency handling: only gold is explicitly accumulated for preview; TrySpendCurrencies handles all currencyCosts, but preview logic specifically checks gold.
-- Output capacity: initial CanAccept check is required before locking in a craft; otherwise immediate failure.
-- Atomicity: TryCraftToInventory attempts to make the craft atomic by recording removals and rolling back on any failure, including material removal, currency spending, or output insertion.
-- State visibility: GetPreview does not mutate inventory or wallet; TryCraftToInventory mutates inventory and wallet only on success.
-- Threading: no explicit synchronization; behavior assumes single-threaded/controlled access per craft operation.
-- External dependencies: RecipeDef, CurrencyCost, ItemStack, InventoryDomain, IWallet, and related APIs are assumed from other parts of the project; their exact behavior is not defined in this file.
-- Unknown/Unsupported items: materials for unknown item types are ignored (TryGetMaterialsInventoryIdByConvention returns false for unknown types).
+- Null/empty handling
+  - recipe.inputs null or empty treated as no-materials
+  - currency costs checked for null before summing
+- Currency handling
+  - Only "gold" currency is recognized in GoldNeed; other currencies are ignored in preview
+  - Currency spend is attempted only if gold > 0
+- Rollback semantics
+  - If material consumption or currency spend fails, previous changes are rolled back to keep state consistent
+  - Output addition failure triggers a gold refund (if spent) and material rollback
+- Guard/order logic
+  - Preview blockers are derived in a defined order to guide UI (OutputInventoryFull, MissingMaterials, NotEnoughCurrency)
+- Threading/async
+  - All operations are synchronous in this file; no explicit async behavior
+- External dependencies
+  - Public API relies on external types: RecipeDef, InventoryDomain, ItemStack, IWallet, and debug/logging utilities
 
-```
-
-```text
 5) Example
-// Example usage (minimal)
-var preview = CraftingService.GetPreview(recipe, "player_inventory", inv, wallet);
-bool canCraft = CraftingService.CanCraft(recipe, inv, "player_inventory", wallet);
+- Not applicable (no direct code example derivable from this file)
 
-string failReason;
-bool success = CraftingService.TryCraftToInventory(recipe, inv, wallet, "player_inventory", out failReason);
-```
-
-```text
 6) Unknowns
-- Exact structures and semantics of:
-  - RecipeDef, Recipe inputs, and currencyCosts
-  - CurrencyCost (fields like currencyId, amount)
-  - ItemStack (fields like itemID, count, HasValue/Value)
-  - IWallet (methods CanSpend, SpendCurrency, Refund)
-  - InventoryDomain methods (CanAccept, GetInstance, HasInstance, TryAdd, TryRemove, etc.)
-  - ItemTypeUtils.FromId(ItemId) and ItemType enum
-- Any side effects beyond what is implemented here (e.g., events, analytics).
-- Behavior when multiple currencies beyond gold are present in currencyCosts (beyond pre-checks and Spend logic).
+- Exact definitions and members of RecipeDef, InventoryDomain, IWallet, ItemStack, and related inventory operations are not defined in this file
+- Behavior of DebugManager.Log and DebugOutputReject beyond what’s shown here
+- Any additional currency types beyond "gold" are not used in preview; their handling is not defined in this file
