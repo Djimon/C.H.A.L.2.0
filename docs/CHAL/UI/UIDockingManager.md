@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/UI/misc/UIDockingManager.cs`._
 
-```text
 1) Purpose
 - Implements a singleton MonoBehaviour that manages docking layout for views implementing IDockableView.
 - Registers/unregisters dockable views, tracks related UIDocuments, and triggers layout passes.
@@ -99,3 +98,4 @@ public class ExampleUsage : MonoBehaviour
 - Exact meanings of properties used in filtering (IsVisible, IsInventoryView, ReadOnly, Edge, DockPriority, AutoDock, BaseWidthPercent, MinWidthPx, MaxWidthPx, OuterContainer) beyond their names.
 - Behavior of UIDocument instances and the semantics of OnDocAdded/OnDocRemoved beyond event hookup.
 - How panels and their VisualTree/width interact in contexts outside this file.
+

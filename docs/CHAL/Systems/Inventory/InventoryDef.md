@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Inventory/core/InventoryDef.cs`._
 
-```text
 1) Purpose
 - Defines InventoryDef as a ScriptableObject asset in the CHAL.Systems.Inventory namespace.
 - Exposes configuration data for inventory definitions used by the system (types, keys, sizing, and slot filtering).
@@ -51,4 +50,4 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/Invento
   - SlotFilter
 - How NameKey is used (localization or display) beyond being a string.
 - How InventoryDef instances are consumed by other systems at runtime.
-```
+

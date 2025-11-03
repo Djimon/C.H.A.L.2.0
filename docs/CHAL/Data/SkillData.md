@@ -19,9 +19,9 @@ Public API
     - public float Cooldown; (cooldown in seconds; default 2)
 
     - public SkillType SkillType; (main behavior: Melee, Projectile, Spell, or Summon)
-    - public bool isProjectile; (flag)
-    - public bool isAoE; (flag)
-    - public bool hasDuration; (flag)
+    - public bool isProjectile; (flag; default false)
+    - public bool isAoE; (flag; default false)
+    - public bool hasDuration; (flag; default false)
 
     - public SkillRange Range; (range category; default SkillRange.Melee)
     - public float Duration; (duration for buffs/debuffs/DoTs; default 0)
@@ -61,3 +61,4 @@ Unknowns
 - Definitions/behaviors of DamageEntry, SkillImpactBase, SkillTag, SkillType, SkillRange, AnimationType are not in this file.
 - How SkillData is consumed by runtime systems or which components rely on which fields.
 - Exact null-handling, serialization details, or default initialization behavior beyond explicit defaults.
+

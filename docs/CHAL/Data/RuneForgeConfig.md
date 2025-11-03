@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/RuneForgeConfig.cs`._
 
-```text
 1) Purpose
 - Defines data structures for Rune Forge configuration (used as data-only assets).
 - RuneForgeEntry stores an input item (remain) and a list of possible runes with weights.
@@ -60,4 +59,4 @@ config.entries = new List<RuneForgeEntry> { entry };
 - Validation rules beyond weight range (e.g., non-null remain, non-empty runes list) are not specified.
 - Details of ItemDef type and how it interacts with RuneForgeConfig are not provided in this file.
 - Any serialization or asset-loading behavior beyond standard Unity ScriptableObject serialization is not specified here.
-```
+

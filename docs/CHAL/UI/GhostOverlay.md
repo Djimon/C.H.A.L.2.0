@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/UI/misc/GhostOverlay.cs`._
 
-```text
 1) Purpose
 - GhostOverlay defines a Unity MonoBehaviour that renders a draggable "ghost" with an item icon and a count when dragging items in the UI Toolkit-based UI.
 - It attaches the ghost to the current UIDocument dock/window, updates its position under the mouse, and moves it between active docs as needed.
@@ -17,6 +16,8 @@ _Automatically generated/updated from `Assets/src/UI/misc/GhostOverlay.cs`._
         - size (in pixels) of the ghost icon area
       - public float opacity
         - overall opacity of the ghost elements
+      - [SerializeField] private Vector2 _offset
+        - offset position of the ghost relative to the mouse
     - (No public methods, properties, or events are declared)
 
 3) Key Behavior & Side Effects
@@ -77,4 +78,4 @@ _Automatically generated/updated from `Assets/src/UI/misc/GhostOverlay.cs`._
 - Exact behavior and lifecycle of InvDnDProvider, DragDropService, UIDockingManager, and UIDocuments beyond what is used here.
 - Details of ItemRegistry, ItemDef.icon, and ItemStack structure beyond usage in this file.
 - Any side effects of adding/removing _ghost to rootVisualElement beyond the visible UI changes.
-```
+

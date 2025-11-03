@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Research/UI/ResearchNodeWidget.cs`._
 
-```text
 1) Purpose
 - Define a UI widget (ResearchNodeWidget) for representing a research node within the Research map UI.
 - Manage visuals (background, icon, title) and interaction state (button enabled/disabled) based on map/service state.
@@ -13,7 +12,7 @@ _Automatically generated/updated from `Assets/src/Systems/Research/UI/ResearchNo
   - CHAL.Systems.Research
 
 - Types
-  - Public class ResearchNodeWidget : MonoBehaviour, IPointerClickHandler
+  - Public sealed class ResearchNodeWidget : MonoBehaviour, IPointerClickHandler
     - Public fields
       - Image background
         - Bindable background image for the node
@@ -44,8 +43,8 @@ _Automatically generated/updated from `Assets/src/Systems/Research/UI/ResearchNo
 - ApplyState(isSelected = false)
   - If _map is null, returns early
   - Queries map.service for:
-    - isCompleted = IsCompleted(nodeId)
-    - isAvailable = IsNodeAvailable(nodeId)
+    - completed = IsCompleted(nodeId)
+    - available = IsNodeAvailable(nodeId)
     - isActive = GetActiveNodeId() == nodeId
   - Determines foreground color (fg):
     - default _normalColor
@@ -75,4 +74,4 @@ _Automatically generated/updated from `Assets/src/Systems/Research/UI/ResearchNo
 - Definition and structure of CHAL.Data.ResearchUIThemeDef and its color fields
 - Exact lifecycle/ownership: when Init is called relative to Unity lifecycle
 - Any other UI interactions or external side effects not visible in this file
-```
+

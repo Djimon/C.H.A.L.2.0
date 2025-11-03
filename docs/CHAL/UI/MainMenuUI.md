@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/UI/MainMenuUI.cs`._
 
-```text
 1) Purpose
 - Defines a Unity MonoBehaviour (MainMenuUI) that wires up and handles the main menu UI actions.
 - Manages a public character creation menu reference and four menu buttons (New Game, Continue, Options, Exit).
@@ -55,4 +54,4 @@ _Automatically generated/updated from `Assets/src/UI/MainMenuUI.cs`._
 - Whether UIDocument, VisualElement queries, and button names ("NewGame", "Continue", "Options", "Exit") exist at runtime
 - Behavior of characterCreationMenue outside this file
 - Threading, async behavior, and scene management details beyond provided code
-```
+

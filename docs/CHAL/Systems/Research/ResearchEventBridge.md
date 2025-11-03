@@ -2,14 +2,11 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Research/ResearchEventBridge.cs`._
 
-```text
 1) Purpose
 - Defines a sealed class ResearchEventBridge to forward research-related events to a ResearchService.
 - Holds a private reference to a ResearchService instance.
 - Exposes methods OnWaveCompleted, OnMapCompleted, OnEnemyKilled that delegate to corresponding Apply* methods on the service.
-```
 
-```text
 2) Public API
 - Namespace: CHAL.Systems.Research
 
@@ -24,9 +21,7 @@ _Automatically generated/updated from `Assets/src/Systems/Research/ResearchEvent
         - parameters: MapDifficulty difficulty
       - void OnEnemyKilled(IReadOnlyList<string> enemyTags, EnemyRank rank)
         - parameters: IReadOnlyList<string> enemyTags, EnemyRank rank
-```
 
-```text
 3) Key Behavior & Side Effects
 - OnWaveCompleted:
   - Calls _service.ApplyWaveCompleted().
@@ -36,26 +31,20 @@ _Automatically generated/updated from `Assets/src/Systems/Research/ResearchEvent
   - Calls _service.ApplyEnemyKilled(enemyTags, rank) with the provided tags and rank.
 - Constructor:
   - Stores the provided ResearchService instance into _service.
-```
 
-```text
 4) Constraints & Failure Modes
 - No null-check on the constructor parameter; passing null may cause NullReferenceException when methods are invoked.
 - All behavior is a direct delegation to ResearchService; no additional validation here.
-```
 
-```text
 5) Example
 ```csharp
 // Example
 var bridge = new ResearchEventBridge(service);
 bridge.OnWaveCompleted();
 ```
-```
 
-```text
 6) Unknowns
 - Implementation details of ResearchService.ApplyWaveCompleted, ApplyMapCompleted, ApplyEnemyKilled.
 - Definitions/values for MapDifficulty and EnemyRank (from CHAL.Data).
 - Any threading/async semantics not explicit in this file.
-```
+

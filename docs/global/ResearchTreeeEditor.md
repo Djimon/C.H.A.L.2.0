@@ -99,5 +99,4 @@ _Automatically generated/updated from `Assets/src/Editor/ResearchTreeeEditor.cs`
     - CHAL.Core.DebugManager
   - Details of ResearchTreeDef’s data contracts beyond what this editor relies on
   - Runtime impact of syncing vs. manual edits on validation/compile outcomes
-
 ```

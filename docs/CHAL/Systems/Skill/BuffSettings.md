@@ -16,6 +16,8 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/BuffStatusEffec
       - configuration for this buff (EffectId, Modifier, duration, max stacks, stacking mode)
     - public int CurrentStacks
       - current number of active stacks
+    - private int CurrentMaxStacks
+      - maximum number of stacks allowed
     - public StackingMode Stacking
       - stacking behavior mode (e.g., RefreshDuration, AddStacks)
     - public bool modifierApplied

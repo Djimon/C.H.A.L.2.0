@@ -2,15 +2,14 @@
 
 _Automatically generated/updated from `Assets/Resources/VFX/Status and Auras FREE/Scripts/CameraRotation.cs`._
 
-```text
 1) Purpose
 - Defines a Unity MonoBehaviour that orbits the camera around a target on the XZ plane.
 - Allows configuration of distance and angular speed; maintains the camera's current Y height.
-- orbitAxis field exists but is not used by the logic in this file.
+- orbitAxis field is defined but not applied in the logic.
 
 ```
 
-```csharp
+```text
 2) Public API
 - Namespace/module
   - MatthewAssets
@@ -21,7 +20,7 @@ _Automatically generated/updated from `Assets/Resources/VFX/Status and Auras FRE
       - Transform target: The object around which the camera will rotate
       - float distance: Distance from object
       - float orbitSpeed: Orbit speed
-      - Vector3 orbitAxis: Axis around which the camera will rotate
+      - Vector3 orbitAxis: Axis around which the camera will rotate (not used)
     - Private fields
       - float currentAngle: Internal angle accumulator
     - Public methods
@@ -77,4 +76,4 @@ void Start() {
   - Class is named CameraOrbit; file name suggests CameraRotation.cs (mismatch not resolvable from code alone).
 - Intended use of orbitAxis: defined but not applied in Update.
 - Any additional behaviors (e.g., vertical offset, clamping) are not present in this file.
-```
+

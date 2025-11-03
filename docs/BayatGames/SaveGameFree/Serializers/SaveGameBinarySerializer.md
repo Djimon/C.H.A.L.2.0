@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Serializers/SaveGameBinarySerializer.cs`._
 
-```text
 1) Purpose
 - Defines SaveGameBinarySerializer class in BayatGames.SaveGameFree.Serializers.
 - Implements ISaveGameSerializer; provides generic binary serialization to/from a Stream using BinaryFormatter.
@@ -92,4 +91,4 @@ public class ExampleUsage
 - Details of ISaveGameSerializer interface (beyond the two generic methods shown) are not present in this file.
 - Whether there are additional platform-specific alternatives or fallbacks elsewhere in the project.
 - Any project-wide serialization policies, e.g., expected [Serializable] requirements, are not specified here.
-```
+

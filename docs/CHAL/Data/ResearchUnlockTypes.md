@@ -57,3 +57,4 @@ Unknowns
 - How this enum is used across the rest of the project is not shown here.
 - No information on serialization behavior or editor tooling beyond the code.
 - Possible additional enum members or underlying type implications beyond what is explicit in this file.
+```

@@ -11,7 +11,7 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/LootRoller.cs`._
 - Namespace: CHAL.Systems.Loot
 - Types
   - public sealed LootRoller
-    - public LootRoller(LootRulesService rules,UnluckyProtection unlucky)
+    - public LootRoller(LootRulesService rules, UnluckyProtection unlucky)
       - ctor wiring: stores rules and unlucky instances
     - public List<LootResultEntry> RollLootForMonster(EnemyDef def, EnemyStruct monster, WaveLootContext ctx)
       - Returns generated loot entries for a single monster; may modify ctx.Drops and ctx.SpentBudget; may log through DebugManager
@@ -111,3 +111,4 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/LootRoller.cs`._
 - Exact constraints of mergedWave and mergedWave.drops (structure, required fields)
 - Details of how bonusTags/baseTags are populated and how rarity, lootValue, and quantity semantics are defined
 - Any external side effects of DebugManager logging beyond message emission
+

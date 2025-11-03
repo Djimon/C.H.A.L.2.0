@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/_test/demo_InvenotryBootstrap.cs`._
 
-```text
 1) Purpose
 - Defines InventoryDemoBootstrap (a MonoBehaviour) to initialize a simple inventory demo.
 - Creates an InventoryDomain and two InventoryInstance bags (bagA and bagB), registers them with the domain, preloads test items, and binds two InventoryView UI components to display them.
@@ -48,4 +47,4 @@ _Automatically generated/updated from `Assets/src/Systems/_test/demo_InvenotryBo
   - CHAL.UI.InventoryView.Bind signature and runtime effects.
   - The structure/content of ItemStack (beyond constructor usage) and the meaning of item IDs like "part:eye".
   - The exact InvDef fields (cols, rows) and their semantics.
-```
+

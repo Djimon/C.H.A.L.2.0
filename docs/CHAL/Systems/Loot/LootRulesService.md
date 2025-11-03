@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Loot/LootRulesService.cs`._
 
-```text
 1) Purpose
 - Load, parse, and manage loot rules from data/LootRules, expose lookup by tag, and provide merged loot configurations.
 - Load and expose additional "secret"/special rules from data/LootComboRules, and compute secret drops for monsters.
@@ -10,7 +9,7 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/LootRulesService.
 
 ```
 
-```csharp
+```text
 2) Public API
 - Namespace/module
   - CHAL.Systems.Loot
@@ -28,6 +27,7 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/LootRulesService.
         - Returns a merged loot configuration for all monsters and their bonus tags in the wave; sums min/max drops and rarities.
       - List<LootDropDto> GetSecretDrops(IEnumerable<string> monsterTags)
         - Returns extra drops from secret rules whose tag requirements are satisfied by the provided monster tags.
+
 ```
 
 ```text
@@ -81,6 +81,7 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/LootRulesService.
   - Returns extras.
 - MatchesAll (private)
   - Returns true if all requiredTags are contained in presentTags.
+
 ```
 
 ```text
@@ -102,6 +103,7 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/LootRulesService.
   - Merges via list concatenation and per-tag loops; uses additive/maximum accumulation strategies.
 - Logging/Debug
   - Uses DebugManager for warnings, errors, and dev logs with simple categories.
+
 ```
 
 ```text
@@ -125,4 +127,4 @@ var merged = lootService.GetMergedForTags(tags);
 - Details of DebugManager methods and log formatting.
 - Any runtime usage of UnityEditor (namespace included but not shown in usage here).
 - Any side effects of loading assets at runtime beyond what is explicit in code.
-```
+

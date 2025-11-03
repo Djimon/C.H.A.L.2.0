@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/ActiveStatusEffect.cs`._
 
-```text
 1) Purpose
 - Serializable data container representing an active status effect (identification, timing, source/target, and modifier).
 - Defines stacking behavior options via StackingMode.
@@ -30,7 +29,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ActiveStatusEff
 
   - public enum StackingMode
     - RefreshDuration
-      - Dauer erneuern, keine Stacks erhohen
+      - Dauer erneuern, keine Stacks erhöhen
     - AddStacks
       - Stack++ bis MaxStacks, Dauer erneuern
     - IgnoreIfActive
@@ -61,3 +60,4 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ActiveStatusEff
 - How ActiveStatusEffect is instantiated, updated, or removed in practice.
 - Exactly how StackingMode values are applied in runtime logic.
 - Any threading, async, or lifecycle implications beyond public fields.
+

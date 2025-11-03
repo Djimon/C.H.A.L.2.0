@@ -14,7 +14,7 @@ _Automatically generated/updated from `Assets/src/Data/DTO/LootDTO.cs`._
     - public int min;
   - [System.Serializable] public class LootDropDto
     - public string itemId;
-    - public float chance;       // optional wench "chances" set
+    - public float chance;       // optional when "chances" is provided
     - public float[] chances;    // optional
     - public int quantity = 1;
     - public string sourceTag;

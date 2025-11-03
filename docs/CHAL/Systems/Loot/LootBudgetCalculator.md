@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Loot/LootBudgetCalculator.cs`._
 
-```text
 1) Purpose
 - Defines a static utility LootBudgetCalculator in CHAL.Systems.Loot.
 - Exposes CalculateBudget(...) to compute an int loot budget for a wave using BalanceManager.Config.
@@ -62,3 +61,4 @@ int budget = LootBudgetCalculator.CalculateBudget(
 - Definitions of BalanceManager, BalanceManager.Config, and the exact structure of cfg.enemies.budgetPoints and cfg.loot.budget are not present in this file.
 - The MapDifficulty enum values beyond those used (Stable, Strained, Volatile, Chaos) are not defined here.
 - Any side effects beyond budget calculation (e.g., triggering other systems) are not shown in this file.
+

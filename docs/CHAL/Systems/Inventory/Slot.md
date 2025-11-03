@@ -5,8 +5,6 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/Slot.cs
 ```csharp
 # Documentation
 
-```
-
 1) Purpose
 - Defines a Slot type for an inventory system, representing a single slot with an index, maximum stack size, an optional filter, and a current item stack (nullable).
 - Defines a SlotFilter type to express allowed and blocked item criteria (types, ids, and tags) and to test whether a given item id passes the filter.
@@ -93,9 +91,8 @@ var slot = new Slot(0, 64, filter);
 
 bool canPlace = slot.Filter?.Allows("weapon_sword01") ?? false;
 
-```
-
 6) Unknowns
 - Definitions and members of ItemType, ItemStack, and ItemTypeUtils.FromId are not present in this file.
 - Exact semantics of ItemType values and item tagging conventions are external to this file.
 - Behavior of external code that might mutate Slot or SlotFilter state (due to internal setters) is not visible here.
+```

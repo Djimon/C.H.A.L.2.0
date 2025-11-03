@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 
-```text
 1) Purpose
 - Define ItemDef as a ScriptableObject that holds item metadata and optional type-specific data blocks.
 - Provide editor-time validation and automatic type-safety enforcement via OnValidate.
@@ -17,8 +16,8 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
       - public ItemType itemType; // [HideInInspector]
       - public string description; // TextArea
       - public Sprite icon;
-      - public Rarity rarity;
-      - public int lootValue;
+      - public Rarity rarity; // default is Rarity.Common
+      - public int lootValue; // default is 10
       - public RemainData remainData;
       - public RuneData runeData;
       - public PartData partData;
@@ -28,7 +27,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
       - void OnValidate()
       - private void ClearTypeBlocksExcept(ItemType keep)
   - public class RemainData
-    - public string remainType;
+    - public string remainType; // Insect, Beast, etc.
   - public static class RuneColors
     - public static readonly Color runeColorSun
     - public static readonly Color runeColorVerdant
@@ -37,19 +36,19 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
     - public static readonly Color runeColorVoid
     - public static Color Get(RuneColorType type)
   - public class RuneData
-    - public string effectType;
+    - public string effectType; // e.g. "Armor+", "Lifesteal"
     - public RuneColorType runeColortType;
     - public Color runecolor => RuneColors.Get(runeColortType);
   - public class PartData
-    - public string dnaType;
+    - public string dnaType; // e.g. "Weapon", "Armor"
     - public List<ItemDef> moduleFuel;
   - public class ModuleData
     - public string effect;
     - public float modulePower;
   - public class GearData
-    - public GearType slotType;
-    - public string[] tags;
-    - public RuneColorType runeSocketType;
+    - public GearType slotType; // Head/Chest/Gloves/Legs/Boots/Amulet 
+    - public string[] tags; // e.g. "gear","leather","light"
+    - public RuneColorType runeSocketType; // optional/future
 
 3) Key Behavior & Side Effects
 - OnValidate:
@@ -76,5 +75,5 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 6) Unknowns
 - Definitions and behavior of ItemType, ItemTypeUtils, ItemKey, RuneColorType, GearType, Rarity, and other dependent types.
 - Exact runtime behavior beyond editor-time validation (e.g., how assets are consumed at runtime).
-- Any additional serialization behavior or editor tooling beyond what is shown. 
-```
+- Any additional serialization behavior or editor tooling beyond what is shown.
+

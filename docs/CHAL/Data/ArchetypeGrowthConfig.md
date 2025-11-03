@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
 
-```text
 1) Purpose
 - Defines Unity ScriptableObject-based data structures for hero archetypes (ArchetypeDef) and their growth/configuration.
 - Provides serializable support for growth patterns and per-archetype attributes (ArchetypeGrowthConfig, LevelGrowthPattern, LevelGrowthRole).
@@ -68,8 +67,6 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
       - Melee
       - Ranged
 
-```
-
 3) Key Behavior & Side Effects
 - ArchetypeDef.OnValidate
   - If GrowthConfig?.GrowthPattern?.growthPriority == null
@@ -95,3 +92,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
 - Definitions and behavior of external types: HeroSlot, HeroAIPrio, HeroAttribs, ModifierDef, DebugManager.
 - How ArchetypeDef instances are created/consumed at runtime beyond OnValidate checks.
 - Any additional editor tooling or handling beyond the provided OnValidate method.
+

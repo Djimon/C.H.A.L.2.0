@@ -31,6 +31,7 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
       - public List<Level> levels  // per-level status data
     - Constructors
       - public CustomData()
+        - Initializes score and highScore to 0 and creates dummy levels.
 
   - public class ExampleSaveCustom : MonoBehaviour
     - Public fields
@@ -52,6 +53,7 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
         - customData = SaveGame.Load<CustomData>(identifier, new CustomData(), SerializerDropdown.Singleton.ActiveSerializer)
         - scoreInputField.text = customData.score.ToString()
         - highScoreInputField.text = customData.highScore.ToString()
+
 ```
 
 ```csharp
@@ -82,6 +84,7 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
   - SaveGame.Load/Save and SerializerDropdown.Singleton.ActiveSerializer determine persistence behavior; not defined here.
 - Silent failures
   - No error handling is present for Save/Load operations; exceptions would propagate.
+
 ```
 
 ```csharp
@@ -90,6 +93,4 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
 - Behavior of SerializerDropdown.Singleton.ActiveSerializer (supported serializers, compatibility).
 - Exact runtime behavior if Save/Load fails (exceptions, fallbacks).
 - How List<Level> serialization is handled by the active serializer.
-```
-
 ```

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/utils/DebugConfig.cs`._
 
-```text
 1) Purpose
 - Defines a ScriptableObject type DebugConfig with CreateAssetMenu for Editor integration.
 - Exposes public debug/config fields: level, productiveMode, autoAddUnknownTagsToAsset, includeGameTimestamps, colorWholeLine, and a serializable TagEntry plus a public List<TagEntry> tags.
@@ -37,8 +36,8 @@ _Automatically generated/updated from `Assets/src/utils/DebugConfig.cs`._
           - Whether this tag is active
         - public Color color = Color.white
           - Color associated with this tag
-- Public methods
-  - None declared (OnValidate is editor-only and private)
+    - Public methods
+      - None declared (OnValidate is editor-only and private)
 
 3) Key Behavior & Side Effects
 - Editor-only seeding (UNITY_EDITOR)
@@ -84,4 +83,4 @@ var cfg = ScriptableObject.CreateInstance<DebugConfig>();
 - Exact effect of autoAddUnknownTagsToAsset at runtime (comment describes intent; implementation not shown here)
 - Exact Unity asset path/location for the created asset beyond the comment
 - Any additional editor tooling or editor script integrations not present in this file
-```
+

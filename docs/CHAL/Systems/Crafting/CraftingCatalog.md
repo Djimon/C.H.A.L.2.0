@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingCatalog.cs`._
 
-```text
 1) Purpose
 - Defines CraftingCatalog as a ScriptableObject in CHAL.Systems.Crafting.
 - Exposes a public List<RecipeDef> named recipes to hold crafting recipe definitions.
@@ -45,4 +44,4 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingCatal
 - Definition and structure of RecipeDef (not present in this file).
 - How CraftingCatalog is consumed by systems at runtime.
 - Any additional fields or methods that may be added in other parts of the project.
-```
+

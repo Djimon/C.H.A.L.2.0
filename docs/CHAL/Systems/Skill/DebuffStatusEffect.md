@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/DebuffStatusEffect.cs`._
 
-```text
 1) Purpose
 - Runtime DEBUFF on a unit (negative modifier).
 - Modifier add/remove is handled centrally by EffectReceiver (on apply/expire).
@@ -19,6 +18,8 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/DebuffStatusEff
         - Debuff configuration used to initialize the effect
       - public int CurrentStacks
         - current stack count
+      - private int _currentMaxStacks
+        - maximum number of stacks (internal use)
       - public StackingMode Stacking
         - stacking behavior (e.g., AddStacks, RefreshDuration)
       - public bool modifierApplied
@@ -41,7 +42,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/DebuffStatusEff
         - maximum number of stacks (>= 1)
       - public StackingMode Stacking
         - stacking semantics (same as DoT)
-        
+
 Note: All types referenced but not defined here (ActiveStatusEffect, EffectReceiver, ModifierData, StackingMode, StatusType) are assumed to be defined elsewhere in the project.
 
 3) Key Behavior & Side Effects
@@ -94,4 +95,4 @@ var debuff = new DebuffStatusEffect(ds);
 - How Debuff interacts with other systems at apply/expire in runtime
 - Exact semantics of Modifier.Id and Modifier lifecycle in this context
 - Any threading considerations or lifecycle hooks not shown in this file
-```
+

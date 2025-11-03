@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 1) Purpose
 - Defines a Unity ScriptableObject GameBalanceConfig (namespace CHAL.Data) for game balance configuration.
 - Provides a rich, nested set of serializable structs to configure loot, enemies, skills, and economy.
@@ -150,4 +149,4 @@ float meleeRange = config.GetRangeValue(SkillRange.Melee);
 - Definitions and exact values of EnemyRank and SkillRange enums are not in this file.
 - How the stored values are interpreted by gameplay systems (loot generation, wave composition, enemy scaling, etc.) is not shown here.
 - Any runtime validation or defaults beyond the declared fields are not present in this file.
-```
+

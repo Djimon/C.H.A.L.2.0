@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/Save Custom/ExampleSaveCustom.cs`._
 
-```text
 1) Purpose
 - Defines ExampleSaveCustom MonoBehaviour with serializable nested types Level and CustomData for demonstrating saving/loading custom data via SaveGameFree.
 - Exposes public fields to configure data and UI, and public methods to set values, save, and load using the active serializer.
@@ -84,4 +83,4 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
 - Threading, async, or error-handling semantics of SaveGameFree methods
 - Persistence format and how Level/List<Level> is serialized/deserialized
 - Lifecycle guarantees for Unity UI InputField references at runtime
-```
+

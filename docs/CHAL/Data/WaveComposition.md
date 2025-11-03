@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Structs/WaveComposition.cs`._
 
-```text
 1) Purpose
 - Defines a serializable struct WaveComposition in CHAL.Data.
 - Represents a wave: level, difficulty, and a list of Monster definitions.
@@ -80,4 +79,4 @@ var waveCopy = wave.Clone();
 - Whether bonusTags can be null in typical usage (Clone copies may throw if null).
 - Any additional serialization behavior tied to [Serializable] in this project context.
 - Any other public surface not visible in this file (extensions, implicit operators, etc.).
-```
+

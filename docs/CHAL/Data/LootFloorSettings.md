@@ -118,9 +118,6 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
   - public CurrencySettings currencies
   - public XpSettings xp
 
-Notes:
-- EnemyRank, SkillRange types are referenced but not defined in this file.
-
 3) Key Behavior & Side Effects
 - GetRangeValue(SkillRange range)
   - Returns the numeric value from skillRanges corresponding to the given range.

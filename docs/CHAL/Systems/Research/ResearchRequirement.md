@@ -2,14 +2,11 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ResearchRequirement.cs`._
 
-```text
 1) Purpose
 - Defines data structures for research requirements in CHAL.Systems.Research.
 - Exposes ResearchRequirement (with thresholds and per-tag kill counts) and supporting types KillTagCount and MapRequirement.
 - Provides simple validation and emptiness-check utilities for research requirements.
-```
 
-```text
 2) Public API
 - Namespace/module
   - CHAL.Systems.Research
@@ -47,9 +44,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ResearchRequirement.
     - Public fields
       - public MapDifficulty difficulty
       - public int amount
-```
 
-```text
 3) Key Behavior & Side Effects
 - ValidateSoft
   - Performs defensive validation without throwing exceptions.
@@ -64,9 +59,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ResearchRequirement.
   - If numeric thresholds are not positive, iterates killsByTag (if not null) and returns false if any non-null entry has count > 0.
   - Otherwise returns true.
 - MapRequirements list is initialized to an empty list by default.
-```
 
-```text
 4) Constraints & Failure Modes
 - Field constraints
   - [Min(0)] attributes indicate non-negative expectations for: waves, maps, killsGeneral, eliteCount, bossCount, championCount.
@@ -76,9 +69,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ResearchRequirement.
   - MapDifficulty is referenced but not defined in this file.
 - Side effects
   - ValidateSoft emits warnings via the provided callback; does not throw.
-```
 
-```text
 5) Example
 ```csharp
 using CHAL.Systems.Research;
@@ -102,11 +93,9 @@ public class Example
 }
 ```
 Note: MapDifficulty is defined elsewhere in the project; usage with default(MapDifficulty) demonstrates structure without assuming specific values.
-```
 
-```text
 6) Unknowns
 - Definition and possible values of MapDifficulty (external to this file).
 - How ResearchRequirement is consumed by other systems (e.g., interpretation of thresholds) beyond this file.
 - Any runtime behavior tied to Unity’s serialization or inspector beyond the included Min attributes.
-```
+

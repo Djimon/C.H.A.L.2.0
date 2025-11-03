@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/utils/DebugManager.cs`._
 
-```text
 1) Purpose
 - Defines a centralized, static DebugManager for level-based, tagged logging with per-tag colorization and optional time stamps.
 - Maintains in-memory state: CurrentDebugLevel, ProductiveMode, ActiveTags, ExcludedTags, TagColors; initializes from a DebugConfig asset when provided.
@@ -100,10 +99,6 @@ _Automatically generated/updated from `Assets/src/utils/DebugManager.cs`._
   - Level gating prevents logs when level > CurrentDebugLevel
 - Data structures
   - ActiveTags, ExcludedTags, TagColors are in-memory HashSets/Dictionaries; no explicit threading safeguards
-- Unknowns
-  - Exact structure of DebugConfig and DebugConfig.TagEntry is not defined here
-  - Asset creation/loading semantics depend on Unity project setup (Resources folder, asset path, scripting runtime)
-  - Behavior for unknown tags in non-editor builds relies on code paths that may or may not execute depending on UNITY_EDITOR
 
 ```
 
@@ -124,4 +119,4 @@ foreach (var t in DebugManager.GetExcludedTags()) { /* inspect excluded tags if 
 - How to create or modify the DebugConfig asset beyond in-editor writes is not shown here.
 - Behavior of Resources.Load path and asset persistence may vary by Unity version; specifics are outside this file.
 - Any runtime interactions with other subsystems (e.g., how colors render in the Unity console across platforms) are not specified here.
-```
+

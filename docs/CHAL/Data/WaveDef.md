@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/WaveDef.cs`._
 
-```text
 1) Purpose
 - Define a WaveDef as a ScriptableObject that describes a template for a wave of enemies.
 - Expose structure counts, constraints, and per-rank spawn-delay configuration.
@@ -76,4 +75,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/WaveDef.cs`._
 - Definitions and behavior of WaveComposition, EnemyStruct, EnemyRank, MapDifficulty.
 - How WaveManager consumes and populates WaveComposition.Monsters.
 - Any runtime validation or interoperability rules beyond what is explicit here.
-```
+

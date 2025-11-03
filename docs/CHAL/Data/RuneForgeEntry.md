@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/RuneForgeConfig.cs`._
 
-```text
 1) Purpose
 - Define data structures for Rune Forge configuration in CHAL.Data.
 - Provide a ScriptableObject config (RuneForgeConfig) that holds a list of RuneForgeEntry items for editing in the Unity inspector.
@@ -61,4 +60,4 @@ cfg.entries = new List<CHAL.Data.RuneForgeEntry> { exampleEntry };
 - How RuneForgeConfig.entries is consumed (where and how it’s loaded/used at runtime).
 - Validation rules beyond editor Range (e.g., sum of weights, non-empty lists).
 - Any serialization defaults or Unity-specific lifecycle behavior beyond CreateAssetMenu.
-```
+

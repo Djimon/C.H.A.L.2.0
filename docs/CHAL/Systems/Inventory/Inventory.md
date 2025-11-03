@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/Inventory.cs
 
 ```csharp
 // Documentation for: Assets/src/Systems/Inventory/Inventory.cs
-```
 
 1) Purpose
 - Serializable Inventory type that groups InventoryItem entries under a per-inventory identifier (invID) and maintains a private item list.
@@ -90,3 +89,4 @@ inv2.FromDictionary(dict);                   // restore items from dictionary
 - Thread-safety and synchronization guarantees for AddItem/RemoveItem/GetAllItems
 - Whether GetAllItems should return a mutable reference or a defensive copy
 - Any external interactions not visible in this file (e.g., how inventories are persisted or synchronized with other systems)
+```

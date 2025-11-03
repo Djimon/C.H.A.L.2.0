@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
 
 ```csharp
 // Documentation for: Assets/src/Data/Config/GameBalanceConfig.cs
-```
 
 1) Purpose
 - Defines a Unity ScriptableObject GameBalanceConfig that holds game balance data (loot, enemies, skills, economy).
@@ -170,3 +169,4 @@ float selfRange = config.GetRangeValue(SkillRange.Self);
 Notes
 - This file is Unity Editor-friendly via [CreateAssetMenu] and [System.Serializable] nested types.
 - Public surface includes the GameBalanceConfig class, its public fields, and all nested types and their public members.
+```

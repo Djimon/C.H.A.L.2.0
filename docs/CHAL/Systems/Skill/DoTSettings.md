@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/DoTStatusEffect.cs`._
 
-```text
 1) Purpose
 - Defines a Damage-over-Time (DoT) status effect (DoTStatusEffect) with stacking behavior.
 - Provides configuration for DoT via DoTSettings (serializable, public fields).
@@ -15,6 +14,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/DoTStatusEffect
   - Public fields
     - public DoTSettings DoTsettings
     - public int CurrentStacks
+    - private int CurrentMaxStacks
     - public float internalTickTimer
     - public StackingMode Stacking
   - Public constructors
@@ -80,4 +80,4 @@ dotEffect.TryAddStack(source);
   - SkillTag.DoT and StackingMode semantics
   - Damage application per tick (how TickInterval, DamagePerTick are applied over time)
 - DoT tick progression, timing, and interaction with other systems beyond this file.
-```
+

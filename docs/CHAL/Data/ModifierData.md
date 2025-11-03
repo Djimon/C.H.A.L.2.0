@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/SkillModifierDef.cs`._
 
-```text
 1) Purpose
 - Defines a ScriptableObject (ModifierDef) for editor-time definitions of skill modifiers (Unity asset).
 - Defines a serializable runtime data class (ModifierData) used at runtime.
@@ -10,7 +9,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillModifierDef.cs`
 
 ```
 
-```csharp
+```text
 2) Public API
 - Namespace/module
   - CHAL.Data
@@ -94,4 +93,4 @@ ModifierData data = defAsset.ToModifierData();
   (not defined in this file)
 - Whether AppliesTo is ever null in practice; behavior if null is not defined here.
 - How ModifierData is consumed at runtime beyond this conversion method.
-```
+

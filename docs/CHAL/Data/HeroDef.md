@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/HeroDef.cs`._
 
-```text
 1) Purpose
 - Defines HeroDef as a ScriptableObject in the CHAL.Data namespace for hero configuration.
 - Groups identity/flavor, gameplay, and visuals data for a hero asset.
@@ -51,4 +50,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/HeroDef.cs`._
 - How HeroDef assets are loaded, instantiated, or referenced at runtime.
 - Nullability expectations for reference fields (Archetype, Portrait, Prefab, VoiceSample) cannot be inferred.
 - Any runtime side effects or validation beyond data storage.
-```
+

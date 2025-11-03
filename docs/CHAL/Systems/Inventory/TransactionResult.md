@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Inventory/core/TransactionResult.cs`._
 
-```text
 1) Purpose
 - Defines a public class TransactionResult in the CHAL.Systems.Inventory namespace.
 - Encapsulates the outcome of a transaction: success flag, textual reason, and per-slot deltas.
@@ -49,4 +48,4 @@ result.SlotDeltas.Add((slotIndex: 2, newStack: null)); // nullable ItemStack
 - Definition and semantics of ItemStack are not provided in this file.
 - How TransactionResult is consumed by other systems is not specified.
 - No behavior beyond public fields is defined (e.g., serialization, equality, or methods).
-```
+

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ImplicitGearTypeConfig.cs`._
 
-```text
 1) Purpose
 - Defines a ScriptableObject data container (ImplicitGearTypeConfig) for per-gear-type implicit stat weights.
 - Exposes serializable data structures (GearTypePool, ImplicitWeight) used to configure Pools and their entries.
@@ -124,4 +123,4 @@ public class ExampleUsage
 - The behavior and usage of the created asset at runtime (beyond OnValidate-time validation) are not specified here.
 - Any additional validation or usage of the Pools data outside OnValidate is not defined in this file.
 - External tooling or scripts that may rely on DefaultImplicitIds order or presence are not described here.
-```
+

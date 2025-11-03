@@ -12,7 +12,7 @@ _Automatically generated/updated from `Assets/src/Systems/Map/MapManager.cs`._
 - Type: public class MapManager : MonoBehaviour
 - Public properties
   - public MapDef CurrentMap { get; private set; }
-  - public int CurrentWave { get; private set; }
+  - public int CurrentWave { get; private set; } = 1;
   - public int MaxWaves => CurrentMap != null ? CurrentMap.maxWaves : 0;
 - Public fields
   - public GameObject waveRewardUI
@@ -29,6 +29,7 @@ _Automatically generated/updated from `Assets/src/Systems/Map/MapManager.cs`._
   - internal void SetSelectedHeroes(List<string> heroIds)
 - Note: There are also private methods (not part of the public API) used internally:
   - SpawnSelectedHeroesAtSlots(List<string> heroIds, WaveManager waveMgr)
+  - ResetHeroesForNewWave(WaveManager waveMgr)
   - ResolveHeroDef(string heroId)
   - GetHeroPrefab(HeroDef def)
 
@@ -53,9 +54,14 @@ _Automatically generated/updated from `Assets/src/Systems/Map/MapManager.cs`._
   - Hides UI
   - Locates WaveManager in the instantiated map
   - If WaveManager not found: logs error, exits to hideout
+  - Calls ResetHeroesForNewWave to clear existing heroes
   - Spawns selected heroes at slots using _pendingSelectedHeroes
   - Logs wave start
   - Calls _waveManager.StartWave(CurrentMap, CurrentWave, this)
+- ResetHeroesForNewWave
+  - Destroys existing hero instances belonging to the active map instance
+  - Logs the number of cleared hero instances
+  - Calls SpawnSelectedHeroesAtSlots to spawn new heroes
 - SpawnSelectedHeroesAtSlots
   - Guards against null waveMgr
   - Retrieves spawns from WaveManager.HeroSpawns
@@ -106,3 +112,4 @@ _Automatically generated/updated from `Assets/src/Systems/Map/MapManager.cs`._
 - Behavior of WaveManager.StartWave and HeroController.Init
 - Serialized field expectations for heroFallbackPrefab.Prefab naming and availability
 - Threading model, if any, for these calls (Unity main thread assumed)
+

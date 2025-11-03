@@ -53,7 +53,7 @@ _Automatically generated/updated from `Assets/src/Data/Enums/SkillEnums.cs`._
     - DoTMaxStacks
     - DotDuration
     - CastTime
-    - cooldown
+    - Cooldown
     - SummonCount
     - SummonHP
     - SummonDamage

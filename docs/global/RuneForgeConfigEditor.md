@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Editor/RunForgeConfigEditor.cs`._
 
-```text
 1) Purpose
 - Defines a Unity Editor CustomEditor for RuneForgeConfig to customize its inspector UI.
 - Uses ItemRegistry to populate dropdowns for remains and runes; warns if none found.
@@ -78,3 +77,4 @@ _Automatically generated/updated from `Assets/src/Editor/RunForgeConfigEditor.cs
   - ItemRegistry, Item type (fields like itemId)
 - Expected semantics of remains vs rune items beyond itemId usage.
 - Any additional editor tooling or integration points outside this file.
+

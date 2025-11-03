@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Unit/UnitLocator.cs`._
 
-```text
 1) Purpose
 - Scene-scoped locator component that tracks active units (heroes and enemies) in the current scene.
 - Provides registration helpers (Register/Unregister) for HeroController and EnemyController.
@@ -93,3 +92,4 @@ public class MyHeroBehaviour : MonoBehaviour
 - Exact semantics of IsAlive, CurrentHP, and how EnemyInstance/CurrentHP are populated.
 - DebugManager implementation and log output specifics beyond what is shown.
 - Any multi-scene behavior or persistence across scenes beyond the described scene-scoped approach.
+

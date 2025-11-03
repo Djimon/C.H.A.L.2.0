@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/Save Rotation/ExampleSaveRotation.cs`._
 
-```text
 1) Purpose
 - Defines a Unity MonoBehaviour example that saves/loads a Transform's rotation using BayatGames.SaveGameFree.
 - Exposes public fields to configure: target (Transform), loadOnStart (bool), identifier (string).
@@ -57,3 +56,4 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
 - Details of SerializerDropdown.Singleton.ActiveSerializer type and behavior when null.
 - Storage location, file format, and error handling when a save/load fails (beyond the default value in Load).
 - Thread-safety and any cross-scene persistence implications.
+

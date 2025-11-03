@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/DTO/ModulePartMapWrapper.cs`._
 
-```text
 1) Purpose
 - Defines serializable data structures in CHAL.Data for mapping module IDs to their parts.
 - ModulePartMapWrapper holds a list of ModulePartMapEntry and can convert it to a Dictionary<string, string[]> via ToDictionary().
@@ -59,3 +58,4 @@ var dict = wrapper.ToDictionary();
 - No constructors defined beyond default; behavior relies on default initialization.
 - No validation on entry content beyond Unity serialization semantics.
 - Usage context (e.g., how entries are populated) is not specified in this file.
+

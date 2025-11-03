@@ -2,12 +2,12 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingController.cs`._
 
-Purpose
+## Purpose
 - Defines a Unity MonoBehaviour that coordinates crafting UI, data, and interactions.
 - Maintains visible recipes (filtered by unlocks) and preview/detail state.
 - Interfaces with CraftingService to compute previews and perform crafting, and wires UI events.
 
-Public API
+## Public API
 - Namespace: CHAL.Systems.Crafting
 - Types
   - public class CraftingController : MonoBehaviour
@@ -25,7 +25,7 @@ Public API
     - Public methods
       - None
 
-Key Behavior & Side Effects
+## Key Behavior & Side Effects
 - Initialization and wiring
   - OnEnable: wires UI handlers via WireUI.
   - Awake: initializes _relevantInvIds (case-insensitive set).
@@ -55,18 +55,8 @@ Key Behavior & Side Effects
   - HandleSelectRecipe: updates _selected and refreshes preview/detail.
   - HandleCraftClicked: attempts crafting via CraftingService.TryCraftToInventory; on failure shows mapped blocker reason and refreshes preview/detail; on success shows success state and refreshes preview/detail.
   - HandleSlotChanged: refreshes preview/detail only if the changed slot belongs to a relevant inventory id (_relevantInvIds).
-- Helpers (read-only)
-  - GetGoldNeed(RecipeDef r)
-    - Sums gold costs from r.currencyCosts (only items with currencyId "gold").
-  - ResolveOutputInventoryId(RecipeDef r)
-    - Uses GameManager to resolve the outputItemId to an inventory type and instance; ensures the instance exists via EnsureInstance; returns the instance id or null on failure.
-  - CountMaterials(RecipeDef r)
-    - For each input itemId, determines a conventional instance id (e.g., player_remains, player_part, player_rune, player_module) based on ItemTypeUtils.FromId.
-    - If a valid instance exists, sums counts across its slots for that itemId; returns a map of itemId -> total owned count.
-  - MapBlockerToText(CraftBlocker blocker, string fallback)
-    - Converts blocker values to user-facing messages, with fallback if provided.
-
-Constraints & Failure Modes
+  
+## Constraints & Failure Modes
 - Null checks and guarded flows
   - Many early returns if inv, wallet, or catalog data are missing; warnings logged to DebugManager.
 - Lifecycle and event management
@@ -78,7 +68,7 @@ Constraints & Failure Modes
 - Performance
   - RebuildRecipeList iterates catalog recipes and constructs per-recipe previews when wallet/inv are available; reasonable for typical recipe counts.
 
-Unknowns
+## Unknowns
 - Exact shapes of types and data structures:
   - RecipeDef, RecipePreview, CraftBlocker, RecipeListView, RecipeDetailPanel, CraftingCatalog, InventoryDomain, ResearchUnlockRegistry, IWallet, and CraftingService behavior.
   - Details of CurrencyCosts structure (fields like currencyId, amount).
@@ -89,5 +79,3 @@ Unknowns
 - Any external side effects not explicit in this file:
   - Additional listeners or side effects triggered by inventory changes beyond HandleSlotChanged.
 
-Example
-- Not applicable (no code examples visible beyond this file).

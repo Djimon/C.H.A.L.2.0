@@ -32,6 +32,8 @@ _Automatically generated/updated from `Assets/src/Data/Enums/AIPrio.cs`._
       - Brief role: spread damage-over-time effects
     - CCFirstThreat
       - Brief role: crowd-control the first threat
+    - // TODO: ggf. erweitern fr Spezialverhalten
+      - Brief role: potential for additional special behaviors
 
 3) Key Behavior & Side Effects
 - No runtime logic, methods, or state changes defined here.

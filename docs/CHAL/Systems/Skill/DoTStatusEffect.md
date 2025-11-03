@@ -2,13 +2,10 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/DoTStatusEffect.cs`._
 
-```text
 1) Purpose
 - Defines DoTStatusEffect, a status effect that applies damage over time with stacking behavior.
 - Defines DoTSettings, a serializable data container for DoT configuration (damage type, tick, duration, stacks, etc.).
-```
 
-```text
 2) Public API
 - Namespace/module
   - CHAL.Systems.Skill
@@ -18,6 +15,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/DoTStatusEffect
     - Public fields/properties
       - public DoTSettings DoTsettings
       - public int CurrentStacks
+      - private int CurrentMaxStacks
       - public float internalTickTimer
       - public StackingMode Stacking
     - Public methods
@@ -34,9 +32,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/DoTStatusEffect
       - public float BaseDuration
       - public int BaseMaxStacks
       - public StackingMode Stacking
-```
 
-```text
 3) Key Behavior & Side Effects
 - DoTStatusEffect constructor (DoTSettings settings)
   - Initializes: DoTsettings = settings
@@ -61,16 +57,12 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/DoTStatusEffect
   - BaseDuration default: 5f
   - BaseMaxStacks default: 1
   - Stacking default: StackingMode.AddStacks
-```
 
-```text
 4) Constraints & Failure Modes
 - Null handling not explicit in TryAddStack; passing a null source would trigger a runtime error when accessing source.ActiveModifiers.
 - Reliant on external types not defined in this file: ActiveStatusEffect, EffectReceiver, ModifierTarget, SkillTag, DamageType, StackingMode, etc.
 - Behavior assumes DoTTick/damage application occurs elsewhere (not in this file); only stacking and timing-related fields are managed here.
-```
 
-```text
 5) Example
 - Minimal usage example (instantiation and a stack try):
 
@@ -92,12 +84,9 @@ var dotStatus = new DoTStatusEffect(settings);
 // dotStatus.TryAddStack(source);
 ```
 
-```
-
-```text
 6) Unknowns
 - Details of ActiveStatusEffect base class (properties like EffectId, RemainingTime, BaseDuration) are not in this file.
 - Definitions/semantics of EffectReceiver, ModifierTarget, SkillTag, DamageType, StackingMode, and how DoT damage is actually applied over time.
 - How internalTickTimer is used beyond initialization (no tick handling shown here).
 - Threading or synchronization considerations are not specified.
-```
+

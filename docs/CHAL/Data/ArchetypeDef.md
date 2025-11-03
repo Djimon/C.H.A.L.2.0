@@ -2,11 +2,11 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
 
-```text
 1) Purpose
 - Defines ArchetypeDef as a Unity ScriptableObject that holds hero archetype data (identity, display/description, attack type, preferred slots, AI priorities, core/secondary/tertiary/edge attributes, growth config, and a signature passive).
 - Defines ArchetypeGrowthConfig and LevelGrowthPattern (with growthPriority) as serializable supporting data for growth targets and order.
 - Defines LevelGrowthRole and PrimaryAttackArchetype enums; LevelGrowthPattern defaults to a 5-entry order Core, Secondary, Secondary, Tertiary, Edge.
+- Adds [CreateAssetMenu] attribute to ArchetypeDef for asset creation in Unity.
 
 2) Public API
 - Namespace/Module: CHAL.Data
@@ -66,4 +66,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
 - Definitions and details of HeroSlot, HeroAIPrio, HeroAttribs, ModifierDef, DebugManager are external to this file.
 - How ArchetypeDef is consumed at runtime beyond its surface fields.
 - Behavior of GrowthConfig.GrowthPattern in other code paths.
-```
+

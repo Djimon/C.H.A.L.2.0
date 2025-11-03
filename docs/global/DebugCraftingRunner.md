@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/_test/DebugCraftingRunner.cs`._
 
-```text
 1) Purpose
 - Defines CraftingDebugRunner, a Unity MonoBehaviour to run and inspect crafting flows against a catalog recipe.
 - Provides a private WalletProxyMissing helper to simulate currency-spend failure for testing.
@@ -117,3 +116,4 @@ public class SetupExample : MonoBehaviour
 - Behavior of GameManager, InventoryDomain, and related inventory initialization are not defined in this file; their behavior is assumed from usage.
 - The precise format of the CraftingPreview data (materials, currencies) is not defined here; only usage surfaced through CraftingService.GetPreview.
 - Any side effects of CraftingService methods beyond what is logged are not described in this file.
+

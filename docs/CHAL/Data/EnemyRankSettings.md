@@ -26,21 +26,21 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
         - public float budgetVariance
         - public float beta
       - public struct LootFloorSettings
-        - public float rare
-        - public float epic
-        - public float legendary
-        - public float specials
+        - [Range(0, 1)] public float rare
+        - [Range(0, 1)] public float epic
+        - [Range(0, 1)] public float legendary
+        - [Range(0, 1)] public float specials
       - public struct LootUnluckySettings
         - public float alphaRare
         - public float alphaEpic
         - public float alphaLegendary
         - public float alphaSpecials
       - public struct LootTrimSettings
-        - public float common
-        - public float uncommon
-        - public float rare
-        - public float epic
-        - public float legendary
+        - [Range(0, 1)] public float common
+        - [Range(0, 1)] public float uncommon
+        - [Range(0, 1)] public float rare
+        - [Range(0, 1)] public float epic
+        - [Range(0, 1)] public float legendary
       - public struct LootRankMultipliers
         - public int spawn
         - public int normal
@@ -137,3 +137,4 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
 - Definitions of EnemyRank and SkillRange (used in signatures) are not declared in this file.
 - How these balance settings are consumed (e.g., how waves spawn or how loot is actually computed) is external to this file.
 - Any runtime validation or initialization logic outside this file (e.g., defaults if asset is missing) is not shown here.
+

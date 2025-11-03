@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Types/MeshSave.cs`._
 
-```text
 1) Purpose
 - Defines a serializable mesh container MeshSave in BayatGames.SaveGameFree.Types.
 - Stores mesh data: vertices, triangles, uv, normals, colors, colors32 (via serializable/vector save types).
@@ -77,3 +76,4 @@ Mesh restored = saved;
 - Details of Vector3Save and Vector2Save types and their conversion rules.
 - How saving framework serializes these fields at runtime.
 - Whether additional mesh attributes (tangents, boneWeights, etc.) are supported elsewhere.
+

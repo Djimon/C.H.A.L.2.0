@@ -78,16 +78,3 @@ Unknowns
 - Performance characteristics (vertex count, redraw frequency) are not documented beyond implementation.
 - External behavior if start/end are animated or changed frequently is not specified.
 
-Code references (from this file)
-- Public surface:
-  - Start/end/thickness/cornerRadius/useCompletedColor/completedColor
-- Methods:
-  - Awake()
-  - OnPopulateMesh(VertexHelper vh)
-- Helpers:
-  - AddQuad(VertexHelper vh, Vector2 a, Vector2 b, float thick, Color c)
-  - AddCorner(VertexHelper vh, Vector2 from, Vector2 to, float thick, Color c)
-
-```csharp
-// Example: only if you want to illustrate a self-contained usage snippet
-```

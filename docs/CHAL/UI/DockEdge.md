@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/UI/misc/UIEnums.cs`._
 
-```text
 1) Purpose
 - Defines public enums for UI layout in CHAL.UI.
 - DockEdge: Left, Right, Top, Bottom.
@@ -34,4 +33,4 @@ _Automatically generated/updated from `Assets/src/UI/misc/UIEnums.cs`._
 - Usage context within the UI system is not defined here.
 - Serialization or Unity-specific behavior for these enums is not specified.
 - Potential future extensions or additional values are not indicated.
-```
+

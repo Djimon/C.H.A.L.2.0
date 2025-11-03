@@ -76,3 +76,4 @@ Unknowns
 - How this struct is used by the broader SaveGameFree framework (serialization/deserialization flow) is not defined in this file.
 - Performance characteristics and memory implications beyond the 4 floats are not specified.
 - Behavior with non-normalized quaternions or NaN/Inf values is not described here.
+```

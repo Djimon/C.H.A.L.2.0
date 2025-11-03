@@ -6,6 +6,7 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingServi
 - Central crafting service for previewing and committing CraftingRecipe operations against inventory and wallet.
 - Exposes lightweight UI-friendly preview data (RecipePreview, with per-field flags) and public craft-check API.
 - Implements atomic commit of materials, currency, and output with rollback on failure; includes internal helpers for material/currency handling.
+- Adds detailed logging for output rejection in preview flow.
 
 2) Public API
 - Namespace: CHAL.Systems.Crafting
@@ -91,3 +92,4 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingServi
 - Exact definitions and members of RecipeDef, InventoryDomain, IWallet, ItemStack, and related inventory operations are not defined in this file
 - Behavior of DebugManager.Log and DebugOutputReject beyond what’s shown here
 - Any additional currency types beyond "gold" are not used in preview; their handling is not defined in this file
+

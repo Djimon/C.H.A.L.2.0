@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Enums/ItemType.cs`._
 
-```text
 1) Purpose
 - Defines a public serializable enum ItemType in the CHAL.Data namespace.
 - Enumerates item categories: Unknown, Remains, Part, Module, Gear, Rune.
@@ -14,9 +13,9 @@ _Automatically generated/updated from `Assets/src/Data/Enums/ItemType.cs`._
 - Types
   - public enum ItemType
     - Unknown = 0
-    - Remains
-    - Part
-    - Module
+    - Remains // Resources
+    - Part // Materials
+    - Module // Skill
     - Gear
     - Rune
 
@@ -45,4 +44,4 @@ class Example {
 - Semantic meaning of each value beyond its name (e.g., exact use of Remains, Part, Module, etc.) is not defined here.
 - Any Unity inspector/display specifics beyond [Serializable] are not specified.
 - How this enum interacts with persistence/serialization across versions is not defined in this file.
-```
+

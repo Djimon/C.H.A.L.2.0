@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Enums/SkillEnums.cs`._
 
-```text
 1) Purpose
 - Define game-related enums under CHAL.Data for skills, ranges, tags, and modifiers.
 - Provide public surface: SkillType, SkillRange, SkillTag, ModifierTarget, ModifierOperation, ModifierHook.
@@ -110,3 +109,4 @@ public class ExampleUsage
 - No serialization attributes or mappings specified.
 - How these enums map to runtime data (skills) or UI is not defined here.
 - No default instances or helper methods provided.
+

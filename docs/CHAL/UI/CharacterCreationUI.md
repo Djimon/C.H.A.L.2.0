@@ -11,7 +11,8 @@ Public API
 - Namespace/module: CHAL.UI
 - Types
   - public class CharacterCreationUI : MonoBehaviour
-    - Public fields/properties: none
+    - Public fields/properties: 
+      - _startSceneName: serialized string for the starting scene name (unused).
     - Public methods: none
 
 Key Behavior & Side Effects
@@ -44,3 +45,4 @@ Unknowns
 Unity lifecycle (summary)
 - Awake: initialize root VisualElement and color data.
 - OnEnable: bind UI elements and event handlers.
+

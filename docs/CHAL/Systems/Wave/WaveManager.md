@@ -3,9 +3,6 @@
 _Automatically generated/updated from `Assets/src/Systems/Waves/WaveManager.cs`._
 
 ```csharp
-// (documentation block in plain text below) 
-``` 
-
 1) Purpose
 - Defines WaveManager, a Unity MonoBehaviour that orchestrates waves and subwaves, spawning enemies and handling wave end/loot flows.
 - Keeps per-wave state (spawn plan, alive enemies, rewards) and integrates loot/reward paths with the player profile.
@@ -178,5 +175,4 @@ wm.StartWave(mapDef, 1, mapManager);
 - Details of WaveLootContext, and how the loot context interacts with LootCube/Inventory beyond what is shown
 - The contents and format of WaveDef.backload and how backloading alpha is configured
 - Any side effects of GameManager.TryResolveByItemId beyond what’s visible here
-
 ```

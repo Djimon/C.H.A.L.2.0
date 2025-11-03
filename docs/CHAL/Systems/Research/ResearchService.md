@@ -78,7 +78,7 @@ _Automatically generated/updated from `Assets/src/Systems/Research/ResearchServi
 - IsNodeAvailable relies on _compiledParents; if InitFromTree wasn’t called, availability may degrade to “not available” unless other state dictates it.
 - Threading: no explicit synchronization; single-threaded usage assumed.
 - Logging side effects occur via DebugManager/Unity logs during state changes.
-- Unknown external types (ResearchTreeDef, ResearchState, NodeProgress, ResearchNodeDef, ResearchUnlock, MapDifficulty, EnemyRank, ResearchUnlock) are assumed to be defined elsewhere; their exact structures are not shown here.
+- Unknown external types (ResearchTreeDef, ResearchState, NodeProgress, ResearchNodeDef, ResearchUnlock, MapDifficulty, EnemyRank) are assumed to be defined elsewhere; their exact structures are not shown here.
 
 5) Example
 ```csharp
@@ -107,3 +107,4 @@ service.ApplyWaveCompleted();
 - Semantics of AlwaysUnlocked IDs in treeDef (beyond their derived list and event).
 - Any multithreading implications or Unity-specific lifecycle coupling beyond the provided code.
 - How NodeProgress is serialized/deserialized and how it interacts with persistence beyond this file.
+```

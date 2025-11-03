@@ -5,7 +5,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
 1) Purpose
 - Defines a Unity ScriptableObject (GameBalanceConfig) in the CHAL.Data namespace for configuring game balance.
 - Provides a set of serializable configuration structs for Loot, Waves, Enemies, Skills, and Economy.
-- Offers helper methods to derive values from config (GetMultiplier on LootRankMultipliers; GetRangeValue on GameBalanceConfig).
+- Offers helper methods to derive values from config (GetMultiplier on LootRankMultipliers; GetScaling on EnemyRankSettings; GetRangeValue on GameBalanceConfig).
 
 2) Public API
 - Namespace/module
@@ -21,7 +21,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
       - public EconomySettings economy
     - Public methods
       - public float GetRangeValue(SkillRange range)
-
+  
   - public struct LootBudgetSettings
     - public float levelFactor
     - public float budgetVariance

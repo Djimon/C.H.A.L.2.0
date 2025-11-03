@@ -2,14 +2,13 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Unit/AiTargetSelector.cs`._
 
-```text
 1) Purpose
 - Defines AITargetSelector class and AITargetPrio enum within the CHAL.AI namespace.
 - Exposes public fields:
   - EffectReceiver currentTarget
   - AITargetPrio prioMode
   - float sightRange
-- Declares two lifecycle-like methods with placeholder behavior:
+- Declares two methods for target management:
   - void EnsureTarget()
   - void InvalidateTarget()
 
@@ -61,4 +60,4 @@ _Automatically generated/updated from `Assets/src/Systems/Unit/AiTargetSelector.
 - How prioMode and sightRange influence target selection decisions.
 - Any Unity-specific lifecycle or update integration (not present in this file).
 - Any threading/async behavior related to target selection.
-```
+

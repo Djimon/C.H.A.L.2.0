@@ -2,14 +2,11 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 1) Purpose
 - Defines CHAL.Data.GameBalanceConfig as a Unity ScriptableObject asset for game balance configuration.
 - Groups configuration for Loot, Waves/Enemies, Skills, and Economy into serializable structs.
 - Exposes public fields for inspector-based tuning and runtime retrieval helpers (GetRangeValue, multipliers, scalings).
-```
 
-```text
 2) Public API
 - Namespace/module
   - CHAL.Data
@@ -105,9 +102,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
   - public struct EconomySettings
     - public CurrencySettings currencies
     - public XpSettings xp
-```
 
-```text
 3) Key Behavior & Side Effects
 - GetRangeValue(SkillRange range)
   - Returns the corresponding value from skillRanges based on the provided range:
@@ -127,9 +122,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
     - Unknown ranks fallback to normal scaling
 - Asset creation
   - This class is a ScriptableObject with CreateAssetMenu, enabling creation of a GameBalanceConfig asset via Unity UI.
-```
 
-```text
 4) Constraints & Failure Modes
 - Inspector constraints
   - LootFloorSettings.rare/epic/legendary/specials and LootTrimSettings fields are annotated with [Range(0,1)].
@@ -139,9 +132,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
 - External dependencies
   - EnemyRank, SkillRange enums are referenced but definitions are not present in this file.
   - The exact usage semantics of these values depend on other parts of the project.
-```
 
-```text
 5) Example
 - Minimal usage example (C#)
 ```csharp
@@ -160,11 +151,9 @@ public class ExampleUsage : MonoBehaviour
     }
 }
 ```
-```
 
-```text
 6) Unknowns
 - Definitions and members of EnemyRank, SkillRange, and EnemyRank/SkillRange enums are not included in this file.
 - How values in this config are consumed at runtime (specific gameplay logic) is not defined here.
 - Any additional behavior or validation performed outside Unity’s inspector is not present in this file.
-```
+

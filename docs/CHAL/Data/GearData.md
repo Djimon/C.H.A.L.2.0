@@ -56,9 +56,9 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 3) Key Behavior & Side Effects
 - OnValidate (Unity editor hook):
   - itemType = ItemTypeUtils.FromId(itemId)
-  - If ItemKey.TryParse(itemId, out _) fails, logs warning about invalid itemId with expected format "category:item"
-  - lootValue clamped to >= 0
-  - ClearTypeBlocksExcept(itemType) invoked to enforce type-safety
+  - If ItemKey.TryParse(itemId, out _) fails, logs warning about invalid itemId with expected format "category:item".
+  - lootValue clamped to >= 0.
+  - ClearTypeBlocksExcept(itemType) invoked to enforce type-safety.
 - ClearTypeBlocksExcept(ItemType keep):
   - remainData = null if keep != ItemType.Remains
   - runeData = null if keep != ItemType.Rune

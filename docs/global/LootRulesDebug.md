@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/_test/dbg_LootRules.cs`._
 
-```text
 1) Purpose
 - Unity test/demo MonoBehaviour LootRulesDebug that exercises loot rule merging, secret drops, budget calculation, unlucky protection, and budget modulation, with runtime logs.
 - Exposes serialized test parameters for loot and budget scenarios:
@@ -81,4 +80,4 @@ _Automatically generated/updated from `Assets/src/Systems/_test/dbg_LootRules.cs
 - Semantics of GetSecretDrops and GetMergedForTags results
 - Any side effects of ItemRegistry.Reload(), or LoadAll() beyond what is observable via Debug.Log
 - Any behavior of the modifier calculation beyond the single usage shown
-```
+

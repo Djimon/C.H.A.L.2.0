@@ -2,17 +2,17 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Research/ResearchUnlockRegistry.cs`._
 
-Purpose
+# Purpose
 - Defines a registry that tracks unlocked research targets across categories (world tiers, crafting features, recipes, skill branches, heroes) and a master catalog of all target IDs with an unlocked flag.
 - Supports rebuilding state from a collection of research nodes and completed node IDs.
 - Provides query surface for other systems to check unlocked status and obtain lists/progress.
 
-Public API
+# Public API
 
-Namespace/Module
+## Namespace/Module
 - CHAL.Systems.Research
 
-Types
+## Types
 - public sealed class ResearchUnlockRegistry
   - Public methods
     - public void Clear()
@@ -56,7 +56,7 @@ Types
     - public IReadOnlyDictionary<string, bool> GetAllFlags()
       - Exposes the full catalog of targetId -> unlocked flag.
 
-Key Behavior & Side Effects
+# Key Behavior & Side Effects
 
 - Data structures
   - Internal per-category hash sets: _worldTiers, _craftingFeatures, _recipes, _skillBranches, _heroes
@@ -83,7 +83,7 @@ Key Behavior & Side Effects
 - AlwaysUnlocked behavior note
   - When using ApplyAlwaysUnlocked, target IDs are marked unlocked in catalog without populating per-type sets (as noted in code comments).
 
-Constraints & Failure Modes
+# Constraints & Failure Modes
 
 - Null/invalid inputs
   - RebuildFrom: logs a warning and returns if allNodes or completedNodeIds are null.
@@ -98,7 +98,7 @@ Constraints & Failure Modes
 - Side effects
   - DebugManager and UnityEngine.LogType are used for logs; side effects are IO/logging only.
 
-Example
+# Example
 
 ```csharp
 // Example usage (pseudo-usage - depends on surrounding data types)
@@ -112,12 +112,10 @@ bool worldUnlocked = registry.IsUnlockedWorldTier("tier_01");
 List<string> unlocked = registry.GetUnlockedIds();
 ```
 
-Unknowns
+# Unknowns
 
 - Definitions and structure of ResearchNodeDef, ResearchUnlock, ResearchUnlockTypes (external to this file).
 - Exact behavior of DebugManager, CHAL.Core.DebugManager, and UnityEngine logging side effects.
 - How this registry integrates with the broader game systems (e.g., when Unlocks are consumed by UI, save/load, or gameplay pacing).
 - Any additional invariants or lifecycle guarantees beyond those explicit in this file.
 
-Code example source (unchanged)
-- See provided ResearchUnlockRegistry.cs for exact implementation details.

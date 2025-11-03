@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 
-```text
 1) Purpose
 - Defines ItemDef as a Unity ScriptableObject that holds item metadata and per-type data blocks.
 - Provides serializable data containers: RemainData, RuneData, PartData, ModuleData, GearData.
@@ -49,7 +48,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
     - _ => Color.white
 
 - public class RuneData : [System.Serializable]
-  - public string effectType;
+  - public string effectType; // e.g. "Armor+", "Lifesteal"
   - public RuneColorType runeColortType;
   - public Color runecolor => RuneColors.Get(runeColortType);
 
@@ -92,4 +91,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 - Definitions/behavior of ItemType, ItemTypeUtils, ItemKey, RuneColorType, GearType, Rarity, and how ItemDef is consumed at runtime (outside OnValidate)
 - Exact usage and validation semantics of RemainData, RuneData, PartData, ModuleData, GearData beyond their field definitions
 - Any multithreading/async considerations related to ScriptableObject usage in this project
-```
+

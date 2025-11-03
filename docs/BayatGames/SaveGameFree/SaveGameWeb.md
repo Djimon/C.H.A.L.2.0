@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/SaveGameWeb.cs`._
 
-```text
 1) Purpose
 - Defines SaveGameWeb class to save/load data to/from a web URL using HTTP POST.
 - Provides configurable defaults (credentials, URL, encoding, serializer, encoder).
@@ -10,7 +9,7 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/S
 
 ```
 
-```csharp
+```text
 2) Public API
 - Namespace/module
   - BayatGames.SaveGameFree
@@ -122,7 +121,7 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/S
 
 ```
 
-```csharp
+```text
 3) Key Behavior & Side Effects
 - Default values are centralized in static fields; instance values can override per-call behavior.
 - Save<T> serializes an object to a memory stream using the configured Serializer and Encoding.
@@ -134,7 +133,7 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/S
 
 ```
 
-```csharp
+```text
 4) Constraints & Failure Modes
 - Unity version branches in Send:
   - UNITY_2019_1_OR_NEWER: uses m_Request.result
@@ -153,7 +152,7 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/S
 
 ```
 
-```csharp
+```text
 5) Example
 - Minimal usage in a Unity coroutine:
 
@@ -195,3 +194,4 @@ public class SaveExample : MonoBehaviour
 - Exact formats of serialized data (beyond using Serializer/Encoder) and how the server interprets fields are not defined in this file.
 - Threading guarantees beyond Unity coroutines are not specified.
 - Any side effects on external systems (e.g., authentication server) are not detailed.
+

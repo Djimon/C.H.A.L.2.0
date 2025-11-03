@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Enums/GearType.cs`._
 
-```text
 1) Purpose
 - Defines a public enum GearType in CHAL.Data.
 - Members correspond to equipment slot names: Head, Chest, Gloves, Legs, Boots, Amulet.
@@ -31,4 +30,4 @@ GearType slot = GearType.Head;
 - How GearType is used beyond this file (e.g., serialization, UI binding, or gameplay logic).
 - Any future additions or aliasing of members.
 - Underlying type and value assignments beyond default language behavior are not specified in this file.
-```
+

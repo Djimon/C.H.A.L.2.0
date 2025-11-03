@@ -7,9 +7,7 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/DragDro
   - Defines a DragDropService that tracks the source of a drag-and-drop operation within the inventory.
   - Uses IInventoryDomain to peek at source stacks and to perform moves (including split moves).
   - Emits events for drag start and end; controls internal state for source item and split flag.
-```
 
-```csharp
 - Public API
 - Namespace/module
   - CHAL.Systems.Inventory
@@ -52,9 +50,7 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/DragDro
       - constructs a MoveRequest with fromInventory, toInventory, moveMode (Split or Move), amount = null
       - calls _domain.TryMove(req, out res); on failure, logs error, Cancel()
       - on success, logs success and Cancel()
-```
 
-```csharp
 - Key Behavior & Side Effects
 - Drag start
   - BeginDrag updates internal state: _from = from, _hasFrom = true, _splitHalf = splitHalf
@@ -89,9 +85,7 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/DragDro
   - Logs indicate Begin, Move failure, and Move success
   - OnBeginDrag, OnEndDrag may be invoked depending on flow
   - Internal state (From, HasFrom, IsSplit) is updated accordingly
-```
 
-```csharp
 - Constraints & Failure Modes
 - State safety
   - TryDropOn returns early if there is no active source (HasFrom is false)
@@ -113,9 +107,7 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/DragDro
 
 - Null handling
   - From/stack values are assumed non-null when engaged; safety via HasFrom checks
-```
 
-```csharp
 - Example
 // Example usage (minimal)
 IInventoryDomain domain = /* obtain domain instance */;
@@ -131,9 +123,7 @@ dragService.TryDropOn(target);
 
 // On cancel (e.g., ESC)
 dragService.Cancel();
-```
 
-```text
 - Unknowns
 - Definitions not present in this file:
   - IInventoryDomain (Peek, TryMove)

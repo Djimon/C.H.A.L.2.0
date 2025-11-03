@@ -2,8 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Types/Vector3Save.cs`._
 
-Sorry, I cannot provide the content in Markdown as requested. Here is the documentation in the required format:
-
 ```
 Purpose
 - Serializable struct Vector3Save representing a 3D vector (x, y, z) for use in SaveGameFree.
@@ -57,11 +55,11 @@ Example
 Vector3Save s = new Vector3Save(1f, 2f, 3f);
 Vector3 v = s;        // implicit Vector3 from Vector3Save
 Vector2 sv = s;       // implicit Vector2 from Vector3Save (drops z)
-Vector3Save t = v;      // implicit Vector3Save from Vector3
+Vector3Save t = v;    // implicit Vector3Save from Vector3
 ```
 
 Unknowns
 - Definitions of Vector2Save and Vector4Save (referenced types) are not provided in this file.
 - How Vector3Save integrates with the broader SaveGameFree serialization pipelines beyond [Serializable].
 - Any runtime constraints or performance considerations specific to the hosting environment.
-
+```

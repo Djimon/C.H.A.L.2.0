@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/utils/DebugConfig.cs`._
 
-```text
 1) Purpose
 - Defines a ScriptableObject DebugConfig for configuring debug/logging behavior in Unity.
 - Exposes a serializable TagEntry list to describe tag metadata (name, color, active).
@@ -117,4 +116,4 @@ _Automatically generated/updated from `Assets/src/utils/DebugConfig.cs`._
 - Exact runtime behavior of autoAddUnknownTagsToAsset
 - Interaction with DebugManager.EDebugLevel beyond the field name
 - Any other serialization or migration considerations when upgrading Unity versions
-```
+

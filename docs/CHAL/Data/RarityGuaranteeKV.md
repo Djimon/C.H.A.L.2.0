@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/DTO/LootDTO.cs`._
 
-```text
 1) Purpose
 - Define serializable data transfer objects (DTOs) for loot configuration in the CHAL.Data namespace.
 - Provide public fields to configure loot drops, rules, and special handling for serialization (Unity-compatible).
@@ -68,3 +67,4 @@ var rule = new CHAL.Data.LootRuleDto
 - The definition and values of Rarity (enum/class) are not shown here.
 - How exactly chance and chances interact at runtime (resolution logic) is not defined in this file.
 - Any usage details (where these DTOs are loaded, validated, or applied) are outside this file.
+

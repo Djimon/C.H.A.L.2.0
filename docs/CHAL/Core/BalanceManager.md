@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Core/BalanceManager.cs`._
 
-```text
 1) Purpose
 - Defines BalanceManager as a central, singleton MonoBehaviour for game balancing data.
 - Exposes a Config accessor (GameBalanceConfig) with lazy loading from Resources if not assigned in the Inspector.
@@ -69,4 +68,4 @@ Notes:
 - Details of DebugManager.Log and Debug levels.
 - Existence and contents of the Resources asset at Config/GameBalanceConfig.
 - Any additional side effects from BalanceManager interactions not visible in this file.
-```
+

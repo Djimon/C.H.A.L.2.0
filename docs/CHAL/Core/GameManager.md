@@ -13,9 +13,9 @@ _Automatically generated/updated from `Assets/src/Core/GameManager.cs`._
 - Types
   - Public enum GameState
     - MainMenu
-    - MapPhase
-    - WaveReward
-    - MapReward
+    - MapPhase     // Spieler kämpft auf einer Map
+    - WaveReward   // kleiner Reward-Screen
+    - MapReward    // großer Reward-Screen
     - Hideout
 
   - Public class GameManager : MonoBehaviour
@@ -132,5 +132,6 @@ _Automatically generated/updated from `Assets/src/Core/GameManager.cs`._
 - Any concurrency considerations or threading model for save/load operations.
 
 Notes
-- Public surface surface area focuses on types and public members; internal/private details are described only where they impact public behavior or flows.
+- Public surface area focuses on types and public members; internal/private details are described only where they impact public behavior or flows.
 - Unity lifecycle: Awake handles singleton pattern and core initialization; Start preloads registries.
+

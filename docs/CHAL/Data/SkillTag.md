@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Enums/SkillEnums.cs`._
 
-```text
 Purpose
 - Defines data enums used for skills and modifiers in the CHAL.Data namespace.
 - Groups related concepts: SkillType, SkillRange, SkillTag, ModifierTarget, ModifierOperation, ModifierHook.
@@ -66,9 +65,9 @@ Public API
     - LeechFactor
     - //  beliebig erweiterbar
   - public enum ModifierOperation
-    - Add
-    - Mult
-    - Replace
+    - Add        // +10
+    - Mult       // 1.2
+    - Replace    // fester Wert
   - public enum ModifierHook
     - None
     - OnCast
@@ -89,4 +88,4 @@ Unknowns
 - Semantics and usage of these enums within the broader codebase are not defined here.
 - Any serialization, persistence, or Unity integration details are not specified.
 - Exact numeric semantics beyond Self = 0 for SkillRange are not further constrained in this file.
-```
+

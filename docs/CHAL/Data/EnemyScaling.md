@@ -21,6 +21,9 @@ Public API
           - Returns the configured range value from skillRanges based on the provided SkillRange
     - Notes
       - Uses [Header("Loot Settings")] to group loot config in inspector
+      - Uses [Header("Enemy Settings")] to group enemy config in inspector
+      - Uses [Header("Skill Settings")] to group skill config in inspector
+      - Uses [Header("Economy Settings")] to group economy config in inspector
 
   - LootBudgetSettings
     - public float levelFactor
@@ -147,3 +150,4 @@ Unknowns
 - Exact definitions and values of EnemyRank and SkillRange enums beyond their usage here.
 - How these settings are consumed by gameplay systems (balance interpretation, asset references).
 - Any runtime validation beyond what Unity serialization provides.
+

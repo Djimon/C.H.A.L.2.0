@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Structs/ItemStruct.cs`._
 
-```text
 1) Purpose
 - Defines public readonly struct ItemKey in namespace CHAL.Data.
 - Represents a key composed of Category and Id parts.
@@ -53,4 +52,4 @@ if (CHAL.Data.ItemKey.TryParse("tools:hammer", out var key)) {
 - No additional constructors, operators, or methods are defined in this file.
 - Interaction with other code (serialization, equality, hashing) is not specified here.
 - Behavior when Category or Id contain ':' or whitespace beyond what TryParse allows is not further constrained.
-```
+

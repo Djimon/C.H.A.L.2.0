@@ -2,14 +2,11 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Inventory/core/IInventoryDomain.cs`._
 
-```text
 1) Purpose
 - Defines the IInventoryDomain interface for inventory domain operations.
 - Declares methods for validating, mutating, and querying inventory state.
 - Declares an event to notify slot changes within an inventory instance.
-```
 
-```text
 2) Public API
 - Namespace/module
   - CHAL.Systems.Inventory
@@ -30,9 +27,7 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/IInvent
       - Return the stack currently in the specified slot, or null if none.
     - int SlotCount(string instanceId)
       - Return the number of slots available for the given instance.
-```
 
-```text
 3) Key Behavior & Side Effects
 - CanAccept: reads validation for accepting an ItemStack into a per-instance inventory.
 - TryAdd: mutates inventory state if successful; outputs detailed TransactionResult.
@@ -41,19 +36,15 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/IInvent
 - OnSlotChanged: fires when a slot's contents changes; arguments are (instanceId, slot, newStack).
 - Peek: reads and returns the current stack in a slot without mutation.
 - SlotCount: reads the number of slots for the given instanceId without mutation.
-```
 
-```text
 4) Constraints & Failure Modes
 - Try* methods return true on success; false on failure and supply a TransactionResult detailing the outcome.
 - Peek returns ItemStack?; may be null if the slot is empty or invalid.
 - SlotCount returns an int; behavior on invalid instanceId is not defined here.
 - in ItemStack stack parameters are passed by readonly reference (in); MoveRequest is also passed by readonly reference (in).
 - No concurrency/threading guarantees specified in this file.
-```
 
-```csharp
-// Example
+5) Example
 // Subscribe to slot change notifications and react to updates
 // (Assumes an instance of IInventoryDomain named inventory)
 inventory.OnSlotChanged += (instanceId, slotIndex, newStack) =>
@@ -61,12 +52,10 @@ inventory.OnSlotChanged += (instanceId, slotIndex, newStack) =>
     // Handle slot update for instanceId and slotIndex
     // newStack can be null if the slot was cleared
 };
-```
 
-```text
-5) Unknowns
+6) Unknowns
 - Implementations of ItemStack, MoveRequest, TransactionResult types.
 - How instanceId maps to inventories, and thread-safety guarantees.
 - Exact error semantics beyond the boolean return value and TransactionResult content.
 - Whether OnSlotChanged is raised synchronously or asynchronously.
-```
+

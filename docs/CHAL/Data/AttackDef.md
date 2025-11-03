@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/AttackDef.cs`._
 
-```text
 1) Purpose
 - Data container for attack definitions (AttackDef) as a ScriptableObject in CHAL.Data.
 - Defines a single damage entry structure (DamageEntry) used within AttackDef.
@@ -49,4 +48,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/AttackDef.cs`._
 - Definition and range of DamageType (defined elsewhere).
 - How AttackDef assets are created, loaded, or consumed at runtime.
 - Any runtime validation or behavior beyond data storage.
-```
+

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Serializers/SaveGameXmlSerializer.cs`._
 
-```text
 1) Purpose
 - Defines SaveGameXmlSerializer class implementing ISaveGameSerializer.
 - Provides XML-based serialization/deserialization to/from a Stream using XmlSerializer.
@@ -79,4 +78,4 @@ public class Example
 - Expected handling for non-seekable streams or mixed-content streams.
 - Whether XmlSerializer requires additional attributes for certain types (beyond this file).
 - Any integration behavior beyond this file (e.g., lifecycle or DI considerations).
-```
+

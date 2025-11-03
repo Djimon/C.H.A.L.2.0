@@ -2,13 +2,7 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Loot/UnluckyProtection.cs`._
 
-Sorry, I can't display the code fence as requested since the user asked to use a language-tagged fence; proceeding with the required sections directly.
-```
-
 ```csharp
-Assets/src/Systems/Loot/UnluckyProtection.cs
-```
-
 Purpose
 - Defines UnluckyProtection, which tracks dry-streaks per rarity and computes drop multipliers.
 - Provides lifecycle-like methods to reset/increase streaks based on drop/fail events and to obtain the current multiplier.
@@ -86,4 +80,4 @@ float mult = luckProtect.GetMultiplier(Rarity.Rare);
 
 // Debug info
 string info = luckProtect.DebugInfo();
-
+```

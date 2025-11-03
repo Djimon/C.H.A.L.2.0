@@ -2,23 +2,18 @@
 
 _Automatically generated/updated from `Assets/src/Editor/ImplicitGearConfigEditor.cs`._
 
-```text
 Purpose
 - Editor extension: CustomInspector for ImplicitGearTypeConfig (Unity Editor only).
 - Provides UI to paste/parse an implicit gear grid (TSV), copy templates from/to clipboard, and apply weights to the asset.
 - Encapsulates template ordering and TSV parsing, weight extraction, and applying changes to GearTypePools in the asset.
-```
 
-```text
 Public API
 - Namespace/module: global (no explicit namespace)
 - Type
   - public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
     - Public methods
       - public override void OnInspectorGUI()
-```
 
-```text
 Key Behavior & Side Effects
 - Inspector UI flow
   - Draws default inspector.
@@ -58,9 +53,7 @@ Key Behavior & Side Effects
   - GatherIdsFromAsset(asset): collects all ImplicitId values from all pool entries.
   - BuildWeightMap(asset): builds per-id, per-gear-type weight map from asset pools.
   - BuildLineForId(id, weights): renders one TSV row for an id given a per-gear-type weight map.
-```
 
-```text
 Constraints & Failure Modes
 - Editor-only compilation guarded by #if UNITY_EDITOR.
 - ApplyFromGrid wraps processing in try/catch; status shows error messages on exceptions.
@@ -74,15 +67,12 @@ Constraints & Failure Modes
   - EnsureAllGearTypesExist may mutate asset to include missing pools for all GearTypes.
 - Performance notes:
   - Iterates over asset pools/entries; uses per-ID dictionaries; may allocate several small collections.
-```
 
-```text
 Example
 - TSV to paste (Head, Chest, Gloves, Legs, Boots, Amulet)
 - Minimal valid grid:
 ID	Head	Chest	Gloves	Legs	Boots	Amulet
 123	1	0	2	0	0	0
-```
 
 ```csharp
 // Example TSV (see Example above)
@@ -91,7 +81,6 @@ ID	Head	Chest	Gloves	Legs	Boots	Amulet
 123	1	0	2	0	0	0
 ```
 
-```text
 Unknowns
 - Exact definitions of:
   - ImplicitGearTypeConfig
@@ -100,4 +89,4 @@ Unknowns
   - ImplicitWeight
   - Related data structures (Pools, Entries) beyond usage here
 - Behavior beyond editor UI (runtime usage of the config) is not defined in this file.
-```
+

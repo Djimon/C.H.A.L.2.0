@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 1) Purpose
 - Defines a Unity ScriptableObject asset (GameBalanceConfig) containing game balance configuration.
 - Organizes configuration into sections: Loot, Waves, Enemies, Skills, Economy.
@@ -149,3 +148,4 @@ float selfRange = config.GetRangeValue(SkillRange.Self);
 - Exact runtime loading/usage patterns (e.g., Resources.Load vs. addressable) are not specified here.
 - Semantics of the numeric fields (e.g., how levelFactor or beta are applied) are not defined in this file.
 - Any validation or dependencies between fields are not enforced within this file.
+

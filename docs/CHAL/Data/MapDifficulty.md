@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Enums/MapDifficulty.cs`._
 
-```text
 Purpose
 - Defines a serializable public enum MapDifficulty in CHAL.Data.
 - Declares four difficulty levels: Stable, Strained, Volatile, Chaos.
@@ -38,4 +37,4 @@ Unknowns
 - Numeric underlying values for members are not explicit (default C# behavior not stated here).
 - Intent for commented-out values Reactive and Oblivion is not determined from this file.
 - Any project-specific serialization behavior beyond [Serializable] is not specified.
-```
+

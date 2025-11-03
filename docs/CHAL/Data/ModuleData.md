@@ -97,7 +97,4 @@ Notes:
   - GearType
 - How these data structures are consumed at runtime beyond what OnValidate enforces.
 - Any runtime validation beyond editor-time OnValidate.
-
-```csharp
-// End of documentation
 ```

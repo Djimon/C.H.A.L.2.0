@@ -3,9 +3,6 @@
 _Automatically generated/updated from `Assets/src/Data/DTO/ResearchSnapShot.cs`._
 
 ```csharp
-// (This section is documentation, not code)
-```
-
 1) Purpose
 - Serializable data containers for research snapshot data.
 - NodeProgressSave: stores per-node progress metrics (waves, maps by difficulty, kills, and counts).
@@ -32,7 +29,7 @@ _Automatically generated/updated from `Assets/src/Data/DTO/ResearchSnapShot.cs`.
     - public List<string> completedNodeIds = new List<string>()
     - public List<NodeProgressEntry> perNodeProgress = new List<NodeProgressEntry>(); // key-value als Liste (JSON-freundlich)
 
-  - public struct NodeProgressEntry (ResearchSnapshot.NodeProgressEntry)
+  - public struct NodeProgressEntry
     - Public fields
       - public string nodeId
       - public NodeProgressSave progress
@@ -72,3 +69,4 @@ var snapshot = new CHAL.Systems.Research.ResearchSnapshot
 - Definitions of MapRequirement and KillTagCount (types used but not defined in this file).
 - Any additional serialization semantics beyond Unity’s default for these types.
 - Relationships or invariants between completedNodeIds and perNodeProgress entries are not specified here.
+```

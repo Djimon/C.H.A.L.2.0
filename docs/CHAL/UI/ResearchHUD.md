@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/UI/ResearchHUD.cs`._
 
-```text
 1) Purpose
 - Unity UI HUD component for research: binds to UI elements, shows active research and a detail panel.
 - Public API for initialization and UI updates: Init(service, theme), RefreshActive(), ShowDetails(nodeId), HideDetails(), IsPointerOverUI(screenPos).
@@ -117,4 +116,3 @@ _Automatically generated/updated from `Assets/src/UI/ResearchHUD.cs`._
 - Details of DebugManager.Log, and how the theme texture is provided, are not specified beyond usage.
 - Any broader game flow interactions (e.g., persisting active node across scenes) are not present in this file.
 
-```

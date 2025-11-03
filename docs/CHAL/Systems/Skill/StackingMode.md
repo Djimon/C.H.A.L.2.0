@@ -20,7 +20,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ActiveStatusEff
       - float RemainingTime — remaining time of the effect
       - ModifierData Modifier — modifier data applied by this effect
   - public enum StackingMode
-    - RefreshDuration — Dauer erneuern, keine Stacks erhheben
+    - RefreshDuration — Dauer erneuern, keine Stacks erhhen
     - AddStacks — Stack++ bis MaxStacks, Dauer erneuern
     - IgnoreIfActive — wenn vorhanden -> ignorieren
     - Replace — vorhandenen Effekt ersetzen
@@ -58,3 +58,4 @@ var effect = new CHAL.Systems.Skill.ActiveStatusEffect
 - What ModifierData contains or how it applies (definitions located elsewhere).
 - How ActiveStatusEffect is consumed by systems (flows, updates, or persistence) beyond this file.
 - Any runtime validation or lifecycle management (constructors, methods) not present in this file.
+

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/UI/InventoryView.cs`._
 
-```text
 1) Purpose
 - UI view for displaying and interacting with an inventory grid in CHAL.UI.
 - Binds to an inventory domain, builds a slot grid, and renders slot contents.
@@ -18,6 +17,7 @@ _Automatically generated/updated from `Assets/src/UI/InventoryView.cs`._
       - public InventoryDef _inventoryDef; // Template/definition for the inventory to render
       - public string inventoryID; // Optional instance identifier; used by template binding when empty
       - public InvDnDProvider _invDnDProvider; // DnD provider (serialized)
+      - public Sprite myInventoryBG; // Optional background sprite for the inventory grid
     - Public properties
       - public string InstanceId => _instanceID // runtime instance identifier
       - public bool IsVisible => _outer != null && _outer.resolvedStyle.visibility == Visibility.Visible
@@ -44,6 +44,10 @@ _Automatically generated/updated from `Assets/src/UI/InventoryView.cs`._
   - StartCoroutine(BindFromTemplate())
 - Awake
   - If _doc is null, set to GetComponent<UIDocument>()
+- OnDisable
+  - Unregisters from UIDockingManager
+- OnDestroy
+  - Unregisters from domain events if present
 - Bind(domain, instanceID, cols, rows)
   - Stores domain and instanceID; clamps cols/rows to >= 1
   - Validates _doc; logs error and returns if missing
@@ -55,12 +59,6 @@ _Automatically generated/updated from `Assets/src/UI/InventoryView.cs`._
   - Resolves or creates a Drag-and-Drop service (_dnd) using _invDnDProvider or new DragDropService(_domain)
   - Builds grid (slots)
   - Subscribes to _domain.OnSlotChanged; renders initial state via RenderAllNow
-- BindFromTemplate
-  - Waits for GameManager.Instance and GameManager.Inventory to be non-null
-  - Uses _inventoryDef; derives inventoryID if empty (player_<type> lowercase)
-  - Gets domain from GameManager.Inventory; tries to fetch a named instance; if not present, yields (tries again later)
-  - Reads cols/rows from inst.InvDef or from _inventoryDef
-  - Calls Bind(domain, inst.instanceID, cols, rows)
 - WireSlotInteractions
   - If ReadOnly, no interactions
   - Left-click: handles QuickMove when Shift held and a valid target inventory exists; otherwise initiates or completes drag/drop with DnD service
@@ -84,8 +82,6 @@ _Automatically generated/updated from `Assets/src/UI/InventoryView.cs`._
 - ApplyContainerSizing
   - Sets container width as percent; enforces min/max width in px
   - Resets margins to zero (dock layout)
-- OnDestroy
-  - Unregisters from domain events if present
 - Update
   - Currently no implementation
 - Additionally, the view relies on:
@@ -124,4 +120,4 @@ _Automatically generated/updated from `Assets/src/UI/InventoryView.cs`._
   - DebugManager, its log levels, and how errors are surfaced
 - Specific runtime behavior of the docking/layout system in edge cases (e.g., dynamic template changes, multiple inventories)
 - Any side effects of dynamically changing _inventoryDef or inventoryID at runtime
-```
+

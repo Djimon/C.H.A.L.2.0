@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Enums/DamageType.cs`._
 
-```text
 1) Purpose
 - Defines the DamageType enum under CHAL.Data.
 - Enumerates damage categories: Physical, Fire, Cold, Poison, Arcane, Void, Holy.
@@ -36,4 +35,4 @@ CHAL.Data.DamageType damage = CHAL.Data.DamageType.Fire;
 - How this enum is serialized or mapped in broader systems.
 - Any future additions beyond the current seven values.
 - Any Unity-specific usage or attributes (not present in this file).
-```
+

@@ -90,3 +90,4 @@ SaveGame.Clear();
 - Whether SaveGame.Save accepts null payloads for generic types.
 - Thread-safety and potential race conditions.
 - Any Unity-specific editor/runtime nuances not evident from this test file.
+```

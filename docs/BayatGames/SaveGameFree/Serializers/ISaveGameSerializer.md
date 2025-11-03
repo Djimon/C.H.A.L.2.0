@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Serializers/ISaveGameSerializer.cs`._
 
-```text
 1) Purpose
 - Defines a contract for Save Game serializers.
 - Declares generic Serialize and Deserialize methods using Stream and Encoding.
@@ -32,4 +31,4 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/S
 6) Unknowns
 - Serialization format (binary, JSON, XML, etc.) is unspecified.
 - Null inputs, exceptions, threading behavior, and performance characteristics are unspecified.
-```
+

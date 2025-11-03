@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Editor/SkillDataEditor.cs`._
 
-```text
 1) Purpose
 - Defines a Unity Editor custom inspector for SkillData.
 - Renders and edits SkillData fields across sections: Identity, Core, Classification, Additional Flags, Composition, Hooks/Impacts, Presentation.
@@ -20,6 +19,8 @@ Note: No public fields/properties are exposed by this class.
   - OnInspectorGUI starts with serializedObject.Update() and cast target to SkillData.
   - Identity section edits: SkillId (TextField) and DisplayName (TextField) directly on data.
   - Core section edits: DamageTypes (serialized property field, recursive), BaseDamage (float), Cooldown (float), CastTime (float).
+  - Classification section edits: SkillType (EnumPopup) and Range (EnumPopup) directly on data.
+  - Additional Flags section edits: isProjectile (Toggle), isAoE (Toggle), hasDuration (Toggle) directly on data.
   - Composition gating (fields depend on SkillType and flags):
     - Wants flags
       - wantsProjectile = (SkillType == Projectile) OR isProjectile
@@ -56,7 +57,7 @@ Note: No public fields/properties are exposed by this class.
   - Uses serializedObject.Update/ApplyModifiedProperties to synchronize serialized fields.
   - GUI.changed triggers EditorUtility.SetDirty on SkillData (explicit persistence hint for the editor).
 - Runtime types assumed
-  - SkillData, SkillType, AnimationType, Range, DamageTypes, OnCastImpactEffects, OnHitImpactEffects, etc. are defined elsewhere; this file relies on their existence and names.
+  - SkillData, SkillType, AnimationType, SkillRange, DamageTypes, OnCastImpactEffects, OnHitImpactEffects, etc. are defined elsewhere; this file relies on their existence and names.
 - Editor-only behavior
   - This is an editor script bound to SkillData via CustomEditor; runs only in Unity Editor.
 
@@ -66,6 +67,6 @@ Note: No public fields/properties are exposed by this class.
 6) Unknowns
 - Exact definitions and values of:
   - SkillData fields: SkillId, DisplayName, BaseDamage, Cooldown, CastTime, SkillType, Range, isProjectile, isAoE, hasDuration, ProjectileSpeed, ProjectileCount, AoERadius, Duration, animationType, vfxPrefab, DamageTypes, OnCastImpactEffects, OnHitImpactEffects.
-  - Enumerations: SkillType, AnimationType, and possible Range values.
+  - Enumerations: SkillType, AnimationType, and possible SkillRange values.
   - Behavior/effects of editing these fields at runtime beyond editor UI.
-```
+

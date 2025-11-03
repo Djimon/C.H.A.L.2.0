@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/Systems/Items/ItemRegistry.cs`
 
 ```csharp
 // Documentation for: Assets/src/Systems/Items/ItemRegistry.cs
-```
 
 1) Purpose
 - Defines a singleton ScriptableObject-based registry for items (ItemDef) loaded from Unity Resources.
@@ -112,3 +111,4 @@ if (registry.TryGet("gear:sword_iron", out var def))
 - Details of DebugManager, ItemKey.TryParse, Rarity, ItemType, and ItemTypeUtils
 - Whether there are additional side effects at runtime beyond editor tooling behavior
 - Any runtime-specific initialization order beyond the lazy Instance construction and Reload call
+```

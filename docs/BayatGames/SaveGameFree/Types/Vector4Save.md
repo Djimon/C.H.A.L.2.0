@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Types/Vector4Save.cs`._
 
-```text
 1) Purpose
 - Serializable struct representing a four-dimensional vector with fields x, y, z, w.
 - Provides multiple constructors to initialize from scalar values or from Vector2/Vector3/Vector4 and their Save counterparts.
@@ -90,3 +89,4 @@ public class Example
 6) Unknowns
 - Definitions of Vector2Save, Vector3Save, and Vector2/Vector3/Vector4 are not shown in this file.
 - No other methods or behavior beyond constructors and implicit conversions are defined here.
+

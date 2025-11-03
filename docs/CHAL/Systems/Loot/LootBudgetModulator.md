@@ -7,9 +7,7 @@ Purpose
 - Defines a helper to modulate loot drop budget outcomes based on budget overflow.
 - Reads configuration from BalanceManager.Instance.Config.loot to compute the modifier.
 - Returns a multiplier used to influence drop chances; 1f when within budget, or a floor/exp-based value when overflow occurs.
-```
 
-```csharp
 Public API
 - Namespace/module
   - CHAL.Systems.Loot
@@ -28,9 +26,7 @@ Public API
         - Side effects
           - Reads BalanceManager.Instance.Config.loot.budget (beta) and BalanceManager.Instance.Config.loot.floors (per-rarity floors)
           - Performs a floating-point calculation with Mathf.Exp
-```
 
-```txt
 Key Behavior & Side Effects
 - If within budget:
   - U + v_i <= B -> returns 1f (no change to drop chance)
@@ -43,9 +39,7 @@ Key Behavior & Side Effects
     - floors.legendary if rarity == Legendary
     - 0.0f otherwise (Common has no floor)
   - Returns max(floor, expVal)
-```
 
-```txt
 Constraints & Failure Modes
 - Dependencies
   - Requires BalanceManager.Instance and its non-null Config; no null checks are present.
@@ -55,9 +49,7 @@ Constraints & Failure Modes
   - Only Rare/Epic/Legendary map to a floor; any other rarity yields 0.0f floor.
 - Performance
   - Uses Mathf.Exp; inexpensive per call but may be invoked frequently in tight loot loops.
-```
 
-```txt
 Example
 ```csharp
 // Usage example (assuming proper BalanceManager setup in the project)
@@ -68,9 +60,7 @@ float modifier = CHAL.Systems.Loot.LootBudgetModulator.GetModifier(
     rarity: Rarity.Rare
 );
 ```
-```
 
-```txt
 Unknowns
 - Exact definitions and structure of:
   - BalanceManager, BalanceManager.Config, and the nested loot budget/floors objects.

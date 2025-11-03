@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/SkillModifierStack.cs`._
 
-```text
 1) Purpose
 - Defines a ModifierStack that stores ModifierData entries and can apply them to a base value for a specific ModifierTarget.
 - Supports additive, multiplicative, and replacement modifier operations.
@@ -64,4 +63,4 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/SkillModifierSt
 - Definitions and members of ModifierData, ModifierTarget, ModifierOperation, and SkillTag (from CHAL.Data) are not provided here.
 - Exact behavior when AppliesTo is null vs. empty (inferred from code: null/empty bypasses the AppliesTo filter).
 - Any additional overloads or extensions related to ModifierStack are not present in this file.
-```
+

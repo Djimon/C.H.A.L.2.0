@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 1) Purpose
 - Defines GameBalanceConfig as a Unity ScriptableObject for configuring game balance.
 - Declares a set of serializable nested data structures (loot, waves, enemies, skills, economy) to be edited in the Unity Inspector.
@@ -190,4 +189,3 @@ public class ExampleUsage
 - Validation or overrides that may occur when assets are edited in the Unity Editor (beyond Range attributes).
 - Any additional behavior tied to how “waves” or “economy” interact during gameplay beyond the provided data structures.
 
-```

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/SkillExecuter.cs`._
 
-```text
 1) Purpose
 - Defines a static SkillExecutor to run skill logic end-to-end.
 - Handles cast-time signaling, per-skill-type behavior, and on-hit damage application.
@@ -21,7 +20,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/SkillExecuter.c
         - Overload delegating to ExecuteSkill(inst, source, null, target, null)
 
 3) Key Behavior & Side Effects
-- ExecuteSkill(inst, source, sourceTr, targetTr, targetTr)
+- ExecuteSkill(inst, source, sourceTr, targetTr)
   - If inst == null or source == null: logs error and returns.
   - Logs casting start: “[SkillExecutor] {source} starts casting {inst.Data.DisplayName}”.
   - Do_OnCastImpactEffects(inst, source): applies OnCastImpactEffects if defined.
@@ -95,4 +94,4 @@ SkillExecutor.ExecuteSkill(skillInstance, caster, target);
 - ProjectileController implementation and its collision/impact handling.
 - Any threading/async expectations or integration with animation systems beyond logging placeholders.
 - Exact structures of related types (e.g., SkillType, ProjectileSpeed, Range, DisplayName) are not defined in this file.
-```
+

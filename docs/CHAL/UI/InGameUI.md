@@ -22,7 +22,7 @@ _Automatically generated/updated from `Assets/src/UI/misc/InGameUI.cs`._
     - public virtual void Show(bool show)
       - Signature: public virtual void Show(bool show)
       - Side effects: root.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
-    - public bool IsVisible => root.style.display == DisplayStyle.Flex;
+    - public bool IsVisible => root.style.display == DisplayStyle.Flex
       - Public property: indicates current visibility state based on display style
 
 3) Key Behavior & Side Effects

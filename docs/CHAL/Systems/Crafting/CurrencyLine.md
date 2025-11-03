@@ -2,15 +2,11 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingService.cs`._
 
-```csharp
- Purposes
+Purpose
 - Exposes a static CraftingService for previewing and executing recipe crafts.
 - Defines lightweight data structures used by the UI (MaterialLine, CurrencyLine, RecipePreview).
 - Provides a public CraftBlocker enum to describe why crafting is blocked.
 
-```
-
-```text
 Public API
 - Namespace/Module
   - CHAL.Systems.Crafting
@@ -49,9 +45,7 @@ Public API
     - NotEnoughCurrency
     - InvalidRefinement
     - UnknownError
-```
 
-```text
 Key Behavior & Side Effects
 - Preview flow (GetPreview)
   - Builds an output ItemStack from recipe.outputItemId and recipe.outputCount (min 1).
@@ -84,9 +78,6 @@ Key Behavior & Side Effects
   - The preview logic is used to drive UI states (canCraft, blockers, and specific flags).
   - The TryCraftToInventory method performs an atomic-like operation with manual rollback on failure.
 
-```
-
-```text
 Constraints & Failure Modes
 - Guards
   - Output acceptance must succeed before composing a preview.
@@ -105,9 +96,6 @@ Constraints & Failure Modes
 - Logging
   - Detailed logging is invoked on output rejection during preview (DebugOutputReject).
 
-```
-
-```text
 Example
 - Minimal usage scenario
 
@@ -128,13 +116,10 @@ if (preview.canCraft)
 }
 ```
 
-```
-
-```text
 Unknowns
 - Exact structure and members of RecipeDef, InventoryDomain, IWallet, and ItemStack are not defined here beyond their usage.
 - Internal behavior of ItemTypeUtils.FromId and TryGetMaterialsInventoryIdByConvention outside this file.
 - DebugManager, its log levels, and the exact logging side effects.
 - Any external constraints on CraftBlocker values beyond naming; no explicit guarantees about UI semantics.
 - Any multithreading considerations or Unity lifecycle interactions beyond typical single-threaded usage in this file.
-```
+

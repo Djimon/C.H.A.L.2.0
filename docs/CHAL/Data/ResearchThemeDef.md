@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ResearchThemeDef.cs`._
 
-```text
 1) Purpose
 - Defines a Unity ScriptableObject asset ResearchUIThemeDef that stores UI theme settings for the Research UI.
 - Exposes serialized fields for map visuals, node visuals, edge visuals, highlighting, zoom, and layout hooks.
@@ -41,7 +40,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ResearchThemeDef.cs`
         - Role: Intensity of the highlight effect.
       - [Range(0f, 2f)] public float activeGlow = 0.6f
         - Role: Optional glow multiplier for active nodes.
-      - [float[]] public float[] zoomSteps = new float[] { 0.75f, 1.0f, 1.25f, 1.5f }
+      - [Tooltip("Diskrete Zoomstufen (Scale-Faktoren).")] public float[] zoomSteps = new float[] { 0.75f, 1.0f, 1.25f, 1.5f }
         - Role: Discrete zoom scale factors.
       - [Tooltip("Default-Index in zoomSteps beim ffnen.")] public int defaultZoomIndex = 1
         - Role: Default index into zoomSteps when opening.
@@ -105,3 +104,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ResearchThemeDef.cs`
 - Debug logging implementation: behavior/details of DebugManager.Log and EDebugLevel.Dev are not defined here.
 - Any additional constraints or interactions imposed by other parts of the project (e.g., how laneBaseX affects layout in the tree) are not shown in this file.
 - Whether any assets referenced by mapBackground, nodeBackground, etc., are expected to exist or be assigned elsewhere is not specified here.
+

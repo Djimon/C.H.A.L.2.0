@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/SaveGameAuto.cs`._
 
-```text
 Section 1) Purpose
 - Defines a Unity MonoBehaviour (SaveGameAuto) that automatically saves and loads a GameObject's position, rotation, and/or scale.
 - Provides a SaveFormat enum to select the serialization format (XML, JSON, Binary).
@@ -129,3 +128,4 @@ Section 6) Unknowns
 - Exact behavior when identifiers are blank or null depends on the underlying SaveGame API.
 - Error handling, exceptional cases, and performance characteristics are not specified in this file.
 - Interaction with other SaveGameFree features or conflicting saves across multiple components is not described here.
+

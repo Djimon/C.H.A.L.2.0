@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Heroes/HeroCatalog.cs`._
 
-```text
 1) Purpose
 - Defines a ScriptableObject data asset HeroCatalog in the CHAL.Data namespace.
 - Exposes a serialized list allHeroes of HeroDef to drive UI order.
@@ -65,3 +64,4 @@ IReadOnlyList<HeroDef> allForUI = catalog.GetAllForUI();
 - How HeroCatalog assets are loaded or referenced at runtime beyond returning via its public API.
 - Any additional behaviors of HeroDef (serialization details, other fields) are not specified in this file.
 - The exact UI implications of the order in allHeroes are implied but not detailed beyond the comment.
+

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Unit/EffectReceiver.cs`._
 
-```text
 1) Purpose
 - Defines an abstract base class EffectReceiver for unit-like entities that manage health, status effects, and modifiers.
 - Provides HP properties, team association, and containers for active status effects and active modifiers.
@@ -33,9 +32,9 @@ _Automatically generated/updated from `Assets/src/Systems/Unit/EffectReceiver.cs
   - If an existing effect with the same EffectId exists:
     - DoTStatusEffect existing and DoTStatusEffect new: exDot.TryAddStack(effect.source); exDot.RemainingTime = max(exDot.RemainingTime, newDot.BaseDuration); return;
     - BuffStatusEffect existing and BuffStatusEffect new: exBuff.TryAddStack(effect.source); exBuff.RemainingTime = max(exBuff.RemainingTime, newBuff.BaseDuration); return;
-    - DebuffStatusEffect existing and DebuffStatusEffect new: exDeBuff.TryAddStack(effect.source); exDeBuff.RemainingTime = max(exDeBuff.RemainingTime, newDeBuff.BaseDuration); return;
-  - New BuffStatusEffect: add its modifier to ActiveModifiers (prevents double-add on refresh due to above path).
-  - New DebuffStatusEffect: add its modifier to ActiveModifiers (prevents double-add on refresh due to above path).
+    - DebuffStatusEffect existing and DebuffStatusEffect new: exDeBuff.TryAddStack(effect.source); exDeBuff.RemainingTime = max(exDeBuff.RemainingTime, newDeBuff.BaseDuration); return.
+  - New BuffStatusEffect: add its modifier to ActiveModifiers.
+  - New DebuffStatusEffect: add its modifier to ActiveModifiers.
   - Final: add effect to ActiveEffects if not already returned from above.
 
 - RemoveEffect(ActiveStatusEffect effect)
@@ -86,4 +85,4 @@ _Automatically generated/updated from `Assets/src/Systems/Unit/EffectReceiver.cs
   - ModifierStack implementation and Modifier type
   - UnitTeam enum/class
 - Exact interactions beyond this file (e.g., how HP interacts with other systems, death handling timing) are not specified here.
-```
+

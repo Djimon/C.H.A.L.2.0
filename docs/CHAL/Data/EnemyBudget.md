@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 Section 1 — Purpose
 - Defines GameBalanceConfig as a ScriptableObject for game balance data (Unity asset).
 - Encapsulates Loot, Waves, Enemies, Skills, and Economy configuration via nested serializable structs.
@@ -10,7 +9,7 @@ Section 1 — Purpose
 
 ```
 
-```csharp
+```text
 Section 2 — Public API
 - Namespace/module
   - CHAL.Data
@@ -192,6 +191,5 @@ Section 6 — Unknowns
   - SkillRange
 - How GameBalanceConfig assets are created/loaded at runtime beyond the asset itself.
 - The semantic meaning or intended default values for each field (values come from assets, not code).
-- Any editor tooling behavior beyond CreateAssetMenu attributes. 
+- Any editor tooling behavior beyond CreateAssetMenu attributes.
 
-```

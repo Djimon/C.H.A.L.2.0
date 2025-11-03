@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/AffixFamilyDef.cs`._
 
-```text
 1) Purpose
 - Defines a ScriptableObject asset type AffixFamilyDef that groups a collection of AffixEntry items with optional TagLimitEntries.
 - Provides serializable helper types:
@@ -41,3 +40,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/AffixFamilyDef.cs`._
 6) Unknowns
 - How other parts of the project consume AffixFamilyDef beyond these fields is not defined in this file.
 - Any runtime serialization or usage specifics outside OnValidate are not described here.
+

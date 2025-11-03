@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/S
 
 ```csharp
 // documentation for: Assets/src/xTernal/SaveGameFree/Scripts/Serializers/SaveGameJsonSerializer.cs
-```
 
 1) Purpose
 - Defines SaveGameJsonSerializer class implementing ISaveGameSerializer.
@@ -88,3 +87,4 @@ public class ExampleUsage
 - Exact behavior/limitations of FullSerializer in this context (e.g., handling of complex or non-serializable types).
 - Any external side effects beyond Debug.LogException logging.
 - Specific runtime implications on platforms not explicitly covered by the conditional compilation (beyond the UNITY_WSA/UNITY_WINRT branches).
+```

@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/UI/RecipeDetailPanelView.cs`._
 
 ```csharp
 // Documentation for Assets/src/UI/RecipeDetailPanelView.cs
-```
 
 1) Purpose
 - Defines a Unity MonoBehaviour (RecipeDetailPanel) that renders and manages a recipe detail UI panel.
@@ -16,7 +15,7 @@ _Automatically generated/updated from `Assets/src/UI/RecipeDetailPanelView.cs`._
   - CHAL.UI
 
 - Types
-  - public class RecipeDetailPanel : MonoBehaviour
+  - public sealed class RecipeDetailPanel : MonoBehaviour
     - Public fields/properties
       - public event Action OnCraftClicked;
     - Public methods
@@ -134,6 +133,4 @@ public class RecipeUIController : MonoBehaviour
 - Exact UXML layout and what visual classes (e.g., ing-row, ing-icon, ing-text) map to in project styles
 - External systems for filling base stats, gear stats, or refinement behavior
 - Any additional behavior connected to refinement (beyond UI visibility)
-
-Notes
-- This file is Unity-specific and targets UIElements-based UI, with some German comments and placeholders for future data wiring.
+```

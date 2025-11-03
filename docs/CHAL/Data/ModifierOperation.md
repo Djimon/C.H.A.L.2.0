@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Enums/SkillEnums.cs`._
 
-```text
 1) Purpose
 - Defines public enums used by the skill system in namespace CHAL.Data: SkillType, SkillRange, SkillTag, ModifierTarget, ModifierOperation, ModifierHook.
 - Specifies discrete categories for skills, their ranges, tags, and modifier specifications (targets, operations, hooks).
@@ -95,3 +94,4 @@ SkillRange r = SkillRange.Melee;
 - Semantics of each enum value (how they affect gameplay) are not defined in this file.
 - Any broader validation, serialization format, or usage patterns are outside this file.
 - German inline comments present in the code are not defined as part of the API semantics.
+

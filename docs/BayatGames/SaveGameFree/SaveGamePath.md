@@ -2,14 +2,11 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/SaveGame.cs`._
 
-```text
 Purpose
 - Defines SaveGamePath enum with two options: PersistentDataPath and DataPath.
 - Provides a public static SaveGame API for saving and loading data with optional encoding, serialization, and encoding pipelines.
 - Exposes events OnSaved/OnLoaded and callbacks SaveCallback/LoadCallback for save/load lifecycle hooks.
-```
 
-```text
 Public API
 - Namespace/Module: BayatGames.SaveGameFree
 
@@ -82,9 +79,7 @@ Public API
 
     - public static bool IOSupported()
     - public static bool IsFilePath(string str)
-```
 
-```text
 Key Behavior & Side Effects
 - Save<T> core path handling
   - Validates identifier; throws ArgumentNullException if null/empty.
@@ -132,9 +127,6 @@ Key Behavior & Side Effects
   - On supported platforms, saves to filesystem; on unsupported, uses PlayerPrefs.
   - On Windows/WSA variants, uses Windows.File/Windows.Directory APIs when available.
 
-```
-
-```text
 Constraints & Failure Modes
 - Identifier must be non-empty; otherwise throws ArgumentNullException("identifier").
 - When loading, if the target does not exist, returns defaultValue and emits a warning via Debug.LogWarningFormat.
@@ -144,9 +136,7 @@ Constraints & Failure Modes
 - Directory creation is guarded by preprocessor directives; may not run on all platforms.
 - Resource cleanup: streams are disposed after use to release resources.
 - GetFiles/GetDirectories/Exists do not throw for missing paths but return empty arrays or false accordingly.
-```
 
-```text
 Example
 // Minimal usage example (pseudo-syntax, using default API)
 var player = new { Name = "Alice", Level = 5 };
@@ -160,12 +150,10 @@ var loaded = BayatGames.SaveGameFree.SaveGame.Load<dynamic>("playerData", null);
 // Optional: customize pipeline
 BayatGames.SaveGameFree.SaveGame.Serializer = new SomeCustomSerializer();
 BayatGames.SaveGameFree.SaveGame.Encoder = new SomeCustomEncoder();
-```
 
-```text
 Unknowns
 - ISaveGameSerializer, ISaveGameEncoder interfaces and concrete implementations (e.g., SaveGameJsonSerializer, SaveGameSimpleEncoder) referenced but not defined in this file.
 - Details of serialization formats and encoder behavior are defined elsewhere.
 - Behavior for mixed/partial saves, versioning, and migration strategies are not specified here.
 - No explicit event args beyond surface types; cannot deduce any extra event payloads beyond the delegates defined.
-```
+

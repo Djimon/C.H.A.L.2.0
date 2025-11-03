@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Loot/Models/LootModel.cs`._
 
-```text
 1) Purpose
 - Define data models used for loot generation: LootDrop, LootRule, MergedLoot, and LootResultEntry.
 - Grouped under CHAL.Systems.Loot.Models namespace for loot-related systems.
@@ -63,4 +62,3 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/Models/LootModel.
 - How LootRule, MergedLoot, and LootResultEntry are consumed by the loot engine (other systems).
 - Any serialization attributes, performance considerations, or Unity-specific integration (not present here).
 
-```

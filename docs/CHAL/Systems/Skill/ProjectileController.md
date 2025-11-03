@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/ProjectileController.cs`._
 
-```text
 1) Purpose
 - Defines ProjectileController, a Unity MonoBehaviour in CHAL.Systems.Skill, to manage skill-related projectiles.
 - Exposes Init(SkillInstance inst, EffectReceiver src, EffectReceiver tgt, Vector3 dir, float projSpeed, float life) to initialize internal state.
@@ -26,6 +25,8 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ProjectileContr
       - Update()
         - Calls MoveForward()
         - Calls Check_LifetimeExpiration()
+      - OnTriggerEnter(Collider other)
+        - Processes collision with other colliders
 
 ```
 
@@ -93,4 +94,4 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ProjectileContr
 - Exact semantics of GetEffectReceiver and Team properties
 - Collision setup details in the Unity scene (IsTrigger, colliders)
 - Any additional side effects of Destroy(gameObject) beyond lifecycle management
-```
+

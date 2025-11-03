@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 
-```text
 1) Purpose
 - Defines ItemDef as a Unity ScriptableObject (data asset) for item definitions, with per-item data blocks.
 - Provides data containers: RemainData, RuneData, PartData, ModuleData, GearData, plus a helper RuneColors for color mapping.
@@ -25,6 +24,9 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
       - PartData partData
       - ModuleData moduleData
       - GearData gearData
+    - Public methods
+      - void OnValidate() 
+      - private void ClearTypeBlocksExcept(ItemType keep)
 
   - public class RemainData
     - public string remainType
@@ -83,4 +85,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 - Definitions and behavior of ItemType, ItemKey, ItemTypeUtils, Rarity, GearType, RuneColorType
 - How ItemDef assets are created/used at runtime beyond OnValidate behavior
 - Any serialization specifics beyond standard Unity ScriptableObject serialization
-```
+

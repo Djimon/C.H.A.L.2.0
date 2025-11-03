@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Unit/AiTargetSelector.cs`._
 
-```text
 1) Purpose
 - Defines CHAL.AI.AITargetSelector: a placeholder target-selection helper for AI.
 - Stores currentTarget, priority mode, and sight range for targeting decisions.
@@ -62,4 +61,4 @@ _Automatically generated/updated from `Assets/src/Systems/Unit/AiTargetSelector.
 - How EffectReceiver defines dead state or range/sight checks.
 - How this integrates with Unity lifecycle (MonoBehaviour/ScriptableObject) since not specified.
 - Any side effects beyond updating currentTarget are not defined.
-```
+

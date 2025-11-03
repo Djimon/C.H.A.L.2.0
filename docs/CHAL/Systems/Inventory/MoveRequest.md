@@ -3,8 +3,6 @@
 _Automatically generated/updated from `Assets/src/Systems/Inventory/core/MoveRequest.cs`._
 
 ```csharp
-```
-
 1) Purpose
 - Defines MoveRequest class with public fields for item movement between inventories.
 - Defines ItemMoveObject struct to reference a specific item location (by instanceID and slot).
@@ -54,3 +52,4 @@ var req = new CHAL.Systems.Inventory.MoveRequest
 - Intended meaning of instanceID formatting and how inventories are resolved.
 - How MoveRequest is used (serialization, threading, validation) outside this file.
 - Any additional invariants or lifecycle expectations in consuming code.
+```

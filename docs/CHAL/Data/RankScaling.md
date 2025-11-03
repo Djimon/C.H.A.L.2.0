@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 1) Purpose
 - Defines a Unity ScriptableObject GameBalanceConfig that centralizes game balance data (loot, waves/enemies, skills, economy).
 - Exposes a hierarchy of serializable structs for configuring loot, enemy waves, enemy stats, skills, and economy.
@@ -144,4 +143,4 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
 - Definitions of SkillRange and EnemyRank enums are not in this file.
 - Behavior or calculation specifics for how these config values interact with gameplay systems are not defined here.
 - Any external constraints or validations beyond [Range] attributes are not specified in this file.
-```
+

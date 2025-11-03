@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/ActiveStatusEffect.cs`._
 
-```text
 1) Purpose
 - Defines a serializable ActiveStatusEffect data container representing an active status effect on a unit.
 - Defines stacking and type enums used by the status system (StackingMode, StatusType).
@@ -82,4 +81,4 @@ var nowEffect = new ActiveStatusEffect
 - How ActiveStatusEffect instances are created, updated, or removed is not defined in this file.
 - Any runtime constraints (e.g., max stacks, interaction with other systems) are not specified.
 - Any default values or serialization behavior beyond [Serializable] are not specified.
-```
+

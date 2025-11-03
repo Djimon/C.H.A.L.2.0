@@ -13,6 +13,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/RecipeDef.cs`._
 - Types
   - public class RecipeDef : ScriptableObject
     - Public fields
+      - string Id
       - string displayKey
       - Sprite icon
       - int tier = 1

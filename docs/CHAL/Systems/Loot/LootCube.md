@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/LootCube.cs`._
 
 ```csharp
 // (Documentation for LootCube.cs)
-```
 
 1) Purpose
 - Defines LootCube as a MonoBehaviour representing a loot item in the world.
@@ -80,3 +79,4 @@ loot.Init("item_sword_01", 2);
 - Whether [SerializeField] on properties behaves as expected in this project
 - How LootCube instances are spawned and managed lifecycle-wise outside Init
 - Any additional behavior triggered by OnLootCollected subscribers beyond this file’s scope
+```

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Items/ItemType.cs`._
 
-```text
 1) Purpose
 - Defines a stateless utility to map item identifiers to ItemType values.
 - FromId(string itemId) parses a prefix before ':' (or the full string if no colon) and maps known prefixes to ItemType values.
@@ -56,4 +55,4 @@ _Automatically generated/updated from `Assets/src/Systems/Items/ItemType.cs`._
   - Whether ItemType defines additional members beyond Remains, Rune, Part, Module, Gear, Unknown.
   - Any broader semantics of ItemType values beyond this mapping.
 - Behavior of ItemType (enum exact underlying type, serialization specifics) is not shown here.
-```
+

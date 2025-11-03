@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Research/UI/ResearchMapView.cs`._
 
-```text
 1) Purpose
 - Unity MonoBehaviour that builds, displays, and interacts with a visual map of research nodes based on a ResearchTreeDef.
 - Handles layout calculation (lanes, centers, per-stage node placement), node/edge instantiation, and basic panning/zooming.
@@ -71,8 +70,6 @@ _Automatically generated/updated from `Assets/src/Systems/Research/UI/ResearchMa
         - Unity lifecycle hook; wires references and builds map
       - void Update()
         - Unity lifecycle hook; handles HUD init, pan, and zoom
-      - void BuildMap() (described above)
-      - void CreateEdge(...) (described above)
 
 3) Key Behavior & Side Effects
 - Map construction flow (BuildMap)
@@ -125,4 +122,3 @@ _Automatically generated/updated from `Assets/src/Systems/Research/UI/ResearchMa
 - Specifics of ResearchNodeWidget.Init signature beyond parameters used here
 - Any additional implicit side effects from external systems (beyond what is visible in this file)
 
-```

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/BuffStatusEffect.cs`._
 
-```text
 1) Purpose
 - Defines BuffStatusEffect, a status effect representing a buff with stacking and duration logic.
 - Defines BuffSettings (serializable) as configuration data for BuffStatusEffect.
@@ -32,8 +31,8 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/BuffStatusEffec
     - Public fields
       - string EffectId — identifier for the buff (default "DefaultBuff")
       - ModifierData Modifier — stat modification applied during duration
-      - float BaseDuration — base duration in seconds
-      - int BaseMaxStacks — maximum number of stacks
+      - float BaseDuration — base duration in seconds (default 5f)
+      - int BaseMaxStacks — maximum number of stacks (default 1)
       - StackingMode Stacking — stacking behavior (e.g., RefreshDuration)
 
 3) Key Behavior & Side Effects
@@ -90,4 +89,4 @@ BuffStatusEffect buff = new BuffStatusEffect(settings);
 - The exact structure and construction of ModifierData
 - Behavior of IgnoreIfActive / Replace as implemented in EffectReceiver.ApplyEffect
 - Any additional side effects or lifecycle management beyond this file (e.g., update loops, expiration handling)
-```
+

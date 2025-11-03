@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Core/InputManager.cs`._
 
-```text
 1) Purpose
 - Defines InputManager as a MonoBehaviour that handles mouse-based interaction with clickable objects via raycasting from the main camera.
 - Tracks hover state with lastHovered to trigger OnHoverEnter/OnHoverExit on ClickableObject instances.
@@ -15,7 +14,8 @@ _Automatically generated/updated from `Assets/src/Core/InputManager.cs`._
 - Namespace/module: CHAL.Core
 - Types
   - public class InputManager : MonoBehaviour
-    - Public fields/properties: none
+    - Public fields/properties: 
+      - private ClickableObject lastHovered; // Tracks the last hovered clickable object.
     - Public methods: none
 ```
 
@@ -60,4 +60,4 @@ _Automatically generated/updated from `Assets/src/Core/InputManager.cs`._
 - Implementation details of DebugManager.Log and its log levels.
 - Whether multiple cameras or layers affect raycast behavior beyond the default configuration.
 - Any additional UI or game logic that may influence what is considered a “clickableObject” in practice.
-```
+

@@ -4,14 +4,15 @@ _Automatically generated/updated from `Assets/src/Data/Defs/RecipeDef.cs`._
 
 1) Purpose
 - Defines a Crafting Recipe as a Unity ScriptableObject asset.
-- Represents required inputs (MaterialCost) and currency costs (CurrencyCost) and the produced output (itemId and count).
-- Stores metadata for display (displayKey, icon, tier, slotType) and output specification (outputItemId, outputCount).
+- Represents required inputs (MaterialCost) and currency costs (CurrencyCost) and the produced output (outputItemId and outputCount).
+- Stores metadata for display (displayKey, icon, tier, slotType) and includes a unique identifier (Id).
 
 2) Public API
 - Namespace: CHAL.Systems.Crafting
 - Types
   - public class RecipeDef : ScriptableObject
     - Public fields
+      - string Id; // unique identifier for the recipe
       - string displayKey; // UI key for display
       - Sprite icon; // icon shown for the recipe
       - int tier = 1; // recipe tier

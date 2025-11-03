@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingServi
 
 ```csharp
 // Documentation for Assets/src/Systems/Crafting/CraftingService.cs
-```
 
 1) Purpose
 - Provides preview, validation, and commit logic for crafting items.
@@ -130,3 +129,4 @@ Notes on surface:
   - DebugManager and DebugOutput logging specifics.
   - Any external side effects from inventory methods (CanAccept, TryAdd, TryRemove, Peek, HasInstance, etc.) beyond what is invoked here.
   - Concurrency considerations or broader game-state implications outside the crafting workflow as implemented in this file.
+```

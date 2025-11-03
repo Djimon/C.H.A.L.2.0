@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/Resources/VFX/Status and Auras FREE/Scripts/OrbitScript.cs`._
 
-```text
 1) Purpose
 - Defines a Unity MonoBehaviour RotationParticle inside namespace MatthewAssets.
 - Rotates Orbit1 around Static on the Y axis at a given Speed.
@@ -53,4 +52,4 @@ rp.Speed = 45f;
 - Intended usage beyond these public fields is not specified.
 - Behavior when multiple Orbit1 objects are needed is not defined.
 - Any runtime expectations for initial positions beyond what RotateAround computes are not stated.
-```
+

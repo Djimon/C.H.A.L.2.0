@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
 
-```text
 1) Purpose
 - Defines a Unity ScriptableObject ArchetypeDef representing a hero archetype with identity, display, roles, growth, and signature passive.
 - Provides supporting data structures for growth configuration (ArchetypeGrowthConfig, LevelGrowthPattern) and related enums (LevelGrowthRole, PrimaryAttackArchetype).
@@ -116,4 +115,3 @@ archetype.GrowthConfig = new ArchetypeGrowthConfig();
 - Behavior of growth values or their application to gameplay is not implemented in this file.
 - Any Unity-specific behavior beyond OnValidate and CreateAssetMenu is not described here.
 
-```

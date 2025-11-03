@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/Save Position/ExampleSavePosition.cs`._
 
-```text
 1) Purpose
 - Defines a serializable data container StorageSG with a DateTime field to demonstrate saving custom data.
 - Defines ExampleSavePosition, a Unity MonoBehaviour that demonstrates saving/loading a Transform's position and a sample StorageSG instance using SaveGameFree.
@@ -95,4 +94,3 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
 - Full semantics of SerializerDropdown.Singleton.ActiveSerializer beyond selecting a serializer at runtime.
 - Any platform-specific file I/O implications or storage locations used by the underlying SaveGameFree implementation.
 
-```

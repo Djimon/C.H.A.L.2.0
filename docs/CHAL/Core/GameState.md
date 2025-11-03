@@ -12,9 +12,9 @@ _Automatically generated/updated from `Assets/src/Core/GameManager.cs`._
 - Types
   - public enum GameState
     - MainMenu
-    - MapPhase
-    - WaveReward
-    - MapReward
+    - MapPhase     // Player fights on a map
+    - WaveReward   // small reward screen
+    - MapReward    // large reward screen
     - Hideout
   - public class GameManager : MonoBehaviour
     - Public surface
@@ -139,3 +139,4 @@ _Automatically generated/updated from `Assets/src/Core/GameManager.cs`._
 - Details of SaveSystem, DebugManager, ItemStack, and the various manager/services (ResearchService, ResearchUnlockRegistry, ResearchEventBridge) are not shown here.
 - Exact serialization format, resource layout, and the full lifecycle of inventory/research data beyond what is shown.
 - Any side effects from other components not visible in this file (e.g., UI updates, event bus behavior, or additional scene initialization).
+

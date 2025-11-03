@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/EnemyDef.cs`._
 
-```text
 Purpose
 - Defines EnemyDef as a ScriptableObject data asset under CHAL.Data.
 - Exposes public fields to configure identity, base stats, rewards, AI, and visuals for an enemy.
@@ -59,4 +58,4 @@ Unknowns
 - Definitions and semantics of EnemyRank, SkillData, EnemyAIType beyond their usage here.
 - How this asset interacts with systems creating enemies, spawning logic, or reward calculations.
 - Any serialization behavior specifics beyond the provided default values (e.g., persistence of initializers in Unity editor).
-```
+

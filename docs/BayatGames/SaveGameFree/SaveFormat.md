@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/SaveGameAuto.cs`._
 
-```text
 1) Purpose
 - Defines SaveGameAuto MonoBehaviour to automatically save/load a GameObject's position, rotation, and scale using SaveGameFree.
 - Configurable save format (XML/JSON/Binary), serializer/encoder/encoding, path, and per-field identifiers.
@@ -21,104 +20,104 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/S
     - JSON
     - Binary
 
-- public class SaveGameAuto : MonoBehaviour
-  - public string positionIdentifier
-    - The position data key used for saving/loading.
-  - public string rotationIdentifier
-    - The rotation data key used for saving/loading.
-  - public string scaleIdentifier
-    - The scale data key used for saving/loading.
-  - public bool encode
-    - Whether to encode the data.
-  - public string encodePassword
-    - Password used for encoding; empty string resets to default if resetBlanks is true.
-  - public SaveFormat format
-    - Serialization format (XML/JSON/Binary); defaults to JSON.
-  - public ISaveGameSerializer serializer
-    - Serializer implementation; used for save/load.
-  - public ISaveGameEncoder encoder
-    - Encoder implementation; used for save/load.
-  - public Encoding encoding
-    - Text encoding to use for serialization.
-  - public SaveGamePath savePath
-    - Destination path for saved data; defaults to PersistentDataPath.
-  - public bool resetBlanks
-    - If true, reset certain fields to defaults on Awake.
+  - public class SaveGameAuto : MonoBehaviour
+    - public string positionIdentifier
+      - The position data key used for saving/loading.
+    - public string rotationIdentifier
+      - The rotation data key used for saving/loading.
+    - public string scaleIdentifier
+      - The scale data key used for saving/loading.
+    - public bool encode
+      - Whether to encode the data.
+    - public string encodePassword
+      - Password used for encoding; empty string resets to default if resetBlanks is true.
+    - public SaveFormat format
+      - Serialization format (XML/JSON/Binary); defaults to JSON.
+    - public ISaveGameSerializer serializer
+      - Serializer implementation; used for save/load.
+    - public ISaveGameEncoder encoder
+      - Encoder implementation; used for save/load.
+    - public Encoding encoding
+      - Text encoding to use for serialization.
+    - public SaveGamePath savePath
+      - Destination path for saved data; defaults to PersistentDataPath.
+    - public bool resetBlanks
+      - If true, reset certain fields to defaults on Awake.
 
-- public bool savePosition
-  - Save position each time Save() is called.
+    - public bool savePosition
+      - Save position each time Save() is called.
 
-- public bool saveRotation
-  - Save rotation each time Save() is called.
+    - public bool saveRotation
+      - Save rotation each time Save() is called.
 
-- public bool saveScale
-  - Save scale each time Save() is called.
+    - public bool saveScale
+      - Save scale each time Save() is called.
 
-- public Vector3 defaultPosition
-  - Default value used when loading if no saved data exists.
+    - public Vector3 defaultPosition
+      - Default value used when loading if no saved data exists.
 
-- public Vector3 defaultRotation
-  - Default rotation (Euler angles) used when loading if no saved data exists.
+    - public Vector3 defaultRotation
+      - Default rotation (Euler angles) used when loading if no saved data exists.
 
-- public Vector3 defaultScale
-  - Default scale used when loading if no saved data exists.
+    - public Vector3 defaultScale
+      - Default scale used when loading if no saved data exists.
 
-- public bool saveOnAwake
-  - Save on Awake() if true.
+    - public bool saveOnAwake
+      - Save on Awake() if true.
 
-- public bool saveOnStart
-  - Save on Start() if true.
+    - public bool saveOnStart
+      - Save on Start() if true.
 
-- public bool saveOnEnable
-  - Save on OnEnable() if true.
+    - public bool saveOnEnable
+      - Save on OnEnable() if true.
 
-- public bool saveOnDisable
-  - Save on OnDisable() if true.
+    - public bool saveOnDisable
+      - Save on OnDisable() if true.
 
-- public bool saveOnApplicationQuit
-  - Save on OnApplicationQuit() if true.
+    - public bool saveOnApplicationQuit
+      - Save on OnApplicationQuit() if true.
 
-- public bool saveOnApplicationPause
-  - Save on OnApplicationPause() if true.
+    - public bool saveOnApplicationPause
+      - Save on OnApplicationPause() if true.
 
-- public bool loadOnAwake
-  - Load on Awake() if true.
+    - public bool loadOnAwake
+      - Load on Awake() if true.
 
-- public bool loadOnStart
-  - Load on Start() if true (default true).
+    - public bool loadOnStart
+      - Load on Start() if true (default true).
 
-- public bool loadOnEnable
-  - Load on OnEnable() if true.
+    - public bool loadOnEnable
+      - Load on OnEnable() if true.
 
-- protected virtual void Awake()
-  - Initialization; if resetBlanks, fill defaults (encodePassword, serializer, encoder, encoding) from SaveGame defaults; instantiate serializer based on format; optionally Load/Save on Awake.
+    - protected virtual void Awake()
+      - Initialization; if resetBlanks, fill defaults (encodePassword, serializer, encoder, encoding) from SaveGame defaults; instantiate serializer based on format; optionally Load/Save on Awake.
 
-- protected virtual void Start()
-  - Optionally Load/Save on Start based on flags.
+    - protected virtual void Start()
+      - Optionally Load/Save on Start based on flags.
 
-- protected virtual void OnEnable()
-  - Optionally Load/Save on Enable based on flags.
+    - protected virtual void OnEnable()
+      - Optionally Load/Save on Enable based on flags.
 
-- protected virtual void OnDisable()
-  - Optionally Save on Disable if flag set.
+    - protected virtual void OnDisable()
+      - Optionally Save on Disable if flag set.
 
-- protected virtual void OnApplicationQuit()
-  - Optionally Save on Quit if flag set.
+    - protected virtual void OnApplicationQuit()
+      - Optionally Save on Quit if flag set.
 
-- protected virtual void OnApplicationPause()
-  - Optionally Save on Pause if flag set.
+    - protected virtual void OnApplicationPause()
+      - Optionally Save on Pause if flag set.
 
-- public virtual void Save()
-  - Saves enabled fields:
-    - Vector3: positionIdentifier, transform.position
-    - Quaternion: rotationIdentifier, transform.rotation
-    - Vector3: scaleIdentifier, transform.localScale
+    - public virtual void Save()
+      - Saves enabled fields:
+        - Vector3: positionIdentifier, transform.position
+        - Quaternion: rotationIdentifier, transform.rotation
+        - Vector3: scaleIdentifier, transform.localScale
 
-- public virtual void Load()
-  - Loads into:
-    - transform.position from positionIdentifier or defaultPosition
-    - transform.rotation from rotationIdentifier or Quaternion.Euler(defaultRotation)
-    - transform.localScale from scaleIdentifier or defaultScale
+    - public virtual void Load()
+      - Loads into:
+        - transform.position from positionIdentifier or defaultPosition
+        - transform.rotation from rotationIdentifier or Quaternion.Euler(defaultRotation)
+        - transform.localScale from scaleIdentifier or defaultScale
 
 ```
 
@@ -194,3 +193,4 @@ public class ExampleUsage : MonoBehaviour
 - Exact behavior of SaveGame.Save/Load for various edge cases (e.g., missing identifiers, I/O errors) is not defined in this file.
 - Interaction details with external SaveGameFree components (e.g., default implementations for serializer/encoder/encoding) are not shown here.
 - Any side effects beyond transform updates (e.g., triggering events, callbacks) are not documented in this file.
+

@@ -17,6 +17,7 @@ _Automatically generated/updated from `.github/scripts/docgen.py`._
 - Generates documentation for each public type or falls back to file-based documentation if no public types are found.
 - Writes documentation to the `docs` directory, creating necessary directories if they do not exist.
 - Updates an index file with links to generated documentation.
+- Uses the OpenAI API to generate documentation content.
 
 4) Constraints & Failure Modes
 - Only processes files with specific extensions: `.cs`, `.py`, `.ts`, `.tsx`, `.js`, `.java`, `.go`.

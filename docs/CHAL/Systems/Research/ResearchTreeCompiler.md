@@ -3,7 +3,6 @@
 _Automatically generated/updated from `Assets/src/Systems/Research/ResearchTreeCompiler.cs`._
 
 ```csharp
-```
 1) Purpose
 - Define a data container (ResearchTreeCompiled) for a compiled research tree: node definitions, per-node position (lane/stage), and parent references.
 - Provide a compiler (ResearchTreeCompiler) to transform a ResearchTreeDef into a ResearchTreeCompiled by traversing lanes, stages, and node entries.
@@ -79,3 +78,4 @@ var compiled = ResearchTreeCompiler.Compile(tree);
 - Definitions and structure of ResearchTreeDef and ResearchNodeDef (external to this file).
 - Details of DebugManager.Log behavior beyond invocation and categories.
 - Any external expectations on the contents/consistency of the input ResearchTreeDef beyond what is explicit here.
+```

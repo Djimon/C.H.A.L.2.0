@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 1) Purpose
 - Define a Unity ScriptableObject GameBalanceConfig that groups game balance settings.
 - Expose many serializable structs for configuring loot, waves, enemies, skills, and economy.
@@ -179,4 +178,4 @@ float selfRange = config.GetRangeValue(SkillRange.Self);
 - How GameBalanceConfig assets are loaded/assigned at runtime or via Unity editor workflow is not shown.
 - Default serialized values for all fields depend on editor data; no explicit defaults beyond AllowFriendlyFire = false.
 - Any external behavior or consumers of these settings outside this file are not specified.
-```
+

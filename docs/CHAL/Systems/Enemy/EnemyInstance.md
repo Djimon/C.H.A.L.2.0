@@ -3,9 +3,6 @@
 _Automatically generated/updated from `Assets/src/Systems/Enemy/EnemyInstance.cs`._
 
 ```csharp
-// (documentation only)
-```
-
 Purpose
 - Defines an in-game enemy instance that tracks health and death logic.
 - Holds references to its definition (EnemyDef) and runtime data (EnemyStruct).
@@ -28,7 +25,7 @@ Public API
     - protected override void OnDeath()
       - Logs death; raises OnDied event; placeholder for loot/XP events.
 
-Key behaviors (summary of major flows)
+Key Behavior & Side Effects
 - Construction
   - Definition = def
   - StructData = data
@@ -64,3 +61,4 @@ Unknowns
 - Definition of EffectReceiver base class (HP fields and behavior).
 - Behavior of DebugManager, DamageType, and how armor/resist would be modeled.
 - Any additional lifecycle events (beyond OnDied) or loot/XP handling specifics.
+```

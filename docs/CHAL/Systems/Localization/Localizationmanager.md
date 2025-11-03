@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Localization/Localizationmanager.cs`._
 
-```text
 1) Purpose
 - Defines a static localization helper in CHAL.Systems.Localization.
 - Loads translations from a JSON asset at Resources/Localization/{languageCode} via Load.
@@ -21,6 +20,7 @@ _Automatically generated/updated from `Assets/src/Systems/Localization/Localizat
     - Public methods
       - public static void Load(string languageCode)
       - public static string Translate(string key)
+
 ```
 
 ```text
@@ -33,6 +33,7 @@ _Automatically generated/updated from `Assets/src/Systems/Localization/Localizat
 - Translate(string key)
   - If _dict is non-null and contains the key, returns the mapped value.
   - Otherwise returns the input key (fallback).
+
 ```
 
 ```text
@@ -43,9 +44,10 @@ _Automatically generated/updated from `Assets/src/Systems/Localization/Localizat
 - _dict is a static field; no synchronization, so potential race conditions if Load is called concurrently.
 - Fallback behavior in Translate is limited to a missing dictionary or missing key; no other error signaling.
 - Path convention: asset must be at Resources/Localization/{languageCode} as a TextAsset.
+
 ```
 
-```text
+```csharp
 5) Example
 ```csharp
 LocalizationManager.Load("en");
@@ -59,4 +61,4 @@ string name = LocalizationManager.Translate("Enemy_InsectSwarm_Name");
 - Exact JSON structure expected by LocalizationDict is not shown.
 - Details of the dictionary content (e.g., all supported keys) are not known from this file.
 - Behavior when the language asset is malformed or missing is not explicitly defined beyond the lack of guards in this file.
-```
+

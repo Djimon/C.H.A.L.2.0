@@ -2,19 +2,21 @@
 
 _Automatically generated/updated from `Assets/src/UI/MapSelectionIUI.cs`._
 
-Purpose
+# Purpose
 - Defines a Unity UI component MapSelectionUI for selecting and starting a map.
 - Dynamically builds a list of map selection buttons from availableMaps in Awake.
 - Bridges UI interactions to game logic (start map, exit menu) and updates details display.
 
-Public API
+# Public API
 - Namespace/module: CHAL.UI
 - Types
   - public class MapSelectionUI : IngameUI
-    - Public fields/properties: none
+    - Public fields/properties:
+      - mapSceneName: Scene name for the map to start (default "04_Map").
+      - availableMaps: List of available maps for selection.
     - Public methods: none
 
-Key Behavior & Side Effects
+# Key Behavior & Side Effects
 - Awake (Unity lifecycle)
   - Calls base.Awake().
   - Retrieves root VisualElement from the UIDocument on this GameObject.
@@ -32,7 +34,7 @@ Key Behavior & Side Effects
   - Otherwise, calls GameManager.Instance.StartMap(mapSceneName, _selectedMap) to start the map (centralized start logic).
 - Note: mapSceneName defaults to "04_Map" and is passed along with the selected map to the start logic.
 
-Constraints & Failure Modes
+# Constraints & Failure Modes
 - Potential null/reference risks
   - availableMaps is not null before iteration; there is no guard, so null leads to NullReferenceException in Awake.
   - root = GetComponent<UIDocument>() may fail if UIDocument is missing; then rootVisualElement access will fail.
@@ -50,7 +52,10 @@ Constraints & Failure Modes
 - Performance/allocation
   - Creates a Button per availableMaps item at startup; no per-frame allocations noted.
 
-Unknowns
+# Example
+- Not provided, as surface usage relies on project-wide types (MapDef, GameManager, DebugManager) and Unity scene setup not shown in this file.
+
+# Unknowns
 - MapDef type details (structure of displayNameKey, baseLevel, etc.) are not defined in this file.
 - Exact behavior of GameManager.StartMap and what scene loading entails.
 - Exact behavior of DebugManager.Warning and any UI blocking during startup.
@@ -58,10 +63,3 @@ Unknowns
 - Localization specifics (how displayNameKey maps to text) are not defined here.
 - The type relationship and exact nature of IngameUI (base class) and Show(bool) behavior.
 
-Example
-- Not provided, as surface usage relies on project-wide types (MapDef, GameManager, DebugManager) and Unity scene setup not shown in this file.
-
-Unknowns (quick reference)
-- MapDef members: displayNameKey, baseLevel (as used here).
-- GameManager.StartMap implementation details.
-- UIDocument existence and specific UI element names (MapList, StartMap, Exit, Details) in the scene.

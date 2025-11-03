@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/UI/HeroSelectionUI.cs`._
 
 ```csharp
 # Documentation: Assets/src/UI/HeroSelectionUI.cs
-```
 
 1) Purpose
 - Defines a Unity UI component HeroSelectionUI for selecting heroes into map slots and starting waves.
@@ -16,7 +15,9 @@ _Automatically generated/updated from `Assets/src/UI/HeroSelectionUI.cs`._
   - CHAL.UI
 - Types
   - public class HeroSelectionUI : IngameUI
-    - Public fields/properties: none
+    - Public fields/properties: 
+      - List<string> availableHeroes
+      - List<string> selectedHeroes
     - Public methods
       - public void Init(MapManager mapMGR)
 
@@ -88,10 +89,4 @@ _Automatically generated/updated from `Assets/src/UI/HeroSelectionUI.cs`._
 - How hero avatars/images are to be populated beyond the placeholder color logic.
 - Exact UI structure and the resolution of UI element names in the Unity editor (names assumed by root.Q calls).
 - Any external side effects from selecting heroes beyond SetSelectedHeroes and StartWave.
-
-Code references (surface summarized, exact names preserved):
-- Class: HeroSelectionUI : IngameUI
-- Public API: Init(MapManager mapMGR)
-- Internal state: availableHeroes, selectedHeroes, _pendingHero, currentSlot, maxSlots
-- Slots/visuals: Slot1-4, imgSlot1Avatar-4, btnSlot1-4Select, btnStartWave, btnExitToHideout
-- Key methods: Awake, Init, OnChooseHeroClicked, UpdateSlotVisual, FillHeroContainer, OnExitToHideoutClicked, OnStartWaveClicked, OnSlotSelectClicked, OnHeroSelected, HighlightSlot
+```

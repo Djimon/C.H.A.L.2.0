@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Heroes/HeroInstance.cs`._
 
-```text
 1) Purpose
 - Defines the HeroInstance class that represents a single hero with stats, growth, HP, and basic combat interactions.
 - Encapsulates growth logic (attribute progression) and death handling, including a Died event for external listeners.
@@ -95,4 +94,4 @@ _Automatically generated/updated from `Assets/src/Systems/Heroes/HeroInstance.cs
   - GameObject integration and CurrentHP/MaxHP fields (likely in a base class)
 - Exact contents of Archetype.GrowthConfig and GrowthPattern.growthPriority
 - Any external lifecycle methods or Unity-specific behavior beyond what's shown
-```
+

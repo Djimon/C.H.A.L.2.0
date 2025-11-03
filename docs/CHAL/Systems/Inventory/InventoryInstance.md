@@ -4,7 +4,6 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/Invento
 
 ```csharp
 // Documentation for: Assets/src/Systems/Inventory/core/InventoryInstance.cs
-```
 
 1) Purpose
 - Defines InventoryInstance with basic inventory data: ID, definition, owned slot array, owner, and capabilities.
@@ -85,3 +84,4 @@ InventoryInstance inv = InventoryInstance.Create("inst-001", def, "owner-42");
 - How InventoryInstance and its fields are used elsewhere (e.g., mutability semantics, serialization)
 - Any additional behavior tied to Caps beyond storage of the flag
 - Expected thread-safety or lifecycle management for InventoryInstance instances
+```

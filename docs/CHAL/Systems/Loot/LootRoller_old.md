@@ -2,11 +2,10 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Loot/LootRoller_old.cs`._
 
-```text
 1) Purpose
 - Defines a class LootRoller_old that orchestrates loot generation for a WaveComposition, using LootRulesService and UnluckyProtection.
 - Performs normal drops per monster (when bonus tags exist), secret rule drops, and post-processing (min drops and guaranteed rarities).
-- Encapsulates helper logic for post-processing and (currently unused) smart trimming.
+- Encapsulates helper logic for post-processing and smart trimming.
 
 2) Public API
 - Namespace/module: CHAL.Systems.Loot
@@ -52,7 +51,7 @@ Note: Private members are not part of the public API surface.
       - candidates = merged.drops with d.rarity == rarity; if none, break.
       - pick a random candidate; add LootResultEntry { EnemyId = "PostProcess:Guarantees", PickedTag = pick.sourceTag, ItemId = pick.itemId }; log; count++.
 
-- SmartTrim behavior (defined but not active in RollLoot):
+- SmartTrim behavior:
   - If merged.maxDrops > 0 and loot.Count > merged.maxDrops:
     - Build a weighted list of current loot entries based on rarity-specific trim weights (balance.loot.trim.*).
     - If weightedList non-empty, remove a randomly selected entry from weightedList; log.
@@ -89,4 +88,4 @@ Note: Private members are not part of the public API surface.
   - LootBudgetCalculator and LootBudgetModulator logic and their interaction with B, U, and drop.lootValue.
   - Debug levels and exact formatting of DebugManager.Log calls.
 - Whether any of the external calls can throw exceptions or rely on specific invariants.
-```
+

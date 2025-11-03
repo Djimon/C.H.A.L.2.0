@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Research/ResearchState.cs`._
 
-```text
 1) Purpose
 - Defines serializable data structures for tracking research progress.
 - NodeProgress stores per-node metrics (waves, maps, kills, elites/bosses).
@@ -78,4 +77,4 @@ state.perNodeProgress["node_1"] = new NodeProgress
 - Definition and values of MapDifficulty enum are not present in this file.
 - Serialization behavior beyond [Serializable] (e.g., Unity-specific serialization nuances) is not specified.
 - Any higher-level behavior or methods that manipulate these structures are not present in this file.
-```
+

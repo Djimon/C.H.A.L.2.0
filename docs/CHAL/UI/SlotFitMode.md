@@ -21,3 +21,16 @@ Public API
     - Members:
       - FitWidth
       - FitBoth
+
+Key Behavior & Side Effects
+- None.
+
+Constraints & Failure Modes
+- None.
+
+Example
+- None.
+
+Unknowns
+- None.
+

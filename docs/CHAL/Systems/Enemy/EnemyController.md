@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Enemy/EnemyController.cs`._
 
-```text
 1) Purpose
 - Defines EnemyController (MonoBehaviour) implementing IUnitController for enemy units.
 - Manages EnemyDef, EnemyData, EnemyInstance and a list of base SkillInstance attacks; coordinates targeting, movement, cooldowns, and casting.
@@ -63,7 +62,6 @@ _Automatically generated/updated from `Assets/src/Systems/Enemy/EnemyController.
   - FindNextHeroTarget: collects all HeroController instances; returns closest alive hero
 
 - Mouse & effect interface
-  - OnMouseDown: debug/damage shortcut: applies 999 Physical damage
   - GetEffectReceiver: returns EnemyInstance
 
 - Misc
@@ -103,4 +101,3 @@ _Automatically generated/updated from `Assets/src/Systems/Enemy/EnemyController.
 - Any side effects of EnemyInstance.OnDied beyond local handling
 - Details of how animations are wired to Skills (animationType is logged, but wiring is not shown)
 
-```

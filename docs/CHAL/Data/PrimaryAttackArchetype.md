@@ -2,13 +2,10 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
 
-```text
 1) Purpose
 - Defines ArchetypeDef as a Unity ScriptableObject for hero archetypes (identifiers, display, role, stats, growth, and signature passive).
 - Provides serializable support types: ArchetypeGrowthConfig, LevelGrowthPattern, LevelGrowthRole, PrimaryAttackArchetype.
 - Exposes editor-time validation for growth configuration via OnValidate; uses DebugManager for errors.
-
-```
 
 2) Public API
 - Namespace/module
@@ -81,3 +78,4 @@ Notes
 - Definitions and runtime behavior of HeroSlot, HeroAIPrio, HeroAttribs, ModifierDef, and DebugManager are not present in this file.
 - Exact usage semantics of GrowthConfig (beyond the target fields) and how GrowthPattern influences gameplay are not specified here.
 - Behavior of external tooling or editor scripts interacting with these types is not defined in this file.
+

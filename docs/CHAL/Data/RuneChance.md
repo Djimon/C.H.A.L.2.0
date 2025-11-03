@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/RuneForgeConfig.cs`._
 
-```text
 Purpose
 - Define data structures for a Rune Forge configuration and a ScriptableObject to store them.
 - Represent an input item (remain) and a set of possible runes with weights per entry.
@@ -66,3 +65,4 @@ Unknowns
 - How entries are interpreted/used at runtime (beyond data storage) is not specified.
 - Validation rules beyond Weight range are not defined in this file.
 - Persistence/asset lifecycle behavior (loading, refreshing) is not shown here.
+

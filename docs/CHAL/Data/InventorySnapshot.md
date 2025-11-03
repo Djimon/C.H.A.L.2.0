@@ -153,4 +153,3 @@ public class Demo
 - Exact runtime behavior for null/empty collections in some edge cases (e.g., state.perNodeProgress in BuildResearchSnapshotFrom)
 - Any higher-level persistence format or file layout used by SaveSystem
 
-Note: This file is a Unity data container with serialization hints and runtime helpers for save/load and state management.

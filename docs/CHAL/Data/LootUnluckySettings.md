@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 1) Purpose
 - Defines a Unity ScriptableObject: CHAL.Data.GameBalanceConfig
 - Groups game balance configuration into Loot, Waves/Enemies, Skills, and Economy via serializable structs
@@ -13,6 +12,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
 
 - public class GameBalanceConfig : ScriptableObject
   - public LootSettings loot
+  - public EnemySettings enemies
   - public SkillRanges skillRanges
   - public bool AllowFriendlyFire = false
   - public EconomySettings economy
@@ -26,10 +26,10 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
     - public float beta
 
   - public struct LootFloorSettings
-    - public float rare
-    - public float epic
-    - public float legendary
-    - public float specials
+    - [Range(0, 1)] public float rare
+    - [Range(0, 1)] public float epic
+    - [Range(0, 1)] public float legendary
+    - [Range(0, 1)] public float specials
 
   - public struct LootUnluckySettings
     - public float alphaRare
@@ -38,11 +38,11 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
     - public float alphaSpecials
 
   - public struct LootTrimSettings
-    - public float common
-    - public float uncommon
-    - public float rare
-    - public float epic
-    - public float legendary
+    - [Range(0, 1)] public float common
+    - [Range(0, 1)] public float uncommon
+    - [Range(0, 1)] public float rare
+    - [Range(0, 1)] public float epic
+    - [Range(0, 1)] public float legendary
 
   - public struct LootRankMultipliers
     - public int spawn
@@ -118,14 +118,6 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
     - public CurrencySettings currencies
     - public XpSettings xp
 
-2) Public API (continued)
-- Section-level public fields
-  - Loot: public LootSettings loot
-  - Waves/Enemies: public EnemySettings enemies
-  - Skills: public SkillRanges skillRanges
-  - Global: public bool AllowFriendlyFire
-  - Economy: public EconomySettings economy
-
 3) Key Behavior & Side Effects
 - GetRangeValue(SkillRange range) selects and returns the corresponding value from skillRanges based on SkillRange
   - Self -> skillRanges.selfRange
@@ -137,7 +129,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
 - LootRankMultipliers.GetMultiplier(EnemyRank rank) returns the multiplier corresponding to the rank, with a default of 1
 - EnemyRankSettings.GetScaling(EnemyRank rank) returns the RankScaling for the given rank, with a default of normal
 - The class is marked with CreateAssetMenu, enabling creation of assets via Unity editor
-- Editor grouping via [Header] attributes for Loot, Skill, Economy sections
+- Editor grouping via [Header] attributes for Loot, Skill, Economy, and Enemy sections
 
 4) Constraints & Failure Modes
 - Range attributes constrain certain fields in the editor:
@@ -165,4 +157,4 @@ float val = config.GetRangeValue(SkillRange.Self);
 - Definitions and values for EnemyRank, SkillRange, and how they map across the rest of the codebase are not included here
 - How these settings are consumed by actual game systems (combat, loot drops, wave spawning) is not shown
 - Any default initialization behavior for the nested structs is not specified beyond field defaults in code
-```
+

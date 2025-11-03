@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
 
-```text
 1) Purpose
 - Defines the Hero archetype data model as a Unity ScriptableObject (ArchetypeDef) and related growth/config structures.
 - Encapsulates metadata for a hero archetype (IDs, display names, role description), slot preferences, AI priorities, attribute allocations, growth targets, and a signature passive modifier.
@@ -31,7 +30,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
       - public ModifierDef SignaturePassive;   // ScriptableObject with ModifierData
     - Private methods
       - private void OnValidate()
-        - If GrowthConfig?.GrowthPattern?.growthPriority == null
+        - If GrowthConfig?.GrowthPattern?.growthPriority is null
           - Debugs error: "[ArchetypeDef] {name}: GrowthPattern muss genau 5 Eintrge haben." with category "Edtior"
           - return
         - int len = GrowthConfig.GrowthPattern.growthPriority.Length;
@@ -90,4 +89,4 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
 - Definitions and behavior of HeroSlot, HeroAIPrio, HeroAttribs, ModifierDef, DebugManager, and the exact runtime usage of ArchetypeDef fields (e.g., how GrowthConfig interacts with gameplay) are not defined in this file.
 - Exact behavior of DebugManager.Error (logging mechanics, localization, etc.) is not specified.
 - Interaction with other systems (e.g., how PreferredSlots, DefaultAIPrio, or SignaturePassive are consumed) is not defined here.
-```
+

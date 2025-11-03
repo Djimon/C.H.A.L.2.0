@@ -63,6 +63,7 @@ _Automatically generated/updated from `Assets/src/Data/Enums/SkillEnums.cs`._
     - Armor
     - MaxHP
     - LeechFactor
+    - // beliebig erweiterbar (extensions are possible)
   - public enum ModifierOperation
     - Add
     - Mult

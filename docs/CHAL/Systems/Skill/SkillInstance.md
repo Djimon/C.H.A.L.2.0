@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Skills/SkillInstance.cs`._
 
-```text
 1) Purpose
 - Defines the SkillInstance class which represents a runtime instance of a Skill for a specific owner.
 - Computes and exposes derived stat values (Damage, CastTime, Cooldown, Range, Duration, ProjectileSpeed, ProjectileCount, AoERadius) from SkillData + owner modifiers.
@@ -87,3 +86,4 @@ if (instance.IsReady())
 - Behavior and lifecycle of BalanceManager.GetRangeValue.
 - Details of DebugManager and its logging configuration.
 - Integration points with Unity's update loop or event system.
+

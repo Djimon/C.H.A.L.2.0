@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Inventory/core/MoveRequest.cs`._
 
-```text
 1) Purpose
 - Defines data containers for inventory move operations.
 - MoveRequest: describes a request to move items between inventories.
@@ -60,4 +59,4 @@ var req = new MoveRequest
 - How ItemMoveObject.instanceID maps to actual inventory systems.
 - Validation rules, defaults, or serialization behavior for these types.
 - Any lifecycle or integration details outside this file.
-```
+

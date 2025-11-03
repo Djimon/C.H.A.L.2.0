@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.cs`._
 
-```text
 1) Purpose
 - Define a ScriptableObject-based game balance configuration (GameBalanceConfig) with structured, serializable settings for loot, waves, enemies, skills, and economy.
 - Provide public, nested data structures to configure budgets, scaling, ranges, multipliers, and tag pools used by gameplay systems.
@@ -20,13 +19,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
     - Public fields
       - [Header("Loot Settings")] public LootSettings loot
       - [Header("Enemy Settings")] public EnemySettings enemies
-      - [System.Serializable] public struct SkillRanges
-        - public float selfRange
-        - public float meleeRange
-        - public float reachRange
-        - public float midDistanceRange
-        - public float farDistanceRange
-      - public SkillRanges skillRanges
+      - [Header("Skill Settings")] public SkillRanges skillRanges
       - public bool AllowFriendlyFire = false
       - public EconomySettings economy
 
@@ -133,7 +126,12 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
     - public List<string> magicTagPool
     - public int minEliteTags
 
-  - public struct SkillRanges (see above)
+  - public struct SkillRanges
+    - public float selfRange
+    - public float meleeRange
+    - public float reachRange
+    - public float midDistanceRange
+    - public float farDistanceRange
 
   - public struct CurrencySettings
     - public int baseGoldReward
@@ -196,4 +194,4 @@ int baseGold = cfg.economy.currencies.baseGoldReward;
 - Exact runtime usage of these settings in gameplay systems (e.g., how budgets and scaling translate to waves or loot drops) is not specified here.
 - Semantics of some fields (e.g., LootBudgetSettings.beta) are not defined beyond simple comments in the code.
 - Default asset values and how missing assets are handled at runtime are not described.
-```
+

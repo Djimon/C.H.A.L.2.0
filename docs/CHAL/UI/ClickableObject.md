@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/UI/misc/ClickableObject.cs`._
 
-```text
 1) Purpose
 - Defines a Unity MonoBehaviour ClickableObject that toggles a per-object shimmer shader on hover and shows a UI menu on click.
 - Exposes a public field to assign a menu UI GameObject in the Inspector.
@@ -74,3 +73,4 @@ obj.OnClick();       // attempt to show associated UI if available and unlocked
 - Details of GameManager.Instance.ResearchUnlocks and IsUnlockedCraftingFeature implementation.
 - Shader behavior beyond property name "_shimmerOn" (e.g., how it visually renders).
 - Any additional side effects from external scripts or editor tooling not present in this file.
+

@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/Save Custom/ExampleSaveCustom.cs`._
 
-```text
 1) Purpose
 - Defines a Unity MonoBehaviour example (ExampleSaveCustom) that demonstrates saving and loading a custom data structure using SaveGameFree.
 - Declares serializable nested types Level (struct) and CustomData (class) to model the saved data.
@@ -64,4 +63,4 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
 - Implementation details of SaveGame.Save/Load and SerializerDropdown behavior.
 - Exact serialization semantics for nested types Level and CustomData beyond what's shown.
 - Impact of missing or invalid saved data beyond default CustomData constructor.
-```
+

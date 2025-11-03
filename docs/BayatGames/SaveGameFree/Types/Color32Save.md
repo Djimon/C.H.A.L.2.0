@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/Types/Color32Save.cs`._
 
-```text
 Purpose
 - Represent RGBA color in 32-bit format.
 - Be serializable by Unity ([Serializable]).
@@ -53,4 +52,3 @@ Unknowns
 - Performance implications of repeated implicit conversions.
 - Interaction with Unity version-specific serialization rules.
 
-```

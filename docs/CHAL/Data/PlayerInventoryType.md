@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/Data/Enums/InventroyType.cs`._
 
-```text
 1) Purpose
 - Defines a serializable enum PlayerInventoryType in CHAL.Data.
 - Enumerates inventory category values: all, Remains, Part, Rune, Module, Gear.
@@ -37,4 +36,4 @@ public class ExampleUsage
 6) Unknowns
 - File name InventroyType.cs uses a different spelling than the enum name (Inventroy vs PlayerInventoryType).
 - No usage context beyond this file; behavior in serialization or UI depends on consuming code.
-```
+

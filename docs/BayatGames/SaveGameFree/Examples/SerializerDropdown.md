@@ -2,7 +2,6 @@
 
 _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/Shared/Scripts/SerializerDropdown.cs`._
 
-```text
 1) Purpose
 - Defines a Unity UI Dropdown (SerializerDropdown) to select the serialization format (XML, JSON, Binary) used by SaveGameFree.
 - Implements a singleton pattern and exposes the instance via SerializerDropdown.Singleton.
@@ -52,4 +51,4 @@ _Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Examples/
 - Exact behavior and side effects of SaveGame.Load/Save calls beyond the signatures shown.
 - Interactions with external code that might manipulate the dropdown value or serializer list at runtime.
 - Whether additional serializers are added elsewhere or at runtime (only three are defined here).
-```
+
