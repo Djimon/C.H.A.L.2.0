@@ -8,7 +8,7 @@ _Automatically generated/updated from `Assets/src/Systems/Items/ItemRegistry.cs`
 1) Purpose
 - Defines a singleton ScriptableObject-based registry for items (ItemDef) loaded from Unity Resources.
 - Builds an in-memory lookup by itemId and exposes basic accessors (rarity, loot value, existence, type).
-- Performs module/gear/recipe validations, creates placeholder items for missing references, and writes validation reports to CSV files (ModulePartValidation.csv, etc.). 
+- Performs module/gear/recipe validations, creates placeholder items for missing references, and writes validation reports to CSV files (ModulePartValidation.csv, etc.).
 
 2) Public API
 - Namespace: CHAL.Systems.Items

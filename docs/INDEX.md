@@ -181,7 +181,7 @@ All documented namespaces and types.
 - [TransactionResult](CHAL/Systems/Inventory/TransactionResult.md) (2025-11-03)
 
 ## CHAL.Systems.Items
-- [ItemRegistry](CHAL/Systems/Items/ItemRegistry.md) (2025-11-03)
+- [ItemRegistry](CHAL/Systems/Items/ItemRegistry.md) (new)
 - [ItemType](CHAL/Systems/Items/ItemType.md) (2025-11-03)
 
 ## CHAL.Systems.Localization
