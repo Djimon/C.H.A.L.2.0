@@ -45,7 +45,8 @@ RE_FINDING_LINE = re.compile(
 
 # Für das eigentliche Ersetzen: DebugManager.X("...") auf der Zeile
 RE_DEBUG_MANAGER_CALL = re.compile(
-    r'(DebugManager\.\w+)\s*\(\s*(@"[^"]*"|"[^"]*")'
+    r'(DebugManager\.\w+)\s*\(\s*([@$]*"[^"]*")',
+    re.MULTILINE,
 )
 
 
