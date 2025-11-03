@@ -13,6 +13,33 @@ DOC_EXTS = {".cs"}  # aktuell nur C#, kann erweitert werden
 SUMMARY_FINDING = "Agent/Summary"
 DEBUG_FINDING = "Agent/DebugLanguage"
 
+UNITY_METHOD_EXCLUSIONS = {
+    "Awake",
+    "OnEnable",
+    "Start",
+    "Update",
+    "FixedUpdate",
+    "LateUpdate",
+    "OnDisable",
+    "OnDestroy",
+    "Reset",
+    "OnValidate",
+    "OnDrawGizmos",
+    "OnDrawGizmosSelected",
+    "OnTriggerEnter",
+    "OnTriggerEnter2D",
+    "OnTriggerStay",
+    "OnTriggerStay2D",
+    "OnTriggerExit",
+    "OnTriggerExit2D",
+    "OnCollisionEnter",
+    "OnCollisionEnter2D",
+    "OnCollisionStay",
+    "OnCollisionStay2D",
+    "OnCollisionExit",
+    "OnCollisionExit2D",
+}
+
 
 @dataclass
 class Finding:
@@ -253,6 +280,9 @@ def check_missing_summary(path: str, text: str) -> List[Finding]:
         m_method = RE_PUBLIC_METHOD.match(line)
         if m_method:
             name = m_method.group(1)
+            # Unity-Standard-Lifecycle-Methoden ignorieren
+            if name in UNITY_METHOD_EXCLUSIONS:
+                continue
             findings.append(
                 Finding(
                     kind=SUMMARY_FINDING,
