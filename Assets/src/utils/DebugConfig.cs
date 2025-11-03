@@ -11,7 +11,7 @@ public class DebugConfig : ScriptableObject
     public bool productiveMode = false;
 
     // Wenn true: unbekannte Tags, die erstmalig geloggt werden,
-    // automatisch ins Asset übernehmen (mit Standardfarbe weiß, active=true).
+    // automatisch ins Asset Ã¼bernehmen (mit Standardfarbe weiÃŸ, active=true).
     public bool autoAddUnknownTagsToAsset = true;
 
     public bool includeGameTimestamps = false;

@@ -121,7 +121,7 @@ namespace CHAL.Systems.Hero
 
         public float GetEffectiveBaseDamage()
         {
-            // TODO: ActiveModifiers berücksichtigen (Multiplikatoren/Additive)
+            // TODO: ActiveModifiers berÃ¼cksichtigen (Multiplikatoren/Additive)
             return heroDef.BaseDamage;
         }
 
@@ -140,7 +140,7 @@ namespace CHAL.Systems.Hero
             // Punkte anteilig das accu-shares auf die 5 Attribute aufladen
             foreach (var kv in _goals)
             {
-                //akkumulator wird auf Basis des Zielwertes in abhängigkeit des aktuellen levels geladen
+                //akkumulator wird auf Basis des Zielwertes in abhÃ¤ngigkeit des aktuellen levels geladen
                 double share = (double)kv.Value / _totalGrowth;
                 _accumulator[kv.Key] += share * ptsThisLevel;
             }
@@ -148,7 +148,7 @@ namespace CHAL.Systems.Hero
             // Punkte vergeben
             while (_accumulator.Any(x => x.Value >= 1.0))
             {
-                //Welcher stat ist "dran"? -> höchster Akkumulator  -> Prio-riehenfolge
+                //Welcher stat ist "dran"? -> hÃ¶chster Akkumulator  -> Prio-riehenfolge
                 var next = _accumulator
                     .OrderByDescending(x => x.Value)
                     .ThenBy(x => Guid.NewGuid()) // Random-Tiebreak

@@ -7,7 +7,7 @@ namespace CHAL.Systems.Loot
     public static class LootBudgetModulator
     {
         /// <summary>
-        /// Berechnet den Multiplikator für die Dropchance basierend auf Budget-Overflow.
+        /// Berechnet den Multiplikator fÃ¼r die Dropchance basierend auf Budget-Overflow.
         /// </summary>
         public static float GetModifier(int U, int v_i, int B, Rarity rarity)
         {

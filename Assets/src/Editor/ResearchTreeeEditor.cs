@@ -40,7 +40,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
     private void EnsureStyles()
     {
-        // Fallback auf Built-in Skin, falls EditorStyles (früh) null liefert
+        // Fallback auf Built-in Skin, falls EditorStyles (frÃ¼h) null liefert
         var toolbar = EditorStyles.toolbarButton ?? EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).button;
         if (_tabStyleOn == null) _tabStyleOn = new GUIStyle(toolbar) { fontStyle = FontStyle.Bold };
         if (_tabStyleOff == null) _tabStyleOff = new GUIStyle(toolbar);
@@ -68,7 +68,7 @@ public sealed class ResearchTreeDefEditor : Editor
             stagesList.elementHeightCallback = idx =>
             {
                 if (idx < 0 || idx >= stagesProp.arraySize) return EditorGUIUtility.singleLineHeight + 20f;
-                // Sicherstellen, dass es eine Nodes-ReorderableList für diese Stage gibt
+                // Sicherstellen, dass es eine Nodes-ReorderableList fÃ¼r diese Stage gibt
                 var key = (lane: laneIdx, stage: idx);
                 if (!_nodesLists.TryGetValue(key, out var nlist))
                 {
@@ -98,7 +98,7 @@ public sealed class ResearchTreeDefEditor : Editor
                     _nodesLists[key] = nodeList;
                 }
 
-                // Höhe der Nodes-Liste sauber berechnen, damit Buttons sicher innerhalb des Elements liegen
+                // HÃ¶he der Nodes-Liste sauber berechnen, damit Buttons sicher innerhalb des Elements liegen
                 float nodesH = CalcNodesListHeight(nodeList, nodesProp);
 
                 var rNodes = new Rect(rect.x, rHeader.yMax + 4f, rect.width, nodesH);
@@ -246,7 +246,7 @@ public sealed class ResearchTreeDefEditor : Editor
     {
         var menu = new GenericMenu();
 
-        // Aktuellen Zustand holen & prüfen
+        // Aktuellen Zustand holen & prÃ¼fen
         var lanesProp = serializedObject.FindProperty("researchTreeLanes");
         if (lanesProp == null || lanesProp.arraySize == 0)
         {
@@ -276,7 +276,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
         int safeStage = Mathf.Clamp(stageIndex, 0, stageCount - 1);
 
-        // Kandidaten aus früheren Stages derselben Lane einsammeln
+        // Kandidaten aus frÃ¼heren Stages derselben Lane einsammeln
         var candidates = new List<UnityEngine.Object>();
         for (int s = 0; s < safeStage; s++)
         {
@@ -318,7 +318,7 @@ public sealed class ResearchTreeDefEditor : Editor
         EnsureStyles();
         serializedObject.Update();
 
-        // --- VISUELLE KONFIG (unverändert) ---
+        // --- VISUELLE KONFIG (unverÃ¤ndert) ---
         EditorGUILayout.LabelField("Lane Labels & Colors (Visual)", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("researchLanes"), includeChildren: true);
 
@@ -356,7 +356,7 @@ public sealed class ResearchTreeDefEditor : Editor
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("Actual Research Tree", EditorStyles.boldLabel);
 
-        // Tabs basieren auf researchTreeLanes; wenn leer → Init aus Visual-Lanes anbieten
+        // Tabs basieren auf researchTreeLanes; wenn leer â†’ Init aus Visual-Lanes anbieten
         DrawLaneTabs();
 
         EditorGUILayout.Space(6);
@@ -404,29 +404,29 @@ public sealed class ResearchTreeDefEditor : Editor
                             .Select(s => s.Trim())
                             .ToList();
 
-        // Dedupe rein für die Anzeige (wir mutieren NICHT)
+        // Dedupe rein fÃ¼r die Anzeige (wir mutieren NICHT)
         var seen = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
         var dedup = ids.Where(s => seen.Add(s)).ToList();
 
         // Node-Targets einsammeln
         var nodeIds = CollectNodeTargetIds(_tree);
 
-        // Überschneidungen
+        // Ãœberschneidungen
         var overlaps = dedup.Where(id => nodeIds.Contains(id)).ToList();
 
         // Feedback
         var msg =
             $"IDs eingetragen: {dedup.Count}\n" +
-            $"(Leer/duplikate Einträge werden ignoriert)\n\n" +
+            $"(Leer/duplikate EintrÃ¤ge werden ignoriert)\n\n" +
             (overlaps.Count > 0
-                ? "Überschneidungen mit Node-Unlocks:\n- " + string.Join("\n- ", overlaps)
-                : "Keine Überschneidungen mit Node-Unlocks gefunden.");
+                ? "Ãœberschneidungen mit Node-Unlocks:\n- " + string.Join("\n- ", overlaps)
+                : "Keine Ãœberschneidungen mit Node-Unlocks gefunden.");
 
         EditorUtility.DisplayDialog("Validate Always Unlocked IDs", msg, "OK");
 
         if (overlaps.Count > 0)
         {
-            Debug.LogWarning($"[ResearchTree] AlwaysUnlocked überschneiden sich mit Nodes: {string.Join(", ", overlaps)}", _tree);
+            Debug.LogWarning($"[ResearchTree] AlwaysUnlocked Ã¼berschneiden sich mit Nodes: {string.Join(", ", overlaps)}", _tree);
         }
     }
 
@@ -463,7 +463,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
         using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
         {
-            // Tabs (auch 0 Tree-Lanes möglich)
+            // Tabs (auch 0 Tree-Lanes mÃ¶glich)
             if (treeLanesProp.arraySize > 0)
             {
                 for (int i = 0; i < treeLanesProp.arraySize; i++)
@@ -484,7 +484,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
             GUILayout.FlexibleSpace();
 
-            // Sync immer verfügbar
+            // Sync immer verfÃ¼gbar
             using (new EditorGUI.DisabledScope(visualLanesProp.arraySize == 0))
             {
                 if (GUILayout.Button(new GUIContent("Sync Tree Lanes from Visual Lanes"), EditorStyles.toolbarButton))
@@ -493,7 +493,7 @@ public sealed class ResearchTreeDefEditor : Editor
                     Undo.RecordObject(target, "Sync Tree Lanes");
                     SyncTreeLanesFromVisual(visualLanesProp, treeLanesProp);
 
-                    // Änderungen festschreiben und Properties neu einlesen
+                    // Ã„nderungen festschreiben und Properties neu einlesen
                     serializedObject.ApplyModifiedProperties();
                     serializedObject.Update();
 
@@ -528,7 +528,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
     private float CalcNodesListHeight(ReorderableList nodeList, SerializedProperty nodesProp)
     {
-        // ReorderableList-typische Maße:
+        // ReorderableList-typische MaÃŸe:
         const float header = 18f;   // List-Header
         const float footer = 13f;   // Footer mit +/-
         float row = nodeList.elementHeight <= 0 ? EditorGUIUtility.singleLineHeight + 6 : nodeList.elementHeight;
@@ -540,10 +540,10 @@ public sealed class ResearchTreeDefEditor : Editor
 
     private float CalcStageHeight(int laneIndex, int stageIndex, ReorderableList nodeList, SerializedProperty stagesProp)
     {
-        // Höhe des Stage-Headers
+        // HÃ¶he des Stage-Headers
         float h = EditorGUIUtility.singleLineHeight + 6f;
 
-        // Höhe der Nodes-Liste in dieser Stage
+        // HÃ¶he der Nodes-Liste in dieser Stage
         var nodesProp = stagesProp.GetArrayElementAtIndex(stageIndex).FindPropertyRelative("nodes");
         h += CalcNodesListHeight(nodeList, nodesProp);
 
@@ -556,7 +556,7 @@ public sealed class ResearchTreeDefEditor : Editor
         int vCount = visualLanes.arraySize;
         int tCount = treeLanes.arraySize;
 
-        // Kürzen, wenn Tree mehr Lanes hat als Visual
+        // KÃ¼rzen, wenn Tree mehr Lanes hat als Visual
         if (tCount > vCount)
         {
             int removed = tCount - vCount;
@@ -564,12 +564,12 @@ public sealed class ResearchTreeDefEditor : Editor
                 treeLanes.DeleteArrayElementAtIndex(i);
 
             DebugManager.Log(
-                $"ResearchTree Sync: {removed} Tree-Lane(s) entfernt (keine Visual-Lanes dafür vorhanden).",
+                $"ResearchTree Sync: {removed} Tree-Lane(s) entfernt (keine Visual-Lanes dafÃ¼r vorhanden).",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Warning
             );
         }
 
-        // Auffüllen, wenn Visual mehr Lanes hat
+        // AuffÃ¼llen, wenn Visual mehr Lanes hat
         if (vCount > treeLanes.arraySize)
         {
             int add = vCount - treeLanes.arraySize;
@@ -582,12 +582,12 @@ public sealed class ResearchTreeDefEditor : Editor
             }
 
             DebugManager.Log(
-                $"ResearchTree Sync: {add} Tree-Lane(s) hinzugefügt (aus Visual-Lanes).",
+                $"ResearchTree Sync: {add} Tree-Lane(s) hinzugefÃ¼gt (aus Visual-Lanes).",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Log
             );
         }
 
-        // Namen/Farben übernehmen (Stages erhalten)
+        // Namen/Farben Ã¼bernehmen (Stages erhalten)
         for (int i = 0; i < treeLanes.arraySize && i < vCount; i++)
         {
             var v = visualLanes.GetArrayElementAtIndex(i);
@@ -598,7 +598,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
             t.FindPropertyRelative("laneName").stringValue = vName;
             t.FindPropertyRelative("laneColor").colorValue = vColor;
-            // Stages unverändert lassen
+            // Stages unverÃ¤ndert lassen
         }
     }
 
@@ -623,7 +623,7 @@ public sealed class ResearchTreeDefEditor : Editor
                     parentLinks += kv.Value?.Count ?? 0;
 
             DebugManager.Log(
-                $"ResearchTree Compile OK → Lanes={laneCount}, Stages={stageCount}, Nodes={nodeCount}, ParentLinks={parentLinks}",
+                $"ResearchTree Compile OK â†’ Lanes={laneCount}, Stages={stageCount}, Nodes={nodeCount}, ParentLinks={parentLinks}",
                 DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log
             );
 
@@ -701,7 +701,7 @@ public sealed class ResearchTreeDefEditor : Editor
         EditorGUIUtility.PingObject(node);
         ResearchNodeEditorWindow.ShowFor(node);
 
-        DebugManager.Log($"CreateNewNodeAsset: erstellt → {path}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
+        DebugManager.Log($"CreateNewNodeAsset: erstellt â†’ {path}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
         return node;
     }
 

@@ -27,7 +27,7 @@ namespace CHAL.Systems.Loot
                     var rule = ToRule(dto, ta.name);
                     if (_byTag.ContainsKey(rule.tag))
                     {
-                        DebugManager.Warning($"[LootRules] Duplicate tag '{rule.tag}' in {ta.name}, wird überschrieben.");
+                        DebugManager.Warning($"[LootRules] Duplicate tag '{rule.tag}' in {ta.name}, wird Ã¼berschrieben.");
                     }
                     _byTag[rule.tag] = rule;
                 }
@@ -65,7 +65,7 @@ namespace CHAL.Systems.Loot
             foreach (var d in dto.drops)
             {
                 if (!ItemKey.TryParse(d.itemId, out _))
-                    throw new System.Exception($"Ungültige itemId '{d.itemId}'");
+                    throw new System.Exception($"UngÃ¼ltige itemId '{d.itemId}'");
 
                 if (!ItemRegistry.Instance.TryGet(d.itemId, out var def))
                 {
@@ -87,16 +87,16 @@ namespace CHAL.Systems.Loot
 
                 // Validierung: chance ODER chancesArray
                 if (drop.chance is float c && (c < 0 || c > 100))
-                    throw new System.Exception($"chance {c} außerhalb [0,100] für '{d.itemId}'");
+                    throw new System.Exception($"chance {c} auÃŸerhalb [0,100] fÃ¼r '{d.itemId}'");
                 if (drop.chancesArray != null)
                 {
                     foreach (var cc in drop.chancesArray)
                     {
-                        if (cc < 0 || cc > 100) throw new System.Exception($"chances[] Wert {cc} außerhalb [0,100] für '{d.itemId}'");
+                        if (cc < 0 || cc > 100) throw new System.Exception($"chances[] Wert {cc} auÃŸerhalb [0,100] fÃ¼r '{d.itemId}'");
                     }
                 }
                 if (drop.chance == null && drop.chancesArray == null)
-                    throw new System.Exception($"Weder chance noch chances[] gesetzt für '{d.itemId}'");
+                    throw new System.Exception($"Weder chance noch chances[] gesetzt fÃ¼r '{d.itemId}'");
 
                 rule.drops.Add(drop);
             }
@@ -109,8 +109,8 @@ namespace CHAL.Systems.Loot
 
         // Merge-Policy: 
         // - drops: concat in Reihenfolge der Tags (stabil)
-        // - minDrops/maxDrops: nehmen das MAX über alle beteiligten Tags (0 wird ignoriert)
-        // - rarityGuarantees: pro Rarity das MAX über alle Tags
+        // - minDrops/maxDrops: nehmen das MAX Ã¼ber alle beteiligten Tags (0 wird ignoriert)
+        // - rarityGuarantees: pro Rarity das MAX Ã¼ber alle Tags
         public MergedLoot GetMergedForTags(IEnumerable<string> tags)
         {
             var merged = new MergedLoot();
@@ -119,7 +119,7 @@ namespace CHAL.Systems.Loot
             {
                 if (!_byTag.TryGetValue(tag, out var rule))
                 {
-                    DebugManager.Warning($"[LootRules] Keine Rule für tag '{tag}' gefunden");
+                    DebugManager.Warning($"[LootRules] Keine Rule fÃ¼r tag '{tag}' gefunden");
                     continue;
                 }
 

@@ -12,7 +12,7 @@ namespace CHAL.Systems.Skill
         private int CurrentMaxStacks = 1;
         public float internalTickTimer;
 
-        // Regeln für Stacking
+        // Regeln fÃ¼r Stacking
         public StackingMode Stacking = StackingMode.AddStacks;
 
         public DoTStatusEffect(DoTSettings settings)

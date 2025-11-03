@@ -7,7 +7,7 @@ namespace CHAL.Systems.Loot
     public static class LootBudgetCalculator
     {
         /// <summary>
-        /// Berechnet das Loot-Budget für eine Welle.
+        /// Berechnet das Loot-Budget fÃ¼r eine Welle.
         /// </summary>
         public static int CalculateBudget(
             int spawns=0,int normals=0, int magics=0, int elites=0, int bosses=0, int champions=0, int level=1, MapDifficulty difficulty=MapDifficulty.Stable)
@@ -29,7 +29,7 @@ namespace CHAL.Systems.Loot
             float variance = Random.Range(-cfg.loot.budget.budgetVariance, cfg.loot.budget.budgetVariance);
             float B_var = B_scaled * (1f + variance);
 
-            // 4. Runden und zurückgeben
+            // 4. Runden und zurÃ¼ckgeben
             return Mathf.Max(0, Mathf.RoundToInt(B_var));
         }
 

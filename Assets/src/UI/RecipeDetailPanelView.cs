@@ -91,7 +91,7 @@ namespace CHAL.UI
             _failLabel.text = "";
 
             _name.text = string.IsNullOrEmpty(r.displayKey) ? r.name : r.displayKey;
-            _baseStats.text = "base stats"; // Platzhalter – später via GearStatsProvider befüllen
+            _baseStats.text = "base stats"; // Platzhalter â€“ spÃ¤ter via GearStatsProvider befÃ¼llen
 
             // Icon (falls vorhanden)
             if (r.icon != null)
@@ -140,7 +140,7 @@ namespace CHAL.UI
             bool hasGold = haveGold > needGold;
             bool localCanCraft = hasAllIngs && hasGold;
 
-            // Optionaler Gate durch Preview (falls du zusätzliche Regeln zentral prüfen willst)
+            // Optionaler Gate durch Preview (falls du zusÃ¤tzliche Regeln zentral prÃ¼fen willst)
             bool finalCanCraft = localCanCraft && preview.canCraft;
             // Craft-Button
             _craftBtn.SetEnabled(finalCanCraft);
@@ -174,13 +174,13 @@ namespace CHAL.UI
         {
             _tooltip.style.display = _tooltip.style.display == DisplayStyle.None ? DisplayStyle.Flex : DisplayStyle.None;
 
-            // Liste könnte hier dynamisch bestückt werden (z. B. aus RollProfile), vorerst leer/Platzhalter:
+            // Liste kÃ¶nnte hier dynamisch bestÃ¼ckt werden (z. B. aus RollProfile), vorerst leer/Platzhalter:
             if (_tooltipList.childCount == 0)
             {
-                _tooltipList.Add(new Label("• implicit A"));
-                _tooltipList.Add(new Label("• implicit B"));
-                _tooltipList.Add(new Label("• implicit C"));
-                _tooltipList.Add(new Label("• implicit D"));
+                _tooltipList.Add(new Label("â€¢ implicit A"));
+                _tooltipList.Add(new Label("â€¢ implicit B"));
+                _tooltipList.Add(new Label("â€¢ implicit C"));
+                _tooltipList.Add(new Label("â€¢ implicit D"));
             }
         }
     }

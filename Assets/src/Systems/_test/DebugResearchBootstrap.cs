@@ -24,14 +24,14 @@ public sealed class ResearchBootstrap : MonoBehaviour
     [Header("Debug UI")]
     public ResearchMapView mapView;
 
-    //Readonly nach druaﬂen geben
+    //Readonly nach drua√üen geben
     public ResearchTreeDef TreeDef => treeDef;
 
     // Falls du Script Execution Order nutzt: stelle sicher, dass dieses Mono vor Verbrauchern startet.
 
     private void Awake()
     {
-        // 1) State erstellen/laden (Phase 5 wird hier echtes Load anschlieﬂen)
+        // 1) State erstellen/laden (Phase 5 wird hier echtes Load anschlie√üen)
         State = new ResearchState();
 
         // 2) Services erzeugen
@@ -52,7 +52,7 @@ public sealed class ResearchBootstrap : MonoBehaviour
         // 3) Research-Service initialisieren
         Service.InitFromTree(treeDef, State);
 
-        // 4) ResearchUnlockRegistry: vollst‰ndigen Katalog aufbauen + aus abgeschlossenem State rekonstruieren
+        // 4) ResearchUnlockRegistry: vollst√§ndigen Katalog aufbauen + aus abgeschlossenem State rekonstruieren
         //    HINWEIS: Dein aktueller ResearchUnlockRegistry-Stand besitzt Sets; falls du die Dictionary<string,bool>-Erweiterung eingebaut hast,
         //    rufe hier optional InitializeCatalog(nodeDefs) auf. RebuildFrom reicht meist, weil es intern katalogisiert.
         Registry.RebuildFrom(nodeDefs, State.completedNodeIds);
@@ -114,9 +114,9 @@ public sealed class ResearchBootstrap : MonoBehaviour
     }
 
     // --------- Bequeme Forwarder (optional) ----------
-    // Andere Systeme kˆnnen die hier rufen, statt direkt an Bridge/Service zu h‰ngen.
+    // Andere Systeme k√∂nnen die hier rufen, statt direkt an Bridge/Service zu h√§ngen.
 
-    /// <summary>Setzt den aktiven Forschungsknoten, falls verf¸gbar.</summary>
+    /// <summary>Setzt den aktiven Forschungsknoten, falls verf√ºgbar.</summary>
     public bool SetActiveResearch(string nodeId) => Service.SetActive(nodeId);
 
     /// <summary>Wave abgeschlossen (Map-Tier).</summary>

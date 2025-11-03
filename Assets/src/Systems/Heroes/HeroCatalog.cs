@@ -9,12 +9,12 @@ namespace CHAL.Data
         [Header("Alle Helden (Reihenfolge = UI-Reihenfolge)")]
         public List<HeroDef> allHeroes = new List<HeroDef>();
 
-        // Lazy Index für Lookups
+        // Lazy Index fÃ¼r Lookups
         private Dictionary<string, HeroDef> _byId;
 
         private void OnValidate()
         {
-            // Duplikate warnen, Index bei Änderungen neu bauen
+            // Duplikate warnen, Index bei Ã„nderungen neu bauen
             var seen = new HashSet<string>();
             foreach (var h in allHeroes)
             {

@@ -21,7 +21,7 @@ namespace CHAL.Systems.Skill
 
     public enum StackingMode
     {
-        RefreshDuration,     // Dauer erneuern, keine Stacks erhöhen
+        RefreshDuration,     // Dauer erneuern, keine Stacks erhÃ¶hen
         AddStacks,     // Stack++ bis MaxStacks, Dauer erneuern
         IgnoreIfActive,      // wenn vorhanden -> ignorieren
         Replace              // vorhandenen Effekt ersetzen

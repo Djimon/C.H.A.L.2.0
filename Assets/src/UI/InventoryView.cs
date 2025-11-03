@@ -62,7 +62,7 @@ namespace CHAL.UI
         private DragDropService _dnd;
 
 
-        // Properties für Manager/QuickMove
+        // Properties fÃ¼r Manager/QuickMove
         public string InstanceId => _instanceID;
         public bool IsVisible => _outer != null && _outer.resolvedStyle.visibility == Visibility.Visible;
         public VisualElement OuterContainer => _outer;
@@ -115,7 +115,7 @@ namespace CHAL.UI
 
 
         /// <summary>
-        /// Baut UI & bindet Domain. cols/rows können hier überschrieben werden (Definition aus InvDef).
+        /// Baut UI & bindet Domain. cols/rows kÃ¶nnen hier Ã¼berschrieben werden (Definition aus InvDef).
         /// </summary>
         public void Bind(IInventoryDomain domain, string instanceID, int cols, int rows)
         {
@@ -169,7 +169,7 @@ namespace CHAL.UI
 
         private void WireSlotInteractions(VisualElement tile, int slotIndex)
         {
-            // ReadOnly → keinerlei Interaktion
+            // ReadOnly â†’ keinerlei Interaktion
             if (readOnly) return;
 
             // LMB: kompletter Klick = Pickup ODER Drop
@@ -186,7 +186,7 @@ namespace CHAL.UI
                     var other = UIDockingManager.Instance?.GetOtherInventory(this);
                     if (other == null)
                     {
-                        DebugManager.Info("QuickMove abgebrochen – kein gültiges Zielinventar verfügbar.");
+                        DebugManager.Info("QuickMove abgebrochen â€“ kein gÃ¼ltiges Zielinventar verfÃ¼gbar.");
                         return;
                     }
 
@@ -200,7 +200,7 @@ namespace CHAL.UI
                     if (!_domain.TryMove(req, out var res))
                         DebugManager.Info($"QuickMove fehlgeschlagen: {res.reason}");
                     else
-                        DebugManager.Log($"QuickMove OK: {s.Value.itemID} → {other.InstanceId}");
+                        DebugManager.Log($"QuickMove OK: {s.Value.itemID} â†’ {other.InstanceId}");
 
                     return; // QuickMove stoppt hier
                 }
@@ -265,11 +265,11 @@ namespace CHAL.UI
             // Nur binden, niemals erzeugen
             if (!domain.TryGetInstance(inventoryID, out var inst))
             {
-                // GameManager hat die Player_* evtl. noch nicht gebaut → später erneut versuchen
+                // GameManager hat die Player_* evtl. noch nicht gebaut â†’ spÃ¤ter erneut versuchen
                 yield break;
             }
 
-            // Grid-Maße aus der Instanz/Def
+            // Grid-MaÃŸe aus der Instanz/Def
             int cols = (inst.InvDef != null) ? inst.InvDef.cols : _inventoryDef.cols;
             int rows = (inst.InvDef != null) ? inst.InvDef.rows : _inventoryDef.rows;
 
@@ -321,7 +321,7 @@ namespace CHAL.UI
             tile.style.borderTopColor = tile.style.borderRightColor =
             tile.style.borderBottomColor = tile.style.borderLeftColor = border;
 
-            // Icon (oben ~75% Höhe)
+            // Icon (oben ~75% HÃ¶he)
             var icon = new Image { name = "icon" };
             icon.scaleMode = ScaleMode.ScaleToFit;
             icon.sprite = null;
@@ -332,7 +332,7 @@ namespace CHAL.UI
             tile.Add(icon);
 
             // Label (unten)
-            var label = new Label("-") { name = "label" };  //TODO: gefährlich wegen nciht threadsave
+            var label = new Label("-") { name = "label" };  //TODO: gefÃ¤hrlich wegen nciht threadsave
             label.style.unityTextAlign = TextAnchor.MiddleCenter;
             label.style.color = Color.white;
             label.style.fontSize = Mathf.Clamp(Mathf.RoundToInt(_minSlotSize * 0.18f), 10, 16);
@@ -371,14 +371,14 @@ namespace CHAL.UI
 
             if (s.HasValue)
             {
-                label.text = $"×{s.Value.count}";
+                label.text = $"Ã—{s.Value.count}";
 
                 Sprite sprite = null;
                 string displayName = s.Value.itemID;
                 if (ItemRegistry.Instance.TryGet(s.Value.itemID, out var def))
                 {
                     sprite = def.icon;
-                    // displayName = def.displayName ?? displayName; // später
+                    // displayName = def.displayName ?? displayName; // spÃ¤ter
                 }
 
                 icon.sprite = sprite;                        // Unity 6: direkt Sprite
@@ -398,7 +398,7 @@ namespace CHAL.UI
         {
             if (!_responsiveSizing || _outer == null || _grid == null) return;
 
-            var r = _outer.contentRect;                // echte, gelayoutete Größe
+            var r = _outer.contentRect;                // echte, gelayoutete GrÃ¶ÃŸe
             if (r.width <= 0f || r.height <= 0f) return;
 
             // 1) Fit nach Breite
@@ -408,7 +408,7 @@ namespace CHAL.UI
 
             int target = fromWidth;
 
-            // 2) Option FitBoth: auch Höhe berücksichtigen (nur sinnvoll, wenn der Container eine echte Höhe hat)
+            // 2) Option FitBoth: auch HÃ¶he berÃ¼cksichtigen (nur sinnvoll, wenn der Container eine echte HÃ¶he hat)
             if (_fitMode == SlotFitMode.FitBoth)
             {
                 float gapsY = Mathf.Max(0, _rows - 1) * _slotGap;
@@ -424,18 +424,18 @@ namespace CHAL.UI
             if (computed == _computedSlotSize) return; // nichts zu tun
             _computedSlotSize = computed;
 
-            ApplySlotMetrics(); // Größen an alle Tiles pushen
+            ApplySlotMetrics(); // GrÃ¶ÃŸen an alle Tiles pushen
 
             UIDockingManager.Instance?.NotifyViewChanged(this);
         }
 
         private void ApplySlotMetrics()
         {
-            // Row-Abstände
+            // Row-AbstÃ¤nde
             foreach (var row in _grid.Children())
                 row.style.marginBottom = _slotGap;
 
-            // Pro Tile: Größe + Icon/Label ableiten
+            // Pro Tile: GrÃ¶ÃŸe + Icon/Label ableiten
             for (int i = 0; i < _cols * _rows; i++)
             {
                 var tile = _grid.Q<VisualElement>($"slot_{i}");
@@ -466,7 +466,7 @@ namespace CHAL.UI
             _outer.style.minWidth = minWidthPx;
             _outer.style.maxWidth = maxWidthPx;
 
-            // Außenabstand zwischen Views an einer Kante (vom DockingManager genutzt)
+            // AuÃŸenabstand zwischen Views an einer Kante (vom DockingManager genutzt)
             _outer.style.marginLeft = _outer.style.marginRight = _outer.style.marginTop = _outer.style.marginBottom = 0;
         }
 

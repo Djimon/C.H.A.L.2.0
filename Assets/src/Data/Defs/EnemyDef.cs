@@ -8,7 +8,7 @@ namespace CHAL.Data
     {
         [Header("Identity")]
         public string enemyId;               // z. B. "insect_worker"
-        public string displayNameKey;        // Lokalisierungs-Key für Namen
+        public string displayNameKey;        // Lokalisierungs-Key fÃ¼r Namen
 
         [Header("Base Stats")]
         public int baseHP = 10;
@@ -19,7 +19,7 @@ namespace CHAL.Data
         [Header("Reward Settings")]
         public int lootValue = 1;            // Einfluss aufs Budget-System
         public int xpReward = 1;
-        public EnemyRank BaseRank = EnemyRank.Normal;  // Rank = Spawn, Normal, Magic, Elite, Boss …
+        public EnemyRank BaseRank = EnemyRank.Normal;  // Rank = Spawn, Normal, Magic, Elite, Boss â€¦
         public List<string> baseTags = new();             // z. B. "insectoid", "poison"
 
         [Header("Combat")]

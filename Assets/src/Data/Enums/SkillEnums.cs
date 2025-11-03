@@ -13,8 +13,8 @@ namespace CHAL.Data
     {
         Self = 0,
         Melee,        // direkt angrenzend
-        Reach,        // verlängerte Nahkampfreichweite (Speer, Hellebarde)
-        MidDistance,  // mittlere Reichweite (typ. 5–10m)
+        Reach,        // verlÃ¤ngerte Nahkampfreichweite (Speer, Hellebarde)
+        MidDistance,  // mittlere Reichweite (typ. 5â€“10m)
         FarDistance   // Fernkampf / Magie (Bogen, Feuerball)
     }
 
@@ -65,13 +65,13 @@ namespace CHAL.Data
         MaxHP,
         LeechFactor,
 
-        // … beliebig erweiterbar
+        // â€¦ beliebig erweiterbar
     }
 
     public enum ModifierOperation
     {
         Add,        // +10
-        Mult,       // ×1.2
+        Mult,       // Ã—1.2
         Replace     // fester Wert
     }
 

@@ -12,7 +12,7 @@ namespace CHAL.Systems.Research
         public Vector2 start;
         public Vector2 end;
         [Min(0.5f)] public float thickness = 2f;
-        [Range(0f, 1f)] public float cornerRadius = 0.25f; // 0..1 Anteil des kürzeren Segments
+        [Range(0f, 1f)] public float cornerRadius = 0.25f; // 0..1 Anteil des kÃ¼rzeren Segments
         public bool useCompletedColor;
         public Color completedColor = new Color(0.6f, 1f, 0.6f, 1f);
 
@@ -39,22 +39,22 @@ namespace CHAL.Systems.Research
             float vLen = Mathf.Abs(p2.y - p1.y);
             float cr = Mathf.Min(hLen, vLen) * cornerRadius;
 
-            // Segment 1 (p0 -> p1), gekürzt
+            // Segment 1 (p0 -> p1), gekÃ¼rzt
             Vector2 dirH = (p1 - p0).normalized;
             Vector2 a1 = p0;
             Vector2 b1 = p1 - dirH * cr;
 
-            // Segment 2 (p1 -> p2), gekürzt
+            // Segment 2 (p1 -> p2), gekÃ¼rzt
             Vector2 dirV = (p2 - p1).normalized;
             Vector2 a2 = p1 + dirV * cr;
             Vector2 b2 = p2;
 
-            // Quad für Segment 1
+            // Quad fÃ¼r Segment 1
             AddQuad(vh, a1, b1, thickness, col);
-            // Quad für Segment 2
+            // Quad fÃ¼r Segment 2
             AddQuad(vh, a2, b2, thickness, col);
 
-            // Runde Ecke als kleines „Knie“ (approximiert mit 4 Quads)
+            // Runde Ecke als kleines â€žKnieâ€œ (approximiert mit 4 Quads)
             AddCorner(vh, b1, a2, thickness, col);
         }
 
@@ -74,7 +74,7 @@ namespace CHAL.Systems.Research
 
         private static void AddCorner(VertexHelper vh, Vector2 from, Vector2 to, float thick, Color c)
         {
-            // vier kurze Quads entlang eines 90°-Bogensegments
+            // vier kurze Quads entlang eines 90Â°-Bogensegments
             Vector2 dir = (to - from);
             float len = dir.magnitude;
             if (len < 0.001f) return;
@@ -84,7 +84,7 @@ namespace CHAL.Systems.Research
             for (int i = 1; i <= steps; i++)
             {
                 float t = i / (float)steps;
-                // kleiner Bezier von 'from' zu 'to' über Ecke
+                // kleiner Bezier von 'from' zu 'to' Ã¼ber Ecke
                 Vector2 p = Vector2.Lerp(from, to, t);
                 AddQuad(vh, prev, p, thick, c);
                 prev = p;

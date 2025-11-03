@@ -37,7 +37,7 @@ using UnityEngine;
             {
                 Ensure(ref item.partData);
                 item.partData.dnaType = EditorGUILayout.TextField("DNA Type", item.partData.dnaType);
-                // (moduleFuel lässt du aktuell im Editor weg – kannst du später ergänzen)
+                // (moduleFuel lÃ¤sst du aktuell im Editor weg â€“ kannst du spÃ¤ter ergÃ¤nzen)
             }
             else if (item.itemId.StartsWith("module:"))
             {
@@ -54,10 +54,10 @@ using UnityEngine;
             }
             else
             {
-                EditorGUILayout.HelpBox("Unbekannter Item-Prefix. Unterstützt: remains:, rune:, part:, module:, gear:", MessageType.Info);
+                EditorGUILayout.HelpBox("Unbekannter Item-Prefix. UnterstÃ¼tzt: remains:, rune:, part:, module:, gear:", MessageType.Info);
             }
 
-            // Änderungen speichern
+            // Ã„nderungen speichern
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(target);

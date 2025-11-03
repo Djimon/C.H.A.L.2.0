@@ -25,7 +25,7 @@ namespace CHAL.Systems.Wave
         public GameObject enemyFallbackPrefab;
         public GameObject lootPrefab;
 
-        public WaveRewards waveRewards; // Sammelbehälter für diese Wave
+        public WaveRewards waveRewards; // SammelbehÃ¤lter fÃ¼r diese Wave
         private LootRulesService _rules;
         private LootRoller _roller;
         private UnluckyProtection _unlucky;
@@ -84,14 +84,14 @@ namespace CHAL.Systems.Wave
                 return;
             }
 
-            // Hole WaveDef & bau Composition (für Loot-Kontext/Stats)
+            // Hole WaveDef & bau Composition (fÃ¼r Loot-Kontext/Stats)
             var wDef = mapDef.waveDefs[waveIndex - 1];
-            var wave = BuildWaveComposition(mapDef, wDef); // behält deine existierende Logik
+            var wave = BuildWaveComposition(mapDef, wDef); // behÃ¤lt deine existierende Logik
             _waveCtx = new WaveLootContext(wave);
             _aliveEnemies.Clear();
             _allSubWavesSpawned = false;
 
-            // --- SubWave-Plan vorbereiten (feste Größe pro SubWave + Backloading) ---
+            // --- SubWave-Plan vorbereiten (feste GrÃ¶ÃŸe pro SubWave + Backloading) ---
             PrepareSubWaveDistribution(mapDef, wDef, out _subWavePlan);
 
             // --- Run ---
@@ -118,7 +118,7 @@ namespace CHAL.Systems.Wave
 
                 DebugManager.Log($"SubWave {k + 1}/{S} spawning...", DebugManager.EDebugLevel.Test, "Wave");
 
-                // SubWave k spawnen (Round-Robin nach Rängen, mit Mini-Delay 0.2s wie bisher)
+                // SubWave k spawnen (Round-Robin nach RÃ¤ngen, mit Mini-Delay 0.2s wie bisher)
                 yield return StartCoroutine(RunSubWaveRoutine(mapDef, wDef, _subWavePlan[k]));
 
                 // Warte zwischen SubWaves
@@ -126,7 +126,7 @@ namespace CHAL.Systems.Wave
                     yield return new WaitForSeconds(interDelay);
             }
 
-            // Danach: Wave endet wie gehabt, sobald alle Gegner tot sind (HandleEnemyKilled → EndWave)
+            // Danach: Wave endet wie gehabt, sobald alle Gegner tot sind (HandleEnemyKilled â†’ EndWave)
             DebugManager.Log("All SubWaves spawned. Waiting for cleanup...", DebugManager.EDebugLevel.Test, "Wave");
 
             _allSubWavesSpawned = true;
@@ -136,7 +136,7 @@ namespace CHAL.Systems.Wave
 
         private IEnumerator RunSubWaveRoutine(MapDef mapDef, WaveDef wDef, SubWaveSlice slice)
         {
-            // Wir spawnen in Round-Robin-Runden über die Ränge mit Resten,
+            // Wir spawnen in Round-Robin-Runden Ã¼ber die RÃ¤nge mit Resten,
             // und behalten dein bestehendes Mini-Delay (0.2 s) bei.
             // Reihenfolge: Spawn -> Normal -> Magic -> Elite -> Boss -> Champion (wie in BuildWaveComposition)
             int remainSpawn = slice.spawn;
@@ -146,7 +146,7 @@ namespace CHAL.Systems.Wave
             int remainBoss = slice.boss;
             int remainChampion = slice.champion;
 
-            // Wir wählen pro Rank passende EnemyDefs & bauen pro Spawn einen EnemyStruct (Count=1), wie bisher.
+            // Wir wÃ¤hlen pro Rank passende EnemyDefs & bauen pro Spawn einen EnemyStruct (Count=1), wie bisher.
             while (remainSpawn + remainNormal + remainMagic + remainElite + remainBoss + remainChampion > 0)
             {
                 if (remainSpawn > 0) { SpawnOne(mapDef, EnemyRank.Spawn); remainSpawn--; yield return new WaitForSeconds(0.2f); }
@@ -180,7 +180,7 @@ namespace CHAL.Systems.Wave
 
         private GameObject GetEnemyPrefab(EnemyDef baseDef)
         {
-            // TODO: über Registry/Lookup aus EnemyDef ziehen?
+            // TODO: Ã¼ber Registry/Lookup aus EnemyDef ziehen?
             GameObject go = baseDef.prefab;
             if (go == null)
                 return enemyFallbackPrefab;
@@ -205,7 +205,7 @@ namespace CHAL.Systems.Wave
 
             int total = totSpawn + totNormal + totMagic + totElite + totBoss + totChampion;
 
-            // Feste Zielgröße pro SubWave (gleichmäßig, Rest in die ersten Runden)
+            // Feste ZielgrÃ¶ÃŸe pro SubWave (gleichmÃ¤ÃŸig, Rest in die ersten Runden)
             int baseT = total / S;
             int restT = total % S; // die ersten restT SubWaves bekommen +1
 
@@ -217,9 +217,9 @@ namespace CHAL.Systems.Wave
             int[] dBoss = BuildBackloadedDeltas(totBoss, S, wDef.backload.GetSpawnDelayAlpha(EnemyRank.Boss));
             int[] dChampion = BuildBackloadedDeltas(totChampion, S, wDef.backload.GetSpawnDelayAlpha(EnemyRank.Champion));
 
-            // Jetzt pro SubWave die Deltas auf die Zielgröße T_k balancieren:
-            // - Unterfüllung: zuerst Normal, dann Magic auffüllen (falls deren Reste übrig sind)
-            // - Überfüllung: zuerst Normal, dann Magic reduzieren (nie Boss/Champion/Elite kürzen)
+            // Jetzt pro SubWave die Deltas auf die ZielgrÃ¶ÃŸe T_k balancieren:
+            // - UnterfÃ¼llung: zuerst Normal, dann Magic auffÃ¼llen (falls deren Reste Ã¼brig sind)
+            // - ÃœberfÃ¼llung: zuerst Normal, dann Magic reduzieren (nie Boss/Champion/Elite kÃ¼rzen)
             for (int k = 0; k < S; k++)
             {
                 int Tk = baseT + (k < restT ? 1 : 0);
@@ -236,7 +236,7 @@ namespace CHAL.Systems.Wave
                 if (sum < Tk)
                 {
                     int need = Tk - sum;
-                    // Auffüllen in Reihenfolge Normal -> Magic
+                    // AuffÃ¼llen in Reihenfolge Normal -> Magic
                     int addN = Mathf.Min(need, RemainingForRank(k, dNormal, totNormal));
                     n += addN; need -= addN;
 
@@ -246,7 +246,7 @@ namespace CHAL.Systems.Wave
                         m += addM; need -= addM;
                     }
 
-                    // Falls immer noch Bedarf (extremer Randfall): fülle Spawn
+                    // Falls immer noch Bedarf (extremer Randfall): fÃ¼lle Spawn
                     if (need > 0)
                     {
                         int addS = Mathf.Min(need, RemainingForRank(k, dSpawn, totSpawn));
@@ -256,7 +256,7 @@ namespace CHAL.Systems.Wave
                 else if (sum > Tk)
                 {
                     int over = sum - Tk;
-                    // Kürzen in Reihenfolge Normal -> Magic (niemals Boss/Elite/Champion kürzen, um Backloading zu erhalten)
+                    // KÃ¼rzen in Reihenfolge Normal -> Magic (niemals Boss/Elite/Champion kÃ¼rzen, um Backloading zu erhalten)
                     int cutN = Mathf.Min(over, n);
                     n -= cutN; over -= cutN;
 
@@ -268,7 +268,7 @@ namespace CHAL.Systems.Wave
 
                     if (over > 0)
                     {
-                        int cutS = Mathf.Min(over, s); // als allerletztes Spawn kürzen
+                        int cutS = Mathf.Min(over, s); // als allerletztes Spawn kÃ¼rzen
                         s -= cutS; over -= cutS;
                     }
                 }
@@ -284,7 +284,7 @@ namespace CHAL.Systems.Wave
                 });
             }
 
-            // Safety: Summen prüfen (sollten exakt passen)
+            // Safety: Summen prÃ¼fen (sollten exakt passen)
             int chkS = 0, chkN = 0, chkM = 0, chkE = 0, chkB = 0, chkC = 0;
             for (int k = 0; k < S; k++)
             {
@@ -333,7 +333,7 @@ namespace CHAL.Systems.Wave
             return result;
         }
 
-        // Wie viele Einheiten dieses Ranges sind ab (inkl.) SubWave k noch „frei“ (für Auffüllen), gemessen an Total?
+        // Wie viele Einheiten dieses Ranges sind ab (inkl.) SubWave k noch â€žfreiâ€œ (fÃ¼r AuffÃ¼llen), gemessen an Total?
         private static int RemainingForRank(int k, int[] deltas, int total)
         {
             int used = 0;
@@ -384,7 +384,7 @@ namespace CHAL.Systems.Wave
             }
             else
             {
-                DebugManager.Log("Wave lost – rewards discarded",
+                DebugManager.Log("Wave lost â€“ rewards discarded",
                     DebugManager.EDebugLevel.Test, "Wave");
             }
 
@@ -449,7 +449,7 @@ namespace CHAL.Systems.Wave
                 var ok = domain.TryAdd(instanceId, new ItemStack(itemId, count), out var tx);
                 if (!ok)
                 {
-                    DebugManager.Log($"TryAdd failed for {itemId} x{count} → {tx.reason}",
+                    DebugManager.Log($"TryAdd failed for {itemId} x{count} â†’ {tx.reason}",
                         DebugManager.EDebugLevel.Dev, "Inventory", LogType.Warning);
                 }
                 else
@@ -498,7 +498,7 @@ namespace CHAL.Systems.Wave
                 Monsters = new List<EnemyStruct>()
             };
 
-            // Reihenfolge wie bisher (nur für Loot-Kontext/Stats; Spawns selber passieren aus dem SubWave-Plan)
+            // Reihenfolge wie bisher (nur fÃ¼r Loot-Kontext/Stats; Spawns selber passieren aus dem SubWave-Plan)
             AddEnemies(wave, mapDef, waveDef.spawnCount, EnemyRank.Spawn);
             AddEnemies(wave, mapDef, waveDef.normalCount, EnemyRank.Normal);
             AddEnemies(wave, mapDef, waveDef.magicCount, EnemyRank.Magic);
@@ -553,7 +553,7 @@ namespace CHAL.Systems.Wave
                 case EnemyRank.Spawn:
                 case EnemyRank.Boss:
                 case EnemyRank.Champion:
-                    // diese Ränge sind eigene Assets
+                    // diese RÃ¤nge sind eigene Assets
                     return pool.FindAll(e => e != null && e.BaseRank == rank);
 
                 case EnemyRank.Normal:
@@ -634,9 +634,9 @@ namespace CHAL.Systems.Wave
             }
 
             var wDef = mapDef.waveDefs[waveIndex - 1];
-            var wave = BuildWaveComposition(mapDef, wDef); // unverändert
+            var wave = BuildWaveComposition(mapDef, wDef); // unverÃ¤ndert
 
-            // UnluckyProtection hier absichtlich frisch, damit Runs unabhängig sind
+            // UnluckyProtection hier absichtlich frisch, damit Runs unabhÃ¤ngig sind
             var roller = new LootRoller(_rules, new UnluckyProtection());
             //WaveSimRunner.RunStats(roller, wave, mapDef.baseLevel, mapDef.difficulty, runs: 100);
         }
@@ -645,8 +645,8 @@ namespace CHAL.Systems.Wave
 
     public class WaveRewards
     {
-        public Dictionary<string, int> Items = new();          // itemId → count
-        public Dictionary<string, int> Currencies = new();     // "gold" → amount
+        public Dictionary<string, int> Items = new();          // itemId â†’ count
+        public Dictionary<string, int> Currencies = new();     // "gold" â†’ amount
         public int XP;
 
         public void AddItem(string itemId, int count = 1)

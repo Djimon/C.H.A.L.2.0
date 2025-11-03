@@ -31,13 +31,13 @@ namespace CHAL.UI
             base.Awake();
             root = GetComponent<UIDocument>().rootVisualElement;
 
-            // Beispiel: baue Buttons für jede Map
+            // Beispiel: baue Buttons fÃ¼r jede Map
             var container = root.Q<VisualElement>("MapList");
             container.Clear();
 
             foreach (var map in availableMaps)
             {
-                var btn = new Button { text = map.displayNameKey }; // später via Localization
+                var btn = new Button { text = map.displayNameKey }; // spÃ¤ter via Localization
                 btn.clicked += () => OnMapSelected(map);
                 container.Add(btn);
             }
@@ -50,7 +50,7 @@ namespace CHAL.UI
 
             detailsText = root.Q<Label>("Details");
 
-            //später: Buttons um schwierigkeit zu ändern, sobald diese freiheschaltet wurden
+            //spÃ¤ter: Buttons um schwierigkeit zu Ã¤ndern, sobald diese freiheschaltet wurden
         }
 
         private void OnExitMenuBtnClicked()

@@ -11,6 +11,6 @@ namespace CHAL.Data
         Throw,
         Buff,
         Debuff,
-        Custom // Platzhalter für Sonderfälle
+        Custom // Platzhalter fÃ¼r SonderfÃ¤lle
     }
 }

@@ -19,7 +19,7 @@ namespace CHAL.Systems.Crafting
         [Header("Kosten (Items)")]
         public List<MaterialCost> inputs = new();
 
-        [Header("Kosten (Währung)")]
+        [Header("Kosten (WÃ¤hrung)")]
         public List<CurrencyCost> currencyCosts = new();
 
         [Header("Output")]

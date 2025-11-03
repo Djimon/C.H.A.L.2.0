@@ -1,4 +1,4 @@
-﻿using CHAL.Core;
+using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
@@ -9,7 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static CHAL.Systems.Crafting.CraftingService;
+
 
 namespace CHAL.Systems.Crafting
 {
@@ -38,7 +38,7 @@ namespace CHAL.Systems.Crafting
         // State
         private readonly List<RecipeDef> _visibleRecipes = new();
         private RecipeDef _selected;
-        private RecipePreview _preview;
+        private CraftingService.RecipePreview _preview;
 
         // Logging
         private const string TAG = "Crafting";
@@ -255,7 +255,7 @@ namespace CHAL.Systems.Crafting
                 return;
             }
 
-            // Letzte Preview nutzen – Guard-Order ist im Service
+            // Letzte Preview nutzen â€“ Guard-Order ist im Service
             var ok = CraftingService.TryCraftToInventory(_selected, inv, _wallet, outId, out var reason);
             if (!ok)
             {
@@ -267,7 +267,7 @@ namespace CHAL.Systems.Crafting
 
             DebugManager.Log($"Craft success: {_selected.outputItemId} x{_selected.outputCount}", DebugManager.EDebugLevel.Test, TAG);
             detailPanel?.ShowSuccess();
-            RefreshPreviewAndDetail(); // Bestand geändert → UI updaten
+            RefreshPreviewAndDetail(); // Bestand geÃ¤ndert â†’ UI updaten
             
             // TODO: SFX/VFX triggern
         }
@@ -300,7 +300,7 @@ namespace CHAL.Systems.Crafting
 
             if (!gm.TryResolveByItemId(r.outputItemId, out var invType, out var instId) || string.IsNullOrEmpty(instId))
             {
-                DebugManager.Error($"Crafting: Konnte Output-Inventory für '{r.outputItemId}' nicht auflösen.", "Crafting");
+                DebugManager.Error($"Crafting: Konnte Output-Inventory fÃ¼r '{r.outputItemId}' nicht auflÃ¶sen.", "Crafting");
                 return null;
             }
 
@@ -309,7 +309,7 @@ namespace CHAL.Systems.Crafting
             return instId;
         }
 
-        /// <summary>Ermittelt "have" je benötigtem MaterialId (für die Detailanzeige).</summary>
+        /// <summary>Ermittelt "have" je benÃ¶tigtem MaterialId (fÃ¼r die Detailanzeige).</summary>
         private Dictionary<string, int> CountMaterials(RecipeDef r)
         {
             var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -357,7 +357,7 @@ namespace CHAL.Systems.Crafting
                 case CraftBlocker.OutputInventoryFull: return "Kein Platz im Zielinventar.";
                 case CraftBlocker.MissingMaterials: return "Materialien fehlen.";
                 case CraftBlocker.NotEnoughCurrency: return "Gold reicht nicht.";
-                case CraftBlocker.InvalidRefinement: return "Veredelung ungültig.";
+                case CraftBlocker.InvalidRefinement: return "Veredelung ungÃ¼ltig.";
                 case CraftBlocker.None: return string.IsNullOrEmpty(fallback) ? "Unbekannter Fehler." : fallback;
                 default: return string.IsNullOrEmpty(fallback) ? "Unbekannter Fehler." : fallback;
             }

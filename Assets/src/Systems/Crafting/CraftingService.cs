@@ -32,7 +32,7 @@ namespace CHAL.Systems.Crafting
             public readonly bool canCraft;         // true nur wenn alle Guards ok
             public readonly CraftBlocker blocker;  // erster harte Blockiergrund in Guard-Reihenfolge
 
-            // optionale Einzel-Flags (hilfreich fürs UI, ohne Listen):
+            // optionale Einzel-Flags (hilfreich fÃ¼rs UI, ohne Listen):
             public readonly bool outputOk;
             public readonly bool materialsOk;
             public readonly bool currencyOk;
@@ -65,7 +65,7 @@ namespace CHAL.Systems.Crafting
             {
                 var ok = inv.CanAccept(outputInventoryId, outStack);
                 if (!ok)
-                    DebugOutputReject(inv, outputInventoryId, outStack); // <— NEU: detailliertes Logging
+                    DebugOutputReject(inv, outputInventoryId, outStack); // <â€” NEU: detailliertes Logging
                 return ok;
             }
 
@@ -137,7 +137,7 @@ namespace CHAL.Systems.Crafting
             int slotCount = hasInst ? inv.SlotCount(instanceId) : 0;
 
             int empty = 0, sameItemStacks = 0, sameItemTotal = 0, filled = 0;
-            const int SAMPLE_MAX = 6; // kurze Stichprobe für Logs
+            const int SAMPLE_MAX = 6; // kurze Stichprobe fÃ¼r Logs
             var sample = new System.Text.StringBuilder();
 
             if (hasInst && slotCount > 0)
@@ -166,7 +166,7 @@ namespace CHAL.Systems.Crafting
 
             // Kompakte, action-able Logzeile
             DebugManager.Log(
-                $"[Craft Preview] Output REJECT → inst='{instanceId}', item={outStack.itemID} x{outStack.count} | " +
+                $"[Craft Preview] Output REJECT â†’ inst='{instanceId}', item={outStack.itemID} x{outStack.count} | " +
                 $"exists={hasInst}, slots={slotCount}, empty={empty}, filled={filled}, sameItemStacks={sameItemStacks}, sameItemTotal={sameItemTotal} | sample: {sample}",
                 DebugManager.EDebugLevel.Test, "Crafting");
         }
@@ -183,7 +183,7 @@ namespace CHAL.Systems.Crafting
                 case ItemType.Part: instanceId = "player_part"; break;
                 case ItemType.Rune: instanceId = "player_rune"; break;
                 case ItemType.Module: instanceId = "player_module"; break;
-                default: instanceId = null; break; // Gear/Unknown → kein Material-Inventar
+                default: instanceId = null; break; // Gear/Unknown â†’ kein Material-Inventar
             }
 
             return !string.IsNullOrEmpty(instanceId) && inv.HasInstance(instanceId);
@@ -304,9 +304,9 @@ namespace CHAL.Systems.Crafting
         None = 0,             // alles ok
         LockedByResearch,      // UI/Controller setzt das, Service bleibt research-agnostisch
         OutputInventoryFull,  // kein Platz / Filter blockt
-        MissingMaterials,     // mind. ein benötigtes Material zu wenig
+        MissingMaterials,     // mind. ein benÃ¶tigtes Material zu wenig
         NotEnoughCurrency,    // Gold (oder andere Currency) reicht nicht
-        InvalidRefinement,    // Slider/Material ungültig (nur wenn Feature aktiv)
+        InvalidRefinement,    // Slider/Material ungÃ¼ltig (nur wenn Feature aktiv)
         UnknownError          // Fallback
     }
 }

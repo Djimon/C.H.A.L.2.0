@@ -15,9 +15,9 @@ namespace CHAL.Core
     public enum GameState
     {
         MainMenu,
-        MapPhase,     // Spieler kämpft auf einer Map
+        MapPhase,     // Spieler kÃ¤mpft auf einer Map
         WaveReward,   // kleiner Reward-Screen
-        MapReward,    // großer Reward-Screen
+        MapReward,    // groÃŸer Reward-Screen
         Hideout
     }
 
@@ -106,7 +106,7 @@ namespace CHAL.Core
 
             inputManager = FindFirstObjectByType<InputManager>();
 
-            // Falls keiner in der Szene existiert → automatisch erstellen
+            // Falls keiner in der Szene existiert â†’ automatisch erstellen
             if (inputManager == null)
             {
                 GameObject go = new GameObject("InputManager");
@@ -147,7 +147,7 @@ namespace CHAL.Core
         // ---------------------------
         public void SetState(GameState newState)
         {
-            DebugManager.Log($"GameState {CurrentState} → {newState}");
+            DebugManager.Log($"GameState {CurrentState} â†’ {newState}");
             CurrentState = newState;
             // Optional: Events triggern oder UI umschalten
             // EventBus.Publish(new GameStateChanged(newState));
@@ -268,7 +268,7 @@ namespace CHAL.Core
             {
                 if (def == null) continue;
 
-                // Player-Inventare: alles außer 'all' (du hast Remains/Parts/Runes/Modules/Gear)
+                // Player-Inventare: alles auÃŸer 'all' (du hast Remains/Parts/Runes/Modules/Gear)
                 if (def.TypeId == PlayerInventoryType.all) continue;
 
                 // Konvention: instanceId = "player_" + enum-name in lowercase
@@ -387,7 +387,7 @@ namespace CHAL.Core
             if (slots <= 0)
             {
                 // Versuche die Instanz on-demand zu erstellen:
-                // Konvention: "player_" + enumname_lower  → Enum parsen
+                // Konvention: "player_" + enumname_lower  â†’ Enum parsen
                 var suffix = instanceId.StartsWith("player_") ? instanceId.Substring("player_".Length) : instanceId;
                 if (Enum.TryParse<PlayerInventoryType>(suffix, true, out var type))
                 {
@@ -430,7 +430,7 @@ namespace CHAL.Core
             _prefixToType.Clear();
             _typeToInstanceId.Clear();
 
-            // NUR die Typen registrieren, für die du auch tatsächlich Defs/Inventare hast
+            // NUR die Typen registrieren, fÃ¼r die du auch tatsÃ¤chlich Defs/Inventare hast
             // Falls du schon eine Liste deiner geladenen InventoryDefs hast, nimm die.
             // Minimalvariante: alle Enumwerte erlauben.
             foreach (PlayerInventoryType t in Enum.GetValues(typeof(PlayerInventoryType)))
@@ -448,7 +448,7 @@ namespace CHAL.Core
                 DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
         }
 
-        // Öffentliche, einfache Resolver-API für alle Systeme
+        // Ã–ffentliche, einfache Resolver-API fÃ¼r alle Systeme
         public bool TryResolveByItemId(string itemId, out PlayerInventoryType type, out string instanceId)
         {
             type = default;

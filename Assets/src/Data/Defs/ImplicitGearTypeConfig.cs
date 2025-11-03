@@ -63,10 +63,10 @@ namespace CHAL.Data
                     e.ImplicitId = (e.ImplicitId ?? string.Empty).Trim();
                     if (e.Weight < 0) e.Weight = 0;
 
-                    // Warnungen bei "ungewöhnlichen" IDs (z.B. Sonderzeichen/Leerzeichen)
+                    // Warnungen bei "ungewÃ¶hnlichen" IDs (z.B. Sonderzeichen/Leerzeichen)
                     if (!IsValidId(e.ImplicitId))
                     {
-                        Debug.LogWarning($"[ImplicitPoolsDef] Ungewöhnliche ImplicitId '{e.ImplicitId}' im Pool {pool.GearType}. " +
+                        Debug.LogWarning($"[ImplicitPoolsDef] UngewÃ¶hnliche ImplicitId '{e.ImplicitId}' im Pool {pool.GearType}. " +
                                          "Empfohlenes Format: lower_snake_case (a-z, 0-9, _).", this);
                     }
 
@@ -75,7 +75,7 @@ namespace CHAL.Data
                     {
                         if (seen.Contains(e.ImplicitId))
                         {
-                            Debug.LogWarning($"[ImplicitPoolsDef] Doppelte ImplicitId '{e.ImplicitId}' im Pool {pool.GearType} – wird ignoriert.", this);
+                            Debug.LogWarning($"[ImplicitPoolsDef] Doppelte ImplicitId '{e.ImplicitId}' im Pool {pool.GearType} â€“ wird ignoriert.", this);
                             e.Weight = 0;
                         }
                         else
@@ -87,7 +87,7 @@ namespace CHAL.Data
                     pool.Entries[i] = e;
                 }
 
-                // Fehlende Default-IDs hinzufügen (Weight = 0)
+                // Fehlende Default-IDs hinzufÃ¼gen (Weight = 0)
                 for (int d = 0; d < DefaultImplicitIds.Length; d++)
                 {
                     string id = DefaultImplicitIds[d];

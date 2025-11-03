@@ -13,12 +13,12 @@ namespace CHAL.Systems.Research
         private readonly Dictionary<string, ResearchNodeDef> _nodesById = new Dictionary<string, ResearchNodeDef>(StringComparer.Ordinal);
         private readonly Dictionary<(int lane, int stage), List<string>> _idsByLaneStage = new Dictionary<(int, int), List<string>>();
 
-        private ResearchTreeDef _treeDef; // nur für Layout/Meta-Daten (optional für UI)
+        private ResearchTreeDef _treeDef; // nur fÃ¼r Layout/Meta-Daten (optional fÃ¼r UI)
         private ResearchState _state;
 
         private Dictionary<string, List<string>> _compiledParents;
 
-        // EnemyRank-Gewichtungen für Kill-"Punkte" (kannst du später in ein Config-Asset verlagern)
+        // EnemyRank-Gewichtungen fÃ¼r Kill-"Punkte" (kannst du spÃ¤ter in ein Config-Asset verlagern)
         private readonly Dictionary<EnemyRank, int> _rankWeights = new Dictionary<EnemyRank, int>
         {
             { EnemyRank.Spawn,   0 },  // farm-sicher
@@ -29,13 +29,13 @@ namespace CHAL.Systems.Research
             { EnemyRank.Champion,10},
         };
 
-        // Elites/Bosses für "eliteCount"/"bossCount"-Requirements
+        // Elites/Bosses fÃ¼r "eliteCount"/"bossCount"-Requirements
         private static bool IsEliteLike(EnemyRank r) => r == EnemyRank.Elite || r == EnemyRank.Champion;
         private static bool IsBoss(EnemyRank r) => r == EnemyRank.Boss;
 
         private static bool IsChamp(EnemyRank r) => r == EnemyRank.Champion;
 
-        // Event: Wenn ein Knoten abgeschlossen wurde (für UnlockRegistry)
+        // Event: Wenn ein Knoten abgeschlossen wurde (fÃ¼r UnlockRegistry)
         public event Action<string, IReadOnlyList<ResearchUnlock>> OnNodeCompleted;
         // Event: wird nach InitFromTree mit den Always-Unlocked-IDs gefeuert
         public event Action<IReadOnlyList<string>> OnAlwaysUnlockedReady;
@@ -52,7 +52,7 @@ namespace CHAL.Systems.Research
 
             var compiled = ResearchTreeCompiler.Compile(treeDef);
 
-            // nodesById + posById übernehmen
+            // nodesById + posById Ã¼bernehmen
             foreach (var kv in compiled.nodesById)
             {
                 _nodesById[kv.Key] = kv.Value;
@@ -73,12 +73,12 @@ namespace CHAL.Systems.Research
             foreach (var kv in _idsByLaneStage)
                 kv.Value.Sort(StringComparer.Ordinal);
 
-            // State: Progress-Einträge sicherstellen
+            // State: Progress-EintrÃ¤ge sicherstellen
             foreach (var id in _nodesById.Keys)
                 EnsureProgress(id);
 
-            // Save: parents werden künftig NICHT aus NodeDef gelesen.
-            _compiledParents = compiled.parentsById; // -> Feld hinzufügen: Dictionary<string,List<string>> _compiledParents;
+            // Save: parents werden kÃ¼nftig NICHT aus NodeDef gelesen.
+            _compiledParents = compiled.parentsById; // -> Feld hinzufÃ¼gen: Dictionary<string,List<string>> _compiledParents;
 
             DebugManager.Log($"ResearchService.InitFromTree: Nodes={_nodesById.Count}", DebugManager.EDebugLevel.Dev, "Research");
 
@@ -96,7 +96,7 @@ namespace CHAL.Systems.Research
             }
         }
 
-        // Änderung in IsNodeAvailable: NICHT mehr def.parents nutzen
+        // Ã„nderung in IsNodeAvailable: NICHT mehr def.parents nutzen
         public bool IsNodeAvailable(string nodeId)
         {
             if (!_nodesById.TryGetValue(nodeId, out var def)) return false;
@@ -259,7 +259,7 @@ namespace CHAL.Systems.Research
 
             var p = EnsureProgress(id);
 
-            // Rarity-Zähler (ungewichtet)
+            // Rarity-ZÃ¤hler (ungewichtet)
             if (IsBoss(rank)) p.bossCount += 1;
             else if (IsEliteLike(rank)) p.eliteCount += 1;
             else if (IsChamp(rank)) p.champCount += 1;
@@ -272,7 +272,7 @@ namespace CHAL.Systems.Research
             if (req != null && req.killsByTag != null && req.killsByTag.Count > 0 && enemyTags != null)
             {
                 // Schnittmenge der geforderten Tags und der Enemy-Tags
-                // (Wenn mehrere geforderte Tags matchen, zählen alle – das ist i. d. R. okay; bei Bedarf auf "nur erster Match" umstellen.)
+                // (Wenn mehrere geforderte Tags matchen, zÃ¤hlen alle â€“ das ist i. d. R. okay; bei Bedarf auf "nur erster Match" umstellen.)
                 foreach (var needed in req.killsByTag)
                 {
                     if (needed == null || string.IsNullOrEmpty(needed.enemyTag)) continue;
@@ -287,7 +287,7 @@ namespace CHAL.Systems.Research
                 }
             }
 
-            // Wenn kein Tag-Bucket getroffen wurde → General hochzählen
+            // Wenn kein Tag-Bucket getroffen wurde â†’ General hochzÃ¤hlen
             if (!anyTagMatched)
             {
                 p.killsGeneralWeighted += weight;
@@ -316,7 +316,7 @@ namespace CHAL.Systems.Research
         private static bool MeetsRequirements(ResearchNodeDef def, NodeProgress p)
         {
             var req = def.requirements;
-            if (req == null) return true; // leere Anforderungen → sofort fertig (V1 erlaubt)
+            if (req == null) return true; // leere Anforderungen â†’ sofort fertig (V1 erlaubt)
 
             // Waves
             if (req.waves > 0 && p.waves < req.waves) return false;

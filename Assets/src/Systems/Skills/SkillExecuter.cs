@@ -54,7 +54,7 @@ namespace CHAL.Systems.Skill
             float castTime = inst.CastTime;
             if (castTime > 0)
             {
-                // später: AnimationManager.Play(inst.Data.AnimationType, castTime)
+                // spÃ¤ter: AnimationManager.Play(inst.Data.AnimationType, castTime)
                 DebugManager.Log($"[SkillExecutor] {source} casting for {castTime} seconds", DebugManager.EDebugLevel.Dev, "Skill");
             }
         }
@@ -102,14 +102,14 @@ namespace CHAL.Systems.Skill
         private static void ApplySummon(SkillInstance inst, EffectReceiver source)
         {
             DebugManager.Log($"[SkillExecutor] {source} summons unit via {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
-            // später: Summon-Controller implementieren
+            // spÃ¤ter: Summon-Controller implementieren
         }
 
 
         private static void SpawnProjectile(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
         {
             DebugManager.Log($"[SkillExecutor] {source} launches projectile {inst.Data.DisplayName} at {target}", DebugManager.EDebugLevel.Test, "Skill");
-            // Saubere Fallbacks: Wenn kein Transform mitgegeben wurde, kann man später Prefab-Owner o. ä. nutzen
+            // Saubere Fallbacks: Wenn kein Transform mitgegeben wurde, kann man spÃ¤ter Prefab-Owner o. Ã¤. nutzen
             if (sourceTr == null)
             {
                 DebugManager.Warning("[SkillExecutor] SpawnProjectile: source Transform not provided", "Skill");
@@ -145,7 +145,7 @@ namespace CHAL.Systems.Skill
             pc.Init(inst, source, target, dir, speed, life);
 
             DebugManager.Log($"[SkillExecutor] Spawned projectile {inst.Data.DisplayName} at {startPos} dir {dir} speed {speed} life {life}", DebugManager.EDebugLevel.Test, "Skill");
-            // WICHTIG: KEINE OnHit-Effekte hier ausführen — das macht das Projektil bei Kollision
+            // WICHTIG: KEINE OnHit-Effekte hier ausfÃ¼hren â€” das macht das Projektil bei Kollision
         }
 
         internal static void ApplyOnHit(SkillInstance skill, EffectReceiver source, EffectReceiver target)
@@ -182,7 +182,7 @@ namespace CHAL.Systems.Skill
                 var type = e.DmgType;
 
                 target.TakeDamage(dmg, type);
-                DebugManager.Log($"OnHit | {skill.Data.DisplayName} → {target}: {dmg:F1} {type}", DebugManager.EDebugLevel.Test, "Combat");
+                DebugManager.Log($"OnHit | {skill.Data.DisplayName} â†’ {target}: {dmg:F1} {type}", DebugManager.EDebugLevel.Test, "Combat");
             }
         }
 
@@ -191,7 +191,7 @@ namespace CHAL.Systems.Skill
             // Fallback: voller BaseDamage als Physical
             target.TakeDamage(baseDmg, DamageType.Physical);
             DebugManager.Log(
-                $"OnHit | {skill.Data.DisplayName} → {target} : {baseDmg:F1} Physical",
+                $"OnHit | {skill.Data.DisplayName} â†’ {target} : {baseDmg:F1} Physical",
                 DebugManager.EDebugLevel.Test, "Combat"
             );
             return;  
@@ -199,7 +199,7 @@ namespace CHAL.Systems.Skill
 
         private static void DoOnHitImpactEffects(SkillInstance skill, EffectReceiver source, EffectReceiver target)
         {
-            // 1) OnHit-Effekte (Buff/DoT u.ä.)
+            // 1) OnHit-Effekte (Buff/DoT u.Ã¤.)
             var effects = skill.Data.OnHitImpactEffects;
             if (effects != null && effects.Count > 0)
             {

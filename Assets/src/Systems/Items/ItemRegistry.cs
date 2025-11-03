@@ -11,7 +11,7 @@ namespace CHAL.Systems.Items
 {
     public sealed class ItemRegistry : ScriptableObject
     {
-        // Optional: ein zentrales Asset, in das du NICHTS einträgst – dient nur als Loader-Entry.
+        // Optional: ein zentrales Asset, in das du NICHTS eintrÃ¤gst â€“ dient nur als Loader-Entry.
         private static ItemRegistry _instance;
         public static ItemRegistry Instance
         {
@@ -75,7 +75,7 @@ namespace CHAL.Systems.Items
             {
                 foreach (var g in gearDefs)
                 {
-                    // leere oder ungültige ID
+                    // leere oder ungÃ¼ltige ID
                     if (string.IsNullOrWhiteSpace(g.itemId))
                     {
                         rows.Add($"warn,gear,id_empty,asset={g.name}");
@@ -88,7 +88,7 @@ namespace CHAL.Systems.Items
                         rows.Add($"warn,gear,wrong_prefix,{g.itemId},asset={g.name}");
                     }
 
-                    // Schon in Registry? (Reload hat _byId befüllt)
+                    // Schon in Registry? (Reload hat _byId befÃ¼llt)
                     if (!_byId.ContainsKey(g.itemId))
                     {
                         rows.Add($"warn,gear,not_in_registry,{g.itemId},asset={g.name}");
@@ -120,7 +120,7 @@ namespace CHAL.Systems.Items
                         // Placeholder erzeugen (wie bei anderen Validierungen)
                         CreatePlaceholderitem(outId);
 
-                        // analog "missing" kennzeichnen + Kontext anhängen
+                        // analog "missing" kennzeichnen + Kontext anhÃ¤ngen
                         rows.Add($"missing,recipe_output,{outId},recipeAsset={r.name}");
                     }
                 }
@@ -133,7 +133,7 @@ namespace CHAL.Systems.Items
                 {
                     if (!File.Exists(reportPath))
                     {
-                        // Header nur beim ersten Mal sinnvoll – optional
+                        // Header nur beim ersten Mal sinnvoll â€“ optional
                         File.WriteAllLines(reportPath, new[] { "level,domain,kind,value,context" });
                     }
                     File.AppendAllLines(reportPath, rows);
@@ -280,7 +280,7 @@ namespace CHAL.Systems.Items
 
             var def = ScriptableObject.CreateInstance<ItemDef>();
             def.itemId = itemId;
-            def.description = "Placeholder Item – auto-generated.";
+            def.description = "Placeholder Item â€“ auto-generated.";
             def.rarity = Rarity.Common;
             def.lootValue = 0;
 

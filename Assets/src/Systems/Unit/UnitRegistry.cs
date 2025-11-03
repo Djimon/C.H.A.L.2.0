@@ -37,7 +37,7 @@ namespace CHAL.Systems.Unit
             {
                 if (string.IsNullOrWhiteSpace(def.HeroId))
                 {
-                    DebugManager.Warning($"[UnitRegistry] Skip ungültige ID in {def.name}");
+                    DebugManager.Warning($"[UnitRegistry] Skip ungÃ¼ltige ID in {def.name}");
                     continue;
                 }
                 if (_HeroById.ContainsKey(def.HeroId))
@@ -61,7 +61,7 @@ namespace CHAL.Systems.Unit
                 //Debug.Log($"?{def.displayNameKey}");
                 if (string.IsNullOrWhiteSpace(def.enemyId))
                 {
-                    DebugManager.Warning($"[UnitRegistry] Skip ungültige ID in {def.name}");
+                    DebugManager.Warning($"[UnitRegistry] Skip ungÃ¼ltige ID in {def.name}");
                     continue;
                 }
                 if (_EnemyById.ContainsKey(def.enemyId))

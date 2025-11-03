@@ -130,7 +130,7 @@ namespace CHAL.UI
             var panel = _doc.rootVisualElement.panel;
             if (panel == null) return false;
 
-            // Screen → Panel-Koordinaten
+            // Screen â†’ Panel-Koordinaten
             Vector2 panelPos = RuntimePanelUtils.ScreenToPanel(panel, screenPos);
 
             // 1) Detailpanel (nur wenn sichtbar)
@@ -152,38 +152,38 @@ namespace CHAL.UI
     {
         public static string FormatUnlocks(ResearchNodeDef def)
         {
-            if (def == null || def.unlocks == null || def.unlocks.Count == 0) return "—";
+            if (def == null || def.unlocks == null || def.unlocks.Count == 0) return "â€”";
             var sb = new StringBuilder();
             foreach (var u in def.unlocks)
-                sb.AppendLine($"• {u.unlockType}: {u.targetId}");
+                sb.AppendLine($"â€¢ {u.unlockType}: {u.targetId}");
             return sb.ToString();
         }
 
         public static string FormatRequirements(ResearchNodeDef def)
         {
-            if (def == null || def.requirements == null) return "—";
+            if (def == null || def.requirements == null) return "â€”";
             var r = def.requirements;
             var sb = new StringBuilder();
 
-            if (r.waves > 0) sb.AppendLine($"• Wellen: {r.waves}");
-            if (r.maps > 0) sb.AppendLine($"• Karten: {r.maps}");
+            if (r.waves > 0) sb.AppendLine($"â€¢ Wellen: {r.waves}");
+            if (r.maps > 0) sb.AppendLine($"â€¢ Karten: {r.maps}");
 
             if (r.mapRequirements != null)
                 foreach (var mr in r.mapRequirements)
-                    sb.AppendLine($"• Karten ({mr.difficulty}): {mr.amount}");
+                    sb.AppendLine($"â€¢ Karten ({mr.difficulty}): {mr.amount}");
 
             if (r.killsGeneral > 0)
-                sb.AppendLine($"• Kills (gesamt, gewichtet): {r.killsGeneral}");
+                sb.AppendLine($"â€¢ Kills (gesamt, gewichtet): {r.killsGeneral}");
 
             if (r.killsByTag != null)
                 foreach (var kc in r.killsByTag)
                     if (kc != null && !string.IsNullOrEmpty(kc.enemyTag))
-                        sb.AppendLine($"• Kills [{kc.enemyTag}]: {kc.count}");
+                        sb.AppendLine($"â€¢ Kills [{kc.enemyTag}]: {kc.count}");
 
-            if (r.eliteCount > 0) sb.AppendLine($"• Elites: {r.eliteCount}");
-            if (r.bossCount > 0) sb.AppendLine($"• Bosse:  {r.bossCount}");
+            if (r.eliteCount > 0) sb.AppendLine($"â€¢ Elites: {r.eliteCount}");
+            if (r.bossCount > 0) sb.AppendLine($"â€¢ Bosse:  {r.bossCount}");
 
-            return sb.Length == 0 ? "—" : sb.ToString();
+            return sb.Length == 0 ? "â€”" : sb.ToString();
         }
     }
 }

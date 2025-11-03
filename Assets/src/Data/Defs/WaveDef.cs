@@ -33,7 +33,7 @@ namespace CHAL.Data
         };
 
 
-        // Sp‰ter: zus‰tzliche Constraints (z. B. verbotene Tags, garantierte Tags, etc.)
+        // Sp√§ter: zus√§tzliche Constraints (z. B. verbotene Tags, garantierte Tags, etc.)
 
         /// <summary>
         /// Baut eine WaveComposition aus diesem Template.
@@ -44,7 +44,7 @@ namespace CHAL.Data
             {
                 Level = baseLevel,
                 Difficulty = difficulty,
-                Monsters = new List<EnemyStruct>() //wird von WaveManager bef¸llt
+                Monsters = new List<EnemyStruct>() //wird von WaveManager bef√ºllt
             };         
         }
 

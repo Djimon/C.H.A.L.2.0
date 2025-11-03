@@ -15,13 +15,13 @@ namespace CHAL.Data
         [HideInInspector]
         public ItemType itemType;
 
-        //public string displayName; //abgeleitet von ID über Localizationmanager -> TODO
+        //public string displayName; //abgeleitet von ID Ã¼ber Localizationmanager -> TODO
         [TextArea] public string description;
         public Sprite icon;
 
         public Rarity rarity = Rarity.Common;
 
-        [Tooltip("Wert für Softcap/Budget (empf.: Common 10, Rare 30, Epic 50, Legendary 80)")]
+        [Tooltip("Wert fÃ¼r Softcap/Budget (empf.: Common 10, Rare 30, Epic 50, Legendary 80)")]
         public int lootValue = 10;
 
         [Tooltip("Type Specific Data")]
@@ -39,9 +39,9 @@ namespace CHAL.Data
             // Basisschutz: korrekte ID
             if (!ItemKey.TryParse(itemId, out _))
             {
-                Debug.LogWarning($"[ItemDef] Ungültige itemId '{itemId}' in {name}. Erwartet 'category:item'.");
+                Debug.LogWarning($"[ItemDef] UngÃ¼ltige itemId '{itemId}' in {name}. Erwartet 'category:item'.");
             }
-            // Sanity für LootValue
+            // Sanity fÃ¼r LootValue
             if (lootValue < 0) lootValue = 0;
 
             //Erzwungene Type-Safety
@@ -111,10 +111,10 @@ namespace CHAL.Data
     [System.Serializable]
     public class GearData
     {
-        public GearType slotType;         // Head/Chest/Gloves/Legs/Boots/Amulet …
+        public GearType slotType;         // Head/Chest/Gloves/Legs/Boots/Amulet â€¦
         public string[] tags;             // z.B. "gear","leather","light"
 
-        // optional/future: Sockeltyp (jetzt auf None lassen, Enum kannst du später ausbauen)
+        // optional/future: Sockeltyp (jetzt auf None lassen, Enum kannst du spÃ¤ter ausbauen)
         public RuneColorType runeSocketType;
     }
 

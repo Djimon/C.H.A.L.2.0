@@ -13,7 +13,7 @@ namespace CHAL.Data
     {
         public string profileId;
         // --- Meta ---
-        public DateTime LastSaveTime;            // Für Autosave / Debug
+        public DateTime LastSaveTime;            // FÃ¼r Autosave / Debug
 
         // --- Charakter Customization ---
         public string playerName;
@@ -23,9 +23,9 @@ namespace CHAL.Data
         public int XP;                           // Gesamt-XP
         public int Level;                        // optional: aus XP berechnet
         public int XPInCurrentLevel;    // XP innerhalb des aktuellen Levels
-        public int XPToNextLevel;       // Gesamtmenge, die für das nächste Level nötig ist
+        public int XPToNextLevel;       // Gesamtmenge, die fÃ¼r das nÃ¤chste Level nÃ¶tig ist
         public int missingXP;           // Noch fehlende XP bis LevelUp
-        public float levelProgress;     // 0..1 für UI-Balken
+        public float levelProgress;     // 0..1 fÃ¼r UI-Balken
 
         //  --- Heros/ Roster ---
         public List<string> UnlockedHeroes = new();
@@ -43,7 +43,7 @@ namespace CHAL.Data
 
         // --- Items ---
         [NonSerialized] public List<Inventory> Inventories = new();
-        // Persistenter Snapshot aller Inventare (nur für Save/Load)
+        // Persistenter Snapshot aller Inventare (nur fÃ¼r Save/Load)
         public List<InventorySnapshot> InventorySave = new();
 
         // --- Research ---
@@ -148,7 +148,7 @@ namespace CHAL.Data
             if (UnlockedHeroes == null) UnlockedHeroes = new List<string>();
             if (UnlockedHeroes.Contains(starterHeroId)) return false;
             UnlockedHeroes.Add(starterHeroId);
-            return true; // hat was geändert
+            return true; // hat was geÃ¤ndert
         }
 
 
@@ -181,7 +181,7 @@ namespace CHAL.Data
 
             Level = level;
 
-            XPInCurrentLevel = XP - totalXpRequired; // nicht XP überschreiben!
+            XPInCurrentLevel = XP - totalXpRequired; // nicht XP Ã¼berschreiben!
             XPToNextLevel = xpForNext;
             missingXP = xpForNext - XPInCurrentLevel;
             levelProgress = (float)XPInCurrentLevel / xpForNext;
@@ -209,12 +209,12 @@ namespace CHAL.Data
                 DebugManager.Log($" - {s.id}: {s.items?.Count ?? 0}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
-        // Nach dem Laden: Snapshot zurück in die Live-Inventare schieben
+        // Nach dem Laden: Snapshot zurÃ¼ck in die Live-Inventare schieben
         public void RestoreInventoriesFromSnapshot()
         {
             if (InventorySave == null) return;
 
-            // Falls z.B. frisch aus Menü geladen wurde: sicherstellen, dass Live-Inventare existieren
+            // Falls z.B. frisch aus MenÃ¼ geladen wurde: sicherstellen, dass Live-Inventare existieren
             if (Inventories.Count == 0)
                 InitInventories();
 
@@ -238,7 +238,7 @@ namespace CHAL.Data
                 applied++;
             }
 
-            DebugManager.Log($"InventorySnapshot restored — applied:{applied}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            DebugManager.Log($"InventorySnapshot restored â€” applied:{applied}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
         public ResearchSnapshot BuildResearchSnapshotFrom(ResearchState state)

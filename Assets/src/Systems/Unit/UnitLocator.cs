@@ -8,8 +8,8 @@ namespace CHAL.Systems.Unit
 {
 
     /// <summary>
-    /// Scene-scoped Locator für aktive Units.
-    /// Hänge diese Komponente an dasselbe GameObject wie den MapManager.
+    /// Scene-scoped Locator fÃ¼r aktive Units.
+    /// HÃ¤nge diese Komponente an dasselbe GameObject wie den MapManager.
     /// Controller rufen Register/Unregister in OnEnable/OnDisable.
     /// </summary>
     public sealed class UnitLocator : MonoBehaviour
@@ -17,7 +17,7 @@ namespace CHAL.Systems.Unit
         // Scene-scoped Instance (kein DontDestroyOnLoad).
         public static UnitLocator Instance { get; private set; }
 
-        // Intern HashSet für O(1) Remove, nach außen nur lesend.
+        // Intern HashSet fÃ¼r O(1) Remove, nach auÃŸen nur lesend.
         private readonly HashSet<HeroController> _heroes = new();
         private readonly HashSet<EnemyController> _enemies = new();
 
@@ -28,7 +28,7 @@ namespace CHAL.Systems.Unit
         {
             if (Instance != null && Instance != this)
             {
-                DebugManager.Error("[UnitLocator] Mehrere Instanzen in der Scene gefunden – bitte nur eine!");
+                DebugManager.Error("[UnitLocator] Mehrere Instanzen in der Scene gefunden â€“ bitte nur eine!");
             }
             Instance = this;
             DebugManager.Log("[UnitLocator] Ready (scene-scoped).", DebugManager.EDebugLevel.Dev, "Combat");
@@ -36,7 +36,7 @@ namespace CHAL.Systems.Unit
 
         private void OnDestroy()
         {
-            // Safety: Bei Scene-Unload sauber aufräumen
+            // Safety: Bei Scene-Unload sauber aufrÃ¤umen
             if (Instance == this) Instance = null;
             _heroes.Clear();
             _enemies.Clear();
@@ -75,8 +75,8 @@ namespace CHAL.Systems.Unit
         // ---------- Queries ----------
 
         /// <summary>
-        /// Liefert das nächste gegnerische Ziel innerhalb von sightRange (Tie-Breaker: first found).
-        /// Gibt das Transform des Gegners zurück oder null, wenn keins gefunden.
+        /// Liefert das nÃ¤chste gegnerische Ziel innerhalb von sightRange (Tie-Breaker: first found).
+        /// Gibt das Transform des Gegners zurÃ¼ck oder null, wenn keins gefunden.
         /// </summary>
         public Transform GetNearestEnemy(Vector3 origin, UnitTeam myTeam, float sightRange)
         {
@@ -110,8 +110,8 @@ namespace CHAL.Systems.Unit
         }
 
         /// <summary>
-        /// Liefert das gegnerische Ziel mit der höchsten aktuellen HP innerhalb von sightRange (Tie-Breaker: first found).
-        /// Gibt das Transform des Gegners zurück oder null, wenn keins gefunden.
+        /// Liefert das gegnerische Ziel mit der hÃ¶chsten aktuellen HP innerhalb von sightRange (Tie-Breaker: first found).
+        /// Gibt das Transform des Gegners zurÃ¼ck oder null, wenn keins gefunden.
         /// </summary>
         public Transform GetHighestHPEnemy(Vector3 origin, UnitTeam myTeam, float sightRange)
         {
@@ -124,7 +124,7 @@ namespace CHAL.Systems.Unit
                 foreach (var e in _enemies)
                 {
                     if (!IsValid(e)) continue;
-                    // Reichweite prüfen
+                    // Reichweite prÃ¼fen
                     float d2 = (e.transform.position - origin).sqrMagnitude;
                     if (d2 > sightRange * sightRange) continue;
 
@@ -142,7 +142,7 @@ namespace CHAL.Systems.Unit
                     float d2 = (h.transform.position - origin).sqrMagnitude;
                     if (d2 > sightRange * sightRange) continue;
 
-                    // HP über EffectReceiver des Helden (EnemyController nutzt diese Methode bereits)
+                    // HP Ã¼ber EffectReceiver des Helden (EnemyController nutzt diese Methode bereits)
                     var rec = h.GetEffectReceiver(); // in eurem Code verwendet, daher hier konsistent
                     float hp = rec != null ? rec.CurrentHP : 0f;
                     if (hp > bestHP) { bestHP = hp; bestTr = h.transform; }
@@ -160,7 +160,7 @@ namespace CHAL.Systems.Unit
         private static bool IsValid(EnemyController e)
             => e != null && e.IsAlive; // EnemyController.IsAlive nutzt EnemyInstance.CurrentHP > 0. :contentReference[oaicite:2]{index=2}
 
-        // Entfernt null/zerstörte Einträge (billig, verringert NRE-Risiko)
+        // Entfernt null/zerstÃ¶rte EintrÃ¤ge (billig, verringert NRE-Risiko)
         private static void CleanupDead(HashSet<HeroController> set)
         {
             set.RemoveWhere(x => x == null || !x.IsAlive);

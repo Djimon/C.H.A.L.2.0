@@ -44,10 +44,10 @@ public class LootRollerDebug : MonoBehaviour
     }
         };
 
-        // Loot w¸rfeln
+        // Loot w√ºrfeln
         var loot = roller.RollLoot(wave);
 
-        //var grouped = loot.GroupBy(id => id).OrderBy(g => g.Key); // alphabetisch sortieren f¸r ‹bersicht
+        //var grouped = loot.GroupBy(id => id).OrderBy(g => g.Key); // alphabetisch sortieren f√ºr √úbersicht
 
         foreach (var entry in loot)
         {

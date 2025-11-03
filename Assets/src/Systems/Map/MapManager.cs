@@ -70,7 +70,7 @@ namespace CHAL.Systems.Map
             DebugManager.Log($"Starting Map {CurrentMap.mapId} (Level {CurrentMap.baseLevel}, Waves {CurrentMap.maxWaves})",
                              DebugManager.EDebugLevel.Test, "Map");
 
-            // Szene "04_Map" muss geladen sein → dann Prefab instanzieren
+            // Szene "04_Map" muss geladen sein â†’ dann Prefab instanzieren
             if (_mapInstancedPrefab != null)
                 Destroy(_mapInstancedPrefab);
 
@@ -179,8 +179,8 @@ namespace CHAL.Systems.Map
 
         private GameObject GetHeroPrefab(HeroDef def)
         {
-            // Annahme: Dein HeroDef enthält ein Prefab-Feld (falls nicht, nutze heroFallbackPrefab)
-            var prefab = def != null ? def.Prefab : null; // falls dein Feld anders heißt: anpassen
+            // Annahme: Dein HeroDef enthÃ¤lt ein Prefab-Feld (falls nicht, nutze heroFallbackPrefab)
+            var prefab = def != null ? def.Prefab : null; // falls dein Feld anders heiÃŸt: anpassen
             return prefab != null ? prefab : heroFallbackPrefab;
         }
 

@@ -29,7 +29,7 @@ namespace CHAL.Data
         [Header("Actual research Tree")]
         public List<ResearchTreeLane>   researchTreeLanes = new List<ResearchTreeLane>();
 
-        // Helper für UI: Lane-Name & -Farbe aus Index holen
+        // Helper fÃ¼r UI: Lane-Name & -Farbe aus Index holen
         public string GetLaneName(int lane)
         {
             return (lane >= 0 && lane < researchLanes.Count)

@@ -86,10 +86,10 @@ namespace CHAL.Systems.Inventory
                 }
             }
 
-            // 3) TODO: Tags prüfen?
+            // 3) TODO: Tags prÃ¼fen?
             
 
-            // 4) Types prüfen
+            // 4) Types prÃ¼fen
             var t = ItemTypeUtils.FromId(itemId);
             if (f.BlockedItemTypes != null)
                 for (int i = 0; i < f.BlockedItemTypes.Count; i++)
@@ -122,7 +122,7 @@ namespace CHAL.Systems.Inventory
             var need = stack.count;
             var itemId = stack.itemID;
 
-            // 1) erst vorhandene Stacks auffüllen (gleiche ItemID)
+            // 1) erst vorhandene Stacks auffÃ¼llen (gleiche ItemID)
             foreach (var slot in inv.slots)
             {
                 if (slot.stack.HasValue && slot.stack.Value.itemID == itemId)
@@ -162,7 +162,7 @@ namespace CHAL.Systems.Inventory
             }
 
 
-            // 1) Versuche bestehende Stacks zu füllen
+            // 1) Versuche bestehende Stacks zu fÃ¼llen
             int remaining = stack.count;
             for (int i = 0; i < inv.slots.Length && remaining > 0; i++)
             {
@@ -179,14 +179,14 @@ namespace CHAL.Systems.Inventory
                     s.stack = s.stack.Value.WithCount(s.stack.Value.count + move);
                     remaining -= move;
                     result.SlotDeltas.Add((i, s.stack));
-                    DebugManager.Log($"Item {stack.itemID} ({move}) in Slot {instanceId}:{i} auffüllen", DebugManager.EDebugLevel.Debug, "Inventory");
+                    DebugManager.Log($"Item {stack.itemID} ({move}) in Slot {instanceId}:{i} auffÃ¼llen", DebugManager.EDebugLevel.Debug, "Inventory");
                     OnSlotChanged?.Invoke(instanceId, i, s.stack);
 
                 }
             }
 
 
-            // 2) Leere Slots befüllen
+            // 2) Leere Slots befÃ¼llen
             for (int i = 0; i < inv.slots.Length && remaining > 0; i++)
             {
                 var s = inv.slots[i];
@@ -276,7 +276,7 @@ namespace CHAL.Systems.Inventory
             if (amount <= 0) { result.reason = "InvalidAmount"; return false; }
             if (amount > moving.count) amount = moving.count;
 
-            // TODO: SlotFilter-Checks (b.Filter gegen moving.itemID / Tags) – später
+            // TODO: SlotFilter-Checks (b.Filter gegen moving.itemID / Tags) â€“ spÃ¤ter
             if (!PassesFilter(b, moving.itemID))
             { 
                 result.reason = "FilterFailed"; 
@@ -290,7 +290,7 @@ namespace CHAL.Systems.Inventory
                     {
                         if (!b.stack.HasValue)
                         {
-                            // Ziel leer → lege bis max ab
+                            // Ziel leer â†’ lege bis max ab
                             int put = Math.Min(b.maxStack, amount);
                             b.stack = new ItemStack(moving.itemID, put);
                             int remain = moving.count - put;

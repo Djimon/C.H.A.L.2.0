@@ -26,7 +26,7 @@ namespace CHAL.Systems.Loot
         }
 
         /// <summary>
-        /// Call wenn ein Item mit Rarity gedroppt ist → Streak resetten.
+        /// Call wenn ein Item mit Rarity gedroppt ist â†’ Streak resetten.
         /// </summary>
         public void OnDrop(Rarity rarity)
         {
@@ -38,7 +38,7 @@ namespace CHAL.Systems.Loot
         }
 
         /// <summary>
-        /// Call wenn ein Item mit Rarity NICHT gedroppt ist → Streak erhöhen.
+        /// Call wenn ein Item mit Rarity NICHT gedroppt ist â†’ Streak erhÃ¶hen.
         /// </summary>
         public void OnFail(Rarity rarity)
         {
@@ -50,7 +50,7 @@ namespace CHAL.Systems.Loot
         }
 
         /// <summary>
-        /// Liefert den Multiplikator für die aktuelle Rarity.
+        /// Liefert den Multiplikator fÃ¼r die aktuelle Rarity.
         /// </summary>
         public float GetMultiplier(Rarity rarity)
         {
@@ -63,12 +63,12 @@ namespace CHAL.Systems.Loot
                 Rarity.Daemonic => 1f + alphaSpecials * s,
                 Rarity.Holy => 1f + alphaSpecials * s,
                 Rarity.Mythic => 1f + alphaSpecials * s,
-                _ => 1f // Common → kein Dry-Streak
+                _ => 1f // Common â†’ kein Dry-Streak
             };
         }
 
         /// <summary>
-        /// Debug-Info für Logs.
+        /// Debug-Info fÃ¼r Logs.
         /// </summary>
         public string DebugInfo()
         {
@@ -76,7 +76,7 @@ namespace CHAL.Systems.Loot
         }
 
         /// <summary>
-        /// Hilfsmethode: welche Rarities überhaupt berücksichtigt werden.
+        /// Hilfsmethode: welche Rarities Ã¼berhaupt berÃ¼cksichtigt werden.
         /// </summary>
         private bool IsTracked(Rarity rarity) =>
             rarity == Rarity.Rare ||

@@ -15,8 +15,8 @@ namespace CHAL.Systems.Inventory
         private bool _hasFrom = false;
         private bool _splitHalf;
 
-        public bool HasFrom => _hasFrom;              // NEU: öffentlich lesbar
-        public ItemMoveObject From => _from;          // NEU: Quelle – für Ghost-Text/Icon
+        public bool HasFrom => _hasFrom;              // NEU: Ã¶ffentlich lesbar
+        public ItemMoveObject From => _from;          // NEU: Quelle â€“ fÃ¼r Ghost-Text/Icon
         public bool IsSplit => _splitHalf;
 
         public DragDropService(IInventoryDomain domain) { _domain = domain; }
@@ -25,7 +25,7 @@ namespace CHAL.Systems.Inventory
         public event Action<ItemStack,bool> OnBeginDrag;
         public event Action OnEndDrag;
 
-        // “Pickup” (auch per RMB für Split möglich)
+        // â€œPickupâ€ (auch per RMB fÃ¼r Split mÃ¶glich)
         public void BeginDrag(ItemMoveObject from, bool splitHalf)
         {
             DebugManager.Log($"[Drag&Drop]: Begin", DebugManager.EDebugLevel.Dev, "Inventory");
@@ -39,7 +39,7 @@ namespace CHAL.Systems.Inventory
         }
 
 
-        // Abbruch (ESC, Rechtsklick außerhalb, etc.)
+        // Abbruch (ESC, Rechtsklick auÃŸerhalb, etc.)
         public void Cancel()
         {
             _hasFrom = false;
@@ -61,7 +61,7 @@ namespace CHAL.Systems.Inventory
                     // Split auf gleichem Slot macht keinen Sinn -> abbrechen
                     Cancel();
                 }
-                // sonst: Pickup bleibt „in der Hand“, Ghost bleibt sichtbar
+                // sonst: Pickup bleibt â€žin der Handâ€œ, Ghost bleibt sichtbar
                 return;
             }
 

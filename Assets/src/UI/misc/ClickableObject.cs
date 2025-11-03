@@ -10,7 +10,7 @@ namespace CHAL.UI
         private Renderer rend;
         private MaterialPropertyBlock mpb;
 
-        public GameObject menuUI; // Hier dein Menü zuweisen im Inspector
+        public GameObject menuUI; // Hier dein MenÃ¼ zuweisen im Inspector
 
         void Awake()
         {

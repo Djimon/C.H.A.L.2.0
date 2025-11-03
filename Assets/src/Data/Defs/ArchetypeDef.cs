@@ -9,7 +9,7 @@ namespace CHAL.Data
     {
         public string ArchetypeId;             // "Vanguard"
         public string DisplayName;             // Lokalisierbarer Name
-        public string RoleDescription;         // "Tank, Frontline, Schadensgl‰ttung"
+        public string RoleDescription;         // "Tank, Frontline, Schadensgl√§ttung"
 
         // TODO: SignaturePassiveName / Desc
         public PrimaryAttackArchetype primAttackType;
@@ -34,14 +34,14 @@ namespace CHAL.Data
         {
             if (GrowthConfig?.GrowthPattern?.growthPriority == null)
             {
-                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern muss genau 5 Eintr‰ge haben.","Edtior");
+                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern muss genau 5 Eintr√§ge haben.","Edtior");
                 return;
             }
 
             int len = GrowthConfig.GrowthPattern.growthPriority.Length;
             if (len != 5)
             {
-                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern muss genau 5 Eintr‰ge haben. Aktuelle: {len}", "Edtior");
+                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern muss genau 5 Eintr√§ge haben. Aktuelle: {len}", "Edtior");
             }
         }
     }

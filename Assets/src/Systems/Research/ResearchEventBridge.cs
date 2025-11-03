@@ -18,7 +18,7 @@ namespace CHAL.Systems.Research
             _service.ApplyWaveCompleted();
         }
 
-        // Aufruf z.B. im MapManager (falls du MapDifficulty schon führst; sonst bool→Mapping machen)
+        // Aufruf z.B. im MapManager (falls du MapDifficulty schon fÃ¼hrst; sonst boolâ†’Mapping machen)
         public void OnMapCompleted(MapDifficulty difficulty)
         {
             _service.ApplyMapCompleted(difficulty);

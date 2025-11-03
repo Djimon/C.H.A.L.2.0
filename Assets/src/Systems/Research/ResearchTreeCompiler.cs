@@ -83,7 +83,7 @@ namespace CHAL.Systems.Research
                 }
             }
 
-            // Azyklizität / Stage-Ordnung validieren
+            // AzyklizitÃ¤t / Stage-Ordnung validieren
             foreach (var kv in parentsById)
             {
                 var id = kv.Key;
@@ -98,7 +98,7 @@ namespace CHAL.Systems.Research
                     }
                     if (ppos.stage >= stage)
                     {
-                        DebugManager.Log($"ResearchTreeCompiler: Stage-Ordnung verletzt: Parent '{pid}' (stage {ppos.stage}) ≥ Child '{id}' (stage {stage}).",
+                        DebugManager.Log($"ResearchTreeCompiler: Stage-Ordnung verletzt: Parent '{pid}' (stage {ppos.stage}) â‰¥ Child '{id}' (stage {stage}).",
                             DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Error);
                     }
                 }
@@ -106,7 +106,7 @@ namespace CHAL.Systems.Research
 
             // Zyklus-Check (DFS)
             if (HasCycle(parentsById))
-                DebugManager.Log("ResearchTreeCompiler: Zyklische Abhängigkeit im Tree.", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Error);
+                DebugManager.Log("ResearchTreeCompiler: Zyklische AbhÃ¤ngigkeit im Tree.", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Error);
 
             return new ResearchTreeCompiled(nodesById, posById, parentsById);
         }

@@ -25,7 +25,7 @@ namespace CHAL.Systems.Loot
         }
 
         /// <summary>
-        /// Rollt Loot für einen einzelnen Gegner bei dessen Tod.
+        /// Rollt Loot fÃ¼r einen einzelnen Gegner bei dessen Tod.
         /// Nutzt Budget & Unlucky aus dem WaveContext.
         /// </summary>
         public List<LootResultEntry> RollLootForMonster(EnemyDef def, EnemyStruct monster, WaveLootContext ctx)
@@ -39,20 +39,20 @@ namespace CHAL.Systems.Loot
             if (effectiveTags == null || effectiveTags.Count == 0)
                 return results;
 
-            // 1. Multiplikator abhängig vom Rank bestimmen
+            // 1. Multiplikator abhÃ¤ngig vom Rank bestimmen
             int rolls = BalanceManager.Instance.Config.loot.rankMultipliers.GetMultiplier(monster.Rank);
 
             for (int r = 0; r < rolls; r++)
             {
-                // 2. Zufälligen Tag picken
+                // 2. ZufÃ¤lligen Tag picken
                 //TODO: Base-tags werden ignoriert?
 
                 var tag = effectiveTags[Random.Range(0, effectiveTags.Count)];
 
-                // 3. Regel für diesen Tag laden
+                // 3. Regel fÃ¼r diesen Tag laden
                 var merged = _rules.GetMergedForTags(new[] { tag });
 
-                // 4. RNG-Loop über alle Drops im Pool
+                // 4. RNG-Loop Ã¼ber alle Drops im Pool
                 foreach (var drop in merged.drops)
                 { 
 
@@ -176,7 +176,7 @@ namespace CHAL.Systems.Loot
 
                     ctx.Drops.Add(entry);
                     //No Unlucky reset
-                    DebugManager.Log($"Guaranteed {rarity} → {pick.itemId}",DebugManager.EDebugLevel.Dev,"Loot");
+                    DebugManager.Log($"Guaranteed {rarity} â†’ {pick.itemId}",DebugManager.EDebugLevel.Dev,"Loot");
                     count++;
                 }
             }

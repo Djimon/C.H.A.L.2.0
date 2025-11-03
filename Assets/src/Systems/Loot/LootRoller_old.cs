@@ -21,7 +21,7 @@ namespace CHAL.Systems.Loot
         }
 
         /// <summary>
-        /// Haupt-Einstieg: rollt Loot für eine komplette Welle.
+        /// Haupt-Einstieg: rollt Loot fÃ¼r eine komplette Welle.
         /// </summary>
         public List<LootResultEntry> RollLoot(WaveComposition wave)
         {
@@ -35,7 +35,7 @@ namespace CHAL.Systems.Loot
             );
             int U = 0; // bisher verbrauchtes Budget
 
-            // 2) Normale Drops für jede Monster-Instanz
+            // 2) Normale Drops fÃ¼r jede Monster-Instanz
             foreach (var monster in wave.Monsters)
             {
                 for (int i = 0; i < monster.Count; i++)
@@ -43,13 +43,13 @@ namespace CHAL.Systems.Loot
                     if (monster.bonusTags == null || monster.bonusTags.Count == 0)
                         continue;
 
-                    // zufällig einen Tag picken
+                    // zufÃ¤llig einen Tag picken
                     var tag = monster.bonusTags[Random.Range(0, monster.bonusTags.Count)];
 
-                    // Regel für diesen Tag laden
+                    // Regel fÃ¼r diesen Tag laden
                     var merged = _rules.GetMergedForTags(new[] { tag });
 
-                    // Würfelprozess für jeden Drop-Kandidaten
+                    // WÃ¼rfelprozess fÃ¼r jeden Drop-Kandidaten
                     foreach (var drop in merged.drops)
                     {
                         float pBase = drop.chance ?? 0f;
@@ -85,7 +85,7 @@ namespace CHAL.Systems.Loot
                         }
                     }
 
-                    // 3) Secret Rules prüfen – für dieses eine Monster
+                    // 3) Secret Rules prÃ¼fen â€“ fÃ¼r dieses eine Monster
                     var secretDrops = _rules.GetSecretDrops(monster.bonusTags);
                     foreach (var sd in secretDrops)
                     {
@@ -95,7 +95,7 @@ namespace CHAL.Systems.Loot
                             finalLoot.Add(new LootResultEntry
                             {
                                 EnemyId = monster.EnemyId,
-                                PickedTag = string.Join(",", monster.bonusTags), // alle Tags für SecretRule
+                                PickedTag = string.Join(",", monster.bonusTags), // alle Tags fÃ¼r SecretRule
                                 ItemId = sd.itemId
                             });
                             DebugManager.Log($"Secret Drop:{sd.itemId}({ItemRegistry.Instance.GetRarity(sd.itemId)}) - chance was {sd.chance}%", DebugManager.EDebugLevel.Test, "Loot");
@@ -163,7 +163,7 @@ namespace CHAL.Systems.Loot
 
             var trimWeights = balance.loot.trim;
 
-            // so lange wir zu viele Drops haben → zufällig Items entfernen
+            // so lange wir zu viele Drops haben â†’ zufÃ¤llig Items entfernen
             while (loot.Count > merged.maxDrops)
             {
                 // Gewichte aufstellen

@@ -13,7 +13,7 @@ namespace CHAL.Data
         MaintainMinions,
         SpreadDoTs,
         CCFirstThreat,
-        // TODO: ggf. erweitern für Spezialverhalten
+        // TODO: ggf. erweitern fÃ¼r Spezialverhalten
     }
 
 }

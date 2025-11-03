@@ -69,7 +69,7 @@ namespace CHAL.UI
             QueueRelayout();
         }
 
-        /// Call, wenn View-Properties/Visibility geändert wurden.
+        /// Call, wenn View-Properties/Visibility geÃ¤ndert wurden.
         public void NotifyViewChanged(IDockableView view)
         {
             if (view == null) return;
@@ -111,7 +111,7 @@ namespace CHAL.UI
                 float panelWidth = panelRoot?.resolvedStyle.width ?? 0f;
                 if (panelWidth <= 0f) continue;
 
-                // Links/ Rechts getrennt sammeln + sortieren (unabhängige Gruppen!)
+                // Links/ Rechts getrennt sammeln + sortieren (unabhÃ¤ngige Gruppen!)
                 var left = panelGroup.Where(v => v.Edge == DockEdge.Left)
                                      .OrderBy(v => v.DockPriority)
                                      .ToList();
@@ -127,7 +127,7 @@ namespace CHAL.UI
         private static void EnsureAbsolutePosition(VisualElement ve)
         {
             if (ve == null) return;
-            // absolut, damit wir left/right setzen können (relativ zum passenden Container)
+            // absolut, damit wir left/right setzen kÃ¶nnen (relativ zum passenden Container)
             if (ve.style.position != Position.Absolute)
                 ve.style.position = Position.Absolute;
         }
@@ -146,14 +146,14 @@ namespace CHAL.UI
 
                 if (v.AutoDock)
                 {
-                    // HARTE Anbindung an linke Kante + Gegenseite zurücksetzen
+                    // HARTE Anbindung an linke Kante + Gegenseite zurÃ¼cksetzen
                     ve.style.left = offsetFromLeft;
                     ve.style.right = StyleKeyword.Auto;
                     ve.style.width = widthPx;
 
                     offsetFromLeft += widthPx + DockSpacing; 
                 }
-                // AutoDock=false → Position bleibt unberührt
+                // AutoDock=false â†’ Position bleibt unberÃ¼hrt
             }
         }
 
@@ -170,7 +170,7 @@ namespace CHAL.UI
 
                 if (v.AutoDock)
                 {
-                    // HARTE Anbindung an rechte Kante + Gegenseite zurücksetzen
+                    // HARTE Anbindung an rechte Kante + Gegenseite zurÃ¼cksetzen
                     ve.style.right = offsetFromRight;
                     ve.style.left = StyleKeyword.Auto;
                     ve.style.width = widthPx;

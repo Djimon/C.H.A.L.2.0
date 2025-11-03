@@ -77,19 +77,19 @@ public class LootRulesDebug : MonoBehaviour
             float pEff = pBase * mult;
             Debug.Log($"Fail {i}: Mult={mult:0.00}, ChanceEff={pEff:0.0}%");
             manager.OnFail(Rarity.Rare); // simuliert Fehlschlag
-            Debug.Log("Nach Drop → " + manager.DebugInfo());
+            Debug.Log("Nach Drop â†’ " + manager.DebugInfo());
         }
 
-        // Dann Drop erzwingen → Reset
+        // Dann Drop erzwingen â†’ Reset
         manager.OnDrop(Rarity.Rare);
-        Debug.Log("Nach Drop → " + manager.DebugInfo());
+        Debug.Log("Nach Drop â†’ " + manager.DebugInfo());
 
         //Softcap_Modulator
         //=================
 
         var rarity = Rarity.Rare;
         float M = LootBudgetModulator.GetModifier(U_budget_Used, vi_item_Value, B, rarity);
-        Debug.Log($"Budget={B}, Used={U_budget_Used}, Item={vi_item_Value}, Rarity={rarity} → Modifier={M:0.00}");
+        Debug.Log($"Budget={B}, Used={U_budget_Used}, Item={vi_item_Value}, Rarity={rarity} â†’ Modifier={M:0.00}");
 
     }
 }

@@ -235,7 +235,7 @@ namespace CHAL.Systems.Research
                 widgets[id] = w;
             }
 
-            // ---- 6) Edges zeichnen (unver‰ndert)
+            // ---- 6) Edges zeichnen (unver√§ndert)
             foreach (var kv in compiled.parentsById)
             {
                 var child = kv.Key;
@@ -261,7 +261,7 @@ namespace CHAL.Systems.Research
             float minY = Mathf.Min(from.y, to.y);
             float maxY = Mathf.Max(from.y, to.y);
 
-            // Grˆﬂe darf nie 0 sein, sonst Cull/Mask-Probleme
+            // Gr√∂√üe darf nie 0 sein, sonst Cull/Mask-Probleme
             float w = Mathf.Max(1f, maxX - minX);
             float h = Mathf.Max(1f, maxY - minY);
 
@@ -273,9 +273,9 @@ namespace CHAL.Systems.Research
             rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); // Top-Left
             rt.pivot = new Vector2(0f, 1f);               // lokale (0,0) = Top-Left dieses Edge-Rechtecks
             rt.anchoredPosition = new Vector2(minX, minY);    // an die Bounding-Box setzen
-            rt.sizeDelta = new Vector2(w, h);          // exakt so groﬂ wie gebraucht
+            rt.sizeDelta = new Vector2(w, h);          // exakt so gro√ü wie gebraucht
 
-            // Graphic konfigurieren ñ Start/End in lokale Koords dieses Rects
+            // Graphic konfigurieren ‚Äì Start/End in lokale Koords dieses Rects
             var g = go.GetComponent<ResearchEdgeGraphic>();
             g.raycastTarget = false;                     // Edge blockt keine Klicks
             g.color = theme.edgeColor;
@@ -299,12 +299,12 @@ namespace CHAL.Systems.Research
 
         void HandlePan()
         {
-            // Pan nur, wenn Maus ¸ber Viewport
+            // Pan nur, wenn Maus √ºber Viewport
             if (Input.GetMouseButtonDown(0) && RectTransformUtility.RectangleContainsScreenPoint(viewport, Input.mousePosition))
             {
-                // Wenn der Klick auf dem HUD (UITK) liegt: NICHT schlieﬂen, NICHT pannen
+                // Wenn der Klick auf dem HUD (UITK) liegt: NICHT schlie√üen, NICHT pannen
                 if (hud != null && hud.IsPointerOverUI(Input.mousePosition)) return;
-                // Klick liegt in der Map -> Details schlieﬂen und Pan starten
+                // Klick liegt in der Map -> Details schlie√üen und Pan starten
                 if (hud != null) hud.HideDetails();
                 dragging = true;
                 lastMouse = (Vector2)Input.mousePosition;
@@ -315,7 +315,7 @@ namespace CHAL.Systems.Research
                 Vector2 delta = m - lastMouse;
                 lastMouse = m;
 
-                content.anchoredPosition += delta; // 1:1 Screen-Pan f¸hlt sich bei Zoom gut an
+                content.anchoredPosition += delta; // 1:1 Screen-Pan f√ºhlt sich bei Zoom gut an
             }
             if (Input.GetMouseButtonUp(0)) dragging = false;
         }
@@ -364,7 +364,7 @@ namespace CHAL.Systems.Research
             foreach (var kv in widgets)
                 kv.Value.ApplyState(isSelected: kv.Key == nodeId);
 
-            // (HUD sp‰ter) ñ hier nur als Beispiel: aktive Forschung setzen, wenn erlaubt
+            // (HUD sp√§ter) ‚Äì hier nur als Beispiel: aktive Forschung setzen, wenn erlaubt
             if (service.IsNodeAvailable(nodeId) && !service.IsCompleted(nodeId))
             {
                 if (hud) hud.ShowDetails(nodeId);

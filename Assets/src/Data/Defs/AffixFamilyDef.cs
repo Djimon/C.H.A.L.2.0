@@ -44,7 +44,7 @@ namespace CHAL.Data
                 {
                     var t = TagLimits[i];
                     t.Tag = NormalizeTag(t.Tag);
-                    // -1 = kein Limit; >=0 = gültig
+                    // -1 = kein Limit; >=0 = gÃ¼ltig
                     if (t.Limit < -1) t.Limit = -1;
                     TagLimits[i] = t;
                 }

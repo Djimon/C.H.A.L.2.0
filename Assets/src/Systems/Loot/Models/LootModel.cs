@@ -38,7 +38,7 @@ namespace CHAL.Systems.Loot.Models
     public sealed class LootResultEntry
     {
         public string EnemyId;   // optional: Referenz, welches Monster den Drop generiert hat
-        public string PickedTag; // der Tag, der f¸r diesen Drop relevant war -> benˆtigt f¸r DNA-Resolver
+        public string PickedTag; // der Tag, der f√ºr diesen Drop relevant war -> ben√∂tigt f√ºr DNA-Resolver
         public string ItemId;    // das eigentliche Item
         public int quantity = 1;
     }

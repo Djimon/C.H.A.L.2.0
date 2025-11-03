@@ -38,7 +38,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
 
     private IEnumerator WaitAndMaybeApply()
     {
-        // Service/Tree/Bridge finden (ein paar Frames warten, falls Bootstrap/GM später init.)
+        // Service/Tree/Bridge finden (ein paar Frames warten, falls Bootstrap/GM spÃ¤ter init.)
         for (int i = 0; i < 60; i++)
         {
             if (TryResolve()) break;
@@ -47,7 +47,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
 
         if (_service == null || bridge == null)
         {
-            DebugManager.Log("DevResearchFastForward: Service oder Bridge nicht gefunden – abgebrochen.",
+            DebugManager.Log("DevResearchFastForward: Service oder Bridge nicht gefunden â€“ abgebrochen.",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
             yield break;
         }
@@ -95,11 +95,11 @@ public sealed class DevResearchFastForward : MonoBehaviour
         if (extraNodeIds != null && extraNodeIds.Count > 0)
             totalOps += CompleteIds(extraNodeIds);
 
-        DebugManager.Log($"DevResearchFastForward: angewandt – {totalOps} Operation(en).",
+        DebugManager.Log($"DevResearchFastForward: angewandt â€“ {totalOps} Operation(en).",
             DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
     }
 
-    // ---------- öffentliche Context-Menüs für den Playmode ----------
+    // ---------- Ã¶ffentliche Context-MenÃ¼s fÃ¼r den Playmode ----------
 
     [ContextMenu("DEV/Complete ALL Now")]
     private void Ctx_CompleteAll() { if (TryResolve()) { var n = CompleteAll(); Post(n); } }
@@ -145,8 +145,8 @@ public sealed class DevResearchFastForward : MonoBehaviour
     {
         int ops = 0;
         var compiled = ResearchTreeCompiler.Compile(_tree);
-        // Elternabhängigkeiten werden durch natürliche Reihenfolge nicht garantiert,
-        // aber SetActive prüft IsNodeAvailable. Wir lassen es den Service entscheiden.
+        // ElternabhÃ¤ngigkeiten werden durch natÃ¼rliche Reihenfolge nicht garantiert,
+        // aber SetActive prÃ¼ft IsNodeAvailable. Wir lassen es den Service entscheiden.
         foreach (var id in compiled.nodesById.Keys)
             ops += CompleteNode(id);
         return ops;
@@ -180,7 +180,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
         if (string.IsNullOrWhiteSpace(nodeId)) return 0;
         if (_service.IsCompleted(nodeId)) return 0;
 
-        // Versuche den Knoten aktiv zu setzen (Elternabhängigkeiten werden hier geprüft).
+        // Versuche den Knoten aktiv zu setzen (ElternabhÃ¤ngigkeiten werden hier geprÃ¼ft).
         if (!_service.SetActive(nodeId))
             return 0;
 
@@ -250,7 +250,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
                 int missing = Mathf.Max(0, kc.count - cur);
                 for (int i = 0; i < missing && !_service.IsCompleted(nodeId); i++)
                 {
-                    // Tag setzen: Service wertet Gewicht nach Rank; Normal ist meist 1 – passt für Dev-FastForward
+                    // Tag setzen: Service wertet Gewicht nach Rank; Normal ist meist 1 â€“ passt fÃ¼r Dev-FastForward
                     var tags = new List<string>(fallbackKillTags);
                     if (!tags.Contains(kc.enemyTag)) tags.Add(kc.enemyTag);
                     bridge.OnEnemyKilled(tags, fallbackKillRank);
@@ -268,11 +268,11 @@ public sealed class DevResearchFastForward : MonoBehaviour
                 bridge.OnEnemyKilled(fallbackKillTags, fallbackKillRank);
         }
 
-        // Service markiert den Knoten selbst als abgeschlossen, sobald Requirements erfüllt sind.
+        // Service markiert den Knoten selbst als abgeschlossen, sobald Requirements erfÃ¼llt sind.
         // Falls Requirements 0 waren oder etwas knapp darunter blieb, ist der Knoten evtl. noch aktiv:
-        // Das ist für Dev-Zwecke ok – bei nächster Operation wird er aktualisiert.
+        // Das ist fÃ¼r Dev-Zwecke ok â€“ bei nÃ¤chster Operation wird er aktualisiert.
 
-        return 1; // "eine Operation" gezählt (ein Knoten wurde bearbeitet)
+        return 1; // "eine Operation" gezÃ¤hlt (ein Knoten wurde bearbeitet)
     }
 }
 #endif

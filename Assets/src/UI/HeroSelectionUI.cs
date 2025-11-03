@@ -98,7 +98,7 @@ namespace CHAL.UI
 
             var profile = GameManager.Instance.Profile;
             var roster = profile != null ? profile.GetUnlockedHeroes() : System.Array.Empty<string>();
-            availableHeroes = new List<string>(roster); // UI-Liste füllen
+            availableHeroes = new List<string>(roster); // UI-Liste fÃ¼llen
 
 
             selectedHeroes = new List<string>(new string[maxSlots]);
@@ -113,7 +113,7 @@ namespace CHAL.UI
 
         private void OnChooseHeroClicked()
         {
-            // Beispiel: aktuellen Slot mit ausgewähltem Hero befüllen
+            // Beispiel: aktuellen Slot mit ausgewÃ¤hltem Hero befÃ¼llen
             if (currentSlot <= 0 || string.IsNullOrEmpty(_pendingHero)) return;
 
             if (selectedHeroes == null || selectedHeroes.Count < maxSlots)
@@ -153,16 +153,16 @@ namespace CHAL.UI
 
             if (string.IsNullOrEmpty(hero))
             {
-                // leerer Slot → grauer Platzhalter
+                // leerer Slot â†’ grauer Platzhalter
                 target.style.backgroundImage = null;
                 target.style.backgroundColor = new Color(0.3f, 0.3f, 0.3f);
             }
             else
             {
-                // Held gesetzt → bunte Debug-Farbe
+                // Held gesetzt â†’ bunte Debug-Farbe
                 target.style.backgroundImage = null;
                 target.style.backgroundColor = new Color(Random.value, Random.value, Random.value);
-                // später: statt Random.value ein echtes Bild
+                // spÃ¤ter: statt Random.value ein echtes Bild
             }
         }
 
@@ -174,7 +174,7 @@ namespace CHAL.UI
 
             foreach (var h in availableHeroes)
             {
-                var btn = new Button { text = h }; // später via Localization
+                var btn = new Button { text = h }; // spÃ¤ter via Localization
                 btn.clicked += () => OnHeroSelected(h);
                 heroContainer.Add(btn);
             }

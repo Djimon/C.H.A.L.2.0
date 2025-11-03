@@ -61,7 +61,7 @@ namespace CHAL.Systems.Research
             if (icon) icon.color = fg;
             if (title) title.color = fg;
 
-            // leichte Highlight-Animation für aktive/ausgewählte
+            // leichte Highlight-Animation fÃ¼r aktive/ausgewÃ¤hlte
             if (background)
             {
                 if (isActive || isSelected)

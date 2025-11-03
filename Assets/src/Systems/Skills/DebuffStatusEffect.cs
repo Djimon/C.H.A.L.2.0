@@ -54,7 +54,7 @@ namespace CHAL.Systems.Skill
             {
                 RemainingTime = BaseDuration;
             }
-            // IgnoreIfActive / Replace → zentral in EffectReceiver.ApplyEffect(...) entscheiden
+            // IgnoreIfActive / Replace â†’ zentral in EffectReceiver.ApplyEffect(...) entscheiden
         }
     }
 

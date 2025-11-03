@@ -10,7 +10,7 @@ namespace CHAL.Data
         [Tooltip("Remain-Item, das als Input dient")]
         public ItemDef remain;
 
-        [Tooltip("Mögliche Runen + Gewichtungen")]
+        [Tooltip("MÃ¶gliche Runen + Gewichtungen")]
         public List<RuneChance> runes;
     }
 

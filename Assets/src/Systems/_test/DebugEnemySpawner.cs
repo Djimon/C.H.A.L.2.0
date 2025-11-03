@@ -18,7 +18,7 @@ public class DebugEnemySpawner : MonoBehaviour
             return;
         }
 
-        // Minimaler Struct fürs Debugging
+        // Minimaler Struct fÃ¼rs Debugging
         EnemyStruct data = new EnemyStruct
         {
             EnemyId = enemyId,

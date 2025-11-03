@@ -8,7 +8,7 @@ namespace CHAL.Core
         [Header("Format")]
         public bool useJsonInEditor = true;      // .json im Editor
         public bool encodeInPlayer = true;       // .dat (encoded) im Player
-        [Tooltip("Nicht hartkodieren – per Bootstrap/BuildConfig setzen.")]
+        [Tooltip("Nicht hartkodieren â€“ per Bootstrap/BuildConfig setzen.")]
         public string encodePassword = "changeme";
 
         [Header("Paths")]

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CHAL.Core
 {
-    // Früh ausführen, damit andere Systeme schon beim Awake darauf zugreifen können.
+    // FrÃ¼h ausfÃ¼hren, damit andere Systeme schon beim Awake darauf zugreifen kÃ¶nnen.
     [DefaultExecutionOrder(-1000)]
     public class BalanceManager : MonoBehaviour
     {
@@ -34,7 +34,7 @@ namespace CHAL.Core
         {
             if (Instance != null && Instance != this)
             {
-                Debug.LogWarning("[BalanceManager] Zweite Instanz gefunden – wird zerstört.");
+                Debug.LogWarning("[BalanceManager] Zweite Instanz gefunden â€“ wird zerstÃ¶rt.");
                 Destroy(gameObject);
                 return;
             }
@@ -42,10 +42,10 @@ namespace CHAL.Core
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // Früh validieren, damit Fehler sofort auffallen
+            // FrÃ¼h validieren, damit Fehler sofort auffallen
             if (Config == null)
             {
-                Debug.LogError("[BalanceManager] Config ist null. Balancing-Werte nicht verfügbar!");
+                Debug.LogError("[BalanceManager] Config ist null. Balancing-Werte nicht verfÃ¼gbar!");
             }
         }
 

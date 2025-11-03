@@ -17,7 +17,7 @@ namespace CHAL.Systems.AI
         [SerializeField] private NavMeshAgent _agent;
 
         [Header("Tuning")]
-        [SerializeField] private float _destinationEpsilon = 0.05f; // „Signifikanz“, um SetDestination-Spam zu vermeiden
+        [SerializeField] private float _destinationEpsilon = 0.05f; // â€žSignifikanzâ€œ, um SetDestination-Spam zu vermeiden
 
         public float BaseSpeed { get; private set; } = 3.5f;
         public float CurrentSpeed { get; private set; } = 3.5f;
@@ -36,7 +36,7 @@ namespace CHAL.Systems.AI
         private void Awake()
         {
             if (_agent == null) _agent = GetComponent<NavMeshAgent>();
-            // Default-Setup – wird bei Init ggf. überschrieben
+            // Default-Setup â€“ wird bei Init ggf. Ã¼berschrieben
             if (_agent != null)
             {
                 _agent.updateRotation = true;
@@ -79,7 +79,7 @@ namespace CHAL.Systems.AI
         public void SetDestination(Vector3 worldPos)
         {
             if (_agent == null) return;
-            // Nur neu setzen, wenn sich das Ziel „merklich“ ändert (verhindert Spam & teures Replan)
+            // Nur neu setzen, wenn sich das Ziel â€žmerklichâ€œ Ã¤ndert (verhindert Spam & teures Replan)
             if (_agent.hasPath)
             {
                 Vector3 diff = _agent.destination - worldPos;
@@ -95,9 +95,9 @@ namespace CHAL.Systems.AI
         public void StopOrHold()
         {
             if (_agent == null) return;
-            // isStopped verhindert „Zucken“ am Ziel
+            // isStopped verhindert â€žZuckenâ€œ am Ziel
             _agent.isStopped = true;
-            // Kein ResetPath: wir wollen, dass er die lokale Position hält
+            // Kein ResetPath: wir wollen, dass er die lokale Position hÃ¤lt
         }
 
         /// <summary>
@@ -117,16 +117,16 @@ namespace CHAL.Systems.AI
         {
             if (_agent == null) return true;
 
-            // Wenn kein gültiger Pfad vorliegt/noch berechnet wird, fallback auf Distanz
+            // Wenn kein gÃ¼ltiger Pfad vorliegt/noch berechnet wird, fallback auf Distanz
             if (_agent.pathPending) return Vector3.SqrMagnitude(targetPos - transform.position) <= (StoppingDistance * StoppingDistance);
 
             if (!_agent.hasPath)
             {
-                // Kein Pfad -> Distanz prüfen
+                // Kein Pfad -> Distanz prÃ¼fen
                 return Vector3.SqrMagnitude(targetPos - transform.position) <= (StoppingDistance * StoppingDistance);
             }
 
-            // remainingDistance ist zuverlässiger, wenn Pfad existiert
+            // remainingDistance ist zuverlÃ¤ssiger, wenn Pfad existiert
             if (_agent.remainingDistance <= Mathf.Max(StoppingDistance, 0.01f))
                 return true;
 

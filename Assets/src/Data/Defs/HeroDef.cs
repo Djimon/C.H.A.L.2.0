@@ -21,7 +21,7 @@ namespace CHAL.Data
 
         [Header("Visuals")]
         public Sprite Portrait;
-        public GameObject Prefab;            // 3D- oder 2D-Model für Ingame
+        public GameObject Prefab;            // 3D- oder 2D-Model fÃ¼r Ingame
         public AudioClip VoiceSample;        // optional
 
 

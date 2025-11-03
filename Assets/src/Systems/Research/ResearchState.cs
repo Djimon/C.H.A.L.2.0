@@ -16,7 +16,7 @@ namespace CHAL.Systems.Research
         public int killsGeneralWeighted;
         public Dictionary<string, int> killsByTagWeighted = new Dictionary<string, int>(StringComparer.Ordinal);
 
-        // Rarities (ungewichtet, reine Stückzahlen für "Elites" / "Bosses"-Requirements)
+        // Rarities (ungewichtet, reine StÃ¼ckzahlen fÃ¼r "Elites" / "Bosses"-Requirements)
         public int eliteCount;
         public int bossCount;
         internal int champCount;

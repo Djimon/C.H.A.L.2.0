@@ -12,7 +12,7 @@ public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
     private string pastedGrid = "";
     private string status = "";
 
-    // feste Gear-Spaltenreihenfolge für Templates/Export
+    // feste Gear-Spaltenreihenfolge fÃ¼r Templates/Export
     private static readonly GearType[] TemplateGears =
     {
         GearType.Head, GearType.Chest, GearType.Gloves,
@@ -24,7 +24,7 @@ public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
         DrawDefaultInspector();
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Paste Grid → Apply", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Paste Grid â†’ Apply", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
             "Input GearType-Implicit-Matrix - Format (TSV):\n" +
             "ImplicitID | Head | Chest | Gloves | Legs | Boots | Amulet\n" +
@@ -72,7 +72,7 @@ public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
 
         if (ids.Count == 0)
         {
-            // Kein IDs im Asset → nur Header kopieren (du kannst die ID-Spalte manuell befüllen)
+            // Kein IDs im Asset â†’ nur Header kopieren (du kannst die ID-Spalte manuell befÃ¼llen)
             status = "no IDs found in the Asset, no copy.";
             EditorGUIUtility.systemCopyBuffer = string.Join("\n", rows);
             return;
@@ -87,7 +87,7 @@ public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
 
     private void CopyFromAssetToClipboard(ImplicitGearTypeConfig asset)
     {
-        if (asset == null) { status = "Kein Asset ausgewählt."; return; }
+        if (asset == null) { status = "Kein Asset ausgewÃ¤hlt."; return; }
         EnsureAllGearTypesExist(asset);
 
         // id -> gear -> weight (aus den Pools)
@@ -135,7 +135,7 @@ public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
             var colToGear = MapColumnsToGearTypes(headers);
 
             if (colToGear.Count == 0)
-                throw new Exception("Keine gültigen GearType-Header gefunden. Erwartet: Head, Chest, Gloves, Legs, Boots, Amulet.");
+                throw new Exception("Keine gÃ¼ltigen GearType-Header gefunden. Erwartet: Head, Chest, Gloves, Legs, Boots, Amulet.");
 
             // ID -> (GearType -> Weight)
             var perIdWeights = new Dictionary<string, Dictionary<GearType, int>>(StringComparer.Ordinal);
@@ -190,7 +190,7 @@ public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
                         pool.Entries[idx] = e;
                     }
 
-                    asset.Pools[poolIdx] = pool; // struct zurückschreiben
+                    asset.Pools[poolIdx] = pool; // struct zurÃ¼ckschreiben
                 }
             }
 

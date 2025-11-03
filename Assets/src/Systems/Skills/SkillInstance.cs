@@ -54,7 +54,7 @@ namespace CHAL.Systems.Skill
             DebugManager.Log($"Initialized Skill {Data.SkillId} with DMG:{Damage} CastTime:{CastTime} cd:{Cooldown} range:{Range} dur:{Duration} ", DebugManager.EDebugLevel.Debug,"Skill");
         }
 
-        public bool IsReady() //→ prüft, ob cooldownRemaining <= 0.
+        public bool IsReady() //â†’ prÃ¼ft, ob cooldownRemaining <= 0.
         {
             if(cooldownRemaining <= 0)
             {
@@ -65,12 +65,12 @@ namespace CHAL.Systems.Skill
             return false;
         }
 
-        public void StartCooldown() //→ setzt cooldownRemaining = Cooldown.
+        public void StartCooldown() //â†’ setzt cooldownRemaining = Cooldown.
         {
             cooldownRemaining = Cooldown;
         }
 
-        public void TickCooldown(float deltaTime) //→ reduziert cooldownRemaining.
+        public void TickCooldown(float deltaTime) //â†’ reduziert cooldownRemaining.
         {
             cooldownRemaining -= deltaTime;
         }

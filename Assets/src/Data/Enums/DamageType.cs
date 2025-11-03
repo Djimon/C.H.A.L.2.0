@@ -9,6 +9,6 @@ namespace CHAL.Data
         Arcane,
         Void,
         Holy
-        // … erweiterbar
+        // â€¦ erweiterbar
     }
 }

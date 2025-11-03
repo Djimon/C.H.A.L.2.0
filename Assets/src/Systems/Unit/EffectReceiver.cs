@@ -22,7 +22,7 @@ namespace CHAL.Systems.Unit
             if (effect == null) return;
 
             var existing = ActiveEffects.Find(e => e.EffectId == effect.EffectId);
-            // — DoT-Case (bestehend): bleibt wie bei dir —
+            // â€” DoT-Case (bestehend): bleibt wie bei dir â€”
             if (existing is DoTStatusEffect exDot && effect is DoTStatusEffect newDot)
             {
                 exDot.TryAddStack(effect.source);
@@ -30,7 +30,7 @@ namespace CHAL.Systems.Unit
                 return;
             }
 
-            // — Buff-Case: analog zu DoT —
+            // â€” Buff-Case: analog zu DoT â€”
             if (existing is BuffStatusEffect exBuff && effect is BuffStatusEffect newBuff)
             {
                 exBuff.TryAddStack(effect.source);
@@ -38,7 +38,7 @@ namespace CHAL.Systems.Unit
                 return;
             }
 
-            // — Neuer Effekt: beim Buff direkt Modifier aktivieren —
+            // â€” Neuer Effekt: beim Buff direkt Modifier aktivieren â€”
             if (effect is BuffStatusEffect buff)
             {
                 ActiveModifiers.AddModifier(buff.Modifier);
@@ -53,7 +53,7 @@ namespace CHAL.Systems.Unit
                 return;
             }
 
-            // — Neuer Effekt: beim Debuff direkt Modifier aktivieren —
+            // â€” Neuer Effekt: beim Debuff direkt Modifier aktivieren â€”
             if (effect is DebuffStatusEffect debuff)
             {
                 ActiveModifiers.AddModifier(debuff.Modifier);

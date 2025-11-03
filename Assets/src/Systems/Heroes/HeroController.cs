@@ -22,7 +22,7 @@ namespace CHAL.Systems.Hero
         public List<SkillData> debugSocketSkills = new();
 
 
-        public Transform target; // aktuelles Target (EnemyController o.ä.)
+        public Transform target; // aktuelles Target (EnemyController o.Ã¤.)
 
         private HeroInstance heroInstance;
         private SkillInstance currentSkill;
@@ -47,7 +47,7 @@ namespace CHAL.Systems.Hero
         {
             UnitLocator.Instance.Unregister(this);
 
-            if (heroInstance != null)                  // <— NEU: Abo lösen
+            if (heroInstance != null)                  // <â€” NEU: Abo lÃ¶sen
                 heroInstance.Died -= OnHeroInstanceDied;
         }
 
@@ -156,16 +156,16 @@ namespace CHAL.Systems.Hero
                 var er = _currentTarget.GetComponent<EnemyController>();
                 if (er == null || er.GetEffectReceiver().CurrentHP <= 0f || IsOutOfSight(myPos, _currentTarget.position, sight))
                 {
-                    _currentTarget = null; // Lock lösen
+                    _currentTarget = null; // Lock lÃ¶sen
                 }
             }
 
-            // Wenn kein Target: neu wählen (Prio v0: Nearest; Alternative HighestHP)
+            // Wenn kein Target: neu wÃ¤hlen (Prio v0: Nearest; Alternative HighestHP)
             if (_currentTarget == null)
             {
                 var team = heroInstance.Team;
 
-                // Wähle deine gewünschte Prio:
+                // WÃ¤hle deine gewÃ¼nschte Prio:
                 // Transform t = UnitLocator.Instance.GetHighestHPEnemy(myPos, team, sight);
                 Transform t = UnitLocator.Instance != null
                     ? UnitLocator.Instance.GetNearestEnemy(myPos, team, sight)
@@ -190,12 +190,12 @@ namespace CHAL.Systems.Hero
 
             if (_currentTarget == null || _move == null)
             {
-                // Kein Target: optional zum „Spawn/Home“ laufen – v0: stehen.
+                // Kein Target: optional zum â€žSpawn/Homeâ€œ laufen â€“ v0: stehen.
                 _move.ClearPathHard();
                 return;
             }
 
-            // StoppingDistance = Reach aus nächster geplanten Aktion
+            // StoppingDistance = Reach aus nÃ¤chster geplanten Aktion
             float reach = GetPlannedReachOrDefault();
             _move.StoppingDistance = reach;
 
@@ -205,7 +205,7 @@ namespace CHAL.Systems.Hero
             bool isCasting = IsCasting(); 
             if (!isCasting && ShouldDoRangedBackstep(targetPos))
             {
-                // v0: kleiner Rückschritt entlang -forward Richtung vom Target
+                // v0: kleiner RÃ¼ckschritt entlang -forward Richtung vom Target
                 Vector3 dir = (transform.position - targetPos).normalized;
                 float RangedComfortMin = 3.0f;
                 Vector3 backTarget = transform.position + dir * (RangedComfortMin + 0.5f);
@@ -256,7 +256,7 @@ namespace CHAL.Systems.Hero
                 if (dist <= currentSkill.Range)
                 {
                     DebugManager.Log(
-                        $"Combat/Hero | Execute {currentSkill.Data.DisplayName} → {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
+                        $"Combat/Hero | Execute {currentSkill.Data.DisplayName} â†’ {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
                         DebugManager.EDebugLevel.Debug, "Combat"
                     );
 
@@ -270,7 +270,7 @@ namespace CHAL.Systems.Hero
                 }
                 // sonst: Out-of-Range 
             }
-            // sonst: kein gültiges Ziel 
+            // sonst: kein gÃ¼ltiges Ziel 
 
             currentSkill = null; // Cast abgeschlossen
         }
@@ -308,8 +308,8 @@ namespace CHAL.Systems.Hero
 
         private SkillInstance SelectNextReadySkill()
         {
-            // Regel: Nimm den ersten „ready“ in Prioritätsreihenfolge.
-            // (Spätere Erweiterung: GCD, „short vs long cast“, Resource-Checks, Flags)
+            // Regel: Nimm den ersten â€žreadyâ€œ in PrioritÃ¤tsreihenfolge.
+            // (SpÃ¤tere Erweiterung: GCD, â€žshort vs long castâ€œ, Resource-Checks, Flags)
             foreach (var s in socketedSkills)
             {
                 if (s == null) continue;
@@ -352,7 +352,7 @@ namespace CHAL.Systems.Hero
 
         }
 
-        private void OnHeroInstanceDied(HeroInstance inst)   // <— NEU
+        private void OnHeroInstanceDied(HeroInstance inst)   // <â€” NEU
         {
             if (inst != heroInstance) return;
             Die();
@@ -400,7 +400,7 @@ namespace CHAL.Systems.Hero
             sd.CastTime = 0.20f;
             sd.Cooldown = 1.00f;
             sd.Range = SkillRange.FarDistance;
-            sd.animationType = AnimationType.Shoot;  // oder Projectile – passend zu deinem Enum
+            sd.animationType = AnimationType.Shoot;  // oder Projectile â€“ passend zu deinem Enum
 
             List<DamageEntry> entries = new List<DamageEntry> { new DamageEntry(DamageType.Physical, 1f) };
             sd.DamageTypes = entries;
@@ -408,20 +408,20 @@ namespace CHAL.Systems.Hero
             return new SkillInstance(sd, owner);
         }
 
-        // Liefert die Reach (StoppingDistance) für die NÄCHSTE geplante Aktion.
-        // v0: Falls du noch keinen Zugriff auf den nächsten Skill-Range hast,
+        // Liefert die Reach (StoppingDistance) fÃ¼r die NÃ„CHSTE geplante Aktion.
+        // v0: Falls du noch keinen Zugriff auf den nÃ¤chsten Skill-Range hast,
         // nimm Melee/Ranged-Heuristik oder den AutoAttack-Typ.
         private float GetPlannedReachOrDefault()
         {
-            // TODO: Wenn dein Rotationssystem den nächsten Skill/AutoAttack liefert,
-            //       gib dessen Range hier zurück (in Metern).
-            //       Bis dahin: Heuristik – Hero/Enemy hat typ AutoAttackMelee?
-            bool nextIsMelee = true; // <— ersetze später durch echte Abfrage
+            // TODO: Wenn dein Rotationssystem den nÃ¤chsten Skill/AutoAttack liefert,
+            //       gib dessen Range hier zurÃ¼ck (in Metern).
+            //       Bis dahin: Heuristik â€“ Hero/Enemy hat typ AutoAttackMelee?
+            bool nextIsMelee = true; // <â€” ersetze spÃ¤ter durch echte Abfrage
             float MeleeReachDefault = 1.5f;
             return nextIsMelee ? MeleeReachDefault : 0f;
         }
 
-        // Optional: Ist das Ziel außerhalb Sicht?
+        // Optional: Ist das Ziel auÃŸerhalb Sicht?
         private static bool IsOutOfSight(Vector3 self, Vector3 target, float sightRange)
         {
             float sr2 = sightRange * sightRange;
@@ -431,7 +431,7 @@ namespace CHAL.Systems.Hero
         private void EnsureMoveAgentInitialized()
         {
             if (_move == null) _move = GetComponent<MoveAgent>();
-            // Init nur einmal, danach kannst du Buffs/Debuffs per ApplyRuntimeSpeed() verändern
+            // Init nur einmal, danach kannst du Buffs/Debuffs per ApplyRuntimeSpeed() verÃ¤ndern
             if (_move != null && !_initedMove)
             {
                 float baseSpeed = HeroDef.BaseMovementSpeed; // HeroDef.moveSpeed / EnemyDef.moveSpeed
@@ -443,7 +443,7 @@ namespace CHAL.Systems.Hero
 
         private bool ShouldDoRangedBackstep(Vector3 targetPos)
         {
-            // Wenn du Nahkämpfer bist → nie backstep
+            // Wenn du NahkÃ¤mpfer bist â†’ nie backstep
             bool isRangedArchetype = true; // TODO: aus Def/Archetype ableiten
             if (!isRangedArchetype) return false;
 

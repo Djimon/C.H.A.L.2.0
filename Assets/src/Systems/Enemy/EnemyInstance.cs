@@ -5,7 +5,7 @@ using System;
 
 namespace CHAL.Systems.Enemy
 {
-    public class EnemyInstance : EffectReceiver   // deine abstrakte Basis für Effekte
+    public class EnemyInstance : EffectReceiver   // deine abstrakte Basis fÃ¼r Effekte
     {
         public EnemyDef Definition { get; private set; }
         public EnemyStruct StructData { get; private set; }
@@ -23,7 +23,7 @@ namespace CHAL.Systems.Enemy
 
         public override void TakeDamage(float amount, DamageType type)
         {
-            // TODO: Armor/Resist später berücksichtigen
+            // TODO: Armor/Resist spÃ¤ter berÃ¼cksichtigen
             CurrentHP -= amount;
 
             DebugManager.Log($"Enemy {StructData.EnemyId} took {amount} {type} damage (HP={CurrentHP}/{MaxHP})",

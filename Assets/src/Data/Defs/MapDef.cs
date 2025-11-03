@@ -8,8 +8,8 @@ namespace CHAL.Data
     {
         [Header("Meta")]
         public int mapId;               // interne ID (z. B. "desert_01")
-        public string displayNameKey;      // Key für Localization (z. B. "MAP_DESERT")
-        public Sprite previewImage;        // für MapSelectionUI
+        public string displayNameKey;      // Key fÃ¼r Localization (z. B. "MAP_DESERT")
+        public Sprite previewImage;        // fÃ¼r MapSelectionUI
         public GameObject mapPrefab;       // eigentliche Umgebung, wird von MapManager instanziert
 
         [Header("Gameplay")]
@@ -23,7 +23,7 @@ namespace CHAL.Data
         public List<string> allowedModifiers;
 
         [Header("Wave Templates")]
-        public List<WaveDef> waveDefs;     // aktuell noch konkret, später Constraints
+        public List<WaveDef> waveDefs;     // aktuell noch konkret, spÃ¤ter Constraints
         public int subWaveCount = 5;
         public float interSubWaveDelay = 10f;
         public int maxConCurrentEnemies = 25;

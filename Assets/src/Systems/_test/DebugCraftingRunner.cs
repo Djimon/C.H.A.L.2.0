@@ -71,7 +71,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
         var recipe = catalog.recipes[recipeIndex];
         var preview = CraftingService.GetPreview(recipe, outputInventoryId, _inv,  _wallet);
 
-        // 1) Materials auffüllen
+        // 1) Materials auffÃ¼llen
         //foreach (var m in preview.materials)
         //{
         //    int need = m.required * grantCrafts;
@@ -89,7 +89,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
         //    }
         //}
 
-        // 2) Currency auffüllen
+        // 2) Currency auffÃ¼llen
         //foreach (var c in preview.currencies)
         //{
         //    int need = c.required * grantCrafts;
@@ -124,7 +124,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
 
     private static string NameOf(RecipeDef r) => string.IsNullOrEmpty(r.displayKey) ? r.name : r.displayKey;
 
-    // Optional: simuliert „Currency fehlt/Spend schlägt fehl“, um Rollback zu testen
+    // Optional: simuliert â€žCurrency fehlt/Spend schlÃ¤gt fehlâ€œ, um Rollback zu testen
     private sealed class WalletProxyMissing : IWallet
     {
         private readonly IWallet _inner;

@@ -42,7 +42,7 @@ namespace CHAL.Systems.Skill
                 {
                     CurrentStacks++;
                 }
-                // In beiden Fällen (neuer Stack ODER Cap) die Dauer auffrischen:
+                // In beiden FÃ¤llen (neuer Stack ODER Cap) die Dauer auffrischen:
                 RemainingTime = BaseDuration;
             }
             else if (Stacking == StackingMode.RefreshDuration)
@@ -50,7 +50,7 @@ namespace CHAL.Systems.Skill
                 RemainingTime = BaseDuration;
             }
 
-            // IgnoreIfActive / Replace → zentral in EffectReceiver.ApplyEffect behandeln
+            // IgnoreIfActive / Replace â†’ zentral in EffectReceiver.ApplyEffect behandeln
         }
 
     }
@@ -59,7 +59,7 @@ namespace CHAL.Systems.Skill
     public class BuffSettings
     {
         public string EffectId = "DefaultBuff";
-        public ModifierData Modifier;          // Stat-Änderung während der Laufzeit
+        public ModifierData Modifier;          // Stat-Ã„nderung wÃ¤hrend der Laufzeit
         public float BaseDuration = 5f;
         public int BaseMaxStacks = 1;
         public StackingMode Stacking = StackingMode.RefreshDuration;

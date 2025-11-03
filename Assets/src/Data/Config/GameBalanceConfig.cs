@@ -15,7 +15,7 @@ namespace CHAL.Data
         {
             public float levelFactor;      // z. B. 0.08
             public float budgetVariance;   // z. B. 0.2 (20 %)
-            public float beta;             // D‰mpfungsst‰rke Overflow
+            public float beta;             // D√§mpfungsst√§rke Overflow
         }
 
         [System.Serializable]

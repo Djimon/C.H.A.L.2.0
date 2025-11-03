@@ -133,7 +133,7 @@ namespace CHAL.UI
             if (panel != null)
             {
                 Vector2 screen = Input.mousePosition;
-                screen.y = Screen.height - screen.y; // Y-Flip für UI Toolkit
+                screen.y = Screen.height - screen.y; // Y-Flip fÃ¼r UI Toolkit
                 Vector2 pos = RuntimePanelUtils.ScreenToPanel(panel, screen);
 
                 _ghost.style.left = pos.x + _offset.x;

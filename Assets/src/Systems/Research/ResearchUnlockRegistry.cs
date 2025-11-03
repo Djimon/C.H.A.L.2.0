@@ -8,14 +8,14 @@ namespace CHAL.Systems.Research
 
     public sealed class ResearchUnlockRegistry
     {
-        // Interne Sets für O(1) Lookups
+        // Interne Sets fÃ¼r O(1) Lookups
         private readonly HashSet<string> _worldTiers = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> _craftingFeatures = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> _recipes = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> _skillBranches = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> _heroes = new HashSet<string>(StringComparer.Ordinal);
 
-        // Vollständiger Katalog aller bekannten targetIds mit Bool-Flag
+        // VollstÃ¤ndiger Katalog aller bekannten targetIds mit Bool-Flag
         private readonly Dictionary<string, bool> _catalog = new Dictionary<string, bool>(StringComparer.Ordinal);
 
 
@@ -42,7 +42,7 @@ namespace CHAL.Systems.Research
 
             InitializeCatalog(allNodes, resetExisting: false);
 
-            // Lookup id → def
+            // Lookup id â†’ def
             var byId = new Dictionary<string, ResearchNodeDef>(StringComparer.Ordinal);
             foreach (var n in allNodes)
             {
@@ -77,7 +77,7 @@ namespace CHAL.Systems.Research
                     if (string.IsNullOrWhiteSpace(u.targetId)) continue;
                     if (!_catalog.ContainsKey(u.targetId))
                     {
-                        _catalog.Add(u.targetId, false); // zunächst locked
+                        _catalog.Add(u.targetId, false); // zunÃ¤chst locked
                         added++;
                     }
                 }
@@ -160,8 +160,8 @@ namespace CHAL.Systems.Research
                     changed++;
                 }
 
-                // Wichtig: Gates laufen über _catalog → typ-spezifische Sets müssen wir hier NICHT füllen.
-                // (IsUnlocked* liest bereits aus _catalog; GetUnlocked*()-Aufzählungen bleiben optional separat.)
+                // Wichtig: Gates laufen Ã¼ber _catalog â†’ typ-spezifische Sets mÃ¼ssen wir hier NICHT fÃ¼llen.
+                // (IsUnlocked* liest bereits aus _catalog; GetUnlocked*()-AufzÃ¤hlungen bleiben optional separat.)
             }
 
             if (changed > 0)
@@ -200,7 +200,7 @@ namespace CHAL.Systems.Research
             return _catalog.TryGetValue(heroId, out var flag) && flag;
         }
 
-        // Generisch bleibt unverändert – ist jetzt identisch zur obigen Logik
+        // Generisch bleibt unverÃ¤ndert â€“ ist jetzt identisch zur obigen Logik
         public bool IsUnlocked(string targetId)
         {
             if (string.IsNullOrWhiteSpace(targetId)) return false;
@@ -230,7 +230,7 @@ namespace CHAL.Systems.Research
             return (unlocked, total);
         }
 
-        // Optionale Helfer für UI/Debug:
+        // Optionale Helfer fÃ¼r UI/Debug:
         public IReadOnlyCollection<string> GetUnlockedWorldTiers() => _worldTiers;
         public IReadOnlyCollection<string> GetUnlockedCraftingFeatures() => _craftingFeatures;
         public IReadOnlyCollection<string> GetUnlockedRecipes() => _recipes;

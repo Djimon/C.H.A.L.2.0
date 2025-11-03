@@ -45,7 +45,7 @@ using UnityEngine;
                 }
             }
 
-            // Immer in-memory sicherstellen (für den Fall, dass Asset alt/leer ist)
+            // Immer in-memory sicherstellen (fÃ¼r den Fall, dass Asset alt/leer ist)
             EnsureDefault("System", Color.yellow);
             EnsureDefault("Info", Color.green);
             EnsureDefault("Debug", Color.white);
@@ -53,7 +53,7 @@ using UnityEngine;
             EnsureDefault("Error", Color.red);
 
 #if UNITY_EDITOR
-            // …und auch ins Asset schreiben, falls noch nicht vorhanden
+            // â€¦und auch ins Asset schreiben, falls noch nicht vorhanden
             if (_config != null)
             {
                 EnsureTagInAsset("System", Color.yellow, true);
@@ -136,7 +136,7 @@ using UnityEngine;
                 return;
             }
 
-            // Unbekannte dürfen loggen, landen aber in Excluded-Liste
+            // Unbekannte dÃ¼rfen loggen, landen aber in Excluded-Liste
             if (!isKnown)
             {
                 ExcludedTags.Add(tag);
@@ -150,7 +150,7 @@ using UnityEngine;
                 TagColors[tag] = tagColor;
 
 #if UNITY_EDITOR
-                // Optional: unbekannten Tag automatisch ins Asset übernehmen
+                // Optional: unbekannten Tag automatisch ins Asset Ã¼bernehmen
                 if (_config != null && _config.autoAddUnknownTagsToAsset)
                 {
                     bool exists = false;
@@ -178,12 +178,12 @@ using UnityEngine;
 
             if (wholeLine)
             {
-                // Alles färben
+                // Alles fÃ¤rben
                 formatted = $"<color=#{ColorUtility.ToHtmlStringRGB(tagColor)}>{timeStamp}[{levelName}][{tag}]: {message}</color>";
             }
             else
             {
-                // Nur Tag färben
+                // Nur Tag fÃ¤rben
                 string coloredTag = $"<color=#{ColorUtility.ToHtmlStringRGB(tagColor)}>{tag} @ {timeStamp}</color>";
                 formatted = $"{timeStamp}[{levelName}][{coloredTag}]: {message}";
             }
@@ -203,7 +203,7 @@ using UnityEngine;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void AutoInit()
         {
-            // Lädt Resources/DebugConfig.asset, wenn vorhanden
+            // LÃ¤dt Resources/DebugConfig.asset, wenn vorhanden
             DebugConfig cfg = Resources.Load<DebugConfig>("config/DebugConfig");
             if (cfg != null) DebugManager.Init(cfg);
             else Debug.LogWarning("[DebugManager] No DebugConfig found in Resources/. Using runtime defaults.");
