@@ -49,6 +49,14 @@ namespace CHAL.Systems.Crafting
         }
 
         // ---- PREVIEW ----
+/// <summary>
+/// Gets a preview of the recipe output based on the provided parameters.
+/// </summary>
+/// <param name="recipe">The recipe definition to preview.</param>
+/// <param name="outputInventoryId">The ID of the output inventory.</param>
+/// <param name="inv">The inventory domain to check against.</param>
+/// <param name="wallet">The wallet used for transactions.</param>
+/// <returns>A RecipePreview object representing the recipe output.</returns>
         public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, IWallet wallet)
         {
             var outStack = new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
@@ -111,6 +119,14 @@ namespace CHAL.Systems.Crafting
             return new RecipePreview(outputOk && materialsOk && currencyOk, blocker, outputOk, materialsOk, currencyOk);
         }
 
+/// <summary>
+/// Determines if a recipe can be crafted with the given inventory and wallet.
+/// </summary>
+/// <param name="recipe">The recipe definition to check.</param>
+/// <param name="inv">The inventory domain to use.</param>
+/// <param name="outputInventoryId">The ID of the output inventory.</param>
+/// <param name="wallet">The wallet to check resources against.</param>
+/// <returns>True if the recipe can be crafted; otherwise, false.</returns>
         public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, IWallet wallet)
             => GetPreview(recipe,  outputInventoryId, inv, wallet).canCraft;
 
@@ -174,6 +190,16 @@ namespace CHAL.Systems.Crafting
         }
 
         // ---- COMMIT (atomar) ----
+/// <summary>
+/// Attempts to craft an item from a recipe and add it to the specified inventory.
+/// Returns true if successful, otherwise false with a failure reason.
+/// </summary>
+/// <param name="recipe">The recipe to craft from.</param>
+/// <param name="inv">The inventory domain to use.</param>
+/// <param name="wallet">The wallet for transaction purposes.</param>
+/// <param name="outputInventoryId">The ID of the inventory to receive the output.</param>
+/// <param name="failReason">An output parameter that describes the failure reason, if any.</param>
+/// <returns>True if crafting was successful; otherwise, false.</returns>
         public static bool TryCraftToInventory(RecipeDef recipe, InventoryDomain inv, IWallet wallet, string outputInventoryId, out string failReason)
         {
             failReason = null;
