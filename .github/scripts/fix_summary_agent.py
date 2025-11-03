@@ -180,7 +180,7 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
             )
             found_any_bullets = True
 
-     if found_any_bullets:
+    if found_any_bullets:
         print(f"parse_findings_from_issue: issue #{number} -> {len(findings)} bullet finding(s)")
         return findings
 
