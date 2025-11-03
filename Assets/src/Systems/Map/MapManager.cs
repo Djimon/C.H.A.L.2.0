@@ -109,7 +109,7 @@ namespace CHAL.Systems.Map
             ResetHeroesForNewWave(_waveManager); 
             SpawnSelectedHeroesAtSlots(_pendingSelectedHeroes, _waveManager);
 
-            DebugManager.Log($"Starte Wave {CurrentWave}/{MaxWaves}", DebugManager.EDebugLevel.Test, "Map");
+            DebugManager.Log($"Starting wave {CurrentWave}/{MaxWaves}", DebugManager.EDebugLevel.Test, "Map");
 
             _waveManager.StartWave(CurrentMap, CurrentWave, this);
         }

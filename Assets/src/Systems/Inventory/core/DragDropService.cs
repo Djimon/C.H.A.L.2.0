@@ -80,7 +80,7 @@ namespace CHAL.Systems.Inventory
                 return;
             }
 
-            DebugManager.Log($"[Drag&Drop]: Move erfolgreich", DebugManager.EDebugLevel.Dev, "Inventory");
+            DebugManager.Log($"[Drag&Drop]: Move successful", DebugManager.EDebugLevel.Dev, "Inventory");
 
             // success
             Cancel();

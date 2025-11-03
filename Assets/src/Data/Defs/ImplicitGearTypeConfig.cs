@@ -66,7 +66,7 @@ namespace CHAL.Data
                     // Warnungen bei "ungewöhnlichen" IDs (z.B. Sonderzeichen/Leerzeichen)
                     if (!IsValidId(e.ImplicitId))
                     {
-                        DebugManager.Warning($"[ImplicitPoolsDef] Ungewöhnliche ImplicitId '{e.ImplicitId}' im Pool {pool.GearType}. " +
+                        DebugManager.Warning($"Unusual ImplicitId '{e.ImplicitId}' in pool {pool.GearType}." +
                                          "Empfohlenes Format: lower_snake_case (a-z, 0-9, _).", this);
                     }
 

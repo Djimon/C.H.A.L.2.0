@@ -66,7 +66,7 @@ namespace CHAL.Systems.Hero
             BuildSkillInstances();
 
             if (autoAttack == null)
-                DebugManager.Log("[HeroController] Warnung: AutoAttack SkillInstance ist nicht gesetzt.", DebugManager.EDebugLevel.Dev, "Hero", LogType.Warning);
+                DebugManager.Log("[HeroController] Warning: AutoAttack SkillInstance is not set.", DebugManager.EDebugLevel.Dev, "Hero", LogType.Warning);
 
         }
 

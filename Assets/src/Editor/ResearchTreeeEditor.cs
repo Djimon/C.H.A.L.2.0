@@ -563,7 +563,7 @@ public sealed class ResearchTreeDefEditor : Editor
             for (int i = tCount - 1; i >= vCount; i--)
                 treeLanes.DeleteArrayElementAtIndex(i);
 
-            DebugManager.Log(
+            DebugManager.Log($"ResearchTree Sync: {removed} Tree-Lane(s) removed (no Visual-Lanes available)."
                 $"ResearchTree Sync: {removed} Tree-Lane(s) entfernt (keine Visual-Lanes dafÃ¼r vorhanden).",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Warning
             );
@@ -634,7 +634,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
             if (nodeCount == 0)
             {
-                DebugManager.Log(
+                DebugManager.Log("ResearchTree notice: No nodes found in the tree yet."
                     "ResearchTree Hinweis: Noch keine Nodes im Tree gefunden.",
                     DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Warning
                 );

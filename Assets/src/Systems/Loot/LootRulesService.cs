@@ -33,10 +33,10 @@ namespace CHAL.Systems.Loot
                 }
                 catch (System.Exception ex)
                 {
-                    DebugManager.Error($"[LootRules] Fehler in {ta.name}: {ex.Message}");
+                    DebugManager.Error($"[LootRules] Error in {ta.name}: {ex.Message}");
                 }
             }
-            DebugManager.Log($"[LootRules] Geladen: {_byTag.Count} Tag-Rules",DebugManager.EDebugLevel.Dev,"System");
+            DebugManager.Log($"[LootRules] Loaded: {_byTag.Count} tag rules",DebugManager.EDebugLevel.Dev,"System");
 
             LoadSecretRules();
         }
@@ -119,7 +119,7 @@ namespace CHAL.Systems.Loot
             {
                 if (!_byTag.TryGetValue(tag, out var rule))
                 {
-                    DebugManager.Warning($"[LootRules] Keine Rule für tag '{tag}' gefunden");
+                    DebugManager.Warning($"[LootRules] No rule found for tag '{tag}'");
                     continue;
                 }
 
@@ -189,10 +189,10 @@ namespace CHAL.Systems.Loot
                 }
                 catch (System.Exception ex)
                 {
-                    DebugManager.Error($"[SecretRules] Fehler in {ta.name}: {ex.Message}");
+                    DebugManager.Error($"[SecretRules] Error in {ta.name}: {ex.Message}");
                 }
             }
-            DebugManager.Log($"[SecretRules] Geladen: {_secretRules.Count} Regeln",DebugManager.EDebugLevel.Dev,"System");
+            DebugManager.Log($"[SecretRules] Loaded: {_secretRules.Count} rules",DebugManager.EDebugLevel.Dev,"System");
         }
 
         public List<LootDropDto> GetSecretDrops(IEnumerable<string> monsterTags)

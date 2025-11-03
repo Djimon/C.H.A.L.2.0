@@ -134,7 +134,7 @@ namespace CHAL.UI
             RecomputeSlotMetricsAndApply();
 
             _grid = root.Q<VisualElement>(_gridElementName);
-            if (_grid == null) { DebugManager.Error("UXML braucht ein Element mit name='Grid'."); return; }
+            if (_grid == null) { DebugManager.Error("UXML requires an element with name='Grid'."); return; }
 
             // Container-Grundlayout (Breite in %, min/max in px)
             ApplyContainerSizing();
@@ -186,7 +186,7 @@ namespace CHAL.UI
                     var other = UIDockingManager.Instance?.GetOtherInventory(this);
                     if (other == null)
                     {
-                        DebugManager.Info("QuickMove abgebrochen â€“ kein gÃ¼ltiges Zielinventar verfÃ¼gbar.");
+                        DebugManager.Info("QuickMove canceled - no valid target inventory available.");
                         return;
                     }
 
@@ -198,7 +198,7 @@ namespace CHAL.UI
                     };
 
                     if (!_domain.TryMove(req, out var res))
-                        DebugManager.Info($"QuickMove fehlgeschlagen: {res.reason}");
+                        DebugManager.Info($"QuickMove failed: {res.reason}");
                     else
                         DebugManager.Log($"QuickMove OK: {s.Value.itemID} â†’ {other.InstanceId}");
 

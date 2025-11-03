@@ -300,7 +300,7 @@ namespace CHAL.Systems.Crafting
 
             if (!gm.TryResolveByItemId(r.outputItemId, out var invType, out var instId) || string.IsNullOrEmpty(instId))
             {
-                DebugManager.Error($"Crafting: Konnte Output-Inventory fÃ¼r '{r.outputItemId}' nicht auflÃ¶sen.", "Crafting");
+                DebugManager.Error($"Crafting: Unable to resolve output inventory for '{r.outputItemId}'.", "Crafting");
                 return null;
             }
 

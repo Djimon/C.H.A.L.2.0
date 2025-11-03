@@ -22,7 +22,7 @@ namespace CHAL.Core
                     config = Resources.Load<GameBalanceConfig>("Config/GameBalanceConfig");
                     if (config == null)
                     {
-                        DebugManager.Error("[BalanceManager] Keine GameBalanceConfig gefunden. " +
+                        DebugManager.Error("[BalanceManager] No GameBalanceConfig found." +
                                         "Bitte im Inspector zuweisen oder unter Resources/Config/GameBalanceConfig ablegen.");
                     }
                 }
@@ -34,7 +34,7 @@ namespace CHAL.Core
         {
             if (Instance != null && Instance != this)
             {
-                DebugManager.Warning("[BalanceManager] Zweite Instanz gefunden – wird zerstört.");
+                DebugManager.Warning("[BalanceManager] Second instance found – will be destroyed.");
                 Destroy(gameObject);
                 return;
             }
@@ -45,7 +45,7 @@ namespace CHAL.Core
             // Früh validieren, damit Fehler sofort auffallen
             if (Config == null)
             {
-                DebugManager.Error("[BalanceManager] Config ist null. Balancing-Werte nicht verfügbar!");
+                DebugManager.Error("[BalanceManager] Config is null. Balancing values unavailable!");
             }
         }
 

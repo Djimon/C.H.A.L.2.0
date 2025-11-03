@@ -179,7 +179,7 @@ namespace CHAL.Systems.Inventory
                     s.stack = s.stack.Value.WithCount(s.stack.Value.count + move);
                     remaining -= move;
                     result.SlotDeltas.Add((i, s.stack));
-                    DebugManager.Log($"Item {stack.itemID} ({move}) in Slot {instanceId}:{i} auffÃ¼llen", DebugManager.EDebugLevel.Debug, "Inventory");
+                    DebugManager.Log($"Item {stack.itemID} ({move}) in Slot {instanceId}:{i} refilled", DebugManager.EDebugLevel.Debug, "Inventory");
                     OnSlotChanged?.Invoke(instanceId, i, s.stack);
 
                 }

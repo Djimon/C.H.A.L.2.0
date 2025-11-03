@@ -47,7 +47,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
 
         if (_service == null || bridge == null)
         {
-            DebugManager.Log("DevResearchFastForward: Service oder Bridge nicht gefunden – abgebrochen.",
+            DebugManager.Log("DevResearchFastForward: Service or bridge not found – aborted.",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
             yield break;
         }
