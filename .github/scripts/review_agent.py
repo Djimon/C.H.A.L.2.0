@@ -440,6 +440,10 @@ def check_debug_language(path: str, text: str) -> List[Finding]:
     return findings
 
 def check_wrong_debug_logger(path: str, text: str) -> List[Finding]:
+    # DebugManager.cs selbst darf Debug.Log* benutzen
+    if pathlib.Path(path).name == "DebugManager.cs":
+        return []
+        
     findings: List[Finding] = []
     for match in RE_WRONG_DEBUG.finditer(text):
         which = match.group(1)  # Log | LogWarning | LogError
