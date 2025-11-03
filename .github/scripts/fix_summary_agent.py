@@ -155,6 +155,7 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
             break
 
     if not file_path:
+        print(f"parse_findings_from_issue: issue #{number} -> no File: line found")
         return findings
 
     # 2) Versuchen, moderne "Findings"-Zeilen zu parsen (falls später eingeführt)
@@ -179,7 +180,8 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
             )
             found_any_bullets = True
 
-    if found_any_bullets:
+     if found_any_bullets:
+        print(f"parse_findings_from_issue: issue #{number} -> {len(findings)} bullet finding(s)")
         return findings
 
     # 3) Legacy-Format: einzelne Line/Symbol/Message-Blöcke
@@ -230,6 +232,9 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
                 message=msg,
             )
         )
+        print(f"parse_findings_from_issue: issue #{number} -> 1 legacy finding ({file_path}:{line_no} {symbol})")
+    else:
+        print(f"parse_findings_from_issue: issue #{number} -> no legacy finding (file={file_path}, line={line_no}, symbol={symbol})")
 
     return findings
 
@@ -387,6 +392,7 @@ def main():
     client = get_openai_client()
 
     issues = list_summary_issues(session, owner, repo)
+    print(f"FixSummaryBot: Found {len(issues)} open issues with labels Agent + {SUMMARY_LABEL}.")
     if not issues:
         print("FixSummaryBot: No open Agent/Summary issues.")
         return
@@ -396,10 +402,17 @@ def main():
     issue_numbers: set[int] = set()
 
     for issue in issues:
+        print(f"FixSummaryBot: Parsing issue #{issue['number']} - {issue.get('title')!r}")
         items = parse_findings_from_issue(issue)
+        print(f"FixSummaryBot:   -> parsed {len(items)} finding(s) from issue #{issue['number']}")
         if not items:
+            # Body zur Fehlersuche kurz ausgeben (erste paar Zeilen)
+            body = (issue.get("body") or "").splitlines()
+            preview = "\n".join(body[:8])
+            print(f"FixSummaryBot:   body preview:\n{preview}\n---")
             continue
         for item in items:
+            print(f"FixSummaryBot:   + {item.file}:{item.line} {item.symbol}")
             file_to_items.setdefault(item.file, []).append(item)
             issue_numbers.add(item.issue_number)
 
