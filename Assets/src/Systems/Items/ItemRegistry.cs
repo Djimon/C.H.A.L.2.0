@@ -220,7 +220,7 @@ namespace CHAL.Systems.Items
             }
             else
             {
-                DebugManager.Log("[ItemRegistry] ModulePartMap ist vollständig valide", DebugManager.EDebugLevel.Production, "System");
+                DebugManager.Log("[ItemRegistry] ModulePartMap vollständig valide", DebugManager.EDebugLevel.Production, "System");
             }
         }
 
