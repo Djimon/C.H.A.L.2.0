@@ -286,48 +286,6 @@ namespace CHAL.Systems.Crafting
             return sum;
         }
 
-        private static bool TryConsumeMaterials(RecipeDef recipe,
-                                                IInventoryDomain inv, string instanceId,
-                                                List<(int slot, ItemStack oldStack, int amount)> removed,
-                                                out string reason)
-        {
-            reason = null;
-            if (recipe.inputs == null || recipe.inputs.Count == 0) return true;
-
-            for (int i = 0; i < recipe.inputs.Count; i++)
-            {
-                var need = recipe.inputs[i];
-                int remaining = need.qty;
-
-                int slots = inv.SlotCount(instanceId);
-                for (int s = 0; s < slots && remaining > 0; s++)
-                {
-                    var peek = inv.Peek(instanceId, s);
-                    if (!peek.HasValue) continue;
-                    var st = peek.Value;
-                    if (st.itemID != need.itemId) continue;
-
-                    int take = System.Math.Min(st.count, remaining);
-                    if (take <= 0) continue;
-
-                    if (!inv.TryRemove(instanceId, s, take, out var _))
-                    {
-                        reason = $"Remove failed @slot {s} ({need.itemId})";
-                        return false;
-                    }
-
-                    removed.Add((s, st, take));
-                    remaining -= take;
-                }
-
-                if (remaining > 0)
-                {
-                    reason = $"Insufficient after scan: {need.itemId}";
-                    return false;
-                }
-            }
-            return true;
-        }
 
         private static void RollbackMaterials(IInventoryDomain inv, string instanceId,
             List<(int slot, ItemStack oldStack, int amount)> removed)
