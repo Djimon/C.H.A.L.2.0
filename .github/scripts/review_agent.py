@@ -6,6 +6,7 @@ import requests
 from dataclasses import dataclass
 from typing import List, Optional
 from git import Repo
+from collections import defaultdict
 
 # -------- Config --------
 ROOT = pathlib.Path(".")
@@ -75,6 +76,55 @@ def get_github_session() -> Optional[requests.Session]:
         "Accept": "application/vnd.github+json",
     })
     return s
+
+def create_issue_for_group(
+    session: requests.Session,
+    owner: str,
+    repo: str,
+    kind: str,
+    file: str,
+    group: List[Finding],
+    fingerprint: str,
+) -> None:
+    """
+    Erstellt EIN Issue für alle Findings eines (Kind, File)-Pairs.
+    Listet alle Findings unter '### Findings' auf, im Format:
+    - Line <line>, `<symbol>`: <message>
+    """
+    labels = ["Agent", kind]
+
+    title = f"[{kind}] {file}"
+
+    body_lines = [
+        "Automatic finding by ReviewAgent.",
+        "",
+        f"**Kind:** {kind}",
+        f"**File:** `{file}`",
+        "",
+        "### Findings",
+    ]
+
+    # sortiert nach Zeile für bessere Lesbarkeit
+    for f in sorted(group, key=lambda x: x.line):
+        body_lines.append(f"- Line {f.line}, `{f.symbol}`: {f.message}")
+
+    body_lines.append("")
+    body_lines.append(f"Fingerprint: {fingerprint}")
+
+    body = "\n".join(body_lines)
+
+    url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+    payload = {
+        "title": title,
+        "body": body,
+        "labels": labels,
+    }
+    resp = session.post(url, json=payload)
+    if resp.status_code not in (200, 201):
+        print(f"ReviewAgent: Failed to create grouped issue for {fingerprint}: {resp.status_code} {resp.text}")
+    else:
+        issue = resp.json()
+        print(f"ReviewAgent: Created grouped issue #{issue.get('number')} for {fingerprint}")
 
 
 def load_existing_fingerprints(session: requests.Session, owner: str, repo: str) -> set[str]:
@@ -448,13 +498,17 @@ def main():
     existing = load_existing_fingerprints(session, owner, repo)
     print(f"ReviewAgent: Loaded {len(existing)} existing fingerprints from open Agent issues.")
 
-    created_count = 0
+    grouped: dict[tuple[str, str], List[Finding]] = defaultdict(list)
     for f in findings:
-        fp = make_fingerprint(f)
+        key = (f.kind, f.file)
+        grouped[key].append(f)
+
+    created_count = 0
+    for (kind, file), group in grouped.items():
+        fp = f"{kind}|{file}"  # Fingerprint nur noch pro Datei & Kind
         if fp in existing:
-            # Issue gibt es schon
             continue
-        create_issue_for_finding(session, owner, repo, f, fp)
+        create_issue_for_group(session, owner, repo, kind, file, group, fp)
         existing.add(fp)
         created_count += 1
 
