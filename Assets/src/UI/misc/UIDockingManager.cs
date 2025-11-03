@@ -29,7 +29,7 @@ namespace CHAL.UI
         {
             if (Instance != null && Instance != this)
             {
-                Debug.LogError("[UIDockingManager] Es existiert bereits eine Instanz.");
+                DebugManager.Error("[UIDockingManager] Es existiert bereits eine Instanz.");
                 enabled = false;
                 return;
             }

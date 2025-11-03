@@ -426,7 +426,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
         if (overlaps.Count > 0)
         {
-            Debug.LogWarning($"[ResearchTree] AlwaysUnlocked Ã¼berschneiden sich mit Nodes: {string.Join(", ", overlaps)}", _tree);
+            DebugManager.Warning($"[ResearchTree] AlwaysUnlocked Ã¼berschneiden sich mit Nodes: {string.Join(", ", overlaps)}", _tree);
         }
     }
 

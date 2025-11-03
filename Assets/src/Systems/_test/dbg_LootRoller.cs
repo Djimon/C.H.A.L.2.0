@@ -51,7 +51,7 @@ public class LootRollerDebug : MonoBehaviour
 
         foreach (var entry in loot)
         {
-            Debug.Log($" - {entry.ItemId} from {entry.EnemyId} via {entry.PickedTag}");
+            DebugManager.DebugLog($" - {entry.ItemId} from {entry.EnemyId} via {entry.PickedTag}");
         }
     }
 }

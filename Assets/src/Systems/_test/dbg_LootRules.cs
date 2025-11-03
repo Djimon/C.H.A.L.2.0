@@ -45,24 +45,24 @@ public class LootRulesDebug : MonoBehaviour
         foreach (var d in merged.drops)
         {
             var c = d.chance.HasValue ? d.chance.Value.ToString("0.##") : $"[{string.Join(",", d.chancesArray)}]";
-            Debug.Log($"- {d.itemId} (rarity={d.rarity}, v={d.lootValue}) chance={c} qty={d.quantity}");
+            DebugManager.DebugLog($"- {d.itemId} (rarity={d.rarity}, v={d.lootValue}) chance={c} qty={d.quantity}");
         }
         foreach (var kv in merged.rarityGuarantees)
-            Debug.Log($"Guarantee: {kv.Key} >= {kv.Value}");
+            DebugManager.DebugLog($"Guarantee: {kv.Key} >= {kv.Value}");
 
 
         var tags = new[] { "insect", "lvl3", "swarm" };
         var extras = svc.GetSecretDrops(tags);
-        Debug.Log($"Gefundene SecretDrops: {extras.Count}");
+        DebugManager.DebugLog($"Gefundene SecretDrops: {extras.Count}");
         foreach (var lt in extras)
-            Debug.Log($"{lt.itemId} : chance: {lt.chance}, qty: {lt.quantity}");
+            DebugManager.DebugLog($"{lt.itemId} : chance: {lt.chance}, qty: {lt.quantity}");
 
         //LOOT_BUDGET
         //==========
         int B = LootBudgetCalculator.CalculateBudget(
             spawns, normals, magics, elites, bosses, champions, level, difficulty);
 
-        Debug.Log($"Wave Budget (Lvl {level}, diff {difficulty}): {B}");
+        DebugManager.DebugLog($"Wave Budget (Lvl {level}, diff {difficulty}): {B}");
 
         //UNLUCKY_PROT
         //===========
@@ -75,21 +75,21 @@ public class LootRulesDebug : MonoBehaviour
         {
             float mult = manager.GetMultiplier(Rarity.Rare);
             float pEff = pBase * mult;
-            Debug.Log($"Fail {i}: Mult={mult:0.00}, ChanceEff={pEff:0.0}%");
+            DebugManager.DebugLog($"Fail {i}: Mult={mult:0.00}, ChanceEff={pEff:0.0}%");
             manager.OnFail(Rarity.Rare); // simuliert Fehlschlag
-            Debug.Log("Nach Drop â†’ " + manager.DebugInfo());
+            DebugManager.DebugLog("Nach Drop â†’ " + manager.DebugInfo());
         }
 
         // Dann Drop erzwingen â†’ Reset
         manager.OnDrop(Rarity.Rare);
-        Debug.Log("Nach Drop â†’ " + manager.DebugInfo());
+        DebugManager.DebugLog("Nach Drop â†’ " + manager.DebugInfo());
 
         //Softcap_Modulator
         //=================
 
         var rarity = Rarity.Rare;
         float M = LootBudgetModulator.GetModifier(U_budget_Used, vi_item_Value, B, rarity);
-        Debug.Log($"Budget={B}, Used={U_budget_Used}, Item={vi_item_Value}, Rarity={rarity} â†’ Modifier={M:0.00}");
+        DebugManager.DebugLog($"Budget={B}, Used={U_budget_Used}, Item={vi_item_Value}, Rarity={rarity} â†’ Modifier={M:0.00}");
 
     }
 }
