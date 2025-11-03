@@ -420,16 +420,16 @@ public sealed class ResearchTreeDefEditor : Editor
         // Feedback
         var msg =
             $"IDs eingetragen: {dedup.Count}\n" +
-            $"(Leer/duplikate EintrÃ¤ge werden ignoriert)\n\n" +
+            $"(Leer/duplikate Einträge werden ignoriert)\n\n" +
             (overlaps.Count > 0
-                ? "Ãœberschneidungen mit Node-Unlocks:\n- " + string.Join("\n- ", overlaps)
-                : "Keine Ãœberschneidungen mit Node-Unlocks gefunden.");
+                ? "Überschneidungen mit Node-Unlocks:\n- " + string.Join("\n- ", overlaps)
+                : "Keine Überschneidungen mit Node-Unlocks gefunden.");
 
         EditorUtility.DisplayDialog("Validate Always Unlocked IDs", msg, "OK");
 
         if (overlaps.Count > 0)
         {
-            DebugManager.Warning($"[ResearchTree] AlwaysUnlocked Ã¼berschneiden sich mit Nodes: {string.Join(", ", overlaps)}", _tree);
+            DebugManager.Warning($"[ResearchTree] AlwaysUnlocked overlaps with Nodes: {string.Join(", ", overlaps)}", _tree);
         }
     }
 
