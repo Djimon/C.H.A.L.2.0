@@ -40,7 +40,7 @@ namespace CHAL.Systems.Items
             {
                 if (string.IsNullOrWhiteSpace(def.itemId) || !ItemKey.TryParse(def.itemId, out _))
                 {
-                    DebugManager.Warning($"[ItemRegistry] Skip ungültige ID in {def.name}");
+                    DebugManager.Warning("[ItemRegistry] Skipping invalid ID in " + def.name");
                     continue;
                 }
                 if (_byId.ContainsKey(def.itemId))
@@ -50,7 +50,7 @@ namespace CHAL.Systems.Items
                 }
                 _byId.Add(def.itemId, def);
             }
-            DebugManager.Log($"[ItemRegistry] Geladen: {_byId.Count} Items",DebugManager.EDebugLevel.Production,"System");
+            DebugManager.Log("[ItemRegistry] Loaded: {_byId.Count} items",DebugManager.EDebugLevel.Production,"System");
 
 
             var mod_part_map = LoadModulePartMap();
@@ -137,12 +137,12 @@ namespace CHAL.Systems.Items
                         File.WriteAllLines(reportPath, new[] { "level,domain,kind,value,context" });
                     }
                     File.AppendAllLines(reportPath, rows);
-                    DebugManager.Log($"[ItemRegistry] Gear/Recipes-Validierung angehängt: {reportPath}",
+                    DebugManager.Log("[ItemRegistry] Gear/Recipes validation attached: {reportPath}",
                         DebugManager.EDebugLevel.Production, "System");
                 }
                 catch (System.Exception ex)
                 {
-                    DebugManager.Warning($"[ItemRegistry] Konnte Validierungsreport nicht schreiben: {ex.Message}", "Validation");
+                    DebugManager.Warning("[ItemRegistry] Failed to write validation report: " + ex.Message", "Validation");
                 }
             }
             else
@@ -156,13 +156,13 @@ namespace CHAL.Systems.Items
             TextAsset json = Resources.Load<TextAsset>("data/Items/ModulePartMap");
             if (json == null)
             {
-                DebugManager.Warning("[ItemRegistry] Keine ModulePartMap gefunden!");
+                DebugManager.Warning("ItemRegistry: No ModulePartMap found!");
                 return null;
             }
 
             var wrapper = JsonUtility.FromJson<ModulePartMapWrapper>(json.text);
             var _modulePartMap = wrapper.ToDictionary();
-            DebugManager.Log($"[ItemRegistry] ModulePartMap geladen mit {_modulePartMap.Count} Modulen", DebugManager.EDebugLevel.Production, "System");
+            DebugManager.Log("[ItemRegistry] ModulePartMap loaded with {_modulePartMap.Count} modules", DebugManager.EDebugLevel.Production, "System");
             return _modulePartMap;
         }
 
@@ -215,12 +215,12 @@ namespace CHAL.Systems.Items
 
                 string path = Path.Combine(Application.dataPath, "../ModulePartValidation.csv");
                 File.WriteAllLines(path, errors);
-                DebugManager.Log($"[ItemRegistry] Validierungsreport gespeichert: {path}", DebugManager.EDebugLevel.Production, "System");
+                DebugManager.Log("[ItemRegistry] Validation report saved: {path}", DebugManager.EDebugLevel.Production, "System");
 
             }
             else
             {
-                DebugManager.Log("[ItemRegistry] ModulePartMap ist vollständig valide", DebugManager.EDebugLevel.Production, "System");
+                DebugManager.Log("ModulePartMap is fully valid", DebugManager.EDebugLevel.Production, "System");
             }
         }
 
@@ -288,7 +288,7 @@ namespace CHAL.Systems.Items
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            DebugManager.Log($"[ItemRegistry] Placeholder für '{itemId}' angelegt unter {assetPath}");
+            DebugManager.Log("[ItemRegistry] Created placeholder for '{itemId}' at {assetPath}");
         }
 
 /// <summary>
