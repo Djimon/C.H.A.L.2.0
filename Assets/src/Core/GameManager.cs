@@ -197,7 +197,7 @@ namespace CHAL.Core
         {
             if (Profile == null)
             {
-                DebugManager.Warning("Kein Save zum Fortsetzen gefunden", "System");
+                DebugManager.Warning("No save found to continue", "System");
                 return;
             }
 
@@ -292,7 +292,7 @@ namespace CHAL.Core
 
             if (_inventoryTemplates.TryGetValue(typeId, out def)) return def;
 
-            DebugManager.Error($"GetTemplate: kein InventoryDef mit TypeId='{typeId}' unter Resources/{path}");
+            DebugManager.Error($"GetTemplate: no InventoryDef with TypeId='{typeId}' under Resources/{path}");
             return null;
         }
 

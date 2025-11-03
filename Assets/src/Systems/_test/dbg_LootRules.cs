@@ -53,7 +53,7 @@ public class LootRulesDebug : MonoBehaviour
 
         var tags = new[] { "insect", "lvl3", "swarm" };
         var extras = svc.GetSecretDrops(tags);
-        DebugManager.DebugLog($"Gefundene SecretDrops: {extras.Count}");
+        DebugManager.DebugLog($"Found SecretDrops: {extras.Count}");
         foreach (var lt in extras)
             DebugManager.DebugLog($"{lt.itemId} : chance: {lt.chance}, qty: {lt.quantity}");
 

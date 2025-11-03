@@ -28,7 +28,7 @@ namespace CHAL.Systems.Unit
         {
             if (Instance != null && Instance != this)
             {
-                DebugManager.Error("[UnitLocator] Mehrere Instanzen in der Scene gefunden – bitte nur eine!");
+                DebugManager.Error("[UnitLocator] Multiple instances found in the scene – please keep only one!");
             }
             Instance = this;
             DebugManager.Log("[UnitLocator] Ready (scene-scoped).", DebugManager.EDebugLevel.Dev, "Combat");

@@ -46,11 +46,11 @@ namespace CHAL.Systems.Unit
                     continue;
                 }
 
-                DebugManager.Log($"[UnitRegistry] Hero Geladen: {def.HeroId}", DebugManager.EDebugLevel.Debug, "System");
+                DebugManager.Log($"[UnitRegistry] Hero Loaded: {def.HeroId}", DebugManager.EDebugLevel.Debug, "System");
                 _HeroById.Add(def.HeroId, def);
 
             }
-            DebugManager.Log($"[UnitRegistry] Geladen: {_HeroById.Count} Heroes", DebugManager.EDebugLevel.Production, "System");
+            DebugManager.Log($"[UnitRegistry] Loaded: {_HeroById.Count} Heroes", DebugManager.EDebugLevel.Production, "System");
 
 
             //Alle degs aus Enemies laden
@@ -69,14 +69,14 @@ namespace CHAL.Systems.Unit
                     DebugManager.Warning($"[UnitRegistry] Duplicate Enemy '{def.enemyId}' in {def.name}");
                     continue;
                 }
-                DebugManager.Log($"[UnitRegistry] Enemy Geladen: {def.enemyId}", DebugManager.EDebugLevel.Debug, "System");
+                DebugManager.Log($"[UnitRegistry] Enemy Loaded: {def.enemyId}", DebugManager.EDebugLevel.Debug, "System");
                 _EnemyById.Add(def.enemyId, def);
             }
 
-            DebugManager.Log($"[UnitRegistry] Geladen: {_EnemyById.Count} Enemies", DebugManager.EDebugLevel.Production, "System");
+            DebugManager.Log($"[UnitRegistry] Loaded: {_EnemyById.Count} enemies", DebugManager.EDebugLevel.Production, "System");
 
             var enemycount = Mathf.Max(0, _EnemyById.Count);
-            DebugManager.Log($"{enemycount} anzahl enemies geladen", DebugManager.EDebugLevel.Production, "System");
+            DebugManager.Log($"{enemycount} enemies loaded", DebugManager.EDebugLevel.Production, "System");
 
         }
 

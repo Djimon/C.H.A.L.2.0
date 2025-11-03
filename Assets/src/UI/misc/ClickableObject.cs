@@ -19,7 +19,7 @@ namespace CHAL.UI
 
             if (!rend.sharedMaterial.HasProperty("_shimmerOn"))
             {
-                DebugManager.Warning($"{name}: Matieral hat kein ShimmerOn-Effekt!", "Visual");
+                DebugManager.Warning($"{name}: Material has no ShimmerOn effect!", "Visual");
             }
 
             SetShimmer(false);

@@ -278,7 +278,7 @@ namespace CHAL.Systems.Enemy
                 }
                 else
                 {
-                    DebugManager.Log($"Targeting | Enemy hat kein gÃ¼ltiges Ziel fÃ¼r {_currentSkill.Data.DisplayName}.", DebugManager.EDebugLevel.Dev, "Combat");
+                    DebugManager.Log($"Targeting | Enemy has no valid target for {_currentSkill.Data.DisplayName}.", DebugManager.EDebugLevel.Dev, "Combat");
                 }
 
                 _currentSkill = null; // Cast abgeschlossen

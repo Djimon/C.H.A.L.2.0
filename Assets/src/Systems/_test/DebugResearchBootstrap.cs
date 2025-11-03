@@ -46,7 +46,7 @@ public sealed class ResearchBootstrap : MonoBehaviour
         }
         if (nodeDefs == null || nodeDefs.Count == 0)
         {
-            DebugManager.Log("ResearchBootstrap: keine Node-Defs zugewiesen.", DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
+            DebugManager.Log("ResearchBootstrap: no node definitions assigned.", DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
         }
 
         // 3) Research-Service initialisieren

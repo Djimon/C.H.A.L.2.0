@@ -34,14 +34,14 @@ namespace CHAL.Data
         {
             if (GrowthConfig?.GrowthPattern?.growthPriority == null)
             {
-                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern muss genau 5 Einträge haben.","Edtior");
+                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern must have exactly 5 entries.","Edtior");
                 return;
             }
 
             int len = GrowthConfig.GrowthPattern.growthPriority.Length;
             if (len != 5)
             {
-                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern muss genau 5 Einträge haben. Aktuelle: {len}", "Edtior");
+                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern must have exactly 5 entries. Current: {len}", "Edtior");
             }
         }
     }
