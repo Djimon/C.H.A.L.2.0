@@ -472,6 +472,10 @@ def run_review() -> List[Finding]:
 
     for f in files:
         p = pathlib.Path(f)
+        if "xTernal" in p.parts or "ThirdParty" in p.parts:
+            print(f"ReviewAgent: Skipping external/third-party file {p}")
+            continue
+        
         try:
             text = p.read_text(encoding="utf-8", errors="ignore")
         except Exception as e:
