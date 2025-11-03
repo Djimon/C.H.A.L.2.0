@@ -27,6 +27,8 @@ Rules:
 - Do NOT invent new information.
 - Keep it short (ideally one short clause).
 - Output ONLY a single C# string literal, including surrounding double quotes, properly escaped.
+- Keep all C# interpolation placeholders of the form {{something}} EXACTLY as they are.
+- Do NOT translate, rename, remove or add anything inside {{...}}.
 - No code fences, no explanations, no comments.
 """
 
@@ -49,6 +51,7 @@ RE_DEBUG_MANAGER_CALL = re.compile(
     re.MULTILINE,
 )
 
+PLACEHOLDER_RE = re.compile(r"\{[^}]+\}")
 
 @dataclass
 class FindingItem:
@@ -262,28 +265,43 @@ def get_openai_client() -> OpenAI:
 
 def translate_debug_literal(client: OpenAI, original_literal: str, context: str) -> str:
     """
-    original_literal: C#-Stringliteral, z. B. "Forschung fehlgeschlagen"
+    original_literal: C#-Stringliteral, z. B. $"Forschung {reason} fehlgeschlagen"
                       oder @"Forschung fehlgeschlagen"
-    Rückgabe: C#-Stringliteral in Englisch, mit doppelten Anführungszeichen.
+    Rückgabe: gleicher Literal-Typ (Prefix $, @, $@ etc. behalten),
+              Text ins Englische übersetzt, Platzhalter {…} unverändert.
     """
-    # inneren Text (ohne @ und äußere Quotes) als Info extrahieren
     s = original_literal.strip()
-    is_verbatim = s.startswith("@\"")
-    if is_verbatim and s.endswith("\""):
-        inner = s[2:-1]
-    elif s.startswith("\"") and s.endswith("\""):
-        inner = s[1:-1]
-    else:
-        inner = s
 
-    user_prompt = f"""Original debug message text:
+    # Prefix (z.B. $, @, $@, @$) + "inner"
+    m = re.match(r'^([@$]*)(\".*\")$', s)
+    if not m:
+        # Falls wir das Format nicht verstehen -> lieber nichts kaputt machen
+        print(f"FixDebugLanguageBot: Could not parse literal format: {original_literal}")
+        return original_literal
+
+    prefix = m.group(1)           # z.B. "$", "@", "$@", "", ...
+    quoted = m.group(2)           # z.B. "\"Text {x}\""
+    inner = quoted[1:-1]          # ohne äußere Quotes
+
+    # Platzhalter aus dem Original extrahieren
+    orig_placeholders = PLACEHOLDER_RE.findall(inner)
+
+    user_prompt = f"""Original C# debug message (inner content of the string literal):
+
 {inner}
 
 Context (may be partial log call line):
 {context}
 
-Rewrite this debug message in concise, natural English suitable for a log.
-Return ONLY a single C# string literal, including quotes and properly escaped."""
+Rewrite this message in concise, natural English suitable for a log.
+
+STRICT rules:
+- Keep all C# interpolation placeholders of the form {{something}} EXACTLY as they are.
+- Do NOT translate, rename, remove or add anything inside {{...}}.
+- Do NOT add new placeholders and do NOT remove existing ones.
+- Return ONLY the rewritten inner content, WITHOUT quotes.
+"""
+
     resp = client.chat.completions.create(
         model=OPENAI_MODEL,
         messages=[
@@ -294,13 +312,36 @@ Return ONLY a single C# string literal, including quotes and properly escaped.""
     )
     content = resp.choices[0].message.content or ""
     lines = [ln for ln in content.splitlines() if ln.strip()]
-    candidate = lines[0].strip() if lines else ""
+    if not lines:
+        return original_literal
 
-    # Safety: wenn das Modell keine Quotes liefert, packen wir sie drum
-    if not (candidate.startswith('"') and candidate.endswith('"')):
-        candidate = '"' + candidate.strip('"') + '"'
+    new_inner = lines[0].strip()
 
-    return candidate
+    # Falls das Modell doch Quotes gesetzt hat -> weg damit
+    if new_inner.startswith('"') and new_inner.endswith('"') and len(new_inner) >= 2:
+        new_inner = new_inner[1:-1]
+
+    # Check: Platzhalter müssen identisch bleiben
+    new_placeholders = PLACEHOLDER_RE.findall(new_inner)
+    if set(new_placeholders) != set(orig_placeholders):
+        print(
+            f"FixDebugLanguageBot: Placeholder mismatch for {original_literal}. "
+            f"orig={orig_placeholders}, new={new_placeholders}. Skipping change."
+        )
+        return original_literal
+
+    # Jetzt korrekt als C#-Literal escapen
+    is_verbatim = "@" in prefix
+
+    if is_verbatim:
+        # Verbatim-Strings: " wird zu ""
+        escaped_inner = new_inner.replace('"', '""')
+    else:
+        # Normale Strings: \ und " escapen
+        escaped_inner = new_inner.replace("\\", "\\\\").replace('"', '\\"')
+
+    # Prefix ($/@) unverändert, Quotes neu
+    return f'{prefix}"{escaped_inner}"'
 
 
 # ---------------- File Patching ----------------
