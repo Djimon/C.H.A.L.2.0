@@ -151,7 +151,7 @@ All documented namespaces and types.
 - [CurrencyCost](CHAL/Systems/Crafting/CurrencyCost.md) (2025-11-03)
 - [CurrencyLine](CHAL/Systems/Crafting/CurrencyLine.md) (2025-11-03)
 - [MaterialCost](CHAL/Systems/Crafting/MaterialCost.md) (2025-11-03)
-- [MaterialLine](CHAL/Systems/Crafting/MaterialLine.md) (new)
+- [MaterialLine](CHAL/Systems/Crafting/MaterialLine.md) (2025-11-03)
 - [RecipeDef](CHAL/Systems/Crafting/RecipeDef.md) (2025-11-03)
 
 ## CHAL.Systems.Enemy
@@ -279,6 +279,7 @@ All documented namespaces and types.
 - [docgen](global/docgen.md) (2025-11-03)
 - [EDebugLevel](global/EDebugLevel.md) (2025-11-03)
 - [EventBus](global/EventBus.md) (2025-11-03)
+- [fix_summary_agent](global/fix_summary_agent.md) (new)
 - [ImplicitGearTypeConfigEditor](global/ImplicitGearTypeConfigEditor.md) (2025-11-03)
 - [InventoryDemoBootstrap](global/InventoryDemoBootstrap.md) (2025-11-03)
 - [ItemDefEditor](global/ItemDefEditor.md) (2025-11-03)
