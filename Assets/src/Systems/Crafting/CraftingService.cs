@@ -270,75 +270,7 @@ namespace CHAL.Systems.Crafting
 
             return true;
         }
-
-
-        // ---- Helpers ----
-        private static int CountOf(IInventoryDomain inv, string instanceId, string itemId)
-        {
-            int sum = 0;
-            int slots = inv.SlotCount(instanceId);
-            for (int i = 0; i < slots; i++)
-            {
-                var st = inv.Peek(instanceId, i);
-                if (st.HasValue && st.Value.itemID == itemId)
-                    sum += st.Value.count;
-            }
-            return sum;
-        }
-
-
-        private static void RollbackMaterials(IInventoryDomain inv, string instanceId,
-            List<(int slot, ItemStack oldStack, int amount)> removed)
-        {
-            // Simplest: add back as new stacks (du hast Platz, weil sie gerade entnommen wurden)
-            for (int i = 0; i < removed.Count; i++)
-            {
-                var (_, old, amount) = removed[i];
-                inv.TryAdd(instanceId, new ItemStack(old.itemID, amount), out _);
-            }
-            removed.Clear();
-        }
-
-        private static bool TrySpendCurrencies(RecipeDef recipe, IWallet wallet,
-                                               List<(string id, int amt)> spent, out string reason)
-        {
-            reason = null;
-            if (recipe.currencyCosts == null || recipe.currencyCosts.Count == 0) return true;
-
-            for (int i = 0; i < recipe.currencyCosts.Count; i++)
-            {
-                var c = recipe.currencyCosts[i];
-                // Sicherheit: vor Spend nochmals prüfen
-                if (!wallet.CanSpend(c.currencyId, c.amount))
-                {
-                    reason = $"Currency missing: {c.currencyId}";
-                    return false;
-                }
-            }
-
-            // tatsächliches Abbuchen
-            for (int i = 0; i < recipe.currencyCosts.Count; i++)
-            {
-                var c = recipe.currencyCosts[i];
-                if (!wallet.SpendCurrency(c.currencyId, c.amount))
-                {
-                    reason = $"Spend failed: {c.currencyId}";
-                    return false;
-                }
-                spent.Add((c.currencyId, c.amount));
-            }
-            return true;
-        }
-
-        private static void RefundCurrencies(IWallet wallet, List<(string id, int amt)> spent)
-        {
-            for (int i = 0; i < spent.Count; i++)
-            {
-                var (id, amt) = spent[i];
-                wallet.Refund(id, amt);
-            }
-            spent.Clear();
-        }
+               
     }
 
     public enum CraftBlocker
