@@ -66,7 +66,7 @@ namespace CHAL.Data
                     // Warnungen bei "ungewöhnlichen" IDs (z.B. Sonderzeichen/Leerzeichen)
                     if (!IsValidId(e.ImplicitId))
                     {
-                        Debug.LogWarning($"[ImplicitPoolsDef] Ungewöhnliche ImplicitId '{e.ImplicitId}' im Pool {pool.GearType}. " +
+                        DebugManager.Warning($"[ImplicitPoolsDef] Ungewöhnliche ImplicitId '{e.ImplicitId}' im Pool {pool.GearType}. " +
                                          "Empfohlenes Format: lower_snake_case (a-z, 0-9, _).", this);
                     }
 
@@ -75,7 +75,7 @@ namespace CHAL.Data
                     {
                         if (seen.Contains(e.ImplicitId))
                         {
-                            Debug.LogWarning($"[ImplicitPoolsDef] Doppelte ImplicitId '{e.ImplicitId}' im Pool {pool.GearType} – wird ignoriert.", this);
+                            DebugManager.Warning($"[ImplicitPoolsDef] Doppelte ImplicitId '{e.ImplicitId}' im Pool {pool.GearType} – wird ignoriert.", this);
                             e.Weight = 0;
                         }
                         else

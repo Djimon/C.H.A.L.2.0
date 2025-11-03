@@ -39,7 +39,7 @@ namespace CHAL.Data
             // Basisschutz: korrekte ID
             if (!ItemKey.TryParse(itemId, out _))
             {
-                Debug.LogWarning($"[ItemDef] Ungültige itemId '{itemId}' in {name}. Erwartet 'category:item'.");
+                DebugManager.Warning($"[ItemDef] Ungültige itemId '{itemId}' in {name}. Erwartet 'category:item'.");
             }
             // Sanity für LootValue
             if (lootValue < 0) lootValue = 0;

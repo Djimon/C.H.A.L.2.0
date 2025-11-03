@@ -49,16 +49,16 @@ public sealed class CraftingDebugRunner : MonoBehaviour
         var recipe = catalog.recipes[recipeIndex];
         var wallet = simulateCurrencyMissing ? new WalletProxyMissing(_wallet) : _wallet;
 
-        Debug.Log($"[CraftTest] Recipe: {NameOf(recipe)}");
+        DebugManager.DebugLog($"[CraftTest] Recipe: {NameOf(recipe)}");
         PrintPreview(recipe);
 
         if (CraftingService.TryCraftToInventory(recipe, _inv,  _wallet, outputInventoryId, out var reason))
         {
-            Debug.Log($"[CraftTest] SUCCESS -> Output placed into '{outputInventoryId}'");
+            DebugManager.DebugLog($"[CraftTest] SUCCESS -> Output placed into '{outputInventoryId}'");
         }
         else
         {
-            Debug.LogWarning($"[CraftTest] FAIL -> {reason}");
+            DebugManager.Warning($"[CraftTest] FAIL -> {reason}");
         }
 
         // nach Commit/Fail erneut den Zustand zeigen
@@ -102,7 +102,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
 
         // 3) Kontrolle
         var after = CraftingService.GetPreview(recipe, outputInventoryId, _inv,  _wallet);
-        Debug.Log($"[Grant] canCraft={after.canCraft} for x{grantCrafts} crafts.");
+        DebugManager.DebugLog($"[Grant] canCraft={after.canCraft} for x{grantCrafts} crafts.");
     }
 
     private void PrintPreview(RecipeDef recipe)
@@ -119,7 +119,7 @@ public sealed class CraftingDebugRunner : MonoBehaviour
         //foreach (var c in prev.currencies)
         //    sb.AppendLine($"    - {c.currencyId}: need {c.required} / have {c.playerAmount} {(c.enough ? "" : "<MISSING>")}");
 
-        Debug.Log(sb.ToString());
+        DebugManager.DebugLog(sb.ToString());
     }
 
     private static string NameOf(RecipeDef r) => string.IsNullOrEmpty(r.displayKey) ? r.name : r.displayKey;

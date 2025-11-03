@@ -250,7 +250,7 @@ namespace CHAL.UI
             while (GameManager.Instance == null || GameManager.Instance.Inventory == null)
                 yield return null;
 
-            if (_inventoryDef == null) { Debug.LogError("InventoryView: kein Template gesetzt."); yield break; }
+            if (_inventoryDef == null) { DebugManager.Error("InventoryView: kein Template gesetzt."); yield break; }
 
             // player_* Default: instanceId = "player_" + enum-name (lowercase), falls im Inspector leer
             if (string.IsNullOrEmpty(inventoryID))
