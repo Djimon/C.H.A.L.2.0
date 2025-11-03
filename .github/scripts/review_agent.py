@@ -3,6 +3,7 @@ import pathlib
 import re
 import json
 import requests
+import time
 from dataclasses import dataclass
 from typing import List, Optional
 from git import Repo
@@ -15,8 +16,8 @@ SUMMARY_FINDING = "Agent/Summary"
 DEBUG_FINDING = "Agent/DebugLanguage"
 DEBUG_MANAGER_FINDING = "Agent/DebugManager"
 
-# GitHub aht ein ratelimit fürs spammen von Issues.
-BATCH_SIZE = int(os.getenv("ISSUE_BATCH_SIZE", "50"))  # z.B. 50
+# GitHub hat ein ratelimit fürs spammen von Issues.
+BATCH_SIZE = int(os.getenv("ISSUE_BATCH_SIZE", "25"))  # z.B. 50
 
 UNITY_METHOD_EXCLUSIONS = {
     "Awake",
@@ -523,6 +524,8 @@ def main():
         create_issue_for_group(session, owner, repo, kind, file, group, fp)
         existing.add(fp)
         created_count += 1
+        # kleine Pause nach jedem erstellten Issue
+        time.sleep(0.5)
 
     print(f"ReviewAgent: Issue creation done. New issues created: {created_count}")
 
