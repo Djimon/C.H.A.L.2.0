@@ -1,0 +1,43 @@
+name: FixAgentSummary
+
+on:
+  workflow_dispatch: {}  # manuell starten
+
+permissions:
+  contents: write        # Branch + Commit + Push
+  issues: write          # Issues schließen
+  pull-requests: write   # PR erstellen
+
+jobs:
+  fix-summary:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests gitpython openai
+
+      - name: Configure git user
+        run: |
+          git config user.name "summary-bot"
+          git config user.email "summary-bot@users.noreply.github.com"
+
+      - name: Run Summary Fix Bot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BASE_BRANCH: "main"
+        run: |
+          python .github/scripts/fix_summary_bot.py
