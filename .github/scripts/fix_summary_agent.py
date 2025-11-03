@@ -120,41 +120,116 @@ def close_issue(session: requests.Session, owner: str, repo: str, issue_number: 
 
 def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
     """
-    Erwartet Issue-Body im Format vom ReviewAgent:
-      **File:** `path`
-      ...
-      ### Findings
-      - Line X, `symbol`: message
+    Unterstützt das aktuelle Body-Format, z.B.:
+
+      Automatic finding by ReviewAgent.
+
+      Kind: Agent/Summary
+      File: Assets/src/Systems/Crafting/CraftingService.cs
+      Line: 114
+      Symbol: method CanCraft()
+
+      Message: Missing
+      XML doc for public method 'CanCraft'.
+
+      Fingerprint: ...
+
+    Und zusätzlich optional das spätere Format mit "### Findings" Zeilen,
+    falls du den ReviewAgent später umstellst.
     """
     number = issue["number"]
     body = issue.get("body") or ""
-    file_path = None
+    lines = body.splitlines()
+
     findings: List[FindingItem] = []
 
-    lines = body.splitlines()
+    file_path: Optional[str] = None
+
+    # 1) File rausziehen
     for line in lines:
-        line_stripped = line.strip()
-        if line_stripped.startswith("**File:**"):
-            # Format: **File:** `path`
-            backtick_start = line_stripped.find("`")
-            backtick_end = line_stripped.rfind("`")
-            if backtick_start != -1 and backtick_end > backtick_start:
-                file_path = line_stripped[backtick_start + 1:backtick_end]
-        elif line_stripped.startswith("- Line "):
-            m = RE_FINDING_LINE.match(line_stripped)
-            if m and file_path:
-                ln = int(m.group(1))
-                symbol = m.group(2)
-                msg = m.group(3)
-                findings.append(
-                    FindingItem(
-                        issue_number=number,
-                        file=file_path,
-                        line=ln,
-                        symbol=symbol,
-                        message=msg,
-                    )
+        l = line.strip()
+        if l.lower().startswith("file:"):
+            # nach dem ersten ':' alles nehmen und Backticks entfernen
+            _, rest = l.split(":", 1)
+            file_path = rest.strip().strip("`")
+            break
+
+    if not file_path:
+        return findings
+
+    # 2) Versuchen, moderne "Findings"-Zeilen zu parsen (falls später eingeführt)
+    found_any_bullets = False
+    for line in lines:
+        l = line.strip()
+        if l.startswith("- Line "):
+            m = RE_FINDING_LINE.match(l)
+            if not m:
+                continue
+            ln = int(m.group(1))
+            symbol = m.group(2)
+            msg = m.group(3)
+            findings.append(
+                FindingItem(
+                    issue_number=number,
+                    file=file_path,
+                    line=ln,
+                    symbol=symbol,
+                    message=msg,
                 )
+            )
+            found_any_bullets = True
+
+    if found_any_bullets:
+        return findings
+
+    # 3) Legacy-Format: einzelne Line/Symbol/Message-Blöcke
+    line_no: Optional[int] = None
+    symbol: Optional[str] = None
+    message_lines: List[str] = []
+    collecting_message = False
+
+    for line in lines:
+        l = line.strip()
+        if not l:
+            if collecting_message:
+                # leere Zeile beendet Message-Block
+                collecting_message = False
+            continue
+
+        if l.lower().startswith("line:"):
+            _, rest = l.split(":", 1)
+            try:
+                line_no = int(rest.strip())
+            except ValueError:
+                line_no = None
+        elif l.lower().startswith("symbol:"):
+            _, rest = l.split(":", 1)
+            symbol = rest.strip().strip("`")
+        elif l.lower().startswith("message:"):
+            collecting_message = True
+            # alles nach "Message:" auf derselben Zeile als Start
+            _, rest = l.split(":", 1)
+            rest = rest.strip()
+            if rest:
+                message_lines.append(rest)
+        elif l.lower().startswith("fingerprint:"):
+            # Fingerprint markiert Ende; keine Message mehr
+            collecting_message = False
+        elif collecting_message:
+            # weitere Zeilen der Message
+            message_lines.append(l)
+
+    if file_path and line_no is not None and symbol:
+        msg = " ".join(message_lines).strip() or "Missing XML doc."
+        findings.append(
+            FindingItem(
+                issue_number=number,
+                file=file_path,
+                line=line_no,
+                symbol=symbol,
+                message=msg,
+            )
+        )
 
     return findings
 
