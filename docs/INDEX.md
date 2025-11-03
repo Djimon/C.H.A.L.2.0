@@ -149,7 +149,7 @@ All documented namespaces and types.
 - [CraftingCatalog](CHAL/Systems/Crafting/CraftingCatalog.md) (2025-11-03)
 - [CraftingController](CHAL/Systems/Crafting/CraftingController.md) (2025-11-03)
 - [CurrencyCost](CHAL/Systems/Crafting/CurrencyCost.md) (2025-11-03)
-- [CurrencyLine](CHAL/Systems/Crafting/CurrencyLine.md) (2025-11-03)
+- [CurrencyLine](CHAL/Systems/Crafting/CurrencyLine.md) (new)
 - [MaterialCost](CHAL/Systems/Crafting/MaterialCost.md) (2025-11-03)
 - [MaterialLine](CHAL/Systems/Crafting/MaterialLine.md) (2025-11-03)
 - [RecipeDef](CHAL/Systems/Crafting/RecipeDef.md) (2025-11-03)

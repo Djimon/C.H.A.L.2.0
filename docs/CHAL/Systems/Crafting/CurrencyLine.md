@@ -6,6 +6,7 @@ Purpose
 - Exposes a static CraftingService for previewing and executing recipe crafts.
 - Defines lightweight data structures used by the UI (MaterialLine, CurrencyLine, RecipePreview).
 - Provides a public CraftBlocker enum to describe why crafting is blocked.
+- Adds detailed logging for output rejection in the GetPreview method.
 
 Public API
 - Namespace/Module
