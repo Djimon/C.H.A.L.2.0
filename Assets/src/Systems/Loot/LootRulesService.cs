@@ -27,7 +27,7 @@ namespace CHAL.Systems.Loot
                     var rule = ToRule(dto, ta.name);
                     if (_byTag.ContainsKey(rule.tag))
                     {
-                        DebugManager.Warning($"[LootRules] Duplicate tag '{rule.tag}' in {ta.name}, wird überschrieben.");
+                        DebugManager.Warning($"[LootRules] Duplicate tag '{rule.tag}' in {ta.name}, will be overwritten.");
                     }
                     _byTag[rule.tag] = rule;
                 }
