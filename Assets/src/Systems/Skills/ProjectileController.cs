@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace CHAL.Systems.Skill
 {
+/// <summary>
+/// Manages the behavior and movement of projectiles in the game.
+/// </summary>
     public class ProjectileController : MonoBehaviour
     {
         private Vector3 direction;
@@ -14,6 +17,15 @@ namespace CHAL.Systems.Skill
         private EffectReceiver source;
         private EffectReceiver target;
 
+/// <summary>
+/// Initializes the projectile with the specified parameters.
+/// </summary>
+/// <param name="inst">The skill instance associated with the projectile.</param>
+/// <param name="src">The effect receiver that is the source of the projectile.</param>
+/// <param name="tgt">The effect receiver that is the target of the projectile.</param>
+/// <param name="dir">The direction in which the projectile will move.</param>
+/// <param name="projSpeed">The speed of the projectile.</param>
+/// <param name="life">The lifespan of the projectile.</param>
         public void Init(SkillInstance inst, EffectReceiver src, EffectReceiver tgt, Vector3 dir, float projSpeed, float life)
         {
             skill = inst;

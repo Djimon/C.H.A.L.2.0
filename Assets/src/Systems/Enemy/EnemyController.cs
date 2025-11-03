@@ -11,6 +11,10 @@ using UnityEngine;
 
 namespace CHAL.Systems.Enemy
 {
+/// <summary>
+/// Manages the behavior and state of enemy units in the game.
+/// Implements the IUnitController interface for unit control functionality.
+/// </summary>
     public class EnemyController : MonoBehaviour, IUnitController
     {
         public EnemyDef EnemyDef;
@@ -53,6 +57,10 @@ namespace CHAL.Systems.Enemy
                 Init(EnemyData);
         }
 
+/// <summary>
+/// Initializes the enemy instance with the provided enemy structure.
+/// </summary>
+/// <param name="enemstruct">The structure containing enemy data.</param>
         public void Init(EnemyStruct enemstruct)
         {
             var def = UnitRegistry.Instance.GetEnemyByID(enemstruct.EnemyId);
@@ -321,6 +329,11 @@ namespace CHAL.Systems.Enemy
             return best;
         }
 
+/// <summary>
+/// Applies damage to the enemy based on the specified amount and damage type.
+/// </summary>
+/// <param name="amount">The amount of damage to apply.</param>
+/// <param name="type">The type of damage being dealt.</param>
         public void TakeDamage(float amount, DamageType type)
         {
             if (!IsAlive) return;
@@ -396,6 +409,10 @@ namespace CHAL.Systems.Enemy
         //    EnemyInstance.TakeDamage(999, DamageType.Physical);
         //}
 
+/// <summary>
+/// Retrieves the EffectReceiver associated with the enemy instance.
+/// </summary>
+/// <returns>The EffectReceiver of the enemy.</returns>
         public EffectReceiver GetEffectReceiver()
         {
             return EnemyInstance;

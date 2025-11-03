@@ -3,6 +3,9 @@ using System;
 
 namespace CHAL.Systems.Inventory
 {
+/// <summary>
+/// Represents an instance of an inventory, containing slots and associated data.
+/// </summary>
     public class InventoryInstance
     {
         public string instanceID;
@@ -15,6 +18,13 @@ namespace CHAL.Systems.Inventory
         public int SlotCount => slots?.Length ?? 0;
 
 
+/// <summary>
+/// Creates a new instance of InventoryInstance with the specified parameters.
+/// </summary>
+/// <param name="instanceId">The unique identifier for the inventory instance.</param>
+/// <param name="def">The definition of the inventory.</param>
+/// <param name="ownerId">The optional owner identifier for the inventory instance.</param>
+/// <returns>The newly created InventoryInstance.</returns>
         public static InventoryInstance Create(string instanceId, InventoryDef def, string ownerId = null)
         {
             var inst = new InventoryInstance

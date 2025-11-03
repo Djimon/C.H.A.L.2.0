@@ -9,6 +9,10 @@ using static CHAL.Systems.Research.ResearchSnapshot;
 namespace CHAL.Data
 {
     [Serializable]
+/// <summary>
+/// Represents a player's profile in the game, including customization and progress data.
+/// Implements the IWallet interface for managing in-game currency.
+/// </summary>
     public class PlayerProfile : IWallet
     {
         public string profileId;
@@ -49,6 +53,11 @@ namespace CHAL.Data
         // --- Research ---
         [NonSerialized] public ResearchState ResearchRuntime;
 
+/// <summary>
+/// Initializes the player with a name and a set of colors.
+/// </summary>
+/// <param name="name">The name of the player.</param>
+/// <param name="colors">An array of colors associated with the player.</param>
         public void InitializePlayer(string name, Color[] colors)
         {
             playerName = name;
@@ -67,6 +76,9 @@ namespace CHAL.Data
             SaveSystem.Save(this);
         }
 
+/// <summary>
+/// Initializes the inventories with default items.
+/// </summary>
         public void InitInventories()
         {
             Inventories.Add(new("remains"));
@@ -76,8 +88,16 @@ namespace CHAL.Data
             Inventories.Add(new("gear"));
         }
 
+/// <summary>
+/// Gets the current experience points of the player.
+/// </summary>
+/// <returns>The amount of experience points.</returns>
         public int GetXP() => XP;
 
+/// <summary>
+/// Adds experience points to the player.
+/// </summary>
+/// <param name="amount">The amount of experience points to add.</param>
         public void AddXP(int amount)
         {
             XP += amount;
@@ -85,11 +105,21 @@ namespace CHAL.Data
         }
 
 
+/// <summary>
+/// Retrieves the amount of currency for the specified currency ID.
+/// </summary>
+/// <param name="currencyId">The ID of the currency to retrieve.</param>
+/// <returns>The amount of currency associated with the given ID, or 0 if not found.</returns>
         public int GetCurrency(string currencyId)
         {
             return Currencies.TryGetValue(currencyId, out var amount) ? amount : 0;
         }
 
+/// <summary>
+/// Adds a specified amount of currency to the collection.
+/// </summary>
+/// <param name="currencyId">The ID of the currency to add.</param>
+/// <param name="amount">The amount of currency to add.</param>
         public void AddCurrency(string currencyId, int amount)
         {
             if (amount <= 0) return;
@@ -100,6 +130,12 @@ namespace CHAL.Data
             Currencies[currencyId] += amount;
         }
 
+/// <summary>
+/// Attempts to spend a specified amount of currency.
+/// </summary>
+/// <param name="currencyId">The ID of the currency to spend.</param>
+/// <param name="amount">The amount of currency to spend.</param>
+/// <returns>True if the currency was successfully spent; otherwise, false.</returns>
         public bool SpendCurrency(string currencyId, int amount)
         {
             if (amount <= 0) return false;
@@ -109,6 +145,12 @@ namespace CHAL.Data
             return true;
         }
 
+/// <summary>
+/// Checks if the specified amount of currency can be spent.
+/// </summary>
+/// <param name="currencyId">The identifier for the currency to check.</param>
+/// <param name="amount">The amount of currency to check.</param>
+/// <returns>True if the amount can be spent; otherwise, false.</returns>
         public bool CanSpend(string currencyId, int amount)
         {
             if (amount <= 0) return false;
@@ -116,18 +158,37 @@ namespace CHAL.Data
         }
 
 
+/// <summary>
+/// Processes a refund for the specified currency and amount.
+/// </summary>
+/// <param name="currencyId">The identifier for the currency to refund.</param>
+/// <param name="amount">The amount of currency to refund.</param>
         public void Refund(string currencyId, int amount)
         {
             if (amount <= 0) return;
             AddCurrency(currencyId, amount);
         }
 
+/// <summary>
+/// Retrieves a list of heroes that are currently unlocked.
+/// </summary>
+/// <returns>A read-only list of unlocked hero identifiers.</returns>
         public IReadOnlyList<string> GetUnlockedHeroes()
             => UnlockedHeroes;
 
+/// <summary>
+/// Checks if the specified hero is unlocked.
+/// </summary>
+/// <param name="heroId">The identifier of the hero to check.</param>
+/// <returns>True if the hero is unlocked; otherwise, false.</returns>
         public bool IsHeroUnlocked(string heroId)
             => !string.IsNullOrEmpty(heroId) && UnlockedHeroes.Contains(heroId);
 
+/// <summary>
+/// Unlocks the specified hero by its identifier.
+/// </summary>
+/// <param name="heroId">The identifier of the hero to unlock.</param>
+/// <returns>True if the hero was successfully unlocked; otherwise, false.</returns>
         public bool UnlockHero(string heroId)
         {
             if (string.IsNullOrEmpty(heroId)) return false;
@@ -136,12 +197,22 @@ namespace CHAL.Data
             return true;
         }
 
+/// <summary>
+/// Locks the specified hero by its identifier.
+/// </summary>
+/// <param name="heroId">The identifier of the hero to lock.</param>
+/// <returns>True if the hero was successfully locked; otherwise, false.</returns>
         public bool LockHero(string heroId)
         {
             if (string.IsNullOrEmpty(heroId)) return false;
             return UnlockedHeroes.Remove(heroId);
         }
 
+/// <summary>
+/// Ensures that the specified starter hero is unlocked.
+/// </summary>
+/// <param name="starterHeroId">The identifier of the starter hero.</param>
+/// <returns>True if the hero was successfully unlocked; otherwise, false.</returns>
         public bool EnsureStarterHeroUnlocked(string starterHeroId)
         {
             if (string.IsNullOrEmpty(starterHeroId)) return false;
@@ -152,11 +223,21 @@ namespace CHAL.Data
         }
 
 
+/// <summary>
+/// Sets the progress for a specified map based on its difficulty.
+/// </summary>
+/// <param name="map">The identifier of the map.</param>
+/// <param name="difficulty">The difficulty level of the map.</param>
         public void SetMapProgress(int map, MapDifficulty difficulty)
         {
                 MapProgress[map] = (int)difficulty;
         }
 
+/// <summary>
+/// Retrieves the progress of a specified map.
+/// </summary>
+/// <param name="map">The identifier of the map.</param>
+/// <returns>The progress value for the map, or 0 if not found.</returns>
         public int GetMapProgress(int map)
         {
             return MapProgress.TryGetValue(map, out var highest) ? highest : 0;
@@ -190,6 +271,9 @@ namespace CHAL.Data
         }
 
 
+/// <summary>
+/// Prepares a snapshot of the current inventory by clearing and populating the inventory save list.
+/// </summary>
         public void PrepareInventorySnapshot()
         {
             InventorySave ??= new List<InventorySnapshot>();
@@ -210,6 +294,10 @@ namespace CHAL.Data
         }
 
         // Nach dem Laden: Snapshot zurück in die Live-Inventare schieben
+/// <summary>
+/// Restores inventories from a saved snapshot if available.
+/// Initializes live inventories if none exist.
+/// </summary>
         public void RestoreInventoriesFromSnapshot()
         {
             if (InventorySave == null) return;
@@ -241,6 +329,11 @@ namespace CHAL.Data
             DebugManager.Log($"InventorySnapshot restored — applied:{applied}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
+/// <summary>
+/// Builds a ResearchSnapshot from the given ResearchState.
+/// </summary>
+/// <param name="state">The ResearchState to build the snapshot from.</param>
+/// <returns>A ResearchSnapshot representing the state.</returns>
         public ResearchSnapshot BuildResearchSnapshotFrom(ResearchState state)
         {
             var snap = new ResearchSnapshot();
@@ -279,6 +372,12 @@ namespace CHAL.Data
             return snap;
         }
 
+/// <summary>
+/// Restores research data from a snapshot into the given research state.
+/// Updates the active node ID and clears progress data as needed.
+/// </summary>
+/// <param name="state">The research state to restore data into.</param>
+/// <param name="snap">The research snapshot containing the data to restore.</param>
         public void RestoreResearchInto(ResearchState state, ResearchSnapshot snap)
         {
             if (state == null) return;

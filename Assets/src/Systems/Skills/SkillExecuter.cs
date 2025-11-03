@@ -10,6 +10,14 @@ namespace CHAL.Systems.Skill
 {
     public static class SkillExecutor
     {
+/// <summary>
+/// Executes a skill from a source to a target, applying effects based on the skill instance.
+/// </summary>
+/// <param name="inst">The skill instance to execute.</param>
+/// <param name="source">The effect receiver initiating the skill.</param>
+/// <param name="sourceTr">The transform of the source.</param>
+/// <param name="target">The effect receiver that is the target of the skill.</param>
+/// <param name="targetTr">The transform of the target.</param>
         public static void ExecuteSkill(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
         {
             if (inst == null || source == null)
@@ -71,6 +79,12 @@ namespace CHAL.Systems.Skill
             }
         }
 
+/// <summary>
+/// Executes a skill on a target from a specified source.
+/// </summary>
+/// <param name="inst">The skill instance to execute.</param>
+/// <param name="source">The effect receiver initiating the skill.</param>
+/// <param name="target">The effect receiver that is the target of the skill.</param>
         public static void ExecuteSkill(SkillInstance inst, EffectReceiver source, EffectReceiver target)
         {
             ExecuteSkill(inst, source, null, target, null);

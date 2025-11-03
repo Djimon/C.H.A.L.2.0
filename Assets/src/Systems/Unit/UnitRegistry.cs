@@ -26,6 +26,9 @@ namespace CHAL.Systems.Unit
         private readonly Dictionary<string, HeroDef> _HeroById = new();
         private readonly Dictionary<string, EnemyDef> _EnemyById = new();
 
+/// <summary>
+/// Reloads the hero and enemy data from resources.
+/// </summary>
         public void Reload()
         {
             _HeroById.Clear();
@@ -80,19 +83,45 @@ namespace CHAL.Systems.Unit
 
         }
 
+/// <summary>
+/// Retrieves a hero definition by its unique identifier.
+/// </summary>
+/// <param name="id">The unique identifier of the hero.</param>
+/// <returns>The hero definition if found; otherwise, null.</returns>
         public HeroDef GetHeroById(string id)
         {
             return _HeroById.TryGetValue(id, out var def) ? def : null;
         }
 
+/// <summary>
+/// Retrieves an enemy definition by its unique identifier.
+/// </summary>
+/// <param name="id">The unique identifier of the enemy.</param>
+/// <returns>The enemy definition if found; otherwise, null.</returns>
         public EnemyDef GetEnemyByID(string id)
         {
             return _EnemyById.TryGetValue(id, out var def) ? def : null;
         }
 
+/// <summary>
+/// Retrieves all hero IDs from the collection.
+/// </summary>
+/// <returns>An enumerable collection of hero IDs.</returns>
         public IEnumerable<string> GetAllHeroIds() => _HeroById.Keys;
+/// <summary>
+/// Retrieves all enemy IDs from the collection.
+/// </summary>
+/// <returns>An enumerable collection of enemy IDs.</returns>
         public IEnumerable<string> GetAllEnemyIds() => _EnemyById.Keys;
+/// <summary>
+/// Retrieves all hero definitions from the collection.
+/// </summary>
+/// <returns>An enumerable collection of hero definitions.</returns>
         public IEnumerable<HeroDef> GetAllHeroes() => _HeroById.Values;
+/// <summary>
+/// Retrieves all enemy definitions from the collection.
+/// </summary>
+/// <returns>An enumerable collection of enemy definitions.</returns>
         public IEnumerable<EnemyDef> GetAllEnemies() => _EnemyById.Values;
 
 #if UNITY_EDITOR

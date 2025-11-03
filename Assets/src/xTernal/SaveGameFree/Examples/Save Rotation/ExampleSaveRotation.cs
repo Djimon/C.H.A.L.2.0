@@ -7,6 +7,9 @@ using BayatGames.SaveGameFree.Types;
 namespace BayatGames.SaveGameFree.Examples
 {
 
+/// <summary>
+/// Manages saving and loading of rotation data in a Unity game.
+/// </summary>
 	public class ExampleSaveRotation : MonoBehaviour
 	{
 
@@ -34,11 +37,17 @@ namespace BayatGames.SaveGameFree.Examples
 			Save ();
 		}
 
+/// <summary>
+/// Saves the current state of the target object.
+/// </summary>
 		public void Save ()
 		{
 			SaveGame.Save<QuaternionSave> ( identifier, target.rotation, SerializerDropdown.Singleton.ActiveSerializer );
 		}
 
+/// <summary>
+/// Loads the saved game state for the target object.
+/// </summary>
 		public void Load ()
 		{
 			target.rotation = SaveGame.Load<QuaternionSave> (

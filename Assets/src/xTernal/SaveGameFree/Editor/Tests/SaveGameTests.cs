@@ -7,10 +7,16 @@ using System.Collections;
 namespace BayatGames.SaveGameFree.Tests
 {
 
+/// <summary>
+/// Contains tests for saving game data.
+/// </summary>
 	public class SaveGameTests
 	{
 
 		[Test]
+/// <summary>
+/// Saves the tests by validating input identifiers.
+/// </summary>
 		public void SaveTests ()
 		{
 
@@ -36,6 +42,10 @@ namespace BayatGames.SaveGameFree.Tests
 		}
 
 		[Test]
+/// <summary>
+/// Loads the test cases for the SaveGame functionality.
+/// This method verifies the behavior with null and empty identifiers.
+/// </summary>
 		public void LoadTests ()
 		{
 
@@ -65,6 +75,9 @@ namespace BayatGames.SaveGameFree.Tests
 		}
 
 		[Test]
+/// <summary>
+/// Tests the Exists method of the SaveGame class for null and empty identifiers.
+/// </summary>
 		public void ExistsTests ()
 		{
 
@@ -90,6 +103,10 @@ namespace BayatGames.SaveGameFree.Tests
 		}
 
 		[Test]
+/// <summary>
+/// Deletes tests related to the SaveGame functionality.
+/// This method verifies that deleting with null or empty identifiers throws exceptions.
+/// </summary>
 		public void DeleteTests ()
 		{
 
@@ -117,6 +134,9 @@ namespace BayatGames.SaveGameFree.Tests
 		}
 
 		[Test]
+/// <summary>
+/// Clears all test data from the save game.
+/// </summary>
 		public void ClearTests ()
 		{
 			

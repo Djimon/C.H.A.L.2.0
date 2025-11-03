@@ -6,6 +6,9 @@ using UnityEngine.UI;
 namespace BayatGames.SaveGameFree.Examples
 {
 
+/// <summary>
+/// Manages the saving and loading of game data.
+/// </summary>
     public class ExampleSaveCustom : MonoBehaviour
     {
 
@@ -23,6 +26,9 @@ namespace BayatGames.SaveGameFree.Examples
         }
 
         [System.Serializable]
+/// <summary>
+/// Represents custom data for a game, including scores and levels.
+/// </summary>
         public class CustomData
         {
 
@@ -60,21 +66,35 @@ namespace BayatGames.SaveGameFree.Examples
             }
         }
 
+/// <summary>
+/// Sets the score for the game.
+/// </summary>
+/// <param name="score">The score to set as a string.</param>
         public void SetScore(string score)
         {
             customData.score = int.Parse(score);
         }
 
+/// <summary>
+/// Sets the high score for the game.
+/// </summary>
+/// <param name="highScore">The high score to set as a string.</param>
         public void SetHighScore(string highScore)
         {
             customData.highScore = int.Parse(highScore);
         }
 
+/// <summary>
+/// Saves the current game data.
+/// </summary>
         public void Save()
         {
             SaveGame.Save<CustomData>(identifier, customData, SerializerDropdown.Singleton.ActiveSerializer);
         }
 
+/// <summary>
+/// Loads the game data and updates the score fields.
+/// </summary>
         public void Load()
         {
             customData = SaveGame.Load<CustomData>(

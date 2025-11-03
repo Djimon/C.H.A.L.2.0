@@ -15,6 +15,11 @@ namespace CHAL.Systems.Inventory
 
         public event Action<string, int, ItemStack?> OnSlotChanged;
 
+/// <summary>
+/// Checks if an instance exists by its ID.
+/// </summary>
+/// <param name="instanceId">The ID of the instance to check.</param>
+/// <returns>True if the instance exists; otherwise, false.</returns>
         public bool HasInstance(string instanceId)
         {
             if (string.IsNullOrEmpty(instanceId)) return false;
@@ -22,6 +27,11 @@ namespace CHAL.Systems.Inventory
         }
 
 
+/// <summary>
+/// Retrieves an inventory instance by its ID.
+/// </summary>
+/// <param name="instanceId">The ID of the inventory instance to retrieve.</param>
+/// <returns>The inventory instance if found; otherwise, null.</returns>
         public InventoryInstance GetInstance(string instanceId)
         {
             if (string.IsNullOrEmpty(instanceId)) return null;
@@ -30,6 +40,10 @@ namespace CHAL.Systems.Inventory
         }
 
 
+/// <summary>
+/// Registers an instance of an inventory.
+/// </summary>
+/// <param name="inst">The inventory instance to register.</param>
         public void RegisterInstance(InventoryInstance inst)
         {
             _instances[inst.instanceID] = inst;
@@ -42,11 +56,20 @@ namespace CHAL.Systems.Inventory
             return inv.slots[slotIndex].stack;
         }
 
+/// <summary>
+/// Gets the number of slots for the specified instance.
+/// </summary>
+/// <param name="instanceId">The ID of the instance.</param>
+/// <returns>The number of slots for the instance.</returns>
         public int SlotCount(string instanceId)
         {
             return _instances.TryGetValue(instanceId, out var inv) ? inv.slots.Length : 0;
         }
 
+/// <summary>
+/// Clears all slots for the specified instance.
+/// </summary>
+/// <param name="instanceId">The ID of the instance whose slots will be cleared.</param>
         public void ClearAllSlots(string instanceId)
         {
             if (!_instances.TryGetValue(instanceId, out var inv) || inv?.slots == null)
@@ -115,6 +138,12 @@ namespace CHAL.Systems.Inventory
         }
 
 
+/// <summary>
+/// Determines if the specified item stack can be accepted for the given instance.
+/// </summary>
+/// <param name="instanceId">The ID of the instance to check.</param>
+/// <param name="stack">The item stack to evaluate.</param>
+/// <returns>True if the item stack can be accepted; otherwise, false.</returns>
         public bool CanAccept(string instanceId, in ItemStack stack)
         {
             if (!HasInstance(instanceId) || stack.count <= 0) return false;
@@ -150,6 +179,13 @@ namespace CHAL.Systems.Inventory
             return false;
         }
 
+/// <summary>
+/// Attempts to add an item stack to the inventory.
+/// </summary>
+/// <param name="instanceId">The ID of the inventory instance.</param>
+/// <param name="stack">The item stack to add.</param>
+/// <param name="result">The result of the transaction.</param>
+/// <returns>True if the item stack was added successfully; otherwise, false.</returns>
         public bool TryAdd(string instanceId, in ItemStack stack, out TransactionResult result)
         {
             result = new TransactionResult();
@@ -215,6 +251,13 @@ namespace CHAL.Systems.Inventory
             return result.success;
         }
 
+/// <summary>
+/// Attempts to move an item from one inventory to another.
+/// Returns true if the move is successful, otherwise false.
+/// </summary>
+/// <param name="req">The request containing details of the move operation.</param>
+/// <param name="result">The result of the transaction, including any error reasons.</param>
+/// <returns>True if the move was successful; otherwise, false.</returns>
         public bool TryMove(in MoveRequest req, out TransactionResult result)
         {
             result = new TransactionResult();
@@ -400,6 +443,15 @@ namespace CHAL.Systems.Inventory
             }
         }
 
+/// <summary>
+/// Attempts to remove a specified amount from a given slot of an instance.
+/// Returns true if the removal is successful; otherwise, false.
+/// </summary>
+/// <param name="instanceId">The ID of the instance to modify.</param>
+/// <param name="slotIndex">The index of the slot to remove from.</param>
+/// <param name="amount">The amount to remove from the slot.</param>
+/// <param name="result">The result of the transaction, including any error reasons.</param>
+/// <returns>True if the removal was successful; otherwise, false.</returns>
         public bool TryRemove(string instanceId, int slotIndex, int amount, out TransactionResult result)
         {
             result = new TransactionResult();

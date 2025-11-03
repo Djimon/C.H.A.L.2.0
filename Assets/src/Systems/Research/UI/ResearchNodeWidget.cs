@@ -27,6 +27,13 @@ namespace CHAL.Systems.Research
         Color _highlightColor;
         float _highlightIntensity;
 
+/// <summary>
+/// Initializes the research map view with the specified parameters.
+/// </summary>
+/// <param name="map">The research map view to initialize.</param>
+/// <param name="id">The identifier for the node.</param>
+/// <param name="titleText">The title text for the node.</param>
+/// <param name="iconSprite">The icon sprite for the node.</param>
         public void Init(ResearchMapView map, string id, string titleText, Sprite iconSprite)
         {
             _map = map;
@@ -46,6 +53,10 @@ namespace CHAL.Systems.Research
             ApplyState();
         }
 
+/// <summary>
+/// Applies the selection state to the node, updating its visual representation.
+/// </summary>
+/// <param name="isSelected">Indicates whether the node is selected.</param>
         public void ApplyState(bool isSelected = false)
         {
             if (_map == null) return;
@@ -84,6 +95,10 @@ namespace CHAL.Systems.Research
             }
         }
 
+/// <summary>
+/// Handles pointer click events on the UI element.
+/// </summary>
+/// <param name="eventData">The data associated with the pointer event.</param>
         public void OnPointerClick(PointerEventData eventData)
         {
             if (_map != null) _map.OnNodeClicked(nodeId);

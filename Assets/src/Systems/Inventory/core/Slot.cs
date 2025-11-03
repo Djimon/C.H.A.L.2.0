@@ -34,12 +34,23 @@ namespace CHAL.Systems.Inventory
         public List<string> BlockedItemIds;
         public List<string> BlockedTags;
 
+/// <summary>
+/// Checks if the specified item ID is allowed based on defined criteria.
+/// </summary>
+/// <param name="itemId">The ID of the item to check.</param>
+/// <returns>True if the item is allowed; otherwise, false.</returns>
         public bool Allows(string itemId)
         {
             // nutzt deine Allowed/Blocked (Ids/Types/Tags); hier nur der Call-Signatur-Vorschlag
             return Passes(itemId);
         }
 
+/// <summary>
+/// Determines if an item passes certain criteria based on its ID and optional tag resolver.
+/// </summary>
+/// <param name="itemId">The ID of the item to evaluate.</param>
+/// <param name="tagResolver">An optional function to resolve tags for the item.</param>
+/// <returns>True if the item passes the criteria; otherwise, false.</returns>
         public bool Passes(string itemId, Func<string, IReadOnlyCollection<string>> tagResolver = null)
         {
             if (string.IsNullOrWhiteSpace(itemId)) return false;

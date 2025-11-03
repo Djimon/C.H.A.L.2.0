@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace CHAL.Systems.Loot
 {
+/// <summary>
+/// Represents a loot cube that contains items.
+/// </summary>
     public class LootCube : MonoBehaviour
     {
         [SerializeField]
@@ -11,6 +14,11 @@ namespace CHAL.Systems.Loot
         [SerializeField]
         public int _quantity { get; private set; } = 1;
 
+/// <summary>
+/// Initializes the item with the specified ID and quantity.
+/// </summary>
+/// <param name="itemId">The unique identifier for the item.</param>
+/// <param name="quantity">The quantity of the item (default is 1).</param>
         public void Init(string itemId, int quantity = 1)
         {
             _itemId = itemId;

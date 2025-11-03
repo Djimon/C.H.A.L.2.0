@@ -5,6 +5,9 @@ using System.Linq;
 namespace CHAL.Systems.Inventory
 {
     [Serializable]
+/// <summary>
+/// Represents an inventory that holds a collection of items.
+/// </summary>
     public class Inventory
     {
         public readonly string invID; //=ItemPrefix
@@ -15,6 +18,13 @@ namespace CHAL.Systems.Inventory
             invID = prefix;
         }
 
+/// <summary>
+/// Adds an item to the inventory with a specified amount.
+/// Returns true if the item was successfully added; otherwise, false.
+/// </summary>
+/// <param name="itemId">The ID of the item to add.</param>
+/// <param name="amount">The number of items to add (default is 1).</param>
+/// <returns>True if the item was added; otherwise, false.</returns>
         public bool AddItem(string itemId, int amount = 1)
         {
             DebugManager.Log($"TEST: {itemId.StartsWith(invID)}");
@@ -70,6 +80,13 @@ namespace CHAL.Systems.Inventory
             return false;
         }
 
+/// <summary>
+/// Removes a specified amount of an item from the inventory.
+/// Returns true if the item was successfully removed; otherwise, false.
+/// </summary>
+/// <param name="itemId">The ID of the item to remove.</param>
+/// <param name="amount">The amount of the item to remove (default is 1).</param>
+/// <returns>True if the item was removed; otherwise, false.</returns>
         public bool RemoveItem(string itemId, int amount = 1)
         {
             var entry = _items.Find(i => i.ItemId == itemId);
@@ -83,19 +100,36 @@ namespace CHAL.Systems.Inventory
             return true;
         }
 
+/// <summary>
+/// Gets the count of a specific item in the inventory.
+/// </summary>
+/// <param name="itemId">The ID of the item to count.</param>
+/// <returns>The count of the specified item.</returns>
         public int GetItemCount(string itemId)
         {
             var entry = _items.Find(i => i.ItemId == itemId);
             return entry?.Count ?? 0;
         }
 
+/// <summary>
+/// Retrieves all items from the inventory.
+/// </summary>
+/// <returns>A list of inventory items.</returns>
         public List<InventoryItem> GetAllItems() => _items;
 
+/// <summary>
+/// Converts the inventory items to a dictionary of item IDs and their counts.
+/// </summary>
+/// <returns>A dictionary where keys are item IDs and values are their counts.</returns>
         public Dictionary<string, int> ToDictionary()
         {
             return _items.ToDictionary(i => i.ItemId, i => i.Count);
         }
 
+/// <summary>
+/// Initializes the inventory from a dictionary of item IDs and counts.
+/// </summary>
+/// <param name="dict">A dictionary where keys are item IDs and values are their counts.</param>
         public void FromDictionary(Dictionary<string, int> dict)
         {
             _items = dict.Select(kv => new InventoryItem

@@ -24,6 +24,11 @@ namespace CHAL.Systems.Research
 
     public static class ResearchTreeCompiler
     {
+/// <summary>
+/// Compiles a research tree definition into a compiled research tree.
+/// </summary>
+/// <param name="tree">The research tree definition to compile.</param>
+/// <returns>A compiled representation of the research tree.</returns>
         public static ResearchTreeCompiled Compile(ResearchTreeDef tree)
         {
             var nodesById = new Dictionary<string, ResearchNodeDef>(StringComparer.Ordinal);

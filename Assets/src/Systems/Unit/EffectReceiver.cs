@@ -17,6 +17,10 @@ namespace CHAL.Systems.Unit
 
         public UnitTeam Team;
 
+/// <summary>
+/// Applies a status effect to the entity, updating existing effects if necessary.
+/// </summary>
+/// <param name="effect">The active status effect to apply.</param>
         public virtual void ApplyStatusEffect(ActiveStatusEffect effect)
         {
             if (effect == null) return;
@@ -65,15 +69,28 @@ namespace CHAL.Systems.Unit
             ActiveEffects.Add(effect);
         }
 
+/// <summary>
+/// Removes the specified active status effect from the entity.
+/// </summary>
+/// <param name="effect">The active status effect to remove.</param>
         public virtual void RemoveEffect(ActiveStatusEffect effect)
         {
             ActiveEffects.Remove(effect);
         }
 
+/// <summary>
+/// Applies damage to the entity based on the specified amount and type.
+/// </summary>
+/// <param name="amount">The amount of damage to apply.</param>
+/// <param name="type">The type of damage being inflicted.</param>
         public abstract void TakeDamage(float amount, DamageType type);
 
         protected abstract void OnDeath();
 
+/// <summary>
+/// Updates the active effects based on the elapsed time.
+/// </summary>
+/// <param name="deltaTime">The time in seconds since the last update.</param>
         public void UpdateEffects(float deltaTime)
         {
             for (int i = ActiveEffects.Count - 1; i >= 0; i--)

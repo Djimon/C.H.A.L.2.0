@@ -15,6 +15,9 @@ namespace BayatGames.SaveGameFree
 	/// Make your game objects save their position, rotaiton and scale automatically.
 	/// </summary>
 	[AddComponentMenu ( "Save Game Free/Auto Save" )]
+/// <summary>
+/// Manages automatic saving of game data.
+/// </summary>
 	public class SaveGameAuto : MonoBehaviour
 	{
 

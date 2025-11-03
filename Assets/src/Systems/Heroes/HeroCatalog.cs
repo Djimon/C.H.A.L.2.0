@@ -4,6 +4,10 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "HeroCatalog", menuName = "Data/Hero Catalog")]
+/// <summary>
+/// Manages a catalog of heroes for the game.
+/// Provides functionality to store and retrieve hero definitions.
+/// </summary>
     public class HeroCatalog : ScriptableObject
     {
         [Header("Alle Helden (Reihenfolge = UI-Reihenfolge)")]
@@ -38,12 +42,21 @@ namespace CHAL.Data
 
         // --- API ---
 
+/// <summary>
+/// Retrieves a read-only list of hero definitions for the UI.
+/// </summary>
+/// <returns>A list of hero definitions.</returns>
         public IReadOnlyList<HeroDef> GetAllForUI()
         {
             // Reihenfolge = wie in allHeroes angeordnet
             return allHeroes;
         }
 
+/// <summary>
+/// Retrieves a hero definition by its unique identifier.
+/// </summary>
+/// <param name="heroId">The unique identifier of the hero.</param>
+/// <returns>The hero definition if found; otherwise, null.</returns>
         public HeroDef GetById(string heroId)
         {
             if (string.IsNullOrEmpty(heroId)) return null;

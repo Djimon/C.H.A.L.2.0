@@ -7,6 +7,10 @@ using BayatGames.SaveGameFree.Types;
 namespace BayatGames.SaveGameFree.Examples
 {
 
+/// <summary>
+/// Manages saving and loading of scale data for a target Transform.
+/// Can automatically load data on start based on configuration.
+/// </summary>
 	public class ExampleSaveScale : MonoBehaviour
 	{
 
@@ -35,11 +39,17 @@ namespace BayatGames.SaveGameFree.Examples
 			Save ();
 		}
 
+/// <summary>
+/// Saves the current game state.
+/// </summary>
 		public void Save ()
 		{
 			SaveGame.Save<Vector3Save> ( identifier, target.localScale, SerializerDropdown.Singleton.ActiveSerializer );
 		}
 
+/// <summary>
+/// Loads the game state and sets the target's scale.
+/// </summary>
 		public void Load ()
 		{
 			target.localScale = SaveGame.Load<Vector3Save> (

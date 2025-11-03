@@ -7,6 +7,9 @@ using BayatGames.SaveGameFree.Types;
 namespace BayatGames.SaveGameFree.Examples
 {
 
+/// <summary>
+/// Manages saving and loading game data over the web.
+/// </summary>
 	public class ExampleSaveWeb : MonoBehaviour
 	{
 
@@ -32,11 +35,17 @@ namespace BayatGames.SaveGameFree.Examples
 			target.position = position;
 		}
 
+/// <summary>
+/// Loads the game data asynchronously.
+/// </summary>
 		public void Load ()
 		{
 			StartCoroutine ( LoadEnumerator () );
 		}
 
+/// <summary>
+/// Initiates the save process for the game.
+/// </summary>
 		public void Save ()
 		{
 			StartCoroutine ( SaveEnumerator () );

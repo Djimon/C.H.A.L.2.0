@@ -20,6 +20,9 @@ namespace CHAL.Systems.Research
 
 
         // Public: Clear/Reset (z. B. beim Ladevorgang)
+/// <summary>
+/// Clears all data from the internal collections.
+/// </summary>
         public void Clear()
         {
             _worldTiers.Clear();
@@ -30,6 +33,11 @@ namespace CHAL.Systems.Research
             _catalog.Clear();
         }
 
+/// <summary>
+/// Rebuilds the research data from the provided nodes and completed node IDs.
+/// </summary>
+/// <param name="allNodes">The collection of all research nodes.</param>
+/// <param name="completedNodeIds">The collection of completed node IDs.</param>
         public void RebuildFrom(IEnumerable<ResearchNodeDef> allNodes, IEnumerable<string> completedNodeIds)
         {
             Clear();
@@ -63,6 +71,12 @@ namespace CHAL.Systems.Research
             DebugManager.Log($"UnlockRegistry.RebuildFrom: applied={applied}", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
         }
 
+/// <summary>
+/// Initializes the research catalog with the provided nodes.
+/// Optionally resets existing entries if specified.
+/// </summary>
+/// <param name="allNodes">The collection of research nodes to add.</param>
+/// <param name="resetExisting">Indicates whether to clear existing entries.</param>
         public void InitializeCatalog(IEnumerable<ResearchNodeDef> allNodes, bool resetExisting = false)
         {
             if (resetExisting) _catalog.Clear();
@@ -87,6 +101,13 @@ namespace CHAL.Systems.Research
                 DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
         }
 
+/// <summary>
+/// Applies the specified unlocks to a node identified by its ID.
+/// Optionally logs warnings for any invalid unlocks.
+/// </summary>
+/// <param name="nodeId">The ID of the node to apply unlocks to.</param>
+/// <param name="unlocks">A list of research unlocks to apply.</param>
+/// <param name="log">Indicates whether to log warnings (default is true).</param>
         public void ApplyNodeUnlocks(string nodeId, IReadOnlyList<ResearchUnlock> unlocks, bool log = true)
         {
             if (unlocks == null || unlocks.Count == 0) return;
@@ -142,6 +163,10 @@ namespace CHAL.Systems.Research
             if (log) DebugManager.Log($"UnlockRegistry: Node '{nodeId}' Effekte angewandt ({unlocks.Count}),  catalog +{catalogChanged} freigeschaltet.", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
         }
 
+/// <summary>
+/// Applies the "always unlocked" status to a collection of IDs.
+/// </summary>
+/// <param name="ids">The collection of IDs to apply the status to.</param>
         public void ApplyAlwaysUnlocked(IEnumerable<string> ids)
         {
             if (ids == null) return;
@@ -170,30 +195,55 @@ namespace CHAL.Systems.Research
 
         // -------------------- Query-API (andere Systeme lesen hier) --------------------
 
+/// <summary>
+/// Checks if the specified world tier is unlocked.
+/// </summary>
+/// <param name="tierId">The ID of the world tier to check.</param>
+/// <returns>True if the world tier is unlocked; otherwise, false.</returns>
         public bool IsUnlockedWorldTier(string tierId)
         {
             if (string.IsNullOrWhiteSpace(tierId)) return false;
             return _catalog.TryGetValue(tierId, out var flag) && flag;
         }
 
+/// <summary>
+/// Checks if the specified crafting feature is unlocked.
+/// </summary>
+/// <param name="feature">The name of the crafting feature to check.</param>
+/// <returns>True if the crafting feature is unlocked; otherwise, false.</returns>
         public bool IsUnlockedCraftingFeature(string feature)
         {
             if (string.IsNullOrWhiteSpace(feature)) return false;
             return _catalog.TryGetValue(feature, out var flag) && flag;
         }
 
+/// <summary>
+/// Checks if the specified recipe is unlocked.
+/// </summary>
+/// <param name="recipeId">The ID of the recipe to check.</param>
+/// <returns>True if the recipe is unlocked; otherwise, false.</returns>
         public bool IsUnlockedRecipe(string recipeId)
         {
             if (string.IsNullOrWhiteSpace(recipeId)) return false;
             return _catalog.TryGetValue(recipeId, out var flag) && flag;
         }
 
+/// <summary>
+/// Checks if the specified skill branch is unlocked.
+/// </summary>
+/// <param name="branchId">The ID of the skill branch to check.</param>
+/// <returns>True if the skill branch is unlocked; otherwise, false.</returns>
         public bool IsUnlockedSkillBranch(string branchId)
         {
             if (string.IsNullOrWhiteSpace(branchId)) return false;
             return _catalog.TryGetValue(branchId, out var flag) && flag;
         }
 
+/// <summary>
+/// Determines if the specified hero is unlocked.
+/// </summary>
+/// <param name="heroId">The ID of the hero to check.</param>
+/// <returns>True if the hero is unlocked; otherwise, false.</returns>
         public bool IsUnlockedHero(string heroId)
         {
             if (string.IsNullOrWhiteSpace(heroId)) return false;
@@ -201,6 +251,11 @@ namespace CHAL.Systems.Research
         }
 
         // Generisch bleibt unverÃ¤ndert â€“ ist jetzt identisch zur obigen Logik
+/// <summary>
+/// Checks if the specified target ID is unlocked.
+/// </summary>
+/// <param name="targetId">The ID to check for unlock status.</param>
+/// <returns>True if the target ID is unlocked; otherwise, false.</returns>
         public bool IsUnlocked(string targetId)
         {
             if (string.IsNullOrWhiteSpace(targetId)) return false;
@@ -208,6 +263,10 @@ namespace CHAL.Systems.Research
         }
 
 
+/// <summary>
+/// Retrieves a list of IDs that are currently unlocked.
+/// </summary>
+/// <returns>A list of unlocked IDs as strings.</returns>
         public List<string> GetUnlockedIds()
         {
             var list = new List<string>(_catalog.Count);
@@ -215,6 +274,10 @@ namespace CHAL.Systems.Research
             return list;
         }
 
+/// <summary>
+/// Retrieves a list of IDs that are currently locked.
+/// </summary>
+/// <returns>A list of locked IDs as strings.</returns>
         public List<string> GetLockedIds()
         {
             var list = new List<string>(_catalog.Count);
@@ -231,11 +294,35 @@ namespace CHAL.Systems.Research
         }
 
         // Optionale Helfer fÃ¼r UI/Debug:
+/// <summary>
+/// Gets a collection of world tiers that are unlocked.
+/// </summary>
+/// <returns>A read-only collection of unlocked world tier names.</returns>
         public IReadOnlyCollection<string> GetUnlockedWorldTiers() => _worldTiers;
+/// <summary>
+/// Gets a collection of crafting features that are unlocked.
+/// </summary>
+/// <returns>A read-only collection of unlocked crafting feature names.</returns>
         public IReadOnlyCollection<string> GetUnlockedCraftingFeatures() => _craftingFeatures;
+/// <summary>
+/// Gets a collection of unlocked recipes.
+/// </summary>
+/// <returns>A read-only collection of unlocked recipe names.</returns>
         public IReadOnlyCollection<string> GetUnlockedRecipes() => _recipes;
+/// <summary>
+/// Gets a collection of skill branches that are unlocked.
+/// </summary>
+/// <returns>A read-only collection of unlocked skill branch names.</returns>
         public IReadOnlyCollection<string> GetUnlockedSkillBranches() => _skillBranches;
+/// <summary>
+/// Gets a collection of heroes that are unlocked.
+/// </summary>
+/// <returns>A read-only collection of unlocked hero names.</returns>
         public IReadOnlyCollection<string> GetUnlockedHeroes() => _heroes;
+/// <summary>
+/// Retrieves all flags from the catalog.
+/// </summary>
+/// <returns>A read-only dictionary of flag names and their values.</returns>
         public IReadOnlyDictionary<string, bool> GetAllFlags() => _catalog;
     }
 }

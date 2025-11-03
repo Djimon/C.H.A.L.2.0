@@ -3,6 +3,10 @@ using UnityEngine.UIElements;
 namespace CHAL.UI
 {
 
+/// <summary>
+/// Defines a dockable view interface for UI components.
+/// Provides properties for visibility, interactivity, and docking settings.
+/// </summary>
     public interface IDockableView
     {
         // Pflicht: der äußere Menü-Container, den der Manager positioniert

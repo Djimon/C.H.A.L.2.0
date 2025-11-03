@@ -3,6 +3,10 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "DebugConfig", menuName = "Config/DebugConfig")]
+/// <summary>
+/// Represents the configuration settings for debugging in the game.
+/// This class allows customization of debug levels and logging behavior.
+/// </summary>
 public class DebugConfig : ScriptableObject
 {
     //Create asset of Type "DebugConfig" and save it under "Resources/config/DebugConfig.asset"

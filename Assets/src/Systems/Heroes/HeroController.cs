@@ -9,6 +9,10 @@ using UnityEngine;
 
 namespace CHAL.Systems.Hero
 {
+/// <summary>
+/// Manages the hero's actions and interactions in the game.
+/// Implements the IUnitController interface for unit control functionality.
+/// </summary>
     public class HeroController : MonoBehaviour, IUnitController
     {
         [SerializeField]
@@ -89,6 +93,10 @@ namespace CHAL.Systems.Hero
         }
 
         // Initialisierung
+/// <summary>
+/// Initializes the hero with the specified definition.
+/// </summary>
+/// <param name="def">The hero definition to initialize the hero with.</param>
         public void Init(HeroDef def)
         {
             if (def == null)
@@ -342,6 +350,11 @@ namespace CHAL.Systems.Hero
             return best;
         }
 
+/// <summary>
+/// Applies damage to the hero based on the specified amount and damage type.
+/// </summary>
+/// <param name="amount">The amount of damage to apply.</param>
+/// <param name="type">The type of damage being inflicted.</param>
         public void TakeDamage(float amount, DamageType type)
         {
             if (!IsAlive) return;
@@ -454,6 +467,10 @@ namespace CHAL.Systems.Hero
         }
 
 
+/// <summary>
+/// Retrieves the EffectReceiver associated with the hero instance.
+/// </summary>
+/// <returns>The EffectReceiver of the hero.</returns>
         public EffectReceiver GetEffectReceiver()
         {
             return heroInstance;

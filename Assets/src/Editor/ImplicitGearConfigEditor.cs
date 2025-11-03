@@ -7,6 +7,9 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(ImplicitGearTypeConfig))]
+/// <summary>
+/// Provides a custom editor for the implicit gear type configuration.
+/// </summary>
 public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
 {
     private string pastedGrid = "";
@@ -19,6 +22,9 @@ public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
         GearType.Legs, GearType.Boots, GearType.Amulet
     };
 
+/// <summary>
+/// Draws the custom inspector GUI for the component.
+/// </summary>
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();

@@ -3,6 +3,10 @@ using UnityEngine;
 namespace CHAL.Systems.Inventory
 {
 
+/// <summary>
+/// Provides functionality for inventory drag and drop operations.
+/// Inherits from MonoBehaviour to integrate with Unity's game object lifecycle.
+/// </summary>
     public class InvDnDProvider : MonoBehaviour
     {
         public IInventoryDomain domain; // per Inspector/Bootstrap setzen

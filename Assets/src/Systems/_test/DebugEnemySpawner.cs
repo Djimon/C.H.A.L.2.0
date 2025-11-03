@@ -3,6 +3,9 @@ using CHAL.Systems.Enemy;
 using CHAL.Systems.Unit;
 using UnityEngine;
 
+/// <summary>
+/// Spawns enemies in the game for debugging purposes.
+/// </summary>
 public class DebugEnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;   // Prefab mit EnemyController

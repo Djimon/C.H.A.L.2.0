@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// This class handles the debugging functionality for loot rolling in the game.
+/// </summary>
 public class LootRollerDebug : MonoBehaviour
 {
     private CHAL.Systems.Loot.LootRoller_old roller;

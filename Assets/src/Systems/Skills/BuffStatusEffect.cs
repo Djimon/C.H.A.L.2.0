@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace CHAL.Systems.Skill
 {
+/// <summary>
+/// Represents a status effect that applies buffs to entities.
+/// </summary>
     public class BuffStatusEffect : ActiveStatusEffect
     {
         public BuffSettings Settings;

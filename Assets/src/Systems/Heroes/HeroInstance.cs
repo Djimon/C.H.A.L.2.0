@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace CHAL.Systems.Hero
 {
+/// <summary>
+/// Represents an instance of a hero with attributes and skills.
+/// </summary>
     public class HeroInstance : EffectReceiver
     {
         public HeroDef heroDef;
@@ -48,6 +51,11 @@ namespace CHAL.Systems.Hero
             CurrentHP = MaxHP;
         }
 
+/// <summary>
+/// Applies damage to the hero and handles death if health falls below zero.
+/// </summary>
+/// <param name="amount">The amount of damage to apply.</param>
+/// <param name="type">The type of damage being inflicted.</param>
         public override void TakeDamage(float amount, DamageType type)
         {
             //ToDO: Armor Resistences, etc
@@ -59,6 +67,10 @@ namespace CHAL.Systems.Hero
             }
         }
 
+/// <summary>
+/// Calculates the effective movement speed of the hero.
+/// </summary>
+/// <returns>The effective movement speed as a float.</returns>
         public float GetEffectiveMovementSpeed()
         {
             //TODO: Modfier drauf rechnen
@@ -119,6 +131,10 @@ namespace CHAL.Systems.Hero
             _totalGrowth = _goals.Values.Sum();
         }
 
+/// <summary>
+/// Calculates the effective base damage of the hero.
+/// </summary>
+/// <returns>The effective base damage as a float.</returns>
         public float GetEffectiveBaseDamage()
         {
             // TODO: ActiveModifiers berücksichtigen (Multiplikatoren/Additive)
@@ -126,6 +142,9 @@ namespace CHAL.Systems.Hero
         }
 
         [ContextMenu("Debug/LevelUP")]
+/// <summary>
+/// Increases the hero's level by one, up to a maximum of 100.
+/// </summary>
         public void LevelUp()
         {
             if (Level >= 100) return;

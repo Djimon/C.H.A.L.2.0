@@ -23,6 +23,10 @@ using UnityEngine;
         private static bool isInitialized = false;
 
         // ---------------- INIT ----------------
+/// <summary>
+/// Initializes the debug configuration settings.
+/// </summary>
+/// <param name="config">The debug configuration to apply.</param>
         public static void Init(DebugConfig config)
         {
             if (isInitialized) return;
@@ -90,35 +94,85 @@ using UnityEngine;
 #endif
 
         // ---------------- PUBLIC API ----------------
+/// <summary>
+/// Logs a message with specified debug level, tag, and optional parameters.
+/// </summary>
+/// <param name="msg">The message to log.</param>
+/// <param name="level">The debug level of the log (default is EDebugLevel.Debug).</param>
+/// <param name="tag">An optional tag for the message (default is "System").</param>
+/// <param name="logType">The type of log (default is LogType.Log).</param>
+/// <param name="customColor">An optional custom color for the log.</param>
         public static void Log(string msg, EDebugLevel level = EDebugLevel.Debug, string tag = "System",
                                LogType logType = LogType.Log, Color? customColor = null)
         {
             LogInternal(msg, level, tag, logType, customColor);
         }
 
+/// <summary>
+/// Logs an informational message with an optional tag.
+/// </summary>
+/// <param name="msg">The informational message to log.</param>
+/// <param name="tag">An optional tag for the message (default is "Info").</param>
         public static void Info(string msg, string tag = "Info") =>
             LogInternal(msg, EDebugLevel.Test, tag, LogType.Log);
 
+/// <summary>
+/// Logs a debug message with an optional tag.
+/// </summary>
+/// <param name="msg">The debug message to log.</param>
+/// <param name="tag">An optional tag for the message (default is "Debug").</param>
         public static void DebugLog(string msg, string tag = "Debug") =>
             LogInternal(msg, EDebugLevel.Debug, tag, LogType.Log);
 
+/// <summary>
+/// Logs a development message with an optional tag.
+/// </summary>
+/// <param name="msg">The development message to log.</param>
+/// <param name="tag">An optional tag for the message (default is "Dev").</param>
         public static void DevLog(string msg, string tag = "Dev") =>
             LogInternal(msg, EDebugLevel.Dev, tag, LogType.Log);
 
+/// <summary>
+/// Logs a warning message with an optional tag.
+/// </summary>
+/// <param name="msg">The warning message to log.</param>
+/// <param name="tag">An optional tag for the warning (default is "Warning").</param>
         public static void Warning(string msg, string tag = "Warning") =>
             LogInternal(msg, EDebugLevel.Test, tag, LogType.Warning);
 
+/// <summary>
+/// Logs an error message with an optional tag.
+/// </summary>
+/// <param name="msg">The error message to log.</param>
+/// <param name="tag">An optional tag for the error (default is "Error").</param>
         public static void Error(string msg, string tag = "Error") =>
             LogInternal(msg, EDebugLevel.Production, tag, LogType.Error);
 
+/// <summary>
+/// Activates or deactivates a tag in the application.
+/// </summary>
+/// <param name="tag">The tag to activate or deactivate.</param>
+/// <param name="active">True to activate the tag; otherwise, false.</param>
         public static void SetTagActive(string tag, bool active)
         {
             if (active) ActiveTags.Add(tag);
             else ActiveTags.Remove(tag);
         }
 
+/// <summary>
+/// Sets the debug level for the application.
+/// </summary>
+/// <param name="level">The debug level to set.</param>
         public static void SetDebugLevel(EDebugLevel level) => CurrentDebugLevel = level;
+/// <summary>
+/// Sets the productive mode for the application.
+/// </summary>
+/// <param name="productive">True to enable productive mode; otherwise, false.</param>
         public static void SetProductiveMode(bool productive) => ProductiveMode = productive;
+/// <summary>
+/// Gets the collection of excluded tags.
+/// </summary>
+/// <returns>An enumerable list of excluded tag strings.</returns>
         public static IEnumerable<string> GetExcludedTags() => ExcludedTags;
 
         // ---------------- INTERNAL ----------------

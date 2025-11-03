@@ -11,6 +11,9 @@ namespace BayatGames.SaveGameFree.Types
 	/// A class that allows creating and modifying meshes from scripts.
 	/// </summary>
 	[Serializable]
+/// <summary>
+/// Represents a mesh with its vertices, triangles, UVs, normals, and colors.
+/// </summary>
 	public class MeshSave
 	{
 
@@ -31,11 +34,21 @@ namespace BayatGames.SaveGameFree.Types
 			this.colors32 = mesh.colors32.Cast<Color32> ().ToArray ();
 		}
 
+/// <summary>
+/// Converts a Mesh object to a MeshSave object.
+/// </summary>
+/// <param name="mesh">The Mesh object to convert.</param>
+/// <returns>A new MeshSave object created from the Mesh data.</returns>
 		public static implicit operator MeshSave ( Mesh mesh )
 		{
 			return new MeshSave ( mesh );
 		}
 
+/// <summary>
+/// Converts a MeshSave object to a Mesh object.
+/// </summary>
+/// <param name="mesh">The MeshSave object to convert.</param>
+/// <returns>A new Mesh object created from the MeshSave data.</returns>
 		public static implicit operator Mesh ( MeshSave mesh )
 		{
 			Mesh newMesh = new Mesh ();

@@ -8,6 +8,9 @@ using BayatGames.SaveGameFree.Serializers;
 namespace BayatGames.SaveGameFree.Examples
 {
 
+/// <summary>
+/// Represents a dropdown for selecting serializers.
+/// </summary>
     public class SerializerDropdown : Dropdown
     {
 

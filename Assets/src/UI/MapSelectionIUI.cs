@@ -13,6 +13,9 @@ using UnityEngine.UIElements;
 namespace CHAL.UI
 {
 
+/// <summary>
+/// Manages the user interface for selecting maps in the game.
+/// </summary>
     public class MapSelectionUI : IngameUI
     {
         [SerializeField]

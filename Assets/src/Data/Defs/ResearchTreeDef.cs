@@ -30,6 +30,11 @@ namespace CHAL.Data
         public List<ResearchTreeLane>   researchTreeLanes = new List<ResearchTreeLane>();
 
         // Helper für UI: Lane-Name & -Farbe aus Index holen
+/// <summary>
+/// Gets the name of the specified lane.
+/// </summary>
+/// <param name="lane">The index of the lane.</param>
+/// <returns>The name of the lane, or "unknown lane" if the index is out of range.</returns>
         public string GetLaneName(int lane)
         {
             return (lane >= 0 && lane < researchLanes.Count)
@@ -37,6 +42,11 @@ namespace CHAL.Data
                 : "unknown lane";
         }
 
+/// <summary>
+/// Gets the color of the specified lane.
+/// </summary>
+/// <param name="lane">The index of the lane.</param>
+/// <returns>The color of the lane, or black if the index is out of range.</returns>
         public Color GetLaneColor(int lane)
         {
             return (lane >= 0 && lane < researchLanes.Count)

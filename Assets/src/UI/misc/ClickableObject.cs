@@ -5,6 +5,9 @@ using UnityEngine;
 namespace CHAL.UI
 {
 
+/// <summary>
+/// Represents an object that can be clicked in the game.
+/// </summary>
     public class ClickableObject : MonoBehaviour
     {
         private Renderer rend;
@@ -25,16 +28,25 @@ namespace CHAL.UI
             SetShimmer(false);
         }
 
+/// <summary>
+/// Handles the event when the mouse pointer enters a hover state.
+/// </summary>
         public void OnHoverEnter()
         {
             SetShimmer(true);
         }
 
+/// <summary>
+/// Handles the event when the mouse pointer exits a hover state.
+/// </summary>
         public void OnHoverExit()
         {
             SetShimmer(false);
         }
 
+/// <summary>
+/// Handles the click event for the UI.
+/// </summary>
         public void OnClick()
         {
             if (menuUI != null)

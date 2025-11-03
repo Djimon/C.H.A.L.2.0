@@ -5,6 +5,12 @@ namespace CHAL.Systems.Items
 {
     public static class ItemTypeUtils
     {
+/// <summary>
+/// Converts an item ID string to its corresponding ItemType.
+/// Returns ItemType.Unknown if the item ID is null or empty.
+/// </summary>
+/// <param name="itemId">The ID of the item as a string.</param>
+/// <returns>The corresponding ItemType.</returns>
         public static ItemType FromId(string itemId)
         {
             if (string.IsNullOrEmpty(itemId)) return ItemType.Unknown;
