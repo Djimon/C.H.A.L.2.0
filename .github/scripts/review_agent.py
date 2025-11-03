@@ -329,7 +329,7 @@ RE_WRONG_DEBUG = re.compile(
 
 GERMAN_HINT_WORDS = [
     "nicht", "kein","erfolgreich","kein","laden", "mit","fehler", "fehlgeschlagen", "fertig",
-    "forschung", "ausrüstung", "bereit", "spieler", "karte",
+    "forschung", "ausrüstung", "bereit", "spieler", "karte","gefunden","konnte","starte",
     "speicher", "daten", "welle", "gegner", "held", "erfolg",
     "abbruch", "überschrieben", "geladen", "speichern",
 ]
