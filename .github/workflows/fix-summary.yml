@@ -30,14 +30,14 @@ jobs:
 
       - name: Configure git user
         run: |
-          git config user.name "summary-bot"
-          git config user.email "summary-bot@users.noreply.github.com"
+          git config user.name "summary-agent"
+          git config user.email "summary-agent@users.noreply.github.com"
 
-      - name: Run Summary Fix Bot
+      - name: Run Summary Fix Agent
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           BASE_BRANCH: "main"
         run: |
-          python .github/scripts/fix_summary_bot.py
+          python .github/scripts/fix_summary_agent.py
