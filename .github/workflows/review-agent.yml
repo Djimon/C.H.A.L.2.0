@@ -42,5 +42,6 @@ jobs:
           FULL_SCAN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.FULL_SCAN || 'false' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # <--- Token für API
           GITHUB_REPOSITORY: ${{ github.repository }} # owner/repo
+          DEFAULT_BRANCH: "master"
         run: |
           python .github/scripts/review_agent.py
