@@ -430,7 +430,7 @@ def main():
     commit_all("chore: add XML summaries (auto)")
     push_branch(branch_name)
 
-    base_branch = os.getenv("BASE_BRANCH", "main")
+    base_branch = os.getenv("BASE_BRANCH", "master")
     pr_url = create_pull_request(session, owner, repo, branch_name, base_branch)
 
     # Issues schließen
