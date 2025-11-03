@@ -124,6 +124,20 @@ def close_issue(session: requests.Session, owner: str, repo: str, issue_number: 
 
 
 # ---------------- Issue Body Parsing ----------------
+def extract_literal_from_issue_message(message: str) -> Optional[str]:
+    """
+    Erwartet z.B.:
+      'Non-English debug message detected: "Forschung fehlgeschlagen"'
+    Gibt das Stringliteral inkl. Quotes zurück: "\"Forschung fehlgeschlagen\""
+    """
+    if '"' not in message:
+        return None
+    first = message.find('"')
+    last = message.rfind('"')
+    if last <= first:
+        return None
+    return message[first:last+1]
+
 
 def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
     number = issue["number"]
@@ -269,7 +283,8 @@ Return ONLY a single C# string literal, including quotes and properly escaped.""
 def insert_translations_in_file(path: pathlib.Path, items: List[FindingItem], client: OpenAI) -> bool:
     """
     Ersetzt für jedes FindingItem die DebugManager-Stringliteral-Nachricht durch eine englische Version.
-    Gibt True zurück, wenn Änderungen gemacht wurden.
+    Versucht zuerst, den Call in der gemeldeten Zeile zu finden.
+    Falls dort nichts ist, sucht er im ganzen File nach dem Literal aus der Issue-Message.
     """
     text = path.read_text(encoding="utf-8", errors="ignore")
     lines = text.splitlines()
@@ -286,26 +301,47 @@ def insert_translations_in_file(path: pathlib.Path, items: List[FindingItem], cl
 
         line = lines[idx]
 
-        # Versuche, DebugManager-Aufruf in dieser Zeile zu finden
+        # 1) Versuch: DebugManager-Call direkt in der angegebenen Zeile
         m = RE_DEBUG_MANAGER_CALL.search(line)
+
+        # 2) Fallback: anhand des Literals aus der Issue-Message im ganzen File suchen
         if not m:
-            print(f"FixDebugLanguageBot: No DebugManager call found on line {item.line} in {item.file}, skipping.")
+            literal_from_msg = extract_literal_from_issue_message(item.message)
+            if literal_from_msg:
+                print(f"FixDebugLanguageBot: No DebugManager call on line {item.line}, "
+                      f"searching by literal {literal_from_msg} in whole file...")
+                match2 = None
+                for m2 in RE_DEBUG_MANAGER_CALL.finditer(text):
+                    if literal_from_msg in m2.group(2):
+                        match2 = m2
+                        break
+                if match2:
+                    # Zeilennummer aus Text-Offset bestimmen
+                    prefix = text[:match2.start()]
+                    idx = prefix.count("\n")
+                    line = lines[idx]
+                    m = match2
+
+        if not m:
+            print(f"FixDebugLanguageBot: No DebugManager call found for issue literal "
+                  f"in {item.file} (line {item.line}), skipping.")
             continue
 
         literal = m.group(2)  # @"..." oder "..."
-        # Kontext: ganze Zeile (oder ein paar Zeilen drumherum, hier reicht die Zeile)
         context = line.strip()
 
         new_literal = translate_debug_literal(client, literal, context)
         if not new_literal or new_literal == literal:
-            print(f"FixDebugLanguageBot: No change produced for {item.file}:{item.line}.")
+            print(f"FixDebugLanguageBot: No change produced for {item.file}:{idx+1}.")
             continue
 
-        # Literal ersetzen
         new_line = line[:m.start(2)] + new_literal + line[m.end(2):]
         lines[idx] = new_line
         changed = True
-        print(f"FixDebugLanguageBot: Updated literal in {item.file}:{item.line}")
+        print(f"FixDebugLanguageBot: Updated literal in {item.file}:{idx+1}")
+
+        # Text aktualisieren, damit spätere Fallback-Suchen den neuen Stand kennen
+        text = "\n".join(lines) + "\n"
 
     if changed:
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
