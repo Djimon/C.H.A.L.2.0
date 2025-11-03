@@ -44,7 +44,7 @@ namespace BayatGames.SaveGameFree.Examples
 
 		IEnumerator LoadEnumerator ()
 		{
-			Debug.Log ( "Downloading..." );
+			DebugManager.DebugLog( "Downloading..." );
 			SaveGameWeb web = new SaveGameWeb (
 				                  username,
 				                  password,
@@ -54,12 +54,12 @@ namespace BayatGames.SaveGameFree.Examples
 				                  SerializerDropdown.Singleton.ActiveSerializer );
 			yield return StartCoroutine ( web.Download ( identifier ) );
 			target.position = web.Load<Vector3Save> ( identifier, Vector3.zero );
-			Debug.Log ( "Download Done." );
+			DebugManager.DebugLog( "Download Done." );
 		}
 
 		IEnumerator SaveEnumerator ()
 		{
-			Debug.Log ( "Uploading..." );
+			DebugManager.DebugLog( "Uploading..." );
 			SaveGameWeb web = new SaveGameWeb (
 				                  username,
 				                  password,
@@ -68,7 +68,7 @@ namespace BayatGames.SaveGameFree.Examples
 				                  encodePassword,
 				                  SerializerDropdown.Singleton.ActiveSerializer );
 			yield return StartCoroutine ( web.Save<Vector3Save> ( identifier, target.position ) );
-			Debug.Log ( "Upload Done." );
+			DebugManager.DebugLog( "Upload Done." );
 		}
 
 	}

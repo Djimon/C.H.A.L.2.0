@@ -96,7 +96,7 @@ namespace CHAL.Core
 
             if (Profile == null)
             {
-                Debug.Log("Kein Save gefunden ");
+                DebugManager.DebugLog("Kein Save gefunden ");
                 //Profile = new PlayerProfile(); //erst im Character Creator
             }
   
@@ -300,14 +300,14 @@ namespace CHAL.Core
         {
             if (string.IsNullOrEmpty(instanceId))
             {
-                Debug.LogError("EnsureInstance: instanceId leer.");
+                DebugManager.Error("EnsureInstance: instanceId leer.");
                 return null;
             }
 
             var domain = Inventory;
             if (domain == null)
             {
-                Debug.LogError("EnsureInstance: InventoryDomain fehlt (GameManager.Inventory == null).");
+                DebugManager.Error("EnsureInstance: InventoryDomain fehlt (GameManager.Inventory == null).");
                 return null;
             }
 

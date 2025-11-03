@@ -37,7 +37,7 @@ namespace BayatGames.SaveGameFree.Serializers
 				Debug.LogException ( ex );
 			}
 			#else
-			Debug.LogError ( "SaveGameFree: The Binary Serialization isn't supported in Windows Store and UWP." );
+			DebugManager.Error( "SaveGameFree: The Binary Serialization isn't supported in Windows Store and UWP." );
 			#endif
 		}
 
@@ -61,7 +61,7 @@ namespace BayatGames.SaveGameFree.Serializers
 				Debug.LogException ( ex );
 			}
 			#else
-			Debug.LogError ( "SaveGameFree: The Binary Serialization isn't supported in Windows Store and UWP." );
+			DebugManager.Error( "SaveGameFree: The Binary Serialization isn't supported in Windows Store and UWP." );
 			#endif
 			return result;
 		}

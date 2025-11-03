@@ -35,7 +35,7 @@ namespace BayatGames.SaveGameFree.Examples
             StorageSG ssg = new StorageSG();
             SaveGame.Save<StorageSG>("pizza2", ssg);
             StorageSG ssgLoaded = SaveGame.Load<StorageSG>("pizza2");
-            Debug.Log(ssgLoaded.myDateTime.ToLocalTime().ToString());
+            DebugManager.DebugLog(ssgLoaded.myDateTime.ToLocalTime().ToString());
             if (loadOnStart)
             {
                 Load();

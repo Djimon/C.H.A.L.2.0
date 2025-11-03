@@ -482,11 +482,11 @@ namespace BayatGames.SaveGameFree
             yield return Send(identifier, data, "save");
             if (this.m_IsError)
             {
-                Debug.LogError(this.m_Error);
+                DebugManager.Error(this.m_Error);
             }
             else
             {
-                Debug.Log("Data successfully saved.");
+                DebugManager.DebugLog("Data successfully saved.");
             }
         }
 
@@ -499,11 +499,11 @@ namespace BayatGames.SaveGameFree
             yield return Send(identifier, null, "load");
             if (this.m_IsError)
             {
-                Debug.LogError(this.m_Error);
+                DebugManager.Error(this.m_Error);
             }
             else
             {
-                Debug.Log("Data successfully downloaded.");
+                DebugManager.DebugLog("Data successfully downloaded.");
             }
         }
 

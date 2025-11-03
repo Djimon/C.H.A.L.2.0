@@ -9,18 +9,18 @@ namespace CHAL.Data
         [Header("Alle Helden (Reihenfolge = UI-Reihenfolge)")]
         public List<HeroDef> allHeroes = new List<HeroDef>();
 
-        // Lazy Index für Lookups
+        // Lazy Index fr Lookups
         private Dictionary<string, HeroDef> _byId;
 
         private void OnValidate()
         {
-            // Duplikate warnen, Index bei Änderungen neu bauen
+            // Duplikate warnen, Index bei nderungen neu bauen
             var seen = new HashSet<string>();
             foreach (var h in allHeroes)
             {
                 if (h == null || string.IsNullOrEmpty(h.HeroId)) continue; // HeroId ist in HeroDef vorhanden
                 if (!seen.Add(h.HeroId))
-                    Debug.LogWarning($"[HeroCatalog] Duplicate HeroId detected: {h.HeroId}", this);
+                    DebugManager.Warning($"[HeroCatalog] Duplicate HeroId detected: {h.HeroId}", this);
             }
             _byId = null;
         }

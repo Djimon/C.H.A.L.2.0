@@ -591,7 +591,7 @@ namespace CHAL.Systems.Wave
         {
             if (spawnPoints == null || spawnPoints.Count == 0)
             {
-                Debug.LogWarning("Keine Spawnpunkte vorhanden!");
+                DebugManager.Warning("Keine Spawnpunkte vorhanden!");
                 return Vector3.zero;
             }
 
