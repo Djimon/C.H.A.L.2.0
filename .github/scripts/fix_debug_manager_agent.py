@@ -194,6 +194,11 @@ def fix_debug_calls_in_file(path: pathlib.Path) -> bool:
     Geht die Datei Zeile für Zeile durch und ersetzt falsche Debug-Aufrufe.
     Kommentare, die mit // beginnen, werden übersprungen.
     """
+    # Drittanbieter/externen Code optional komplett überspringen
+    if "xTernal" in path.parts or "ThirdParty" in path.parts:
+        print(f"FixDebugManagerBot: Skipping external/third-party file {path}")
+        return False
+    
     text = path.read_text(encoding="utf-8", errors="ignore")
     lines = text.splitlines()
     changed = False
