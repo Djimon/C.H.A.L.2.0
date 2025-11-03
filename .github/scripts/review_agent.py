@@ -15,6 +15,7 @@ DOC_EXTS = {".cs"}  # aktuell nur C#, kann erweitert werden
 SUMMARY_FINDING = "Agent/Summary"
 DEBUG_FINDING = "Agent/DebugLanguage"
 DEBUG_MANAGER_FINDING = "Agent/DebugManager"
+DEFAULT_BRANCH = os.getenv("DEFAULT_BRANCH", "master")
 
 # GitHub hat ein ratelimit fürs spammen von Issues.
 BATCH_SIZE = int(os.getenv("ISSUE_BATCH_SIZE", "250"))  # z.B. 50
@@ -99,11 +100,15 @@ def create_issue_for_group(
 
     title = f"[{kind}] {file}"
 
+    # Klickbarer Link zur Datei im Repo (immer auf DEFAULT_BRANCH)
+    file_url = f"https://github.com/{owner}/{repo}/blob/{DEFAULT_BRANCH}/{file}"
+
     body_lines = [
         "Automatic finding by ReviewAgent.",
         "",
         f"**Kind:** {kind}",
         f"**File:** `{file}`",
+        f"[Open file in GitHub]({file_url})",
         "",
         "### Findings",
     ]
