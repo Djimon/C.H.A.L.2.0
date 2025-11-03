@@ -12,6 +12,7 @@ ROOT = pathlib.Path(".")
 DOC_EXTS = {".cs"}  # aktuell nur C#, kann erweitert werden
 SUMMARY_FINDING = "Agent/Summary"
 DEBUG_FINDING = "Agent/DebugLanguage"
+DEBUG_MANAGER_FINDING = "Agent/DebugManager"
 
 UNITY_METHOD_EXCLUSIONS = {
     "Awake",
@@ -316,7 +317,13 @@ def check_missing_summary(path: str, text: str) -> List[Finding]:
 
 # einfache Heuristik: Debug.*(...) oder irgendwasLog(...)
 RE_DEBUG_CALL = re.compile(
-    r'(Debug\w*\.Log\w*|DebugManager\.\w+|\w*Logger\.\w+)\s*\(\s*(@"[^"]*"|"[^"]*")',
+    r'(DebugManager\.\w+)\s*\(\s*(@"[^"]*"|"[^"]*")',
+    re.MULTILINE,
+)
+
+# Falsche Logger-Nutzung: UnityEngine.Debug.* direkt
+RE_WRONG_DEBUG = re.compile(
+    r'\bDebug\.(Log|LogWarning|LogError)\s*\(',
     re.MULTILINE,
 )
 
@@ -378,7 +385,24 @@ def check_debug_language(path: str, text: str) -> List[Finding]:
 
     return findings
 
+def check_wrong_debug_logger(path: str, text: str) -> List[Finding]:
+    findings: List[Finding] = []
+    for match in RE_WRONG_DEBUG.finditer(text):
+        which = match.group(1)  # Log | LogWarning | LogError
+        prefix = text[: match.start()]
+        line = prefix.count("\n") + 1
 
+        findings.append(
+            Finding(
+                kind=DEBUG_MANAGER_FINDING,
+                file=path,
+                line=line,
+                symbol=f"Debug.{which}",
+                message="Use DebugManager instead of UnityEngine.Debug.*.",
+            )
+        )
+    return findings
+    
 # -------- Runner / Output --------
 
 def run_review() -> List[Finding]:
@@ -398,6 +422,7 @@ def run_review() -> List[Finding]:
 
         findings.extend(check_missing_summary(f, text))
         findings.extend(check_debug_language(f, text))
+        findings.extend(check_wrong_debug_logger(f, text))
 
     return findings
 
