@@ -82,7 +82,6 @@ Notes on surface:
 - Helper behaviors (internal to the file)
   - TryGetMaterialsInventoryIdByConvention maps material itemId types to player inventory identifiers (Remains/Part/Rune/Module) or null for other gear, and checks inventory presence.
   - DebugOutputReject logs detailed diagnostic information when OutputOk fails.
-  - CountOf, TryConsumeMaterials, RollbackMaterials, TrySpendCurrencies, RefundCurrencies provide supporting operations for material and currency handling and rollback paths.
 
 4) Constraints & Failure Modes
 
