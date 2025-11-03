@@ -6,14 +6,32 @@ using UnityEngine;
 
 namespace CHAL.Systems.Skill
 {
+/// <summary>
+/// Represents a collection of modifiers that can be added or removed.
+/// </summary>
     public class ModifierStack
     {
         private readonly List<ModifierData> _mods = new();
 
+/// <summary>
+/// Adds a modifier to the collection.
+/// </summary>
+/// <param name="mod">The modifier to add.</param>
         public void AddModifier(ModifierData mod) => _mods.Add(mod);
 
+/// <summary>
+/// Removes a modifier from the collection.
+/// </summary>
+/// <param name="mod">The modifier to remove.</param>
         public void RemoveModifier(ModifierData mod) => _mods.Remove(mod);
 
+/// <summary>
+/// Applies modifiers to a base value based on the target and skill tags.
+/// </summary>
+/// <param name="target">The target to which the modifiers apply.</param>
+/// <param name="baseValue">The initial value to modify.</param>
+/// <param name="tags">A list of skill tags that may affect the modifiers.</param>
+/// <returns>The modified value after applying the modifiers.</returns>
         public float Apply(ModifierTarget target, float baseValue, List<SkillTag> tags)
         {
             float add = 0f;

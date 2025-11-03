@@ -4,6 +4,9 @@ using UnityEngine.Rendering;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "Hero", menuName = "Data/Hero")]
+/// <summary>
+/// Represents a hero definition in the game, including identity, lore, and gameplay attributes.
+/// </summary>
     public class HeroDef : ScriptableObject
     {
         [Header("Identity & Flavor")]

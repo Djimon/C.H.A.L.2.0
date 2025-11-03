@@ -42,6 +42,10 @@ namespace CHAL.Core
             return Cfg != null ? Cfg.ResolveFileIdRuntime() : "profiles/main/profile.json";
         }
 
+/// <summary>
+/// Saves the specified player profile to the game storage.
+/// </summary>
+/// <param name="profile">The player profile to save.</param>
         public static void Save(PlayerProfile profile)
         {
             if (profile == null)
@@ -60,6 +64,10 @@ namespace CHAL.Core
             DebugManager.Log($"SaveSystem: saved → {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
+/// <summary>
+/// Loads the player profile from the save game file.
+/// </summary>
+/// <returns>The loaded PlayerProfile, or null if no file exists.</returns>
         public static PlayerProfile Load()
         {
             ConfigureSaveGame();
@@ -102,6 +110,12 @@ namespace CHAL.Core
             return true;
         }
 
+/// <summary>
+/// Saves a research snapshot associated with the specified profile ID.
+/// If the profile ID is empty, the current profile ID is used.
+/// </summary>
+/// <param name="profileId">The ID of the profile to save the research snapshot for.</param>
+/// <param name="snap">The research snapshot to save.</param>
         public static void SaveResearch(string profileId, ResearchSnapshot snap)
         {
             ConfigureSaveGame(); // Encoder/Passwort etc. aus GameSaveConfig
@@ -114,6 +128,12 @@ namespace CHAL.Core
             DebugManager.Log($"SaveResearch → {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
+/// <summary>
+/// Loads a research snapshot based on the provided profile ID.
+/// If the profile ID is empty, the current profile ID is used.
+/// </summary>
+/// <param name="profileId">The ID of the profile to load research for.</param>
+/// <returns>A ResearchSnapshot object containing the loaded data.</returns>
         public static ResearchSnapshot LoadResearch(string profileId)
         {
             ConfigureSaveGame();
@@ -132,6 +152,12 @@ namespace CHAL.Core
             return snap;
         }
 
+/// <summary>
+/// Deletes the research data associated with the specified profile ID.
+/// Returns true if the deletion was successful; otherwise, false.
+/// </summary>
+/// <param name="profileId">The ID of the profile whose research data is to be deleted.</param>
+/// <returns>True if the research data was deleted; otherwise, false.</returns>
         public static bool DeleteResearch(string profileId)
         {
             ConfigureSaveGame();
@@ -148,6 +174,11 @@ namespace CHAL.Core
             return $"profiles/{profileId}/research_v1.json";
         }
 
+/// <summary>
+/// Retrieves the current profile ID from a file path.
+/// If no valid ID is found, it returns "main".
+/// </summary>
+/// <returns>The current profile ID as a string.</returns>
         public static string CurrentProfileId()
         {
             var id = FileId(); // z. B. "profiles/main/profile.json"

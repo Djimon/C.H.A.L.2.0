@@ -58,11 +58,21 @@ namespace BayatGames.SaveGameFree.Types
 			this.w = quaternion.w;
 		}
 
+/// <summary>
+/// Converts a Quaternion to a QuaternionSave instance.
+/// </summary>
+/// <param name="quaternion">The Quaternion to convert.</param>
+/// <returns>A QuaternionSave representing the converted values.</returns>
 		public static implicit operator QuaternionSave ( Quaternion quaternion )
 		{
 			return new QuaternionSave ( quaternion );
 		}
 
+/// <summary>
+/// Converts a QuaternionSave instance to a Quaternion.
+/// </summary>
+/// <param name="quaternion">The QuaternionSave instance to convert.</param>
+/// <returns>A Quaternion representing the converted values.</returns>
 		public static implicit operator Quaternion ( QuaternionSave quaternion )
 		{
 			return new Quaternion ( quaternion.x, quaternion.y, quaternion.z, quaternion.w );

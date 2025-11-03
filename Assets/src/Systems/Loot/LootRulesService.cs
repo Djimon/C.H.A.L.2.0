@@ -15,6 +15,9 @@ namespace CHAL.Systems.Loot
         private readonly List<SpecialRule> _secretRules = new();
 
         //NORMALE RULES
+/// <summary>
+/// Loads all loot rules from the specified resources.
+/// </summary>
         public void LoadAll()
         {
             _byTag.Clear();
@@ -105,12 +108,23 @@ namespace CHAL.Systems.Loot
         }
 
 
+/// <summary>
+/// Tries to get a loot rule associated with the specified tag.
+/// </summary>
+/// <param name="tag">The tag to look up the loot rule.</param>
+/// <param name="rule">The loot rule associated with the tag, if found.</param>
+/// <returns>True if the rule was found; otherwise, false.</returns>
         public bool TryGetRule(string tag, out LootRule rule) => _byTag.TryGetValue(tag, out rule);
 
         // Merge-Policy: 
         // - drops: concat in Reihenfolge der Tags (stabil)
         // - minDrops/maxDrops: nehmen das MAX über alle beteiligten Tags (0 wird ignoriert)
         // - rarityGuarantees: pro Rarity das MAX über alle Tags
+/// <summary>
+/// Merges loot based on the specified tags.
+/// </summary>
+/// <param name="tags">The collection of tags to filter the loot.</param>
+/// <returns>The merged loot corresponding to the provided tags.</returns>
         public MergedLoot GetMergedForTags(IEnumerable<string> tags)
         {
             var merged = new MergedLoot();
@@ -141,6 +155,11 @@ namespace CHAL.Systems.Loot
             return merged;
         }
 
+/// <summary>
+/// Merges loot for a given wave composition of monsters.
+/// </summary>
+/// <param name="wave">The wave composition containing the monsters.</param>
+/// <returns>The merged loot from the specified wave.</returns>
         public MergedLoot GetMergedForWave(WaveComposition wave)
         {
             var merged = new MergedLoot();
@@ -195,6 +214,11 @@ namespace CHAL.Systems.Loot
             DebugManager.Log($"[SecretRules] Loaded: {_secretRules.Count} rules",DebugManager.EDebugLevel.Dev,"System");
         }
 
+/// <summary>
+/// Retrieves a list of secret loot drops based on the specified monster tags.
+/// </summary>
+/// <param name="monsterTags">The tags of the monsters to match against.</param>
+/// <returns>A list of loot drop data transfer objects.</returns>
         public List<LootDropDto> GetSecretDrops(IEnumerable<string> monsterTags)
         {
             var extras = new List<LootDropDto>();

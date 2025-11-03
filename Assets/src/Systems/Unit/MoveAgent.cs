@@ -46,6 +46,13 @@ namespace CHAL.Systems.AI
             }
         }
 
+/// <summary>
+/// Initializes the agent's speed and settings based on the provided parameters.
+/// </summary>
+/// <param name="baseSpeed">The base speed for the agent.</param>
+/// <param name="isHero">Indicates if the agent is a hero.</param>
+/// <param name="radius">The radius of the agent (default is 0.35).</param>
+/// <param name="overridePriority">An optional priority override for the agent.</param>
         public void Init(float baseSpeed, bool isHero, float radius = 0.35f, int? overridePriority = null)
         {
             BaseSpeed = Mathf.Max(0.1f, baseSpeed);

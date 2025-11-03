@@ -1,8 +1,16 @@
 
 namespace CHAL.Systems.Inventory
 {
+/// <summary>
+/// Provides rules and methods for managing inventory items.
+/// </summary>
     public class InventoryRules
     {
+/// <summary>
+/// Gets the maximum number of slots based on the given prefix.
+/// </summary>
+/// <param name="prefix">The prefix to determine the maximum stack size.</param>
+/// <returns>The maximum number of slots for the specified prefix.</returns>
         public static int GetMaxStack(string prefix)
         {
             return prefix switch
@@ -15,6 +23,11 @@ namespace CHAL.Systems.Inventory
             };
         }
 
+/// <summary>
+/// Gets the maximum number of slots based on the given prefix.
+/// </summary>
+/// <param name="prefix">The prefix to determine the maximum slots.</param>
+/// <returns>The maximum number of slots for the specified prefix.</returns>
         public static int GetMaxSlots(string prefix)
         {
             return prefix switch

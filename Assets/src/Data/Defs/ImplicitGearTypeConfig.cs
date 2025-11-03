@@ -5,6 +5,10 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "ImplicitGearTypeConfig", menuName = "Data/ImplicitGearTypeConfig")]
+/// <summary>
+/// Represents the configuration for implicit gear types in the game.
+/// This class inherits from ScriptableObject to allow for easy asset management.
+/// </summary>
     public class ImplicitGearTypeConfig : ScriptableObject
     {
 

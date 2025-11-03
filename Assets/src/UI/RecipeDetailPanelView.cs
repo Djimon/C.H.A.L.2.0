@@ -69,6 +69,9 @@ namespace CHAL.UI
                 _refineSlider.RegisterValueChangedCallback(e => _refineValue.text = e.newValue.ToString());
         }
 
+/// <summary>
+/// Clears all fields and resets the UI elements to their default state.
+/// </summary>
         public void Clear()
         {
             _name.text = "";
@@ -83,6 +86,14 @@ namespace CHAL.UI
             _refinePanel.style.display = DisplayStyle.None;
         }
 
+/// <summary>
+/// Displays the details of a recipe.
+/// </summary>
+/// <param name="r">The recipe definition to display.</param>
+/// <param name="preview">The recipe preview information.</param>
+/// <param name="needGold">The amount of gold needed.</param>
+/// <param name="haveGold">The amount of gold available.</param>
+/// <param name="haveByItemId">A dictionary of items available by their IDs.</param>
         public void ShowRecipeDetails(RecipeDef r,
                          CraftingService.RecipePreview preview,
                          int needGold, int haveGold,
@@ -160,11 +171,18 @@ namespace CHAL.UI
             //TODO: (Refinement bleibt vorerst verborgen; Controller kann sie sichtbar schalten)
         }
 
+/// <summary>
+/// Displays a failure message to the user.
+/// </summary>
+/// <param name="message">The message to display.</param>
         public void ShowFail(string message)
         {
             _failLabel.text = message ?? "";
         }
 
+/// <summary>
+/// Displays a success message to the user.
+/// </summary>
         public void ShowSuccess()
         {
             _failLabel.text = ""; // optional kurze Erfolgsmeldung/SFX extern

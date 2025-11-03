@@ -44,6 +44,9 @@ public sealed class CraftingDebugRunner : MonoBehaviour
     }
 
     [ContextMenu("RunOnce")]
+/// <summary>
+/// Executes a crafting operation once using the specified recipe.
+/// </summary>
     public void RunOnce()
     {
         var recipe = catalog.recipes[recipeIndex];
@@ -66,6 +69,9 @@ public sealed class CraftingDebugRunner : MonoBehaviour
     }
 
     [ContextMenu("GrantRequirements")]
+/// <summary>
+/// Grants the required materials for crafting based on the specified recipe.
+/// </summary>
     public void GrantRequirements()
     {
         var recipe = catalog.recipes[recipeIndex];
@@ -129,9 +135,31 @@ public sealed class CraftingDebugRunner : MonoBehaviour
     {
         private readonly IWallet _inner;
         public WalletProxyMissing(IWallet inner) { _inner = inner; }
+/// <summary>
+/// Retrieves the current amount of currency for the specified identifier.
+/// </summary>
+/// <param name="id">The identifier for the currency.</param>
+/// <returns>The current amount of currency associated with the identifier.</returns>
         public int GetCurrency(string id) => 0;
+/// <summary>
+/// Checks if a specified amount of currency can be spent using the provided identifier.
+/// </summary>
+/// <param name="id">The identifier for the currency transaction.</param>
+/// <param name="amt">The amount of currency to check for spending.</param>
+/// <returns>Returns true if the amount can be spent; otherwise, false.</returns>
         public bool CanSpend(string id, int amt) => false;
+/// <summary>
+/// Deducts a specified amount of currency using the provided identifier.
+/// </summary>
+/// <param name="id">The identifier for the currency transaction.</param>
+/// <param name="amt">The amount of currency to spend.</param>
+/// <returns>Returns false if the transaction fails.</returns>
         public bool SpendCurrency(string id, int amt) => false; // erzwingt Fail NACH Materialabbuchung
+/// <summary>
+/// Processes a refund for a specified amount using the given identifier.
+/// </summary>
+/// <param name="id">The identifier for the refund transaction.</param>
+/// <param name="amt">The amount to be refunded.</param>
         public void Refund(string id, int amt) => _inner.Refund(id, amt);
     }
 }

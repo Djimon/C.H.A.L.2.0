@@ -2,6 +2,9 @@ using System;
 
 namespace CHAL.Systems.Inventory
 {
+/// <summary>
+/// Defines the interface for inventory domain operations.
+/// </summary>
     public interface IInventoryDomain
     {
         bool CanAccept(string instanceId, in ItemStack stack);

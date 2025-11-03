@@ -5,6 +5,9 @@ namespace CHAL.Data
 {
 
     [CreateAssetMenu(fileName = "GameBalanceConfig", menuName = "Config/GameBalanceConfig")]
+/// <summary>
+/// Holds configuration settings for game balance, including loot parameters.
+/// </summary>
     public class GameBalanceConfig : ScriptableObject
     {
         // ==========================
@@ -55,6 +58,11 @@ namespace CHAL.Data
             public int elite;
             public int boss;
             public int champion;
+/// <summary>
+/// Gets the multiplier based on the specified enemy rank.
+/// </summary>
+/// <param name="rank">The rank of the enemy.</param>
+/// <returns>The multiplier associated with the enemy rank.</returns>
             public int GetMultiplier(EnemyRank rank)
             {
                 return rank switch
@@ -135,6 +143,11 @@ namespace CHAL.Data
             public RankScaling boss;
             public RankScaling champion;
 
+/// <summary>
+/// Gets the scaling associated with the specified enemy rank.
+/// </summary>
+/// <param name="rank">The rank of the enemy.</param>
+/// <returns>The corresponding RankScaling for the given enemy rank.</returns>
             public RankScaling GetScaling(EnemyRank rank)
             {
                 return rank switch
@@ -184,6 +197,11 @@ namespace CHAL.Data
         public SkillRanges skillRanges;
         public bool AllowFriendlyFire = false;
 
+/// <summary>
+/// Gets the range value based on the specified skill range.
+/// </summary>
+/// <param name="range">The skill range to evaluate.</param>
+/// <returns>The corresponding range value as a float.</returns>
         public float GetRangeValue(SkillRange range)
         {
             return range switch

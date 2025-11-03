@@ -47,6 +47,10 @@ namespace CHAL.UI
 
         // -------- Registrierung --------
 
+/// <summary>
+/// Registers a dockable view with the system.
+/// </summary>
+/// <param name="view">The dockable view to register.</param>
         public void Register(IDockableView view)
         {
             if (view == null || _views.Contains(view)) return;
@@ -60,6 +64,10 @@ namespace CHAL.UI
             QueueRelayout();
         }
 
+/// <summary>
+/// Unregisters a dockable view from the system.
+/// </summary>
+/// <param name="view">The dockable view to unregister.</param>
         public void Unregister(IDockableView view)
         {
             if (view == null) return;
@@ -76,6 +84,9 @@ namespace CHAL.UI
             QueueRelayout();
         }
 
+/// <summary>
+/// Marks the layout for relayout in the UI.
+/// </summary>
         public void QueueRelayout() => _relayoutQueued = true;
 
         // -------- Abfragen --------

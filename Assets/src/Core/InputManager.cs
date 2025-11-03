@@ -5,6 +5,9 @@ using UnityEngine;
 namespace CHAL.Core
 {
 
+/// <summary>
+/// Manages user input and interactions with clickable objects in the game.
+/// </summary>
     public class InputManager : MonoBehaviour
     {
         private ClickableObject lastHovered;

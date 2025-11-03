@@ -13,6 +13,11 @@ namespace CHAL.Systems.Inventory
             count = itemcount;
         }
 
+/// <summary>
+/// Creates a new ItemStack with the specified count.
+/// </summary>
+/// <param name="newCount">The new count for the ItemStack.</param>
+/// <returns>A new instance of ItemStack with the updated count.</returns>
         public ItemStack WithCount(int newCount) => new ItemStack(itemID, newCount);
 
     }

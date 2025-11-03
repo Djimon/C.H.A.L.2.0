@@ -42,6 +42,11 @@ namespace CHAL.Systems.Research
 
         // ------------------ Init ------------------
 
+/// <summary>
+/// Initializes the object using data from the specified research tree definition and state.
+/// </summary>
+/// <param name="treeDef">The research tree definition to initialize from.</param>
+/// <param name="state">The research state to use; if null, a new state is created.</param>
         public void InitFromTree(ResearchTreeDef treeDef, ResearchState state)
         {
             _treeDef = treeDef;
@@ -97,6 +102,11 @@ namespace CHAL.Systems.Research
         }
 
         // Ã„nderung in IsNodeAvailable: NICHT mehr def.parents nutzen
+/// <summary>
+/// Checks if a node is available based on its ID.
+/// </summary>
+/// <param name="nodeId">The ID of the node to check.</param>
+/// <returns>True if the node is available; otherwise, false.</returns>
         public bool IsNodeAvailable(string nodeId)
         {
             if (!_nodesById.TryGetValue(nodeId, out var def)) return false;
@@ -121,20 +131,44 @@ namespace CHAL.Systems.Research
         }
 
         // ------------------ Query API ------------------
+/// <summary>
+/// Retrieves the ID of the currently active node.
+/// </summary>
+/// <returns>The active node ID as a string.</returns>
         public string GetActiveNodeId() => _state.activeNodeId;
 
+/// <summary>
+/// Checks if the specified node is completed.
+/// </summary>
+/// <param name="nodeId">The ID of the node to check.</param>
+/// <returns>True if the node is completed; otherwise, false.</returns>
         public bool IsCompleted(string nodeId) => _state.completedNodeIds.Contains(nodeId);
 
+/// <summary>
+/// Retrieves the progress of the specified node.
+/// </summary>
+/// <param name="nodeId">The ID of the node to get progress for.</param>
+/// <returns>The progress of the node.</returns>
         public NodeProgress GetNodeProgress(string nodeId)
         {
             return _state.perNodeProgress.TryGetValue(nodeId, out var p) ? p : new NodeProgress();
         }
 
+/// <summary>
+/// Retrieves the ResearchNodeDef associated with the specified node ID.
+/// </summary>
+/// <param name="nodeID">The ID of the node to retrieve the definition for.</param>
+/// <returns>The ResearchNodeDef for the given node ID, or null if not found.</returns>
         public ResearchNodeDef GetNodeDef(string nodeID)
         {
             return _nodesById.TryGetValue(nodeID, out var def) ? def: null;
         }
 
+/// <summary>
+/// Calculates the progress of a node based on its ID.
+/// </summary>
+/// <param name="nodeId">The ID of the node to check progress for.</param>
+/// <returns>The progress of the node as a float value between 0 and 1.</returns>
         public float GetNodeProgress01(string nodeId)
         {
             if (IsCompleted(nodeId)) return 1f;
@@ -205,6 +239,12 @@ namespace CHAL.Systems.Research
         }
 
         // ------------------ Befehle ------------------
+/// <summary>
+/// Sets the active research node based on the provided node ID.
+/// Returns true if the node is successfully set; otherwise, false.
+/// </summary>
+/// <param name="nodeId">The ID of the node to activate.</param>
+/// <returns>True if the node is set as active; otherwise, false.</returns>
         public bool SetActive(string nodeId)
         {
             if (string.IsNullOrWhiteSpace(nodeId)) return false;
@@ -217,6 +257,9 @@ namespace CHAL.Systems.Research
             return true;
         }
 
+/// <summary>
+/// Clears the currently active research node.
+/// </summary>
         public void ClearActive()
         {
             _state.activeNodeId = null;
@@ -224,6 +267,9 @@ namespace CHAL.Systems.Research
         }
 
         // ------------------ Event-Inputs (Bridge ruft diese auf) ------------------
+/// <summary>
+/// Marks the completion of the wave process.
+/// </summary>
         public void ApplyWaveCompleted()
         {
             var id = _state.activeNodeId;
@@ -235,6 +281,10 @@ namespace CHAL.Systems.Research
             TryComplete(def, p);
         }
 
+/// <summary>
+/// Applies the completion of a map based on its difficulty.
+/// </summary>
+/// <param name="difficulty">The difficulty level of the map.</param>
         public void ApplyMapCompleted(MapDifficulty difficulty)
         {
             var id = _state.activeNodeId;
@@ -252,6 +302,11 @@ namespace CHAL.Systems.Research
             TryComplete(def, p);
         }
 
+/// <summary>
+/// Applies the effects of an enemy being killed based on its tags and rank.
+/// </summary>
+/// <param name="enemyTags">A list of tags associated with the enemy.</param>
+/// <param name="rank">The rank of the enemy that was killed.</param>
         public void ApplyEnemyKilled(IReadOnlyList<string> enemyTags, EnemyRank rank)
         {
             var id = _state.activeNodeId;

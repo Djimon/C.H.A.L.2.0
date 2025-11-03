@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace CHAL.Systems.Map
 {
+/// <summary>
+/// Manages the map and its related functionalities in the game.
+/// </summary>
     public class MapManager : MonoBehaviour
     {
         //public static MapManager Instance { get; private set; }
@@ -55,6 +58,10 @@ namespace CHAL.Systems.Map
             PrepareMap();
         }
 
+/// <summary>
+/// Hides the user interface elements for the current wave.
+/// This method is called to prepare the game for the next wave.
+/// </summary>
         public void HideUI()
         {
             waveRewardUI.GetComponent<WaveRewardUI>().Show(false);
@@ -62,6 +69,10 @@ namespace CHAL.Systems.Map
         }
 
 
+/// <summary>
+/// Prepares the game map for the current wave.
+/// This method initializes the map and instantiates the necessary prefabs.
+/// </summary>
         public void PrepareMap()
         {
             CurrentMap = GameManager.Instance.pendingMap;
@@ -85,6 +96,10 @@ namespace CHAL.Systems.Map
             selectUI.Show(true);   
         }
 
+/// <summary>
+/// Resets the current wave to the first wave.
+/// Prepares the game for a new wave to start.
+/// </summary>
         public void ResetWave() 
         {
             CurrentWave = 1;
@@ -92,6 +107,10 @@ namespace CHAL.Systems.Map
         }
 
         [ContextMenu("Debug/StartWave")]
+/// <summary>
+/// Starts a new wave in the game.
+/// Initializes the wave manager and resets heroes for the new wave.
+/// </summary>
         public void StartWave()
         {
             HideUI();
@@ -189,6 +208,11 @@ namespace CHAL.Systems.Map
             _pendingSelectedHeroes = heroIds != null ? new List<string>(heroIds) : null;
         }
 
+/// <summary>
+/// Called when a wave is completed, handling success and rewards.
+/// </summary>
+/// <param name="success">Indicates if the wave was completed successfully.</param>
+/// <param name="rewards">The rewards earned from the completed wave.</param>
         public void OnWaveCompleted(bool success, WaveRewards rewards)
         {
             if (!success)
@@ -220,6 +244,9 @@ namespace CHAL.Systems.Map
         }
 
         [ContextMenu("Debug/Start Next Wave")]
+/// <summary>
+/// Advances to the next wave in the game.
+/// </summary>
         public void NextWave()
         {
             CurrentWave++;

@@ -5,6 +5,9 @@ using UnityEngine;
 namespace BayatGames.SaveGameFree.Examples
 {
 
+/// <summary>
+/// Controls the movement of a game object based on player input.
+/// </summary>
 	public class ExampleMoveObject : MonoBehaviour
 	{
 

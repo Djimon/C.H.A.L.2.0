@@ -43,6 +43,11 @@ namespace CHAL.UI
             HideDetails();
         }
 
+/// <summary>
+/// Initializes the research service with the specified theme.
+/// </summary>
+/// <param name="service">The research service to initialize.</param>
+/// <param name="theme">The theme to apply to the UI.</param>
         public void Init(ResearchService service, ResearchUIThemeDef theme)
         {
             Service = service;
@@ -50,6 +55,10 @@ namespace CHAL.UI
             RefreshActive();
         }
 
+/// <summary>
+/// Refreshes the active state of the service.
+/// Updates the UI elements based on the current active node.
+/// </summary>
         public void RefreshActive()
         {
             if (Service == null) return;
@@ -82,6 +91,11 @@ namespace CHAL.UI
             }
         }
 
+/// <summary>
+/// Displays the details of a node identified by the given node ID.
+/// Hides details if the node ID is null or empty.
+/// </summary>
+/// <param name="nodeId">The ID of the node to display details for.</param>
         public void ShowDetails(string nodeId)
         {
             _selectedNodeId = nodeId;
@@ -108,6 +122,9 @@ namespace CHAL.UI
             if (_detailPanel != null) _detailPanel.style.display = DisplayStyle.Flex;
         }
 
+/// <summary>
+/// Hides the detail panel by setting its display style to none.
+/// </summary>
         public void HideDetails()
         {
             if (_detailPanel != null) _detailPanel.style.display = DisplayStyle.None;
@@ -124,6 +141,11 @@ namespace CHAL.UI
             }
         }
 
+/// <summary>
+/// Checks if the pointer is currently over a UI element based on screen position.
+/// </summary>
+/// <param name="screenPos">The screen position to check.</param>
+/// <returns>True if the pointer is over a UI element; otherwise, false.</returns>
         public bool IsPointerOverUI(Vector2 screenPos)
         {
             if (_doc == null || _doc.rootVisualElement == null) return false;
@@ -150,6 +172,11 @@ namespace CHAL.UI
 
     public static class ResearchUIFormat
     {
+/// <summary>
+/// Formats the unlocks of a given research node definition.
+/// </summary>
+/// <param name="def">The research node definition to format.</param>
+/// <returns>A formatted string of the unlocks.</returns>
         public static string FormatUnlocks(ResearchNodeDef def)
         {
             if (def == null || def.unlocks == null || def.unlocks.Count == 0) return "â€”";
@@ -159,6 +186,11 @@ namespace CHAL.UI
             return sb.ToString();
         }
 
+/// <summary>
+/// Formats the requirements of a given research node definition.
+/// </summary>
+/// <param name="def">The research node definition to format.</param>
+/// <returns>A formatted string of the requirements.</returns>
         public static string FormatRequirements(ResearchNodeDef def)
         {
             if (def == null || def.requirements == null) return "â€”";

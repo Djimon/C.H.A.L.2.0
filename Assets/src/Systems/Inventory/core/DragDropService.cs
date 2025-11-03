@@ -26,6 +26,11 @@ namespace CHAL.Systems.Inventory
         public event Action OnEndDrag;
 
         // “Pickup” (auch per RMB für Split möglich)
+/// <summary>
+/// Initiates the drag operation for an item.
+/// </summary>
+/// <param name="from">The item to be dragged.</param>
+/// <param name="splitHalf">Indicates whether to split the item in half during the drag.</param>
         public void BeginDrag(ItemMoveObject from, bool splitHalf)
         {
             DebugManager.Log($"[Drag&Drop]: Begin", DebugManager.EDebugLevel.Dev, "Inventory");
@@ -40,6 +45,9 @@ namespace CHAL.Systems.Inventory
 
 
         // Abbruch (ESC, Rechtsklick außerhalb, etc.)
+/// <summary>
+/// Cancels the current action or operation.
+/// </summary>
         public void Cancel()
         {
             _hasFrom = false;
@@ -48,6 +56,10 @@ namespace CHAL.Systems.Inventory
             OnEndDrag?.Invoke();
         }
 
+/// <summary>
+/// Attempts to drop an item onto the specified target object.
+/// </summary>
+/// <param name="to">The target item move object to drop onto.</param>
         public void TryDropOn(ItemMoveObject to)
         {
             if (!_hasFrom) return;

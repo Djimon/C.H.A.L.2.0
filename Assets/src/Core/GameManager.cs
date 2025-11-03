@@ -21,6 +21,9 @@ namespace CHAL.Core
         Hideout
     }
 
+/// <summary>
+/// Manages the game state and handles game-related logic.
+/// </summary>
     public class GameManager : MonoBehaviour
     {
 
@@ -124,12 +127,20 @@ namespace CHAL.Core
             ItemRegistry.Instance.TriggerInstance();
         }
 
+/// <summary>
+/// Saves the current game state to persistent storage.
+/// This method updates the saved profile with the latest changes.
+/// </summary>
         public void SaveGame()
         {
             MapDomainToProfile();
             SaveSystem.Save(Profile);
         }
 
+/// <summary>
+/// Resets the player profile to its default state.
+/// This method initializes a new player profile and retains the old player's name and colors.
+/// </summary>
         public void ResetProfile()
         {
             var oldName = Profile.playerName;
@@ -145,6 +156,10 @@ namespace CHAL.Core
         // ---------------------------
         // State Machine Logik
         // ---------------------------
+/// <summary>
+/// Sets the current game state to the specified new state.
+/// </summary>
+/// <param name="newState">The new game state to set.</param>
         public void SetState(GameState newState)
         {
             DebugManager.Log($"GameState {CurrentState} â†’ {newState}");
@@ -180,6 +195,9 @@ namespace CHAL.Core
 
 
 
+/// <summary>
+/// Navigates to the main menu of the game.
+/// </summary>
         public void GoToMainMenu()
         {
             SaveGame();
@@ -187,6 +205,9 @@ namespace CHAL.Core
             SceneManager.LoadScene("01_MainMenu");
         }
 
+/// <summary>
+/// Exits the current game state and transitions to the hideout scene.
+/// </summary>
         public void ExitToHideout()
         {
             SetState(GameState.Hideout);
@@ -231,6 +252,9 @@ namespace CHAL.Core
 
         }
 
+/// <summary>
+/// Initializes the player inventory for the test.
+/// </summary>
         public void TestInitInventory()
         {
             BuildPlayerInventoriesFromFolder();
@@ -280,6 +304,11 @@ namespace CHAL.Core
             }
         }
 
+/// <summary>
+/// Retrieves the inventory template for the specified player inventory type.
+/// </summary>
+/// <param name="typeId">The type ID of the player inventory.</param>
+/// <returns>The corresponding InventoryDef, or null if not found.</returns>
         public InventoryDef GetTemplate(PlayerInventoryType typeId)
         {
             if (_inventoryTemplates.TryGetValue(typeId, out var def)) return def;
@@ -296,6 +325,12 @@ namespace CHAL.Core
             return null;
         }
 
+/// <summary>
+/// Ensures an inventory instance is created based on the provided instance ID and template type.
+/// </summary>
+/// <param name="instanceId">The unique identifier for the inventory instance.</param>
+/// <param name="templateTypeId">The type of player inventory template to use.</param>
+/// <returns>The created inventory instance, or null if the instance could not be created.</returns>
         public InventoryInstance EnsureInstance(string instanceId, PlayerInventoryType templateTypeId)
         {
             if (string.IsNullOrEmpty(instanceId))
@@ -322,6 +357,9 @@ namespace CHAL.Core
             return inst;
         }
 
+/// <summary>
+/// Maps domain data to the profile's inventory.
+/// </summary>
         public void MapDomainToProfile()
         {
             if (Inventory == null || Profile == null) return;
@@ -344,6 +382,9 @@ namespace CHAL.Core
                 DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
         }
 
+/// <summary>
+/// Maps the profile data to the domain model.
+/// </summary>
         public void MapProfileToDomain()
         {
             if (Inventory == null || Profile == null) return;
@@ -449,6 +490,13 @@ namespace CHAL.Core
         }
 
         // Ã–ffentliche, einfache Resolver-API fÃ¼r alle Systeme
+/// <summary>
+/// Attempts to resolve a PlayerInventoryType and instance ID from the given item ID.
+/// </summary>
+/// <param name="itemId">The item ID to resolve.</param>
+/// <param name="type">The resolved PlayerInventoryType.</param>
+/// <param name="instanceId">The resolved instance ID.</param>
+/// <returns>True if resolution is successful; otherwise, false.</returns>
         public bool TryResolveByItemId(string itemId, out PlayerInventoryType type, out string instanceId)
         {
             type = default;
@@ -472,6 +520,11 @@ namespace CHAL.Core
             return true;
         }
 
+/// <summary>
+/// Gets the instance ID for the specified player inventory type.
+/// </summary>
+/// <param name="t">The player inventory type to get the instance ID for.</param>
+/// <returns>The instance ID associated with the specified inventory type.</returns>
         public string InstanceIdFor(PlayerInventoryType t)
         {
             if (_typeToInstanceId.TryGetValue(t, out var id)) return id;
@@ -480,6 +533,10 @@ namespace CHAL.Core
             return id;
         }
 
+/// <summary>
+/// Initializes the research system, optionally loading existing data.
+/// </summary>
+/// <param name="loadExisting">Indicates whether to load existing research data.</param>
         public void InitResearch(bool loadExisting)
         {
             EnsureResearchDefsLoaded();

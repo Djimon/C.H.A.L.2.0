@@ -18,6 +18,9 @@ namespace BayatGames.SaveGameFree.Examples
         }
     }
 
+/// <summary>
+/// Manages saving and loading game positions.
+/// </summary>
     public class ExampleSavePosition : MonoBehaviour
     {
         private string _encodePassword;
@@ -55,11 +58,17 @@ namespace BayatGames.SaveGameFree.Examples
             Save();
         }
 
+/// <summary>
+/// Saves the current game state.
+/// </summary>
         public void Save()
         {
             SaveGame.Save<Vector3Save>(identifier, target.position, SerializerDropdown.Singleton.ActiveSerializer);
         }
 
+/// <summary>
+/// Loads the saved game state and updates the target position.
+/// </summary>
         public void Load()
         {
             target.position = SaveGame.Load<Vector3Save>(

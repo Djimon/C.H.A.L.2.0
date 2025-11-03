@@ -65,6 +65,9 @@ namespace CHAL.Systems.Research
             CenterOnActiveOrFirst();
         }
 
+/// <summary>
+/// Initializes the HUD if the service is available.
+/// </summary>
         public void initHUD()
         {
             if (service == null) return;
@@ -87,6 +90,9 @@ namespace CHAL.Systems.Research
 
         // ==== Build ====
 
+/// <summary>
+/// Builds the map by cleaning up existing elements and compiling the research tree.
+/// </summary>
         public void BuildMap()
         {
             // Clean
@@ -329,6 +335,11 @@ namespace CHAL.Systems.Research
             SetZoomIndex(zoomIndex + dir, (Vector2)Input.mousePosition);
         }
 
+/// <summary>
+/// Sets the zoom index and adjusts the content scale based on the specified screen pivot.
+/// </summary>
+/// <param name="newIndex">The new zoom index to set.</param>
+/// <param name="screenPivot">The screen point used to maintain the content position during zoom.</param>
         public void SetZoomIndex(int newIndex, Vector2 screenPivot)
         {
             newIndex = Mathf.Clamp(newIndex, 0, zoomSteps.Length - 1);
@@ -358,6 +369,11 @@ namespace CHAL.Systems.Research
         //TODO
 //        public string ActiveNodeId => service.ActiveNodeId;
 
+/// <summary>
+/// Handles the event when a node is clicked.
+/// Updates the visual state of widgets and shows details if the node is available.
+/// </summary>
+/// <param name="nodeId">The identifier of the clicked node.</param>
         public void OnNodeClicked(string nodeId)
         {
             // Auswahl visualisieren
@@ -374,6 +390,9 @@ namespace CHAL.Systems.Research
             
         }
 
+/// <summary>
+/// Centers the content on the active node or the first widget if no active node is found.
+/// </summary>
         public void CenterOnActiveOrFirst()
         {
             string id = service.GetActiveNodeId();

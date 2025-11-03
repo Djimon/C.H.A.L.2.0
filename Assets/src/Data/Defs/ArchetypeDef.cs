@@ -5,6 +5,10 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "HeroArcheType", menuName = "Data/Hero Archetype")]
+/// <summary>
+/// Represents an archetype definition for a character in the game.
+/// Contains attributes and settings related to the archetype's role and abilities.
+/// </summary>
     public class ArchetypeDef : ScriptableObject
     {
         public string ArchetypeId;             // "Vanguard"
@@ -57,6 +61,9 @@ namespace CHAL.Data
     }
 
     [Serializable]
+/// <summary>
+/// Represents a pattern for level growth with a defined priority of roles.
+/// </summary>
     public class LevelGrowthPattern
     {
         [Tooltip("Pattern aus genau 5 Rollen, z.B. Core, Sec, Sec, Ter, Edge")]

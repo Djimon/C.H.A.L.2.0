@@ -6,6 +6,10 @@ using UnityEngine;
 namespace CHAL.Systems.Crafting
 {
     [CreateAssetMenu(fileName = "CraftingRecipe", menuName = "Data/Crafting Recipe")]
+/// <summary>
+/// Represents a recipe definition used in the game.
+/// Contains details about the recipe's costs and display properties.
+/// </summary>
     public class RecipeDef : ScriptableObject
     {
         public string Id;

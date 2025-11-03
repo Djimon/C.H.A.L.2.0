@@ -5,6 +5,10 @@ using System;
 namespace CHAL.Systems.Skill
 {
     [Serializable]
+/// <summary>
+/// Represents an active status effect applied to a target.
+/// Contains information about the effect's duration, source, and target.
+/// </summary>
     public class ActiveStatusEffect
     {
         public string EffectId;

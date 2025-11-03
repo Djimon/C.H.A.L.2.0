@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace CHAL.Systems.Wave
 {
+/// <summary>
+/// Represents the context for wave loot management, including budget and drop information.
+/// </summary>
     public class WaveLootContext
     {
         public WaveComposition Wave { get; }

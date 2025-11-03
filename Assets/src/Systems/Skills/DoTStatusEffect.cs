@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace CHAL.Systems.Skill
 {
+/// <summary>
+/// Represents a damage-over-time status effect that can stack over time.
+/// Inherits from ActiveStatusEffect and manages its own stacking behavior.
+/// </summary>
     public class DoTStatusEffect : ActiveStatusEffect
     {
         public DoTSettings DoTsettings;

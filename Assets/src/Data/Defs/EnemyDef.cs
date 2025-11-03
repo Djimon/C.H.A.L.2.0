@@ -4,6 +4,9 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "EnemyDef", menuName = "Data/EnemyDef")]
+/// <summary>
+/// Represents the definition of an enemy in the game, including its identity, stats, and rewards.
+/// </summary>
     public class EnemyDef : ScriptableObject
     {
         [Header("Identity")]

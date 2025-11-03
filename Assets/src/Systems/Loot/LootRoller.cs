@@ -196,6 +196,12 @@ namespace CHAL.Systems.Loot
         }
 
 
+/// <summary>
+/// Calculates the amount of gold dropped by a monster based on its rank and the map level.
+/// </summary>
+/// <param name="enemy">The enemy struct containing the monster's rank.</param>
+/// <param name="maplvl">The level of the map where the monster is located.</param>
+/// <returns>The amount of gold rolled for the monster.</returns>
         public int RollGoldForMonster(EnemyStruct enemy, int maplvl)
         {
             var rank = enemy.Rank;
@@ -217,6 +223,14 @@ namespace CHAL.Systems.Loot
 
         }
 
+/// <summary>
+/// Calculates the experience points awarded for defeating a monster.
+/// </summary>
+/// <param name="enemy">The enemy struct representing the monster.</param>
+/// <param name="mapLevel">The level of the map where the monster is located.</param>
+/// <param name="difficulty">The difficulty level of the map.</param>
+/// <param name="waveLevel">The current wave level of the encounter.</param>
+/// <returns>The amount of experience points awarded.</returns>
         public int RollXPForMonster(EnemyStruct enemy, int mapLevel, MapDifficulty difficulty, int waveLevel)
         {
             var econ = BalanceManager.Instance.Config.economy;

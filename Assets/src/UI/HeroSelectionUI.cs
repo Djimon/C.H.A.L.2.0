@@ -8,6 +8,9 @@ using UnityEngine.UIElements;
 namespace CHAL.UI
 {
 
+/// <summary>
+/// Manages the user interface for selecting heroes in the game.
+/// </summary>
     public class HeroSelectionUI : IngameUI
     {
         [SerializeField]
@@ -91,6 +94,10 @@ namespace CHAL.UI
 
         }
 
+/// <summary>
+/// Initializes the map manager and sets up the hero slots.
+/// </summary>
+/// <param name="mapMGR">The MapManager instance to initialize.</param>
         public void Init(MapManager mapMGR)
         {
             mapManager = mapMGR;

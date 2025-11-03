@@ -4,6 +4,9 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "MapDef", menuName = "Data/Map Definition")]
+/// <summary>
+/// Represents a map definition used in the game, including metadata and gameplay settings.
+/// </summary>
     public class MapDef : ScriptableObject
     {
         [Header("Meta")]

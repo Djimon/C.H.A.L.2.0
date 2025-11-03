@@ -11,6 +11,10 @@ using UnityEngine;
 
 namespace CHAL.Systems.Wave
 {
+/// <summary>
+/// Manages the spawning of waves of enemies in the game.
+/// Handles enemy spawn points, wave definitions, and rewards.
+/// </summary>
     public class WaveManager : MonoBehaviour
     {
         [Header("Setup")]
@@ -70,6 +74,12 @@ namespace CHAL.Systems.Wave
 
         // ------------------ PUBLIC API ------------------
 
+/// <summary>
+/// Starts a new wave in the game with the specified map and index.
+/// </summary>
+/// <param name="mapDef">The definition of the map for the wave.</param>
+/// <param name="waveIndex">The index of the wave to start.</param>
+/// <param name="_ref">A reference to the MapManager.</param>
         public void StartWave(MapDef mapDef, int waveIndex, MapManager _ref)
         {
             _MapMangerRef = _ref;
@@ -392,6 +402,9 @@ namespace CHAL.Systems.Wave
             waveRewards = new WaveRewards(); // reset
         }
 
+/// <summary>
+/// Collects any remaining loot in the scene.
+/// </summary>
         public void CollectRemainingLoot()
         {
             int lootLayer = LayerMask.NameToLayer("Loot");
@@ -481,6 +494,11 @@ namespace CHAL.Systems.Wave
             gm.SaveGame();
         }
 
+/// <summary>
+/// Collects a specified quantity of loot identified by the item ID.
+/// </summary>
+/// <param name="itemId">The ID of the item to collect.</param>
+/// <param name="quantity">The amount of the item to collect.</param>
         public void CollectLoot(string itemId, int quantity)
         {
             waveRewards.AddItem(itemId, quantity);
@@ -587,6 +605,11 @@ namespace CHAL.Systems.Wave
             }
         }
 
+/// <summary>
+/// Selects a random spawn point from the provided list of transforms.
+/// </summary>
+/// <param name="spawnPoints">A list of transform objects representing potential spawn points.</param>
+/// <returns>A Vector3 representing the position of the selected spawn point.</returns>
         public static Vector3 SelectSpawnpoint(List<Transform> spawnPoints)
         {
             if (spawnPoints == null || spawnPoints.Count == 0)
@@ -625,6 +648,12 @@ namespace CHAL.Systems.Wave
             }
         }
 
+/// <summary>
+/// Simulates the statistics for a specific wave in the given map.
+/// Validates the map and wave index before processing.
+/// </summary>
+/// <param name="mapDef">The map definition containing wave details.</param>
+/// <param name="waveIndex">The index of the wave to simulate.</param>
         public void SimulateWaveStats(MapDef mapDef, int waveIndex)
         {
             if (mapDef == null || waveIndex < 1 || waveIndex > mapDef.waveDefs.Count)
@@ -643,24 +672,41 @@ namespace CHAL.Systems.Wave
 
     }
 
+/// <summary>
+/// Represents a collection of rewards including items and currencies.
+/// </summary>
     public class WaveRewards
     {
         public Dictionary<string, int> Items = new();          // itemId â†’ count
         public Dictionary<string, int> Currencies = new();     // "gold" â†’ amount
         public int XP;
 
+/// <summary>
+/// Adds an item to the collection with a specified count.
+/// </summary>
+/// <param name="itemId">The identifier for the item to add.</param>
+/// <param name="count">The number of items to add. Defaults to 1.</param>
         public void AddItem(string itemId, int count = 1)
         {
             if (!Items.ContainsKey(itemId)) Items[itemId] = 0;
             Items[itemId] += count;
         }
 
+/// <summary>
+/// Adds a specified amount of currency to the player's account.
+/// </summary>
+/// <param name="currencyId">The identifier for the currency to add.</param>
+/// <param name="amount">The amount of currency to add.</param>
         public void AddCurrency(string currencyId, int amount)
         {
             if (!Currencies.ContainsKey(currencyId)) Currencies[currencyId] = 0;
             Currencies[currencyId] += amount;
         }
 
+/// <summary>
+/// Adds experience points to the player.
+/// </summary>
+/// <param name="amount">The amount of XP to add.</param>
         public void AddXP(int amount)
         {
             XP += amount;

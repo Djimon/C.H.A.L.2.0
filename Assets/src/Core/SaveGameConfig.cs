@@ -18,6 +18,10 @@ namespace CHAL.Core
         public string extensionJson = "json";
         public string extensionDat = "dat";
 
+/// <summary>
+/// Resolves the file ID at runtime based on the current settings.
+/// </summary>
+/// <returns>The resolved file ID as a string.</returns>
         public string ResolveFileIdRuntime()
         {
 #if UNITY_EDITOR
@@ -29,6 +33,10 @@ namespace CHAL.Core
             return $"{baseFolder}/{singleProfileFolder}/{fileStem}.{ext}";
         }
 
+/// <summary>
+/// Determines if runtime encoding should be applied.
+/// </summary>
+/// <returns>True if encoding is needed; otherwise, false.</returns>
         public bool ShouldEncodeRuntime()
         {
 #if UNITY_EDITOR

@@ -8,6 +8,9 @@ namespace CHAL.Data
 {
 
     [CreateAssetMenu(fileName = "ItemDef", menuName = "Data/ItemDef")]
+/// <summary>
+/// Represents an item definition in the game, including its properties and attributes.
+/// </summary>
     public class ItemDef : ScriptableObject
     {
         [Tooltip("Schema: category:item, z.B. remains:gland")]
@@ -73,6 +76,11 @@ namespace CHAL.Data
         public static readonly Color runeColorIgnis = new Color(200 /255f, 0 /255f, 0 /255f);
         public static readonly Color runeColorVoid = new Color(135 /255f, 0 /255f, 120 /255f);
 
+/// <summary>
+/// Gets the color associated with the specified rune color type.
+/// </summary>
+/// <param name="type">The type of rune color.</param>
+/// <returns>The corresponding color for the rune color type.</returns>
         public static Color Get(RuneColorType type) => type switch
         {
             RuneColorType.Sun => runeColorSun,

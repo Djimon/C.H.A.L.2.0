@@ -4,6 +4,9 @@ using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
 using UnityEngine;
 
+/// <summary>
+/// Manages loot rules and enemy composition for debugging purposes.
+/// </summary>
 public class LootRulesDebug : MonoBehaviour
 {
     //LootRules

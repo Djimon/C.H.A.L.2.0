@@ -5,8 +5,16 @@ using UnityEngine;
 
 
     [CustomEditor(typeof(ItemDef))]
+/// <summary>
+/// Provides a custom editor for the ItemDef object in the Unity Inspector.
+/// This class allows users to edit item properties visually.
+/// </summary>
     public class ItemDefEditor : Editor
     {
+/// <summary>
+/// Draws the custom inspector GUI for the ItemDef object.
+/// This method allows editing of item properties in the Unity Inspector.
+/// </summary>
         public override void OnInspectorGUI()
         {
             var item = (ItemDef)target;

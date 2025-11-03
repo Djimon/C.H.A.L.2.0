@@ -5,6 +5,10 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "WaveDef", menuName = "Data/Wave Definition")]
+/// <summary>
+/// Represents a wave definition for spawning enemies in the game.
+/// Contains parameters for different enemy types and constraints.
+/// </summary>
     public class WaveDef : ScriptableObject
     {
         [Header("Structure")]
@@ -61,6 +65,11 @@ namespace CHAL.Data
         [Range(0f, 5f)] public float alphaBossDelay;
         [Range(0f, 5f)] public float alphaChampionDelay;
 
+/// <summary>
+/// Gets the spawn delay alpha based on the enemy rank.
+/// </summary>
+/// <param name="r">The rank of the enemy.</param>
+/// <returns>The spawn delay alpha as a float.</returns>
         public float GetSpawnDelayAlpha(EnemyRank r) => r switch
         {
             EnemyRank.Spawn => alphaSpawnDelay,

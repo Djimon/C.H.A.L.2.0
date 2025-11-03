@@ -9,6 +9,9 @@ using static UnityEngine.UI.GridLayoutGroup;
 
 namespace CHAL.Systems.Skill
 {
+/// <summary>
+/// Represents an instance of a skill with various attributes and effects.
+/// </summary>
     public class SkillInstance
     {
         public SkillData Data { get; private set; }
@@ -37,6 +40,9 @@ namespace CHAL.Systems.Skill
 
         }
 
+/// <summary>
+/// Recalculates the skill's attributes based on current modifiers and data.
+/// </summary>
         public void Recalculate()
         {
             var tags = Data.Tags ?? new List<SkillTag>();
@@ -54,6 +60,10 @@ namespace CHAL.Systems.Skill
             DebugManager.Log($"Initialized Skill {Data.SkillId} with DMG:{Damage} CastTime:{CastTime} cd:{Cooldown} range:{Range} dur:{Duration} ", DebugManager.EDebugLevel.Debug,"Skill");
         }
 
+/// <summary>
+/// Checks if the cooldown period has ended.
+/// </summary>
+/// <returns>True if cooldownRemaining is less than or equal to zero; otherwise, false.</returns>
         public bool IsReady() //â†’ prÃ¼ft, ob cooldownRemaining <= 0.
         {
             if(cooldownRemaining <= 0)
@@ -65,19 +75,34 @@ namespace CHAL.Systems.Skill
             return false;
         }
 
+/// <summary>
+/// Starts the cooldown by setting the remaining time to the full cooldown duration.
+/// </summary>
         public void StartCooldown() //â†’ setzt cooldownRemaining = Cooldown.
         {
             cooldownRemaining = Cooldown;
         }
 
+/// <summary>
+/// Reduces the remaining cooldown time by the specified delta time.
+/// </summary>
+/// <param name="deltaTime">The amount of time to reduce from the cooldown.</param>
         public void TickCooldown(float deltaTime) //â†’ reduziert cooldownRemaining.
         {
             cooldownRemaining -= deltaTime;
         }
 
+/// <summary>
+/// Gets the remaining cooldown time, ensuring it is not negative.
+/// </summary>
+/// <returns>The remaining cooldown time as a float.</returns>
         public float GetCooldownRemaining() => Mathf.Max(0f, cooldownRemaining);
 
 
+/// <summary>
+/// Returns a string representation of the object, including its properties.
+/// </summary>
+/// <returns>A formatted string with the object's data.</returns>
         public override string ToString()
         {
             return $"{Data.DisplayName}: Dmg={Damage}, CD={Cooldown}, Range={Range}, " +

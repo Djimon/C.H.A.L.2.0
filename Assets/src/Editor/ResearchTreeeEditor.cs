@@ -313,6 +313,9 @@ public sealed class ResearchTreeDefEditor : Editor
         menu.ShowAsContext();
     }
 
+/// <summary>
+/// Draws the custom inspector GUI for the component.
+/// </summary>
     public override void OnInspectorGUI()
     {
         EnsureStyles();

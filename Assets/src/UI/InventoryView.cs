@@ -12,6 +12,10 @@ using static UnityEngine.Rendering.DebugUI;
 
 namespace CHAL.UI
 {
+/// <summary>
+/// Manages the inventory UI and layout in the game.
+/// Implements IDockableView for docking functionality.
+/// </summary>
     public class InventoryView : MonoBehaviour, IDockableView
     {
         public InventoryDef _inventoryDef;

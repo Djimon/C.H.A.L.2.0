@@ -5,6 +5,9 @@ namespace CHAL.Core
 {
     // Früh ausführen, damit andere Systeme schon beim Awake darauf zugreifen können.
     [DefaultExecutionOrder(-1000)]
+/// <summary>
+/// Manages the game balance configuration and provides access to it.
+/// </summary>
     public class BalanceManager : MonoBehaviour
     {
         public static BalanceManager Instance { get; private set; }
@@ -49,6 +52,11 @@ namespace CHAL.Core
             }
         }
 
+/// <summary>
+/// Calculates the experience points required for a given level.
+/// </summary>
+/// <param name="level">The level for which to calculate the experience points.</param>
+/// <returns>The experience points needed to reach the specified level.</returns>
         public static int GetXpForLevel(int level)
         {
             var xpConfig = Instance.config.economy.xp;
@@ -59,6 +67,10 @@ namespace CHAL.Core
         }
 
         [ContextMenu("Debug XP Progression")]
+/// <summary>
+/// Debugs the experience progression for specified levels.
+/// This method calculates and displays the total experience points up to each checkpoint level.
+/// </summary>
         public void DebugXpProgression()
         {
             int[] checkpoints = {1, 10, 50, 100 };
@@ -78,6 +90,11 @@ namespace CHAL.Core
             }
         }
 
+/// <summary>
+/// Gets the range value based on the specified skill range.
+/// </summary>
+/// <param name="range">The skill range to evaluate.</param>
+/// <returns>The corresponding range value as a float.</returns>
         public float GetRangeValue(SkillRange range)
         {
             var skillRangeCOnfig = Instance.Config.skillRanges;

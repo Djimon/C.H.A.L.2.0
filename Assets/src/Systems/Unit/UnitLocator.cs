@@ -44,6 +44,10 @@ namespace CHAL.Systems.Unit
 
         // ---------- Registrierung (Pooling-freundlich) ----------
 
+/// <summary>
+/// Registers the specified hero with the unit locator.
+/// </summary>
+/// <param name="hero">The hero controller to register.</param>
         public void Register(HeroController hero)
         {
             if (hero == null) return;
@@ -51,6 +55,10 @@ namespace CHAL.Systems.Unit
             DebugManager.Log($"[UnitLocator] +Hero {hero.name} (now {_heroes.Count})", DebugManager.EDebugLevel.Debug, "Combat");
         }
 
+/// <summary>
+/// Unregisters the specified hero from the unit locator.
+/// </summary>
+/// <param name="hero">The hero controller to unregister.</param>
         public void Unregister(HeroController hero)
         {
             if (hero == null) return;
@@ -58,6 +66,10 @@ namespace CHAL.Systems.Unit
             DebugManager.Log($"[UnitLocator] -Hero {hero?.name} (now {_heroes.Count})", DebugManager.EDebugLevel.Debug, "Combat");
         }
 
+/// <summary>
+/// Registers the specified enemy with the unit locator.
+/// </summary>
+/// <param name="enemy">The enemy controller to register.</param>
         public void Register(EnemyController enemy)
         {
             if (enemy == null) return;
@@ -65,6 +77,10 @@ namespace CHAL.Systems.Unit
             DebugManager.Log($"[UnitLocator] +Enemy {enemy.name} (now {_enemies.Count})", DebugManager.EDebugLevel.Debug, "Combat");
         }
 
+/// <summary>
+/// Unregisters the specified enemy from the unit locator.
+/// </summary>
+/// <param name="enemy">The enemy controller to unregister.</param>
         public void Unregister(EnemyController enemy)
         {
             if (enemy == null) return;

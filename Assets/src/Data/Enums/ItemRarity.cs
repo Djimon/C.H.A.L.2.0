@@ -31,6 +31,11 @@ namespace CHAL.Data
             { Rarity.Daemonic, new Color( 87f/255f,  12f/255f,  27f/255f) }  // Blutrot
         };
   
+/// <summary>
+/// Retrieves the color associated with the specified rarity.
+/// </summary>
+/// <param name="rarity">The rarity to get the corresponding color for.</param>
+/// <returns>The color associated with the given rarity, or white if not found.</returns>
         public static Color Get(Rarity rarity) =>
             _map.TryGetValue(rarity, out var c) ? c : Color.white;
     }
