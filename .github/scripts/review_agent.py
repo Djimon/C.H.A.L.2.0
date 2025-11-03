@@ -1,6 +1,8 @@
 import os
 import pathlib
 import re
+import json
+import requests
 from dataclasses import dataclass
 from typing import List, Optional
 from git import Repo
@@ -19,6 +21,71 @@ class Finding:
     line: int          # 1-based
     symbol: str        # Klassen-/Methodenname oder "Debug call"
     message: str       # kurze Beschreibung
+
+# -------- Helper --------
+
+def make_fingerprint(f: Finding) -> str:
+    # Eindeutige ID pro Finding: <Kind>|<File>|<Symbol>
+    return f"{f.kind}|{f.file}|{f.symbol}"
+
+def get_repo_from_env() -> Optional[tuple[str, str]]:
+    repo = os.getenv("GITHUB_REPOSITORY")
+    if not repo or "/" not in repo:
+        return None
+    owner, name = repo.split("/", 1)
+    return owner, name
+
+
+def get_github_session() -> Optional[requests.Session]:
+    token = os.getenv("GITHUB_TOKEN")
+    if not token:
+        print("ReviewAgent: No GITHUB_TOKEN set, skipping issue creation.")
+        return None
+    s = requests.Session()
+    s.headers.update({
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+    })
+    return s
+
+
+def load_existing_fingerprints(session: requests.Session, owner: str, repo: str) -> set[str]:
+    """
+    Lädt alle offenen Issues mit Label 'Agent' und sammelt Fingerprints aus der Body-Zeile:
+    'Fingerprint: <...>'
+    """
+    fingerprints: set[str] = set()
+    page = 1
+    per_page = 50
+
+    while True:
+        url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+        params = {
+            "state": "open",
+            "labels": "Agent",
+            "page": page,
+            "per_page": per_page,
+        }
+        resp = session.get(url, params=params)
+        if resp.status_code != 200:
+            print(f"ReviewAgent: Failed to load existing issues: {resp.status_code} {resp.text}")
+            break
+
+        issues = resp.json()
+        if not issues:
+            break
+
+        for issue in issues:
+            body = issue.get("body") or ""
+            for line in body.splitlines():
+                line = line.strip()
+                if line.startswith("Fingerprint: "):
+                    fp = line[len("Fingerprint: "):].strip()
+                    if fp:
+                        fingerprints.add(fp)
+        page += 1
+
+    return fingerprints
 
 
 # -------- Git / File discovery --------
@@ -52,6 +119,43 @@ def all_repo_files() -> List[str]:
 def files_to_process() -> List[str]:
     full = (os.getenv("FULL_SCAN", "").lower() == "true")
     return all_repo_files() if full else changed_files_since_last_commit()
+
+
+def create_issue_for_finding(session: requests.Session, owner: str, repo: str,
+                             finding: Finding, fingerprint: str) -> None:
+    """
+    Erstellt ein Issue für ein Finding, inkl. Fingerprint und Labels.
+    """
+    # Labels: "Agent", plus kind-spezifisch
+    labels = ["Agent", finding.kind]
+
+    title = f"[{finding.kind}] {finding.symbol} in {finding.file}"
+    body_lines = [
+        f"Automatic finding by ReviewAgent.",
+        "",
+        f"**Kind:** {finding.kind}",
+        f"**File:** `{finding.file}`",
+        f"**Line:** {finding.line}",
+        f"**Symbol:** `{finding.symbol}`",
+        "",
+        f"**Message:** {finding.message}",
+        "",
+        f"Fingerprint: {fingerprint}",
+    ]
+    body = "\n".join(body_lines)
+
+    url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+    payload = {
+        "title": title,
+        "body": body,
+        "labels": labels,
+    }
+    resp = session.post(url, json=payload)
+    if resp.status_code not in (200, 201):
+        print(f"ReviewAgent: Failed to create issue for {fingerprint}: {resp.status_code} {resp.text}")
+    else:
+        issue = resp.json()
+        print(f"ReviewAgent: Created issue #{issue.get('number')} for {fingerprint}")
 
 
 # -------- Check A: fehlende <summary> --------
@@ -274,13 +378,32 @@ def main():
         print("ReviewAgent: No findings for Summary or DebugLanguage.")
         return
 
-    # Aktuell: nur in der Konsole ausgeben.
-    # Hier später: GitHub Issues erstellen pro Finding.
     print("ReviewAgent: Findings:")
     for f in findings:
-        print(
-            f"[{f.kind}] {f.file}:{f.line} — {f.symbol} :: {f.message}"
-        )
+        print(f"[{f.kind}] {f.file}:{f.line} — {f.symbol} :: {f.message}")
+
+    # Versuche Issues zu erstellen
+    repo_info = get_repo_from_env()
+    session = get_github_session()
+    if not repo_info or not session:
+        print("ReviewAgent: Missing repo info or token, skipping GitHub issues.")
+        return
+
+    owner, repo = repo_info
+    existing = load_existing_fingerprints(session, owner, repo)
+    print(f"ReviewAgent: Loaded {len(existing)} existing fingerprints from open Agent issues.")
+
+    created_count = 0
+    for f in findings:
+        fp = make_fingerprint(f)
+        if fp in existing:
+            # Issue gibt es schon
+            continue
+        create_issue_for_finding(session, owner, repo, f, fp)
+        existing.add(fp)
+        created_count += 1
+
+    print(f"ReviewAgent: Issue creation done. New issues created: {created_count}")
 
 
 if __name__ == "__main__":
