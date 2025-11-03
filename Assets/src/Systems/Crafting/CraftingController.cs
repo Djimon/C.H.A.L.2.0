@@ -14,6 +14,10 @@ using static CHAL.Systems.Crafting.CraftingService;
 namespace CHAL.Systems.Crafting
 {
 
+/// <summary>
+/// Manages crafting operations and interactions within the game.
+/// Handles inventory, recipes, and UI elements related to crafting.
+/// </summary>
     public class CraftingController : MonoBehaviour
     {
         [Header("References")]
