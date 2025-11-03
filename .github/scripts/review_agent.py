@@ -15,6 +15,9 @@ SUMMARY_FINDING = "Agent/Summary"
 DEBUG_FINDING = "Agent/DebugLanguage"
 DEBUG_MANAGER_FINDING = "Agent/DebugManager"
 
+# GitHub aht ein ratelimit fürs spammen von Issues.
+BATCH_SIZE = int(os.getenv("ISSUE_BATCH_SIZE", "50"))  # z.B. 50
+
 UNITY_METHOD_EXCLUSIONS = {
     "Awake",
     "OnEnable",
@@ -504,10 +507,19 @@ def main():
         grouped[key].append(f)
 
     created_count = 0
-    for (kind, file), group in grouped.items():
-        fp = f"{kind}|{file}"  # Fingerprint nur noch pro Datei & Kind
+    
+    # sortiert -> deterministische Reihenfolge bei jedem Run
+    for (kind, file) in sorted(grouped.keys()):
+        group = grouped[(kind, file)]
+        fp = f"{kind}|{file}"
+
         if fp in existing:
-            continue
+            continue  # Issue für diese (Kind,Datei)-Kombi existiert schon
+
+        if created_count >= BATCH_SIZE:
+            print(f"ReviewAgent: Reached BATCH_SIZE={BATCH_SIZE}, skipping remaining groups.")
+            break
+
         create_issue_for_group(session, owner, repo, kind, file, group, fp)
         existing.add(fp)
         created_count += 1
