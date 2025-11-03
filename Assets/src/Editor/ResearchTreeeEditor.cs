@@ -563,8 +563,7 @@ public sealed class ResearchTreeDefEditor : Editor
             for (int i = tCount - 1; i >= vCount; i--)
                 treeLanes.DeleteArrayElementAtIndex(i);
 
-            DebugManager.Log($"ResearchTree Sync: {removed} Tree-Lane(s) removed (no Visual-Lanes available)."
-                $"ResearchTree Sync: {removed} Tree-Lane(s) entfernt (keine Visual-Lanes dafÃ¼r vorhanden).",
+            DebugManager.Log($"ResearchTree Sync: {removed} Tree-Lane(s) removed (no Visual-Lanes available).",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Warning
             );
         }
@@ -582,7 +581,7 @@ public sealed class ResearchTreeDefEditor : Editor
             }
 
             DebugManager.Log(
-                $"ResearchTree Sync: {add} Tree-Lane(s) hinzugefÃ¼gt (aus Visual-Lanes).",
+                $"ResearchTree Sync: {add} Tree-Lane(s) added (from Visual-Lanes).",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Log
             );
         }
@@ -623,7 +622,7 @@ public sealed class ResearchTreeDefEditor : Editor
                     parentLinks += kv.Value?.Count ?? 0;
 
             DebugManager.Log(
-                $"ResearchTree Compile OK â†’ Lanes={laneCount}, Stages={stageCount}, Nodes={nodeCount}, ParentLinks={parentLinks}",
+                $"ResearchTree Compile OK: Lanes={laneCount}, Stages={stageCount}, Nodes={nodeCount}, ParentLinks={parentLinks}",
                 DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log
             );
 
@@ -634,8 +633,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
             if (nodeCount == 0)
             {
-                DebugManager.Log("ResearchTree notice: No nodes found in the tree yet."
-                    "ResearchTree Hinweis: Noch keine Nodes im Tree gefunden.",
+                DebugManager.Log("ResearchTree notice: No nodes found in the tree yet.",
                     DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Warning
                 );
             }
@@ -666,7 +664,7 @@ public sealed class ResearchTreeDefEditor : Editor
         string path = EditorUtility.SaveFilePanelInProject(title, defaultName, "asset", filter, baseDir);
         if (string.IsNullOrEmpty(path))
         {
-            DebugManager.Log("CreateNewNodeAsset: Abgebrochen.", DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
+            DebugManager.Log("CreateNewNodeAsset: Aborted.", DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
             return null;
         }
 
@@ -701,7 +699,7 @@ public sealed class ResearchTreeDefEditor : Editor
         EditorGUIUtility.PingObject(node);
         ResearchNodeEditorWindow.ShowFor(node);
 
-        DebugManager.Log($"CreateNewNodeAsset: erstellt â†’ {path}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
+        DebugManager.Log($"CreateNewNodeAsset: created’ {path}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
         return node;
     }
 
