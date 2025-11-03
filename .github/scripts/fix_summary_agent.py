@@ -145,20 +145,23 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
 
     file_path: Optional[str] = None
 
-    # 1) File rausziehen
+    # 1) File rausziehen – robust gegen **File:** `pfad`
     for line in lines:
         l = line.strip()
-        if l.lower().startswith("file:"):
-            # nach dem ersten ':' alles nehmen und Backticks entfernen
-            _, rest = l.split(":", 1)
-            file_path = rest.strip().strip("`")
+        lower = l.lower()
+        if "file:" in lower:
+            idx = lower.find("file:")
+            rest = l[idx + len("file:"):]
+            # Sterne + Backticks + Spaces weg
+            rest = rest.replace("*", "").strip()
+            file_path = rest.strip("`").strip()
             break
 
     if not file_path:
         print(f"parse_findings_from_issue: issue #{number} -> no File: line found")
         return findings
 
-    # 2) Versuchen, moderne "Findings"-Zeilen zu parsen (falls später eingeführt)
+    # 2) Bullet-Format (falls später genutzt)
     found_any_bullets = False
     for line in lines:
         l = line.strip()
@@ -184,7 +187,7 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
         print(f"parse_findings_from_issue: issue #{number} -> {len(findings)} bullet finding(s)")
         return findings
 
-    # 3) Legacy-Format: einzelne Line/Symbol/Message-Blöcke
+    # 3) Dein aktuelles Format mit **Line:**, **Symbol:**, **Message:**
     line_no: Optional[int] = None
     symbol: Optional[str] = None
     message_lines: List[str] = []
@@ -194,31 +197,38 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
         l = line.strip()
         if not l:
             if collecting_message:
-                # leere Zeile beendet Message-Block
                 collecting_message = False
             continue
 
-        if l.lower().startswith("line:"):
-            _, rest = l.split(":", 1)
+        lower = l.lower()
+
+        if "line:" in lower:
+            idx = lower.find("line:")
+            rest = l[idx + len("line:"):]
+            rest = rest.replace("*", "").strip()
             try:
-                line_no = int(rest.strip())
+                line_no = int(rest)
             except ValueError:
                 line_no = None
-        elif l.lower().startswith("symbol:"):
-            _, rest = l.split(":", 1)
-            symbol = rest.strip().strip("`")
-        elif l.lower().startswith("message:"):
+
+        elif "symbol:" in lower:
+            idx = lower.find("symbol:")
+            rest = l[idx + len("symbol:"):]
+            rest = rest.replace("*", "").strip()
+            symbol = rest.strip("`").strip()
+
+        elif "message:" in lower:
             collecting_message = True
-            # alles nach "Message:" auf derselben Zeile als Start
-            _, rest = l.split(":", 1)
-            rest = rest.strip()
+            idx = lower.find("message:")
+            rest = l[idx + len("message:"):]
+            rest = rest.replace("*", "").strip()
             if rest:
                 message_lines.append(rest)
-        elif l.lower().startswith("fingerprint:"):
-            # Fingerprint markiert Ende; keine Message mehr
+
+        elif "fingerprint:" in lower:
             collecting_message = False
+
         elif collecting_message:
-            # weitere Zeilen der Message
             message_lines.append(l)
 
     if file_path and line_no is not None and symbol:
