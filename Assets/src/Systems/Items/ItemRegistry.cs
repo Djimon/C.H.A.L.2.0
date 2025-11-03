@@ -153,7 +153,7 @@ namespace CHAL.Systems.Items
             TextAsset json = Resources.Load<TextAsset>("data/Items/ModulePartMap");
             if (json == null)
             {
-                DebugManager.Warning("[ItemRegistry] Keine ModulePartMap gefunden.");
+                DebugManager.Warning("[ItemRegistry] Keine ModulePartMap gefunden!");
                 return null;
             }
 
