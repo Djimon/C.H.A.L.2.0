@@ -9,7 +9,7 @@ _Automatically generated/updated from `.github/scripts/review_agent.py`._
 - Namespace/module: None
 - Types
   - `Finding`
-    - `kind`: Type of finding (e.g., SUMMARY_FINDING or DEBUG_FINDING).
+    - `kind`: Type of finding (e.g., SUMMARY_FINDING, DEBUG_FINDING, DEBUG_MANAGER_FINDING).
     - `file`: Relative path of the file.
     - `line`: 1-based line number of the finding.
     - `symbol`: Class/method name or "Debug call".
@@ -21,6 +21,7 @@ _Automatically generated/updated from `.github/scripts/review_agent.py`._
 - `files_to_process()`: Determines which files to process based on the `FULL_SCAN` environment variable.
 - `check_missing_summary(path: str, text: str)`: Checks for public types, methods, and properties missing XML `<summary>` documentation.
 - `check_debug_language(path: str, text: str)`: Checks for non-English debug messages in debug log calls.
+- `check_wrong_debug_logger(path: str, text: str)`: Checks for incorrect usage of Unity's `Debug` logger.
 - `run_review()`: Executes the review process and collects findings.
 - `main()`: Entry point that runs the review and prints findings to the console.
 - `create_issue_for_finding(session: requests.Session, owner: str, repo: str, finding: Finding, fingerprint: str)`: Creates a GitHub issue for a finding, including fingerprint and labels.
@@ -39,3 +40,4 @@ if __name__ == "__main__":
 
 # Unknowns
 - None.
+
