@@ -165,7 +165,31 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
         print(f"parse_findings_from_issue: issue #{number} -> no File: line found")
         return findings
 
-    # 2) Legacy-Format: **Line:**, **Symbol:**, **Message:**
+    # 2) Neues Gruppenformat: Bullet-Liste unter '### Findings'
+    bullet_items: List[FindingItem] = []
+    for line in lines:
+        l = line.strip()
+        m = RE_FINDING_LINE.match(l)
+        if not m:
+            continue
+        ln = int(m.group(1))
+        symbol = m.group(2)
+        msg = m.group(3)
+        bullet_items.append(
+            FindingItem(
+                issue_number=number,
+                file=file_path,
+                line=ln,
+                symbol=symbol,
+                message=msg,
+            )
+        )
+
+    if bullet_items:
+        print(f"parse_findings_from_issue: issue #{number} -> {len(bullet_items)} bullet finding(s)")
+        return bullet_items
+
+    # 3) Legacy-Format: **Line:**, **Symbol:**, **Message:**
     line_no: Optional[int] = None
     symbol: Optional[str] = None
     message_lines: List[str] = []
@@ -220,7 +244,7 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
                 message=msg,
             )
         )
-        print(f"parse_findings_from_issue: issue #{number} -> 1 finding ({file_path}:{line_no} {symbol})")
+        print(f"parse_findings_from_issue: issue #{number} -> 1 legacy finding ({file_path}:{line_no} {symbol})")
     else:
         print(f"parse_findings_from_issue: issue #{number} -> no finding (file={file_path}, line={line_no}, symbol={symbol})")
 
