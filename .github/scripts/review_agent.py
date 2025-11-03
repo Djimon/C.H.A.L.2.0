@@ -317,7 +317,7 @@ def check_missing_summary(path: str, text: str) -> List[Finding]:
 
 # einfache Heuristik: Debug.*(...) oder irgendwasLog(...)
 RE_DEBUG_CALL = re.compile(
-    r'(DebugManager\.\w+)\s*\(\s*(@"[^"]*"|"[^"]*")',
+    r'(DebugManager\.\w+)\s*\(\s*([@$]*"[^"]*")',
     re.MULTILINE,
 )
 
