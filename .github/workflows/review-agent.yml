@@ -1,0 +1,40 @@
+name: ReviewAgent
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      FULL_SCAN:
+        description: 'Scan all files instead of only changed (true/false)'
+        required: false
+        default: 'false'
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # nötig für git diff HEAD~1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install gitpython
+
+      - name: Run ReviewAgent
+        env:
+          # nur bei workflow_dispatch gibt es github.event.inputs.FULL_SCAN
+          FULL_SCAN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.FULL_SCAN || 'false' }}
+        run: |
+          python .github/scripts/review_agent.py
