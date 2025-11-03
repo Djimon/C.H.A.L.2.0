@@ -38,6 +38,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          BASE_BRANCH: "main"
+          BASE_BRANCH: "master"
         run: |
           python .github/scripts/fix_summary_agent.py
