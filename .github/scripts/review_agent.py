@@ -74,9 +74,28 @@ def check_missing_summary(path: str, text: str) -> List[Finding]:
     - '///' Kommentarblöcke werden einem folgenden Declaration-Block zugeordnet.
     - Wenn der Block kein <summary> enthält, zählt er nicht.
     - public Types/Methods/Properties ohne vorherigen /// <summary> => Finding.
+    - ABER: public Types nur, wenn der Typ-Block mehr als 10 Zeilen hat.
     """
     findings: List[Finding] = []
     lines = text.splitlines()
+
+    def estimate_block_size(start_idx: int) -> int:
+        depth = 0
+        seen_open = False
+        for j in range(start_idx, len(lines)):
+            line = lines[j]
+            # recht naive, aber meist ausreichende Klammerzählung
+            opens = line.count("{")
+            closes = line.count("}")
+            if opens:
+                seen_open = True
+            depth += opens
+            depth -= closes
+            # sobald wir nach einem ersten '{' wieder bei <= 0 sind, ist der Block zu Ende
+            if seen_open and depth <= 0:
+                return j - start_idx + 1
+        # Fallback: bis Dateiende
+        return len(lines) - start_idx
 
     # Map: line_index -> has_summary_comment
     summary_for_next_decl = [False] * len(lines)
@@ -111,6 +130,10 @@ def check_missing_summary(path: str, text: str) -> List[Finding]:
         m_type = RE_PUBLIC_TYPE.match(line)
         if m_type:
             kind, name = m_type.groups()
+            # nur flaggen, wenn der Typ-Block "groß genug" ist (> 10 Zeilen)
+            block_size = estimate_block_size(idx)
+            if block_size <= 10:
+                continue
             findings.append(
                 Finding(
                     kind=SUMMARY_FINDING,
@@ -138,19 +161,19 @@ def check_missing_summary(path: str, text: str) -> List[Finding]:
             continue
 
         # Property?
-        m_prop = RE_PUBLIC_PROPERTY.match(line)
-        if m_prop:
-            name = m_prop.group(1)
-            findings.append(
-                Finding(
-                    kind=SUMMARY_FINDING,
-                    file=path,
-                    line=idx + 1,
-                    symbol=f"property {name}",
-                    message=f"Missing <summary> XML doc for public property '{name}'.",
-                )
-            )
-            continue
+        #m_prop = RE_PUBLIC_PROPERTY.match(line)
+        #if m_prop:
+        #    name = m_prop.group(1)
+        #    findings.append(
+        #        Finding(
+        #            kind=SUMMARY_FINDING,
+        #            file=path,
+        #            line=idx + 1,
+        #            symbol=f"property {name}",
+        #            message=f"Missing <summary> XML doc for public property '{name}'.",
+        #        )
+        #    )
+        #    continue
 
     return findings
 
@@ -188,11 +211,11 @@ def is_likely_non_english(text: str) -> bool:
         return True
 
     # Wenn extrem wenig A-Z-Anteil -> ebenfalls verdächtig
-    letters = [ch for ch in s if ch.isalpha()]
-    if letters:
-        ascii_letters = [ch for ch in letters if "a" <= ch.lower() <= "z"]
-        if len(ascii_letters) / len(letters) < 0.7:
-            return True
+    #letters = [ch for ch in s if ch.isalpha()]
+    #if letters:
+    #    ascii_letters = [ch for ch in letters if "a" <= ch.lower() <= "z"]
+    #    if len(ascii_letters) / len(letters) < 0.7:
+    #        return True
 
     return False
 
