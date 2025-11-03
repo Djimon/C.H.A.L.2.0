@@ -28,6 +28,9 @@ namespace CHAL.Systems.Items
 
         private readonly Dictionary<string, ItemDef> _byId = new();
 
+/// <summary>
+/// Reloads the item definitions from the Resources folder.
+/// </summary>
         public void Reload()
         {
             _byId.Clear();
@@ -222,11 +225,37 @@ namespace CHAL.Systems.Items
         }
 
 
+/// <summary>
+/// Tries to retrieve an item definition based on its identifier.
+/// </summary>
+/// <param name="itemId">The identifier of the item to retrieve.</param>
+/// <param name="def">The item definition if found; otherwise, null.</param>
+/// <returns>True if the item was found; otherwise, false.</returns>
         public bool TryGet(string itemId, out ItemDef def) => _byId.TryGetValue(itemId, out def);
+/// <summary>
+/// Retrieves the rarity of an item based on its identifier.
+/// </summary>
+/// <param name="itemId">The identifier of the item to retrieve the rarity for.</param>
+/// <returns>The rarity of the item, or Rarity.Common if the item does not exist.</returns>
         public Rarity GetRarity(string itemId) => _byId.TryGetValue(itemId, out var d) ? d.rarity : Rarity.Common;
+/// <summary>
+/// Retrieves the loot value for a specified item by its identifier.
+/// </summary>
+/// <param name="itemId">The identifier of the item to retrieve the loot value for.</param>
+/// <returns>The loot value of the item, or 0 if the item does not exist.</returns>
         public int GetLootValue(string itemId) => _byId.TryGetValue(itemId, out var d) ? d.lootValue : 0;
+/// <summary>
+/// Checks if an item exists by its identifier.
+/// </summary>
+/// <param name="itemId">The identifier of the item to check.</param>
+/// <returns>True if the item exists; otherwise, false.</returns>
         public bool Exists(string itemId) => _byId.ContainsKey(itemId);
 
+/// <summary>
+/// Retrieves all items that match the specified type prefix.
+/// </summary>
+/// <param name="typePrefix">The prefix to filter item types.</param>
+/// <returns>An enumerable collection of matching item definitions.</returns>
         public IEnumerable<ItemDef> GetAllItemsByType(string typePrefix)
         {
             foreach (var kv in _byId)
@@ -236,6 +265,10 @@ namespace CHAL.Systems.Items
             }
         }
 
+/// <summary>
+/// Creates a placeholder item asset with the specified item ID.
+/// </summary>
+/// <param name="itemId">The unique identifier for the item.</param>
         public void CreatePlaceholderitem(string itemId)
         {
             var prefix = itemId.Split(':')[0];
@@ -258,16 +291,30 @@ namespace CHAL.Systems.Items
             DebugManager.Log($"[ItemRegistry] Placeholder für '{itemId}' angelegt unter {assetPath}");
         }
 
+/// <summary>
+/// Retrieves the item type associated with the specified item ID.
+/// </summary>
+/// <param name="itemId">The ID of the item.</param>
+/// <returns>The item type corresponding to the given item ID.</returns>
         public ItemType GetTypeOf(string itemId)
         {
             return ItemTypeUtils.FromId(itemId);
         }
 
+/// <summary>
+/// Checks if the specified item ID matches the given item type.
+/// </summary>
+/// <param name="itemId">The ID of the item to check.</param>
+/// <param name="t">The item type to compare against.</param>
+/// <returns>True if the item ID matches the item type; otherwise, false.</returns>
         public bool IsType(string itemId, ItemType t)
         {
             return GetTypeOf(itemId) == t;
         }
 
+/// <summary>
+/// Triggers an instance action in the ItemRegistry.
+/// </summary>
         public void TriggerInstance()
         {
             DebugManager.Log("trigger Instance form Itemregistry");
