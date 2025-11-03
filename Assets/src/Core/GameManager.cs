@@ -96,7 +96,7 @@ namespace CHAL.Core
 
             if (Profile == null)
             {
-                DebugManager.DebugLog("Kein Save gefunden ");
+                DebugManager.DebugLog("No save found");
                 //Profile = new PlayerProfile(); //erst im Character Creator
             }
   
