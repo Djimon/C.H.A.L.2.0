@@ -55,7 +55,7 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingContr
   - HandleSelectRecipe: updates _selected and refreshes preview/detail.
   - HandleCraftClicked: attempts crafting via CraftingService.TryCraftToInventory; on failure shows mapped blocker reason and refreshes preview/detail; on success shows success state and refreshes preview/detail.
   - HandleSlotChanged: refreshes preview/detail only if the changed slot belongs to a relevant inventory id (_relevantInvIds).
-  
+
 ## Constraints & Failure Modes
 - Null checks and guarded flows
   - Many early returns if inv, wallet, or catalog data are missing; warnings logged to DebugManager.
@@ -78,4 +78,3 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingContr
   - How detailPanel.ShowRecipeDetails and ShowFail/ShowSuccess render in the actual UI.
 - Any external side effects not explicit in this file:
   - Additional listeners or side effects triggered by inventory changes beyond HandleSlotChanged.
-
