@@ -105,7 +105,8 @@ namespace CHAL.Systems.Map
                 return;
             }
 
-            ResetHeroesForNewWave(_waveManager);
+
+            ResetHeroesForNewWave(_waveManager); 
             SpawnSelectedHeroesAtSlots(_pendingSelectedHeroes, _waveManager);
 
             DebugManager.Log($"Starte Wave {CurrentWave}/{MaxWaves}", DebugManager.EDebugLevel.Test, "Map");
@@ -134,9 +135,6 @@ namespace CHAL.Systems.Map
 
             DebugManager.Log($"ResetHeroesForNewWave: cleared {count} existing hero instance(s).",
                 DebugManager.EDebugLevel.Test, "Map");
-
-            // Fresh spawn at slots in the order of _pendingSelectedHeroes
-            SpawnSelectedHeroesAtSlots(_pendingSelectedHeroes, waveMgr);
         }
 
         private void SpawnSelectedHeroesAtSlots(List<string> heroIds, WaveManager waveMgr)
