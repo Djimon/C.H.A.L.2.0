@@ -121,13 +121,13 @@ namespace CHAL.Systems.Crafting
             {
                 detailPanel?.Clear();
                 listView?.SetData(Array.Empty<RecipeDef>(), new Dictionary<RecipeDef, bool>());
-                DebugManager.Warning("Crafting", "Rebuild skipped: InventoryDomain is null.");
+                DebugManager.Warning("Rebuild skipped: InventoryDomain is null.", "Crafting");
                 return;
             }
 
             if (catalog == null || catalog.recipes == null)
             {
-                DebugManager.Warning("Crafting", "Catalog is null/empty.");
+                DebugManager.Warning("Catalog is null/empty.", "Crafting");
                 listView?.SetData(Array.Empty<RecipeDef>(), new Dictionary<RecipeDef, bool>());
                 detailPanel?.Clear();
                 return;
