@@ -19,6 +19,9 @@ RE_WRONG_DEBUG = re.compile(
     re.MULTILINE,
 )
 
+RE_FINDING_LINE = re.compile(
+    r"^[-*]\s*Line\s+(\d+),\s*`([^`]+)`: (.+)$"
+)
 
 @dataclass
 class FindingItem:
@@ -104,9 +107,9 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
 
     **Kind:** Agent/DebugManager
     **File:** `Assets/.../Foo.cs`
-    **Line:** 42
-    **Symbol:** `Debug.Log`
-    **Message:** Use DebugManager instead of UnityEngine.Debug.*.
+    ### Findings
+    - Line 25, `Debug.LogError`: Use DebugManager instead of UnityEngine.Debug.*.
+    - Line 37, `Debug.LogWarning`: Use DebugManager instead of UnityEngine.Debug.*.
     """
     number = issue["number"]
     body = issue.get("body") or ""
@@ -115,46 +118,49 @@ def parse_findings_from_issue(issue: dict) -> List[FindingItem]:
     findings: List[FindingItem] = []
 
     file_path: Optional[str] = None
-    line_no: Optional[int] = None
-    symbol: Optional[str] = None
 
+    # 1) File: Zeile finden (Markdown: **File:** `path`)
     for line in lines:
         l = line.strip()
-        if not l:
-            continue
         lower = l.lower()
         if "file:" in lower:
             idx = lower.find("file:")
             rest = l[idx + len("file:"):]
             rest = rest.replace("*", "").strip()
             file_path = rest.strip("`").strip()
-        elif "line:" in lower:
-            idx = lower.find("line:")
-            rest = l[idx + len("line:"):]
-            rest = rest.replace("*", "").strip()
-            try:
-                line_no = int(rest)
-            except ValueError:
-                line_no = None
-        elif "symbol:" in lower:
-            idx = lower.find("symbol:")
-            rest = l[idx + len("symbol:"):]
-            rest = rest.replace("*", "").strip()
-            symbol = rest.strip("`").strip()
+            break
 
-    if file_path and line_no is not None and symbol:
+    if not file_path:
+        print(f"parse_findings_from_issue: issue #{number} -> no File: line found")
+        return findings
+
+    # 2) Bullet-Findings parsen
+    for line in lines:
+        l = line.strip()
+        if not l.startswith(("-", "*")):
+            continue
+        m = RE_FINDING_LINE.match(l)
+        if not m:
+            continue
+
+        ln = int(m.group(1))
+        symbol = m.group(2)
+        msg = m.group(3).strip()
+
         findings.append(
             FindingItem(
                 issue_number=number,
                 file=file_path,
-                line=line_no,
+                line=ln,
                 symbol=symbol,
-                message="Wrong logger usage",
+                message=msg or "Wrong logger usage",
             )
         )
-        print(f"parse_findings_from_issue: issue #{number} -> 1 finding ({file_path}:{line_no} {symbol})")
+
+    if findings:
+        print(f"parse_findings_from_issue: issue #{number} -> {len(findings)} finding(s) for {file_path}")
     else:
-        print(f"parse_findings_from_issue: issue #{number} -> no finding (file={file_path}, line={line_no}, symbol={symbol})")
+        print(f"parse_findings_from_issue: issue #{number} -> no bullet findings (file={file_path})")
 
     return findings
 
