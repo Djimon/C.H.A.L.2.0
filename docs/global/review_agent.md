@@ -23,11 +23,13 @@ _Automatically generated/updated from `.github/scripts/review_agent.py`._
 - `check_debug_language(path: str, text: str)`: Checks for non-English debug messages in debug log calls.
 - `run_review()`: Executes the review process and collects findings.
 - `main()`: Entry point that runs the review and prints findings to the console.
+- `create_issue_for_finding(session: requests.Session, owner: str, repo: str, finding: Finding, fingerprint: str)`: Creates a GitHub issue for a finding, including fingerprint and labels.
 
 # Constraints & Failure Modes
 - Handles missing files and read errors gracefully by printing error messages and continuing execution.
 - Only processes files with the `.cs` extension.
 - Assumes UTF-8 encoding for reading files.
+- Requires `GITHUB_TOKEN` environment variable for GitHub API interactions.
 
 # Example
 ```python
@@ -37,4 +39,3 @@ if __name__ == "__main__":
 
 # Unknowns
 - None.
-

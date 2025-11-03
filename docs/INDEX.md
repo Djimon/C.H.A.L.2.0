@@ -287,7 +287,7 @@ All documented namespaces and types.
 - [LootRulesDebug](global/LootRulesDebug.md) (2025-11-03)
 - [ResearchNodeEditorWindow](global/ResearchNodeEditorWindow.md) (2025-11-03)
 - [ResearchTreeeEditor](global/ResearchTreeeEditor.md) (2025-11-03)
-- [review_agent](global/review_agent.md) (2025-11-03)
+- [review_agent](global/review_agent.md) (new)
 - [RuneForgeConfigEditor](global/RuneForgeConfigEditor.md) (2025-11-03)
 - [SkillDataEditor](global/SkillDataEditor.md) (2025-11-03)
 - [TagEntry](global/TagEntry.md) (2025-11-03)
