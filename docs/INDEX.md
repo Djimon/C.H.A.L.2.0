@@ -279,7 +279,7 @@ All documented namespaces and types.
 - [docgen](global/docgen.md) (2025-11-03)
 - [EDebugLevel](global/EDebugLevel.md) (2025-11-03)
 - [EventBus](global/EventBus.md) (2025-11-03)
-- [fix_debug_language_agent](global/fix_debug_language_agent.md) (new)
+- [fix_debug_language_agent](global/fix_debug_language_agent.md) (2025-11-03)
 - [fix_summary_agent](global/fix_summary_agent.md) (2025-11-03)
 - [ImplicitGearTypeConfigEditor](global/ImplicitGearTypeConfigEditor.md) (2025-11-03)
 - [InventoryDemoBootstrap](global/InventoryDemoBootstrap.md) (2025-11-03)
