@@ -7,9 +7,6 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ImplicitGearTypeConf
 - Exposes serializable data structures (GearTypePool, ImplicitWeight) used to configure Pools and their entries.
 - Provides default implicit IDs and validation logic to deduplicate, trim, clamp, and auto-fill IDs during validation.
 
-```
-
-```text
 2) Public API
 - Namespace/module: CHAL.Data
 
@@ -39,9 +36,6 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ImplicitGearTypeConf
   - GearType is referenced but defined elsewhere in the project.
   - DefaultImplicitIds is private and not part of the public API.
 
-```
-
-```text
 3) Key Behavior & Side Effects
 - OnValidate (private)
   - If Pools is null, early return.
@@ -70,9 +64,6 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ImplicitGearTypeConf
       "elem_resist_pct", "dodge_pct", "barrier_pct", "armor_flat", "barrier_flat",
       "life_pct", "life_flat", "item_rarity_pct", "move_speed_pct"
 
-```
-
-```text
 4) Constraints & Failure Modes
 - Pools null: gracefully skips processing.
 - Entries null: skipped for that pool; still fills in missing defaults.
@@ -84,12 +75,10 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ImplicitGearTypeConf
 - Threading/async: OnValidate is a Unity editor callback; behavior is editor-time data validation (not runtime guarantees) and relies on Unity serialization lifecycle.
 - Performance: validation touches all pools/entries and may allocate for per-type lookups; intended for editor-time data hygiene rather than frequent runtime cost.
 
-```
-
-```text
 5) Example
 - Minimal usage snippet (illustrative; relies on Unity/CHAL types):
 
+```csharp
 // C# example demonstrating creating a config instance programmatically
 using UnityEngine;
 using CHAL.Data;
@@ -114,13 +103,10 @@ public class ExampleUsage
         // In the editor, you would typically create an asset via CreateAssetMenu instead.
     }
 }
-
 ```
 
-```text
 6) Unknowns
 - The exact definition and values of GearType (enum) are not present in this file.
 - The behavior and usage of the created asset at runtime (beyond OnValidate-time validation) are not specified here.
 - Any additional validation or usage of the Pools data outside OnValidate is not defined in this file.
 - External tooling or scripts that may rely on DefaultImplicitIds order or presence are not described here.
-

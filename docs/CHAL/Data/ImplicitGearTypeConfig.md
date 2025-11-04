@@ -37,7 +37,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ImplicitGearTypeConf
     - Adds missing DefaultImplicitIds with Weight 0 if not already present
     - Writes back updated pool to Pools[p]
 - DefaultImplicitIds: static array of string IDs used to fill missing entries
-- Logging: uses Debug.LogWarning for invalid IDs and duplicates
+- Logging: uses DebugManager.Warning for invalid IDs and duplicates
 
 4) Constraints & Failure Modes
 - Pools can be null; OnValidate returns without changes

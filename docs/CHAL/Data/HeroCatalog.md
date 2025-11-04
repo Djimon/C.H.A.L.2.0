@@ -43,7 +43,7 @@ Notes:
   - OnValidate/EnsureIndex skip null entries or entries with empty HeroId.
   - GetById returns null for null/empty heroId.
 - Duplicate handling:
-  - Duplicates trigger a warning via Debug.LogWarning; last encountered entry wins in the index.
+  - Duplicates trigger a warning via DebugManager.Warning; last encountered entry wins in the index.
 - Lazy/indexing notes:
   - _byId is built lazily; subsequent lookups reuse the index until OnValidate invalidates it.
 - Threading/async:
@@ -64,4 +64,3 @@ IReadOnlyList<HeroDef> allForUI = catalog.GetAllForUI();
 - How HeroCatalog assets are loaded or referenced at runtime beyond returning via its public API.
 - Any additional behaviors of HeroDef (serialization details, other fields) are not specified in this file.
 - The exact UI implications of the order in allHeroes are implied but not detailed beyond the comment.
-

@@ -44,7 +44,7 @@ Notes:
     - Save back the modified pool: Pools[p] = pool
 - ID validation helper IsValidId(string id):
   - Returns true only for non-empty IDs consisting of a-z, 0-9, or underscore; otherwise false
-- Warnings are emitted via Debug.LogWarning to aid editor feedback
+- Warnings are emitted via DebugManager.Warning to aid editor feedback
 
 4) Constraints & Failure Modes
 - Pools may be null; OnValidate exits gracefully.
