@@ -7,9 +7,6 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillModifierDef.cs`
 - Defines a serializable runtime data class (ModifierData) used at runtime.
 - Provides ToModifierData() to convert a ModifierDef asset into a runtime ModifierData instance (including a copy of AppliesTo).
 
-```
-
-```text
 2) Public API
 - Namespace/module
   - CHAL.Data
@@ -37,9 +34,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillModifierDef.cs`
 
 - Notes about asset creation
   - ModifierDef has [CreateAssetMenu(fileName = "SkillModifier", menuName = "Data/SkillModifier")]
-```
 
-```text
 3) Key Behavior & Side Effects
 - ToModifierData():
   - Creates and returns a new ModifierData with:
@@ -56,9 +51,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillModifierDef.cs`
   - ModifierDef is a ScriptableObject; instances are created as Unity assets via the CreateAssetMenu.
   - Value defaults to 1 unless overridden in the asset.
   - AppliesTo empty means global behavior; non-empty applies tag-filtering.
-```
 
-```text
 4) Constraints & Failure Modes
 - AppliesTo null handling:
   - ToModifierData() assumes AppliesTo is non-null; null would cause an exception when constructing the list.
@@ -68,9 +61,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillModifierDef.cs`
   - Value defaults to 1; the German-comment notes it should be set when applying the modifier.
 - Threading/async:
   - No explicit threading or async behavior; all is synchronous.
-```
 
-```text
 5) Example
 - Minimal usage (assuming you have a ModifierDef asset instance):
 
@@ -81,9 +72,6 @@ ModifierData data = defAsset.ToModifierData();
 // data now contains the runtime representation of the modifier
 ```
 
-```
-
-```text
 6) Unknowns
 - Definitions and exact semantics of:
   - ModifierTarget
@@ -93,4 +81,3 @@ ModifierData data = defAsset.ToModifierData();
   (not defined in this file)
 - Whether AppliesTo is ever null in practice; behavior if null is not defined here.
 - How ModifierData is consumed at runtime beyond this conversion method.
-

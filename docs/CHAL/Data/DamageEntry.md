@@ -52,6 +52,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/AttackDef.cs`._
 - No threading/async guarantees or performance hints are explicit in this file.
 
 5) Example
+```csharp
 // Example usage (Unity runtime)
 var atk = UnityEngine.ScriptableObject.CreateInstance<CHAL.Data.AttackDef>();
 atk.attackId = "fireball_poison";
@@ -65,10 +66,10 @@ atk.cooldown = 3.0f;
 atk.tags = new[] { "projectile", "aoe" };
 atk.animationType = "Cast";
 atk.vfxPrefab = null; // assign a prefab as needed
+```
 
 6) Unknowns
 - Definition and values of DamageType (enum) are not present in this file.
 - How AttackDef instances are created/loaded, and how they are consumed by gameplay systems (central skillData is referenced but not shown here).
 - Any runtime logic that applies damages, cooldowns, or visuals is outside this file.
 - Whether AttackDef assets are created via Unity Editor, runtime, or via external tooling is not specified here.
-

@@ -7,9 +7,6 @@ _Automatically generated/updated from `Assets/src/Systems/Localization/Localizat
 - Loads translations from a JSON asset at Resources/Localization/{languageCode} via Load.
 - Translates keys using Translate, with a fallback to the input key if not found.
 
-```
-
-```csharp
 2) Public API
 - Namespace/module
   - CHAL.Systems.Localization
@@ -21,9 +18,6 @@ _Automatically generated/updated from `Assets/src/Systems/Localization/Localizat
       - public static void Load(string languageCode)
       - public static string Translate(string key)
 
-```
-
-```text
 3) Key Behavior & Side Effects
 - Load(string languageCode)
   - Reads a TextAsset from Resources.Load<TextAsset>($"Localization/{languageCode}").
@@ -34,9 +28,6 @@ _Automatically generated/updated from `Assets/src/Systems/Localization/Localizat
   - If _dict is non-null and contains the key, returns the mapped value.
   - Otherwise returns the input key (fallback).
 
-```
-
-```text
 4) Constraints & Failure Modes
 - No null checks for the loaded asset:
   - If the asset is missing, json will be null and json.text would throw.
@@ -45,9 +36,6 @@ _Automatically generated/updated from `Assets/src/Systems/Localization/Localizat
 - Fallback behavior in Translate is limited to a missing dictionary or missing key; no other error signaling.
 - Path convention: asset must be at Resources/Localization/{languageCode} as a TextAsset.
 
-```
-
-```csharp
 5) Example
 ```csharp
 LocalizationManager.Load("en");
@@ -55,10 +43,8 @@ string name = LocalizationManager.Translate("Enemy_InsectSwarm_Name");
 // name = translated value if present; otherwise "Enemy_InsectSwarm_Name"
 ```
 
-```text
 6) Unknowns
 - LocalizationDict type and its ToDictionary() implementation are not defined in this file.
 - Exact JSON structure expected by LocalizationDict is not shown.
 - Details of the dictionary content (e.g., all supported keys) are not known from this file.
 - Behavior when the language asset is malformed or missing is not explicitly defined beyond the lack of guards in this file.
-

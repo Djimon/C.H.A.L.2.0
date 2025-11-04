@@ -23,8 +23,9 @@ _Automatically generated/updated from `Assets/src/Data/Defs/AttackDef.cs`._
       - public string animationType;              // presentation: e.g., "MeleeSwing", "Cast", "Shoot"
       - public GameObject vfxPrefab;              // visual effect prefab for this attack
   - public struct DamageEntry
-    - public DamageType DmgType;      // damage type (defined elsewhere)
-    - public float DmgMultiplier;       // e.g., 1.5f means 150% of base damage
+    - Public fields:
+      - public DamageType DmgType;      // damage type (defined elsewhere)
+      - public float DmgMultiplier;       // e.g., 1.5f means 150% of base damage
     - public DamageEntry(DamageType type, float multiplier) // constructor
       - sets DmgType = type
       - sets DmgMultiplier = multiplier
@@ -48,4 +49,3 @@ _Automatically generated/updated from `Assets/src/Data/Defs/AttackDef.cs`._
 - Definition and range of DamageType (defined elsewhere).
 - How AttackDef assets are created, loaded, or consumed at runtime.
 - Any runtime validation or behavior beyond data storage.
-

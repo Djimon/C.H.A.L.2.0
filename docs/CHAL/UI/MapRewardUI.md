@@ -11,7 +11,7 @@ _Automatically generated/updated from `Assets/src/UI/MapRewardUI.cs`._
   - public class `MapRewardUI` [extends `IngameUI`]
     - Public fields/properties: None
     - Public methods:
-      - `void populateText(bool succeded)` - Updates the status text based on success or failure.
+      - `void populateText(bool succeded)` - Updates the status text and color based on success or failure.
 
 3) Key Behavior & Side Effects
 - `Awake()`: Initializes buttons and assigns click event handlers. Retrieves the `MapManager` instance.

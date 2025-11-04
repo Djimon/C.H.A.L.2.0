@@ -5,7 +5,7 @@ _Automatically generated/updated from `Assets/Resources/VFX/Status and Auras FRE
 1) Purpose
 - Defines a Unity MonoBehaviour that orbits the camera around a target on the XZ plane.
 - Allows configuration of distance and angular speed; maintains the camera's current Y height.
-- orbitAxis field is defined but not applied in the logic.
+- orbitAxis field is now defined and initialized to Vector3.up, but not applied in the logic.
 
 ```
 

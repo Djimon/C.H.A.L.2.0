@@ -59,10 +59,10 @@ All documented namespaces and types.
 - [AnimationType](CHAL/Data/AnimationType.md) (2025-11-04)
 - [ArchetypeDef](CHAL/Data/ArchetypeDef.md) (2025-11-04)
 - [ArchetypeGrowthConfig](CHAL/Data/ArchetypeGrowthConfig.md) (2025-11-04)
-- [AttackDef](CHAL/Data/AttackDef.md) (2025-11-04)
+- [AttackDef](CHAL/Data/AttackDef.md) (new)
 - [BackloadProfile](CHAL/Data/BackloadProfile.md) (2025-11-04)
 - [CurrencySettings](CHAL/Data/CurrencySettings.md) (2025-11-04)
-- [DamageEntry](CHAL/Data/DamageEntry.md) (2025-11-04)
+- [DamageEntry](CHAL/Data/DamageEntry.md) (new)
 - [DamageType](CHAL/Data/DamageType.md) (2025-11-04)
 - [EconomySettings](CHAL/Data/EconomySettings.md) (2025-11-04)
 - [EnemyAIType](CHAL/Data/EnemyAIType.md) (2025-11-04)
@@ -76,14 +76,14 @@ All documented namespaces and types.
 - [GameBalanceConfig](CHAL/Data/GameBalanceConfig.md) (2025-11-04)
 - [GearData](CHAL/Data/GearData.md) (2025-11-04)
 - [GearType](CHAL/Data/GearType.md) (2025-11-04)
-- [GearTypePool](CHAL/Data/GearTypePool.md) (new)
+- [GearTypePool](CHAL/Data/GearTypePool.md) (2025-11-04)
 - [HeroAIPrio](CHAL/Data/HeroAIPrio.md) (2025-11-04)
 - [HeroAttribs](CHAL/Data/HeroAttribs.md) (2025-11-04)
-- [HeroCatalog](CHAL/Data/HeroCatalog.md) (new)
+- [HeroCatalog](CHAL/Data/HeroCatalog.md) (2025-11-04)
 - [HeroDef](CHAL/Data/HeroDef.md) (2025-11-04)
 - [HeroSlot](CHAL/Data/HeroSlot.md) (2025-11-04)
-- [ImplicitGearTypeConfig](CHAL/Data/ImplicitGearTypeConfig.md) (new)
-- [ImplicitWeight](CHAL/Data/ImplicitWeight.md) (new)
+- [ImplicitGearTypeConfig](CHAL/Data/ImplicitGearTypeConfig.md) (2025-11-04)
+- [ImplicitWeight](CHAL/Data/ImplicitWeight.md) (2025-11-04)
 - [InventorySnapshot](CHAL/Data/InventorySnapshot.md) (2025-11-04)
 - [ItemDef](CHAL/Data/ItemDef.md) (2025-11-04)
 - [ItemStruct](CHAL/Data/ItemStruct.md) (2025-11-04)
@@ -100,7 +100,7 @@ All documented namespaces and types.
 - [LootUnluckySettings](CHAL/Data/LootUnluckySettings.md) (2025-11-04)
 - [MapDef](CHAL/Data/MapDef.md) (2025-11-04)
 - [MapDifficulty](CHAL/Data/MapDifficulty.md) (2025-11-04)
-- [ModifierData](CHAL/Data/ModifierData.md) (2025-11-04)
+- [ModifierData](CHAL/Data/ModifierData.md) (new)
 - [ModifierDef](CHAL/Data/ModifierDef.md) (2025-11-04)
 - [ModifierHook](CHAL/Data/ModifierHook.md) (2025-11-04)
 - [ModifierOperation](CHAL/Data/ModifierOperation.md) (2025-11-04)
@@ -187,7 +187,7 @@ All documented namespaces and types.
 ## CHAL.Systems.Localization
 - [LocalizationDict](CHAL/Systems/Localization/LocalizationDict.md) (2025-11-04)
 - [LocalizationEntry](CHAL/Systems/Localization/LocalizationEntry.md) (2025-11-04)
-- [Localizationmanager](CHAL/Systems/Localization/Localizationmanager.md) (2025-11-04)
+- [Localizationmanager](CHAL/Systems/Localization/Localizationmanager.md) (new)
 
 ## CHAL.Systems.Loot
 - [LootBudgetCalculator](CHAL/Systems/Loot/LootBudgetCalculator.md) (2025-11-04)
@@ -257,7 +257,7 @@ All documented namespaces and types.
 - [InGameUI](CHAL/UI/InGameUI.md) (2025-11-04)
 - [InventoryView](CHAL/UI/InventoryView.md) (2025-11-04)
 - [MainMenuUI](CHAL/UI/MainMenuUI.md) (2025-11-04)
-- [MapRewardUI](CHAL/UI/MapRewardUI.md) (2025-11-04)
+- [MapRewardUI](CHAL/UI/MapRewardUI.md) (new)
 - [MapSelectionUI](CHAL/UI/MapSelectionUI.md) (2025-11-04)
 - [RecipeDetailPanelView](CHAL/UI/RecipeDetailPanelView.md) (2025-11-04)
 - [RecipeListView](CHAL/UI/RecipeListView.md) (2025-11-04)
@@ -267,7 +267,7 @@ All documented namespaces and types.
 - [WaveRewardUI](CHAL/UI/WaveRewardUI.md) (2025-11-04)
 
 ## MatthewAssets
-- [CameraOrbit](MatthewAssets/CameraOrbit.md) (2025-11-04)
+- [CameraOrbit](MatthewAssets/CameraOrbit.md) (new)
 - [RotationParticle](MatthewAssets/RotationParticle.md) (2025-11-04)
 
 ## global
