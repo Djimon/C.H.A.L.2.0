@@ -18,7 +18,7 @@ DEBUG_MANAGER_FINDING = "Agent/DebugManager"
 DEFAULT_BRANCH = os.getenv("DEFAULT_BRANCH", "master")
 
 # GitHub hat ein ratelimit fürs spammen von Issues.
-BATCH_SIZE = int(os.getenv("ISSUE_BATCH_SIZE", "250"))  # z.B. 50
+BATCH_SIZE = int(os.getenv("ISSUE_BATCH_SIZE", "500"))  # z.B. 50
 
 UNITY_METHOD_EXCLUSIONS = {
     "Awake",
