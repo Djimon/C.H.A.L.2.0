@@ -24,7 +24,7 @@ namespace CHAL.Data
             {
                 if (h == null || string.IsNullOrEmpty(h.HeroId)) continue; // HeroId ist in HeroDef vorhanden
                 if (!seen.Add(h.HeroId))
-                    DebugManager.Warning($"[HeroCatalog] Duplicate HeroId detected: {h.HeroId}", this);
+                    DebugManager.Warning($"[HeroCatalog] Duplicate HeroId detected: {h.HeroId}", "Hero");
             }
             _byId = null;
         }

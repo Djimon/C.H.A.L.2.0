@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using CHAL.Core;                    // DebugManager
 using CHAL.Data;
 using CHAL.Systems.Research;        // ResearchTreeCompiler
@@ -429,7 +429,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
         if (overlaps.Count > 0)
         {
-            DebugManager.Warning($"[ResearchTree] AlwaysUnlocked overlaps with Nodes: {string.Join(", ", overlaps)}", _tree);
+            DebugManager.Warning($"[ResearchTree] AlwaysUnlocked overlaps with Nodes: {string.Join(", ", overlaps)}", "Research");
         }
     }
 

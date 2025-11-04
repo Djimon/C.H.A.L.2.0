@@ -71,7 +71,7 @@ namespace CHAL.Data
                     if (!IsValidId(e.ImplicitId))
                     {
                         DebugManager.Warning($"Unusual ImplicitId '{e.ImplicitId}' in pool {pool.GearType}." +
-                                         "Empfohlenes Format: lower_snake_case (a-z, 0-9, _).", this);
+                                         "Empfohlenes Format: lower_snake_case (a-z, 0-9, _).", "System");
                     }
 
                     // Deduplizieren (gleiche ID innerhalb eines GearType nur einmal)
@@ -79,7 +79,7 @@ namespace CHAL.Data
                     {
                         if (seen.Contains(e.ImplicitId))
                         {
-                            DebugManager.Warning($"[ImplicitPoolsDef] Doppelte ImplicitId '{e.ImplicitId}' im Pool {pool.GearType} – wird ignoriert.", this);
+                            DebugManager.Warning($"[ImplicitPoolsDef] Doppelte ImplicitId '{e.ImplicitId}' im Pool {pool.GearType} – wird ignoriert.", "System");
                             e.Weight = 0;
                         }
                         else
