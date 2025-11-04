@@ -4,6 +4,10 @@ namespace MatthewAssets
 {
 
 
+/// <summary>
+/// Controls the camera's orbit around a target object.
+/// Allows customization of distance, speed, and orbit axis.
+/// </summary>
     public class CameraOrbit : MonoBehaviour
     {
         public Transform target; // The object around which the camera will rotate

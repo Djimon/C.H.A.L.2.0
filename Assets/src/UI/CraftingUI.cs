@@ -3,6 +3,10 @@ using UnityEngine.UIElements;
 
 namespace CHAL.UI
 {
+/// <summary>
+/// Manages the crafting user interface in the game.
+/// Inherits from IngameUI to provide additional functionality.
+/// </summary>
     public class CraftingUI : IngameUI
     {
         private Button _btnExit;

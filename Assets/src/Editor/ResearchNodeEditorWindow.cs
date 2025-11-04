@@ -9,6 +9,10 @@ public sealed class ResearchNodeEditorWindow : EditorWindow
     private Editor _cachedInspector;
     private Vector2 _scroll;
 
+/// <summary>
+/// Displays the Research Node Editor window for the specified research node.
+/// </summary>
+/// <param name="node">The research node to display in the editor.</param>
     public static void ShowFor(ResearchNodeDef node)
     {
         if (node == null) return;

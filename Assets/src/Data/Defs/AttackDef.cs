@@ -16,6 +16,10 @@ namespace CHAL.Data
      */
 
     [System.Obsolete("Deprecated.Please use the central skillData", false)]
+/// <summary>
+/// Represents an attack definition used in the game.
+/// Contains properties for identity, damage, cooldown, and metadata.
+/// </summary>
     public class AttackDef : ScriptableObject
     {
         [Header("Identity")]

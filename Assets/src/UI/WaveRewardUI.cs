@@ -7,6 +7,9 @@ using UnityEngine.UIElements;
 namespace CHAL.UI
 {
 
+/// <summary>
+/// Manages the user interface for wave rewards in the game.
+/// </summary>
     public class WaveRewardUI : IngameUI
     {
 
@@ -37,6 +40,10 @@ namespace CHAL.UI
             mapManager = FindFirstObjectByType<MapManager>();
         }
 
+/// <summary>
+/// Updates the details text based on the success status.
+/// </summary>
+/// <param name="succeded">Indicates whether the operation was successful.</param>
         public void populateText(bool succeded)
         {
             detailsText.text = succeded ? "Successful!" : "Failed!";

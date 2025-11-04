@@ -7,9 +7,15 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(RuneForgeConfig))]
+/// <summary>
+/// Provides a custom editor for configuring RuneForge settings.
+/// </summary>
 public class RuneForgeConfigEditor : Editor
 {
     private List<bool> runeFoldouts = new List<bool>();
+/// <summary>
+/// Draws the custom inspector GUI for the RuneForge configuration.
+/// </summary>
     public override void OnInspectorGUI()
     {
         var config = (RuneForgeConfig)target;
