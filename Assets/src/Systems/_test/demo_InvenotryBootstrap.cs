@@ -4,6 +4,9 @@ using CHAL.UI;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manages the inventory system for the demo, handling multiple inventory views.
+/// </summary>
 public class InventoryDemoBootstrap : MonoBehaviour
 {
     public InventoryView bagAView;

@@ -23,6 +23,10 @@ namespace CHAL.Data
         public int TotalBosses => Monsters?.Where(m => m.Rank == EnemyRank.Boss).Sum(m => m.Count) ?? 0;
         public int TotalChampions => Monsters?.Where(m => m.Rank == EnemyRank.Champion).Sum(m => m.Count) ?? 0;
 
+/// <summary>
+/// Creates a copy of the current WaveComposition instance.
+/// </summary>
+/// <returns>A new WaveComposition that is a clone of the current instance.</returns>
         public WaveComposition Clone() =>
         new WaveComposition
         {

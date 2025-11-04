@@ -8,6 +8,10 @@ using UnityEngine.UIElements;
 namespace CHAL.UI
 {
 
+/// <summary>
+/// Manages the user interface for character creation.
+/// Handles scene transitions and user input for character names.
+/// </summary>
     public class CharacterCreationUI : MonoBehaviour
     {
 

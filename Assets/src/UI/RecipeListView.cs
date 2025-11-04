@@ -22,6 +22,11 @@ namespace CHAL.UI
             _scroll = doc.rootVisualElement.Q<ScrollView>("list-scroll");
         }
 
+/// <summary>
+/// Sets the data for the recipe display, organizing recipes into groups.
+/// </summary>
+/// <param name="recipes">The collection of recipes to display.</param>
+/// <param name="craftableMap">A dictionary indicating which recipes are craftable.</param>
         public void SetData(IEnumerable<RecipeDef> recipes, IDictionary<RecipeDef, bool> craftableMap)
         {
             _scroll?.Clear();

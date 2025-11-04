@@ -3,8 +3,16 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(SkillData))]
+/// <summary>
+/// Custom editor for SkillData objects in the Unity Inspector.
+/// </summary>
 public class SkillDataEditor : Editor
 {
+/// <summary>
+/// Draws the custom inspector GUI for the SkillData object.
+/// </summary>
+/// <param name="target">The target object being inspected.</param>
+/// <returns>None.</returns>
     public override void OnInspectorGUI()
     {
         serializedObject.Update();

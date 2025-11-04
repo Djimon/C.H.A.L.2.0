@@ -16,6 +16,10 @@ namespace CHAL.UI
             root.style.display = DisplayStyle.None; // start hidden
         }
 
+/// <summary>
+/// Shows or hides the UI element based on the specified flag.
+/// </summary>
+/// <param name="show">True to show the element; false to hide it.</param>
         public virtual void Show(bool show)
         {
             root.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;

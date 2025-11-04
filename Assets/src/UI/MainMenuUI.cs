@@ -8,6 +8,10 @@ using UnityEngine.UIElements;
 namespace CHAL.UI
 {
 
+/// <summary>
+/// Manages the main menu user interface for the game.
+/// Handles scene transitions and menu interactions.
+/// </summary>
     public class MainMenuUI : MonoBehaviour
     {
         [SerializeField]

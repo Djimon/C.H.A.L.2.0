@@ -7,6 +7,10 @@ using UnityEngine.UIElements;
 namespace CHAL.UI
 {
 
+/// <summary>
+/// Manages the user interface for map rewards in the game.
+/// Inherits from IngameUI to provide additional functionality.
+/// </summary>
     public class MapRewardUI : IngameUI
     {
         private Button btnRetry;
@@ -32,6 +36,10 @@ namespace CHAL.UI
             mapManager = FindFirstObjectByType<MapManager>();
         }
 
+/// <summary>
+/// Populates the text based on the success status.
+/// </summary>
+/// <param name="succeded">Indicates whether the operation was successful.</param>
         public void populateText(bool succeded)
         {
             detailsText.text = succeded ? "Successful!" : "Failed!";

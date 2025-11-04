@@ -5,6 +5,9 @@ using UnityEngine;
 namespace MatthewAssets
 {
 
+/// <summary>
+/// Controls the rotation of a particle around a static point.
+/// </summary>
     public class RotationParticle : MonoBehaviour
     {
         public Transform Orbit1;

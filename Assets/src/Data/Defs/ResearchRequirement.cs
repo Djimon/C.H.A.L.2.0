@@ -7,6 +7,9 @@ namespace CHAL.Systems.Research
 {
 
     [Serializable]
+/// <summary>
+/// Represents the requirements for a research task, including waves, maps, and kill counts.
+/// </summary>
     public class ResearchRequirement
     {
         [Min(0)]
@@ -25,6 +28,11 @@ namespace CHAL.Systems.Research
         [Min(0)] public int bossCount;
         [Min(0)] public int championCount;
 
+/// <summary>
+/// Validates the soft requirements and triggers warnings for any invalid conditions.
+/// </summary>
+/// <param name="warn">The action to invoke for warnings.</param>
+/// <param name="ctx">The context string for the warning messages.</param>
         public void ValidateSoft(Action<string> warn, string ctx)
         {
             if (waves < 0 || maps < 0 || killsGeneral < 0 || eliteCount < 0 || bossCount < 0)
@@ -44,6 +52,10 @@ namespace CHAL.Systems.Research
             }
         }
 
+/// <summary>
+/// Checks if the current instance is empty, meaning it has no active waves, maps, or kills.
+/// </summary>
+/// <returns>True if empty; otherwise, false.</returns>
         public bool IsEmpty()
         {
             if (waves > 0 || maps > 0 || killsGeneral > 0 || eliteCount > 0 || bossCount > 0 || championCount > 0)

@@ -6,6 +6,9 @@ namespace CHAL.Data
 {
 
     [CreateAssetMenu(fileName = "SkilData", menuName = "Data/SkillData")]
+/// <summary>
+/// Represents data for a skill, including its identity, damage, and casting properties.
+/// </summary>
     public class SkillData : ScriptableObject
     {
         [Header("Identity")]

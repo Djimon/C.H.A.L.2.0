@@ -7,6 +7,10 @@ namespace CHAL.Data
 {
     // ========= Editor-Klasse =========
     [CreateAssetMenu(fileName = "SkillModifier", menuName = "Data/SkillModifier")]
+/// <summary>
+/// Represents a modifier definition used in gameplay mechanics.
+/// Contains properties that define how the modifier behaves.
+/// </summary>
     public class ModifierDef : ScriptableObject
     {
         public string modId;
@@ -16,6 +20,10 @@ namespace CHAL.Data
         public List<SkillTag> AppliesTo;   // leer = global, sonst tag-Filter
         public ModifierHook Hook = ModifierHook.None;
 
+/// <summary>
+/// Converts the current instance to a ModifierData object.
+/// </summary>
+/// <returns>A new instance of ModifierData populated with the current object's data.</returns>
         public ModifierData ToModifierData()
         {
             return new ModifierData
