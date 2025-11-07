@@ -51,6 +51,7 @@ _Automatically generated/updated from `Assets/src/Systems/Map/MapManager.cs`._
   - Destroys existing _mapInstancedPrefab if present
   - Instantiates CurrentMap.mapPrefab if available; otherwise logs a warning
   - Initializes and shows HeroSelectionUI via selectHeroUI
+  - Resets _activeHeroes list and _autoStartAllWaves to false
 - ResetWave
   - Sets CurrentWave to 1 and starts the wave via StartWave()
 - StartWave

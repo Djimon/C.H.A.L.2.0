@@ -243,8 +243,8 @@ All documented namespaces and types.
 
 ## CHAL.Systems.Wave
 - [WaveLootContext](CHAL/Systems/Wave/WaveLootContext.md) (2025-11-07)
-- [WaveManager](CHAL/Systems/Wave/WaveManager.md) (new)
-- [WaveRewards](CHAL/Systems/Wave/WaveRewards.md) (new)
+- [WaveManager](CHAL/Systems/Wave/WaveManager.md) (2025-11-07)
+- [WaveRewards](CHAL/Systems/Wave/WaveRewards.md) (2025-11-07)
 
 ## CHAL.UI
 - [CharacterCreationUI](CHAL/UI/CharacterCreationUI.md) (2025-11-07)
@@ -264,7 +264,7 @@ All documented namespaces and types.
 - [ResearchHUD](CHAL/UI/ResearchHUD.md) (2025-11-07)
 - [SlotFitMode](CHAL/UI/SlotFitMode.md) (2025-11-07)
 - [UIDockingManager](CHAL/UI/UIDockingManager.md) (2025-11-07)
-- [WaveRewardUI](CHAL/UI/WaveRewardUI.md) (new)
+- [WaveRewardUI](CHAL/UI/WaveRewardUI.md) (2025-11-07)
 
 ## MatthewAssets
 - [CameraOrbit](MatthewAssets/CameraOrbit.md) (2025-11-07)
