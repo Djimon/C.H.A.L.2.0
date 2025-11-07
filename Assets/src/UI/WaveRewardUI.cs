@@ -80,6 +80,10 @@ namespace CHAL.UI
             });
         }
 
+/// <summary>
+/// Displays the UI element based on the visibility state.
+/// </summary>
+/// <param name="visible">Indicates whether the UI should be shown or hidden.</param>
         public override void Show(bool visible)
         { 
             base.Show(visible);

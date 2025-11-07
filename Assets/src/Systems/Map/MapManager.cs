@@ -200,6 +200,10 @@ namespace CHAL.Systems.Map
             _pendingSelectedHeroes = heroIds != null ? new List<string>(heroIds) : null;
         }
 
+/// <summary>
+/// Checks if there is a next wave available.
+/// </summary>
+/// <returns>True if there is a next wave; otherwise, false.</returns>
         public bool HasNextWave()
         {
             return CurrentWave < MaxWaves;
@@ -243,6 +247,10 @@ namespace CHAL.Systems.Map
             }
         }
 
+/// <summary>
+/// Sets whether all waves should start automatically.
+/// </summary>
+/// <param name="enabled">True to enable auto-start for all waves; false to disable.</param>
         public void SetAutoStartAllWaves(bool enabled)
         {
             _autoStartAllWaves = enabled;
