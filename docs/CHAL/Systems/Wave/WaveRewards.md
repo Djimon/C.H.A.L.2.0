@@ -2,12 +2,12 @@
 
 _Automatically generated/updated from `Assets/src/Systems/Waves/WaveManager.cs`._
 
-Purpose
+# Purpose
 - Defines WaveManager: orchestrates subwave planning, spawning, and end-of-wave handling for waves.
 - Defines WaveRewards: lightweight container for earned items, currencies, and XP with helper methods.
 - Encapsulates public API for starting a wave, loot collection, and reward transfer.
 
-Public API
+# Public API
 - Namespace: CHAL.Systems.Wave
 
 - Types
@@ -19,6 +19,8 @@ Public API
       - GameObject enemyFallbackPrefab
       - GameObject lootPrefab
       - WaveRewards waveRewards
+      - MapDef debugMap
+      - int debugWaveIndex
     - Public methods
       - void StartWave(MapDef mapDef, int waveIndex, MapManager _ref)
       - void CollectRemainingLoot()
@@ -37,7 +39,7 @@ Public API
       - void AddCurrency(string currencyId, int amount)
       - void AddXP(int amount)
 
-Key Behavior & Side Effects
+# Key Behavior & Side Effects
 - Initialization and event wiring
   - Awake: initializes LootRulesService, LootRoller; subscribes to EnemyController.OnEnemyKilled and LootCube.OnLootCollected.
   - OnDestroy: unsubscribes from events.
@@ -65,7 +67,7 @@ Key Behavior & Side Effects
 - Debug utilities
   - ContextMenu entries to start a wave or simulate stats from the Inspector (private methods).
 
-Constraints & Failure Modes
+# Constraints & Failure Modes
 - StartWave guards
   - If mapDef is null, waveIndex out of range, or mapDef.waveDefs invalid, logs error and aborts.
 - Spawning guards
@@ -87,7 +89,7 @@ Constraints & Failure Modes
 - Debug
   - Debug menu actions rely on inspector-provided debugMap/debugWaveIndex; null checks present.
 
-Unknowns
+# Unknowns
 - Details of types not defined in this file (e.g., WaveDef, WaveComposition, EnemyDef, EnemyStruct, MapDef, BalanceManager, DebugManager, LootRulesService, LootRoller, UnluckyProtection, MapManager, GameManager, Inventory domain, etc.).
 - Exact behavior of external systems (loot dropping rules, currency/XP scaling, map progression persistence, and UI feedback) beyond what this file directly implements.
 - Runtime characteristics of the Loot/Inventory pipeline (threading, async behavior, or side effects outside this file).

@@ -21,6 +21,10 @@ _Automatically generated/updated from `Assets/src/Systems/Waves/WaveManager.cs`.
         - Spawn points used for enemies
       - public List<Transform> HeroSpawns
         - Spawn points for heroes (unused directly in this file, stored)
+      - [SerializeField] private MapDef debugMap
+        - Debug map definition for testing purposes
+      - [SerializeField] private int debugWaveIndex
+        - Debug wave index for testing purposes
       - public GameObject enemyFallbackPrefab
         - Fallback prefab if an enemy baseDef has no prefab
       - public GameObject lootPrefab

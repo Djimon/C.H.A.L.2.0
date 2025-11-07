@@ -14,6 +14,7 @@ _Automatically generated/updated from `Assets/src/Systems/Map/MapManager.cs`._
   - public MapDef CurrentMap { get; private set; }
   - public int CurrentWave { get; private set; } = 1;
   - public int MaxWaves => CurrentMap != null ? CurrentMap.maxWaves : 0;
+  - public bool AutoStartAllWaves => _autoStartAllWaves;
 - Public fields
   - public GameObject waveRewardUI
   - public GameObject mapRewardUI
@@ -25,6 +26,8 @@ _Automatically generated/updated from `Assets/src/Systems/Map/MapManager.cs`._
   - public void StartWave()
   - public void OnWaveCompleted(bool success, WaveRewards rewards)
   - public void NextWave()
+  - public void SetAutoStartAllWaves(bool enabled)
+  - public bool HasNextWave()
 - Internal methods (visibility in codebase)
   - internal void SetSelectedHeroes(List<string> heroIds)
 - Note: There are also private methods (not part of the public API) used internally:
