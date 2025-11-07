@@ -1,4 +1,4 @@
-﻿using CHAL.Data;
+using CHAL.Data;
 using CHAL.Systems.AI;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Skill;
@@ -152,7 +152,11 @@ namespace CHAL.Systems.Hero
 
         private void Targeting()
         {
-            if (!IsAlive) { _currentTarget = null; return; }
+            if (!IsAlive)
+            {
+                target = _currentTarget = null;
+                return;
+            }
 
             float sight = HeroDef.sightRange; // Def.sightRange oder BalanceConfig.SightRangeDefault
             var myPos = transform.position;
@@ -164,7 +168,7 @@ namespace CHAL.Systems.Hero
                 var er = _currentTarget.GetComponent<EnemyController>();
                 if (er == null || er.GetEffectReceiver().CurrentHP <= 0f || IsOutOfSight(myPos, _currentTarget.position, sight))
                 {
-                    _currentTarget = null; // Lock lÃ¶sen
+                    _currentTarget = null; // Lock lösen
                 }
             }
 
@@ -196,10 +200,11 @@ namespace CHAL.Systems.Hero
         {
             EnsureMoveAgentInitialized();
 
-            if (_currentTarget == null || _move == null)
+            if (_currentTarget == null || target==null || _move == null)
             {
-                // Kein Target: optional zum â€žSpawn/Homeâ€œ laufen â€“ v0: stehen.
+                // Kein Target: optional zum Spawn/Home laufen v0: stehen.
                 _move.ClearPathHard();
+                _move.StopOrHold();
                 return;
             }
 
@@ -278,7 +283,7 @@ namespace CHAL.Systems.Hero
                 }
                 // sonst: Out-of-Range 
             }
-            // sonst: kein gÃ¼ltiges Ziel 
+            // sonst: kein gültiges Ziel 
 
             currentSkill = null; // Cast abgeschlossen
         }

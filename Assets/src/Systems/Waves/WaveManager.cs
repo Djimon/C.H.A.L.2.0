@@ -1,4 +1,4 @@
-﻿using CHAL.Core;
+using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Enemy;
@@ -98,7 +98,9 @@ namespace CHAL.Systems.Wave
             var wDef = mapDef.waveDefs[waveIndex - 1];
             var wave = BuildWaveComposition(mapDef, wDef); // behÃ¤lt deine existierende Logik
             _waveCtx = new WaveLootContext(wave);
-            _aliveEnemies.Clear();
+
+            ClearAllEnemies();
+                      
             _allSubWavesSpawned = false;
 
             // --- SubWave-Plan vorbereiten (feste GrÃ¶ÃŸe pro SubWave + Backloading) ---
@@ -107,6 +109,16 @@ namespace CHAL.Systems.Wave
             // --- Run ---
             StopAllCoroutines();
             StartCoroutine(RunWaveRoutine(mapDef, wDef));
+        }
+
+        private void ClearAllEnemies()
+        {
+            foreach (var en in _aliveEnemies)
+            { 
+                Destroy(en.gameObject);
+            }
+
+            _aliveEnemies.Clear();
         }
 
         // ------------------ CORE: SUBWAVE LAUF ------------------

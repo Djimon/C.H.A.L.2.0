@@ -1,4 +1,4 @@
-﻿using CHAL.Data;
+using CHAL.Data;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
@@ -162,7 +162,7 @@ namespace CHAL.Core
 /// <param name="newState">The new game state to set.</param>
         public void SetState(GameState newState)
         {
-            DebugManager.Log($"GameState {CurrentState} â†’ {newState}");
+            DebugManager.Log($"GameState {CurrentState} -> {newState}");
             CurrentState = newState;
             // Optional: Events triggern oder UI umschalten
             // EventBus.Publish(new GameStateChanged(newState));

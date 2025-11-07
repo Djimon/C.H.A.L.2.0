@@ -1,4 +1,4 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/src/UI/uss/mainmenue_style.uss?fileID=7433441132597879392&amp;guid=7cdca454dedc5224bacce2cb7bc195ab&amp;type=3#mainmenue_style" />
     <ui:VisualElement name="Panel" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); -unity-background-scale-mode: scale-to-fit; flex-direction: row;">
         <ui:VisualElement name="leftbox" style="flex-grow: 0; flex-basis: 15%;" />
@@ -9,7 +9,7 @@
                 <ui:VisualElement name="title" style="flex-grow: 1; flex-basis: auto; justify-content: space-around;">
                     <ui:Label text="Map Completed" double-click-selects-word="false" style="color: rgb(255, 255, 255); font-size: 83px; -unity-text-align: middle-center; -unity-font-style: bold;" />
                     <ui:Label text="Label" name="MapStatus" style="background-color: rgba(0, 0, 0, 0); color: rgb(0, 0, 0); font-size: 58px; -unity-text-align: lower-center;" />
-                </ui:VisualElement>
+                </ui:VisualElement>               
                 <ui:VisualElement name="SelectionPanel" style="flex-grow: 0; flex-basis: 30%; flex-direction: row; align-self: auto; justify-content: center; align-content: auto; align-items: center;">
                     <ui:Button text="Retry Map" name="Retry" class="menueBtn" style="font-size: 30px; width: 20%; height: 20%;" />
                     <ui:Button text="To Hideout" name="Hideout" class="menueBtn" style="font-size: 30px; width: 20%; height: 20%;" />

@@ -1,4 +1,4 @@
-﻿using CHAL.Core;
+using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Hero;
 using CHAL.Systems.Wave;
@@ -27,6 +27,10 @@ namespace CHAL.Systems.Map
         [SerializeField] private GameObject heroFallbackPrefab;   // optionaler Fallback
         private Dictionary<string, HeroDef> _heroById;
         private List<string> _pendingSelectedHeroes;
+        private List<GameObject> _activeHeroes;
+
+        private bool _autoStartAllWaves = false;
+        public bool AutoStartAllWaves => _autoStartAllWaves;
 
 
         private WaveManager _waveManager;
@@ -35,22 +39,7 @@ namespace CHAL.Systems.Map
 
         private void Awake()
         {
-            //if (Instance != null && Instance != this)
-            //{
-            //    Destroy(gameObject);
-            //    return;
-            //}
-            //Instance = this;
-            //DontDestroyOnLoad(gameObject);
-
-            //if (waveRewardUI = null)
-            //    waveRewardUI = FindFirstObjectByType<WaveRewardUI>().gameObject;
-
-            //if(mapRewardUI = null)
-            //    mapRewardUI = FindFirstObjectByType<MapRewardUI>().gameObject;
-
             HideUI();
-
         }
 
         private void Start()
@@ -93,7 +82,12 @@ namespace CHAL.Systems.Map
 
             var selectUI = selectHeroUI.GetComponent<HeroSelectionUI>();
             selectUI.Init(this);
-            selectUI.Show(true);   
+            selectUI.Show(true);
+
+            _activeHeroes = new List<GameObject>();
+
+            _autoStartAllWaves = false; // Default für neue Map
+            DebugManager.Info("AutoStartAllWaves reset for new map","Wave");
         }
 
 /// <summary>
@@ -138,16 +132,12 @@ namespace CHAL.Systems.Map
             if (waveMgr == null) return;
 
             // Destroy only heroes that belong to the active map instance to avoid touching editor objects or other scenes.
-            var existing = _mapInstancedPrefab != null
-                ? _mapInstancedPrefab.GetComponentsInChildren<HeroController>(true)
-                : Array.Empty<HeroController>();
-
             int count = 0;
-            for (int i = 0; i < existing.Length; i++)
+            foreach (var ah in _activeHeroes)
             {
-                if (existing[i] != null && existing[i].gameObject != null)
+                if (ah != null)
                 {
-                    Destroy(existing[i].gameObject);
+                    Destroy(ah);
                     count++;
                 }
             }
@@ -187,6 +177,8 @@ namespace CHAL.Systems.Map
                 {
                     DebugManager.Warning($"Spawned hero '{heroId}' has no HeroController!", "Map");
                 }
+
+                _activeHeroes.Add(hc.gameObject);
             }
         }
 
@@ -208,6 +200,11 @@ namespace CHAL.Systems.Map
             _pendingSelectedHeroes = heroIds != null ? new List<string>(heroIds) : null;
         }
 
+        public bool HasNextWave()
+        {
+            return CurrentWave < MaxWaves;
+        }
+
 /// <summary>
 /// Called when a wave is completed, handling success and rewards.
 /// </summary>
@@ -215,6 +212,7 @@ namespace CHAL.Systems.Map
 /// <param name="rewards">The rewards earned from the completed wave.</param>
         public void OnWaveCompleted(bool success, WaveRewards rewards)
         {
+            
             if (!success)
             {
                 GameManager.Instance.SetState(GameState.WaveReward);
@@ -222,6 +220,7 @@ namespace CHAL.Systems.Map
                 rewardUI.Show(true);
                 rewardUI.populateText(success);
                 //Show missed rewards
+
                 return;
             }
 
@@ -231,8 +230,8 @@ namespace CHAL.Systems.Map
                 var rewardUI = waveRewardUI.GetComponent<WaveRewardUI>();
                 rewardUI.Show(true);
                 rewardUI.populateText(success);
-                DebugManager.Log("Reward");
                 //show collected rewards
+
             }
             else
             {
@@ -240,7 +239,14 @@ namespace CHAL.Systems.Map
                 var maprewardUI = mapRewardUI.GetComponent<MapRewardUI>();
                 maprewardUI.Show(true);
                 maprewardUI.populateText(success);
+
             }
+        }
+
+        public void SetAutoStartAllWaves(bool enabled)
+        {
+            _autoStartAllWaves = enabled;
+            DebugManager.Info($"AutoStartAllWaves set to {enabled}","UI");
         }
 
         [ContextMenu("Debug/Start Next Wave")]

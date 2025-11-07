@@ -19,6 +19,7 @@ MonoBehaviour:
   baseLevel: 1
   maxWaves: 5
   difficulty: 0
+  heroSlots: 1
   allowedEnemies:
   - {fileID: 11400000, guid: f1846d707583dd640a447f05eff0d54d, type: 2}
   allowedModifiers:
@@ -31,3 +32,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b9a403313554f3349ad27ee01088d8ca, type: 2}
   - {fileID: 11400000, guid: b9a403313554f3349ad27ee01088d8ca, type: 2}
   - {fileID: 11400000, guid: b9a403313554f3349ad27ee01088d8ca, type: 2}
+  subWaveCount: 5
+  interSubWaveDelay: 5
+  maxConCurrentEnemies: 25

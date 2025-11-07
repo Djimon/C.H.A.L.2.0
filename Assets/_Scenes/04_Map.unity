@@ -180,6 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85a1a6246f3ed7f49a1c819a3f7a6781, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  requiredFeatureID: none
   availableHeroes:
   - Peter
   - Ariane
@@ -282,6 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5b0fd1b7e2e4c4181e1301c82f94d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  requiredFeatureID: none
 --- !u!1 &1049467657
 GameObject:
   m_ObjectHideFlags: 0
@@ -346,6 +348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c34b243bc78ce142a582ba28b3dbbfd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  requiredFeatureID: none
 --- !u!1 &1150240573
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,7 +477,6 @@ MonoBehaviour:
   waveRewardUI: {fileID: 719534916}
   mapRewardUI: {fileID: 1049467657}
   selectHeroUI: {fileID: 444716844}
-  heroCatalog: []
   heroFallbackPrefab: {fileID: 2247629065414298591, guid: 07a4dd78230ff3446939aa4bc9eb549b, type: 3}
 --- !u!1 &1526442825
 GameObject:
