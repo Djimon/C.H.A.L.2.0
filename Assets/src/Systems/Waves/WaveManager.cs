@@ -37,6 +37,7 @@ namespace CHAL.Systems.Wave
         private WaveLootContext _waveCtx;
 
         private MapManager _MapMangerRef;
+        private int _remainingLoot = 0;
 
         // --- SubWave-Plan (zur Laufzeit berechnet) ---
         private struct SubWaveSlice
@@ -86,6 +87,10 @@ namespace CHAL.Systems.Wave
             DebugManager.Log($"Starting Wave {waveIndex}/{mapDef.maxWaves}", DebugManager.EDebugLevel.Test, "Wave");
 
             waveRewards = new WaveRewards();
+
+            _remainingLoot = 0;
+
+            // TODO: Finish-Wave Countdown-Overlay hiden
 
             // Guard
             if (mapDef == null || waveIndex < 1 || waveIndex > mapDef.waveDefs.Count)
@@ -380,6 +385,8 @@ namespace CHAL.Systems.Wave
                 var lootObj = Instantiate(lootPrefab, spawnPos, Quaternion.identity);
                 var lc = lootObj.GetComponent<LootCube>();
                 lc.Init(d.ItemId, d.quantity);
+
+                _remainingLoot++;
             }
 
                 TryEndWave();
@@ -387,11 +394,21 @@ namespace CHAL.Systems.Wave
 
         private void TryEndWave()
         {
-            if (_allSubWavesSpawned && _aliveEnemies.Count == 0)
+            if (_allSubWavesSpawned && _aliveEnemies.Count == 0 && _remainingLoot == 0)
             {
                 _roller.FinalizeWave(_waveCtx);
                 DebugManager.Log("Wave Completed!", DebugManager.EDebugLevel.Test, "Wave");
                 EndWave(true);
+            }
+            else if (_allSubWavesSpawned && _aliveEnemies.Count == 0 && _remainingLoot > 0)
+            {
+                /* TODO Auto-Complete-Wave (Optional):
+                 - Spieler findet evtl. nicht allen Loot → nach 20s automatisches Abschließen.
+                 - Großer Overlay-Countdown (20 → 0) anzeigen.
+                 - Nach Ablauf: optional CollectRemainingLoot() auslösen und TryEndWave() erneut prüfen.
+                 - Countdown sofort abbrechen, wenn der Spieler Loot aufhebt (remainingLoot dekrementiert) oder manuell per HUD-Button einsammelt.
+                 - Keine Implementierung hier – nur Platzhalter.
+                */
             }
         }
 
@@ -399,7 +416,7 @@ namespace CHAL.Systems.Wave
         {
             if (success)
             {
-                CollectRemainingLoot();
+                //CollectRemainingLoot();
                 TransferRewardsToProfile(waveRewards);
                 DebugManager.Log("Wave Rewards transferred to PlayerProfile",
                     DebugManager.EDebugLevel.Test, "Wave");
@@ -411,6 +428,9 @@ namespace CHAL.Systems.Wave
             }
 
             _MapMangerRef.OnWaveCompleted(success, waveRewards);
+
+            // TODO: Finish-Wave Countdown-Overlay hiden
+
             waveRewards = new WaveRewards(); // reset
         }
 
@@ -514,7 +534,11 @@ namespace CHAL.Systems.Wave
         public void CollectLoot(string itemId, int quantity)
         {
             waveRewards.AddItem(itemId, quantity);
+            if (_remainingLoot > 0) _remainingLoot--;
             DebugManager.Log($"Collected {itemId} ({quantity}x). Inventory now: {waveRewards.Items[itemId]}", DebugManager.EDebugLevel.Debug, "Loot");
+
+            if(_allSubWavesSpawned && _aliveEnemies.Count <= 0 && _remainingLoot <=0)
+                TryEndWave();
         }
 
         // ------------------ DEIN BESTEHENDER AUFBAU (leicht angepasst genutzt) ------------------
