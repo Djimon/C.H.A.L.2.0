@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   gen-docs:
-    if: false
+    #if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
