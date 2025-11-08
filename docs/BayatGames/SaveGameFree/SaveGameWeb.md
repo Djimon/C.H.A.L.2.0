@@ -1,0 +1,67 @@
+# BayatGames.SaveGameFree.SaveGameWeb
+
+_Automatically generated/updated from `Assets/src/xTernal/SaveGameFree/Scripts/SaveGameWeb.cs`._
+
+# Purpose
+- Defines the `SaveGameWeb` class for saving and loading game data from a web server.
+
+# Public API
+- Namespace: `BayatGames.SaveGameFree`
+- Types
+  - **public class** `SaveGameWeb`
+    - **Public fields/properties**
+      - `static string DefaultUsername`: Gets or sets the default username.
+      - `static string DefaultPassword`: Gets or sets the default password.
+      - `static string DefaultURL`: Gets or sets the default URL.
+      - `static bool DefaultEncode`: Gets or sets whether to use default encoding.
+      - `static string DefaultEncodePassword`: Gets or sets the default encoding password.
+      - `static ISaveGameSerializer DefaultSerializer`: Gets or sets the default serializer.
+      - `static ISaveGameEncoder DefaultEncoder`: Gets or sets the default encoder.
+      - `static Encoding DefaultEncoding`: Gets or sets the default encoding.
+      - `virtual string Username`: Gets or sets the username.
+      - `virtual string Password`: Gets or sets the password.
+      - `virtual string URL`: Gets or sets the URL.
+      - `virtual bool Encode`: Gets or sets whether to encode.
+      - `virtual string EncodePassword`: Gets or sets the encode password.
+      - `virtual ISaveGameSerializer Serializer`: Gets or sets the serializer.
+      - `virtual ISaveGameEncoder Encoder`: Gets or sets the encoder.
+      - `virtual Encoding Encoding`: Gets or sets the encoding.
+      - `virtual UnityWebRequest Request`: Gets the request.
+      - `virtual bool IsError`: Gets whether there is an error.
+      - `virtual string Error`: Gets the error message.
+    - **Public methods**
+      - `SaveGameWeb()`: Initializes with default username.
+      - `SaveGameWeb(string username)`: Initializes with specified username.
+      - `SaveGameWeb(string username, string password)`: Initializes with specified username and password.
+      - `SaveGameWeb(string username, string password, string url)`: Initializes with specified username, password, and URL.
+      - `SaveGameWeb(string username, string password, string url, bool encode)`: Initializes with specified username, password, URL, and encoding option.
+      - `SaveGameWeb(string username, string password, string url, bool encode, string encodePassword)`: Initializes with specified parameters including encoding password.
+      - `SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer)`: Initializes with specified parameters including serializer.
+      - `SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer, ISaveGameEncoder encoder)`: Initializes with specified parameters including encoder.
+      - `SaveGameWeb(string username, string password, string url, bool encode, string encodePassword, ISaveGameSerializer serializer, ISaveGameEncoder encoder, Encoding encoding)`: Initializes with all parameters.
+      - `IEnumerator Save<T>(string identifier, T obj)`: Saves the specified object.
+      - `IEnumerator Download(string identifier)`: Downloads data for the specified identifier.
+      - `T Load<T>(string identifier)`: Loads data for the specified identifier.
+      - `T Load<T>(string identifier, T defaultValue)`: Loads data with a default value.
+      - `IEnumerator Send(string identifier, string data, string action)`: Sends data to the server.
+
+# Key Behavior & Side Effects
+- The `Save` method serializes an object and sends it to the server; logs an error if the operation fails.
+- The `Download` method retrieves data from the server; logs an error if the operation fails.
+- The `Load` method deserializes data retrieved from the server; returns a default value if an error occurs or data is empty.
+- The `Send` method constructs a web request and handles errors based on the response.
+
+# Constraints & Failure Modes
+- Handles null or empty values for identifiers and data.
+- Uses Unity's `UnityWebRequest` for network operations; may encounter network or HTTP errors.
+- Error handling is performed based on the response from the server.
+
+# Example
+```csharp
+SaveGameWeb saveGame = new SaveGameWeb("username", "password", "http://www.example.com");
+yield return saveGame.Save("gameData", gameObject);
+```
+
+# Unknowns
+- Specific behavior of the server-side implementation is not defined in this file.
+
