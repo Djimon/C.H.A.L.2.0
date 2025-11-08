@@ -451,7 +451,7 @@ def main():
 
             md_body = llm_markdown_for(f, code, "")
             header = build_header_for(f)  # falls vorhanden; sonst leer
-            out_rel = out_markdown_path_for(ns, f)  # deine bestehende Logik
+            out_rel = out_markdown_path_for(ns, pub_types, f) # deine bestehende Logik
             out_path = OUT_DIR / out_rel
 
             changed = write_if_changed(out_path, header + md_body + "\n")
