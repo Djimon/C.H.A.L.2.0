@@ -37,7 +37,7 @@ _Automatically generated/updated from `Assets/src/Systems/Waves/WaveManager.cs`.
       - public void CollectRemainingLoot()
         - Auto-collects any remaining LootCube objects of layer "Loot" in the scene into waveRewards
       - public void CollectLoot(string itemId, int quantity)
-        - Adds collected loot to waveRewards
+        - Adds collected loot to waveRewards; decrements remaining loot count; triggers TryEndWave if conditions are met
       - public void SimulateWaveStats(MapDef mapDef, int waveIndex)
         - Runs a simulation setup for a given map/wave (loosely connected to RunStats; code shows placeholder)
       - public static Vector3 SelectSpawnpoint(List<Transform> spawnPoints)
@@ -102,6 +102,7 @@ _Automatically generated/updated from `Assets/src/Systems/Waves/WaveManager.cs`.
     - Calls TryEndWave
   - TryEndWave
     - If all subwaves spawned and no alive enemies remain, finalizes wave via LootRoller and triggers EndWave(true)
+    - If all subwaves spawned and no alive enemies remain but remaining loot exists, logs a placeholder for optional auto-completion
   - EndWave
     - If success: CollectRemainingLoot, TransferRewardsToProfile, log, and notify MapManager
     - If failed: log
