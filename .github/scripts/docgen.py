@@ -8,6 +8,7 @@ from difflib import SequenceMatcher
 # ----- Einstellungen -----
 DOC_EXTS = {".cs", ".py", ".ts", ".tsx", ".js", ".java", ".go"}
 EXCLUDE_DIRS = set(d.strip() for d in os.getenv("DOCGEN_EXCLUDE_DIRS", "BayatGames,MatthewAssets,ThirdParty,Packages").split(","))
+EXCLUDE_NAMESPACE_PREFIXES = tuple(s.strip() for s in os.getenv("DOCGEN_EXCLUDE_NS", "BayatGames,MatthewAssets").split(","))
 ALLOWED_NAMESPACE_PREFIXES = tuple(s.strip() for s in os.getenv("DOCGEN_ALLOWED_NS", "CHAL,global").split(","))
 
 OUT_DIR = pathlib.Path("docs")
@@ -82,8 +83,15 @@ def changed_files_since_last_commit():
     return files
 
 def is_excluded_path(p: pathlib.Path) -> bool:
-    # irgendein Pfadteil gehört zu EXCLUDE_DIRS?
-    return any(part in EXCLUDE_DIRS for part in p.parts)
+    parts_lower = [part.lower() for part in p.parts]
+    return any(ex in parts_lower for ex in EXCLUDE_DIRS)
+
+def is_allowed_namespace(ns: str) -> bool:
+    # erst harte Excludes
+    if any(ns.startswith(prefix) for prefix in EXCLUDE_NAMESPACE_PREFIXES if prefix):
+        return False
+    # dann nur erlaubte Präfixe
+    return any(ns.startswith(prefix) for prefix in ALLOWED_NAMESPACE_PREFIXES if prefix)
 
 def extract_namespace_and_public_types(code: str):
     ns_match = NS_RX.search(code)
@@ -244,6 +252,9 @@ def main():
 
         # Namespace + öffentliche Typen aus dem Code ziehen
         namespace, pub_types = extract_namespace_and_public_types(code)
+        # Harte Schranke: Namespace nicht erlaubt? -> Datei komplett überspringen
+        if not is_allowed_namespace(namespace):
+            continue
         type_names = [name for _, name in pub_types]
 
         # Zielpfade erzeugen (eine Datei je public Type, sonst Fallback auf Dateibasis)
@@ -329,8 +340,9 @@ def main():
         return ts.strftime("%Y-%m-%d")
 
     def should_list_namespace(ns: str) -> bool:
-        # Nur gewünschte Präfixe (z. B. "CHAL" und "global")
-        return ns.startswith(ALLOWED_NAMESPACE_PREFIXES)
+        if any(ns.startswith(prefix) for prefix in EXCLUDE_NAMESPACE_PREFIXES if prefix):
+            return False
+        return any(ns.startswith(prefix) for prefix in ALLOWED_NAMESPACE_PREFIXES if prefix)
 
     def build_namespace_tree(namespace_map):
         tree = {}
