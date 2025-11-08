@@ -1,0 +1,44 @@
+# CHAL.Data.ModulePartMapEntry
+
+_Automatically generated/updated from `Assets/src/Data/DTO/ModulePartMapWrapper.cs`._
+
+# Purpose
+- Defines data structures for mapping module IDs to their corresponding parts.
+
+# Public API
+- Namespace: CHAL.Data
+- Types
+  - public class ModulePartMapWrapper
+    - Public fields/properties:
+      - List<ModulePartMapEntry> entries: Collection of module part mappings.
+    - Public methods:
+      - Dictionary<string, string[]> ToDictionary(): Converts entries to a dictionary mapping module IDs to their corresponding parts.
+  
+  - public class ModulePartMapEntry
+    - Public fields/properties:
+      - string moduleId: Identifier for the module.
+      - string[] parts: Array of parts associated with the module ID.
+
+# Key Behavior & Side Effects
+- The `ToDictionary` method creates a dictionary where each key is a module ID and the value is an array of parts.
+
+# Constraints & Failure Modes
+- No explicit guards or null handling present; assumes `entries` is initialized and contains valid data.
+
+# Example
+```csharp
+var wrapper = new ModulePartMapWrapper
+{
+    entries = new List<ModulePartMapEntry>
+    {
+        new ModulePartMapEntry { moduleId = "module1", parts = new[] { "partA", "partB" } },
+        new ModulePartMapEntry { moduleId = "module2", parts = new[] { "partC" } }
+    }
+};
+
+var dictionary = wrapper.ToDictionary();
+```
+
+# Unknowns
+- None.
+
