@@ -13,7 +13,7 @@ import requests
 
 # ----- Einstellungen -----
 BASE_BRANCH = os.getenv("BASE_BRANCH", "master")
-DOCGEN_DRY_RUN = os.getenv("DOCGEN_DRY_RUN", "false").lower() == "false"
+DOCGEN_DRY_RUN = os.getenv("DOCGEN_DRY_RUN", "false").lower() == "true"
 DOC_EXTS = {".cs", ".py", ".ts", ".tsx", ".js", ".java", ".go"}
 
 EXCLUDE_DIRS = set(d.strip().lower() for d in os.getenv(
@@ -27,7 +27,8 @@ OUT_DIR: pathlib.Path | None = None
 DOC_ROOT: pathlib.Path | None = None
 
 # Konfiguration (Env oder Default)
-CHANGE_RATE_THRESHOLD = float(os.getenv("DOCGEN_CHANGE_RATE", "0.10"))  # 10% default
+CHANGE_RATE_THRESHOLD = float(os.getenv("DOCGEN_CHANGE_RATE", "0.1"))  # 10% default
+CODE_CHANGE_THRESHOLD = float(os.getenv("DOCGEN_CODE_CHANGE_RATE", "0.10"))  # 10% default
 
 INDEX_MAX_LEVELS = int(os.getenv("DOCGEN_INDEX_MAX_LEVELS", "3"))
 
@@ -104,6 +105,28 @@ def cleanup_worktree(path: str) -> None:
 def push_branch(branch: str, cwd: str) -> None:
     # Push aus dem Worktree heraus
     git_run(["push", "origin", branch], cwd=cwd)
+
+def _git_show_file(ref: str, path: str) -> str | None:
+    """Liest Dateiinhalt aus Git für ref:path, None wenn nicht vorhanden."""
+    try:
+        r = subprocess.run(
+            ["git", "show", f"{ref}:{path}"],
+            capture_output=True, text=True, check=True
+        )
+        return r.stdout
+    except Exception:
+        return None
+
+def code_change_rate(src_path: str, compare_ref: str = "HEAD~1") -> float:
+    """
+    Änderungsrate (0..1) des *Quellcodes* zwischen compare_ref und aktuellem Workspace.
+    0.0 = identisch. 1.0 = komplett verschieden. Fehlende Altversion -> 1.0.
+    """
+    current = pathlib.Path(src_path).read_text(encoding="utf-8")
+    previous = _git_show_file(compare_ref, src_path.replace("\\", "/"))
+    if previous is None:
+        return 1.0
+    return 1.0 - SequenceMatcher(None, previous.strip(), current.strip()).ratio()
 
 def get_repo_from_env():
     repo = os.getenv("GITHUB_REPOSITORY")
@@ -449,12 +472,21 @@ def main():
             if not is_allowed_namespace(ns):
                 continue
 
-            md_body = llm_markdown_for(f, code, "")
-            header = build_header_for(f)  # falls vorhanden; sonst leer
             out_rel = out_markdown_path_for(ns, pub_types, f) # deine bestehende Logik
             out_path = OUT_DIR / out_rel
 
+            must_generate = not out_path.exists()
+            if not must_generate:
+                delta_code = code_change_rate(f, compare_ref=os.getenv("DOCGEN_COMPARE_REF", "HEAD~1"))
+                if delta_code < CODE_CHANGE_THRESHOLD:
+                    # zu wenig Code-Änderung: LLM SKIPPEN
+                    # (Optional: Touch/Index unverändert lassen)
+                    continue
+
+            md_body = llm_markdown_for(f, code, "")
+            header = build_header_for(f)  # falls vorhanden; sonst leer
             changed = write_if_changed(out_path, header + md_body + "\n")
+
             any_change |= changed
 
         # 3) Index über DENSELBEN OUT_DIR
