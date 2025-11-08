@@ -15,6 +15,8 @@ DOC_EXTS = {".cs"}  # aktuell nur C#, kann erweitert werden
 SUMMARY_FINDING = "Agent/Summary"
 DEBUG_FINDING = "Agent/DebugLanguage"
 DEBUG_MANAGER_FINDING = "Agent/DebugManager"
+TODO_FINDING = "Agent/TODO"
+
 DEFAULT_BRANCH = os.getenv("DEFAULT_BRANCH", "master")
 
 # GitHub hat ein ratelimit fürs spammen von Issues.
@@ -258,6 +260,88 @@ RE_PUBLIC_PROPERTY = re.compile(
     r'^\s*public\s+[\w<>\[\],\s]+\s+([A-Za-z0-9_]+)\s*\{\s*get', re.MULTILINE
 )
 
+# Einzeilig: // TODO ...
+RE_TODO_LINE = re.compile(r'^\s*//\s*TODO\b(.*)$', re.IGNORECASE | re.MULTILINE)
+
+# Mehrzeilig – Variante 2 (fallback): bis zum nächsten */ (wenn kein END TODO benutzt wird)
+RE_TODO_BLOCK_GENERIC = re.compile(
+    r'/\*\s*TODO\b([\s\S]*?)\*/',
+    re.IGNORECASE
+)
+
+def _line_range_of_match(text: str, match: re.Match) -> tuple[int, int]:
+    """Gibt (start_line, end_line) 1-basiert für den gesamten Match zurück."""
+    start = match.start()
+    end = match.end()
+    start_line = text[:start].count("\n") + 1
+    end_line = text[:end].count("\n") + 1
+    return start_line, end_line
+
+def _line_of_match(text: str, match: re.Match) -> int:
+    """1-basierte Zeilennummer des Match-Beginns."""
+    return text[: match.start()].count("\n") + 1
+
+def _first_meaningful_line(block_text: str) -> str:
+    """
+    Liefert eine kurze Einzeiler-Zusammenfassung aus dem Block:
+    - erste nicht-leere Zeile, ohne führende Kommentarsterne/Slashes.
+    - maximal ~120 Zeichen.
+    """
+    for raw in block_text.splitlines():
+        s = raw.strip(" */\t\r\n-")
+        if s:
+            return (s[:120] + "…") if len(s) > 120 else s
+    return ""
+
+def check_todos(path: str, text: str) -> List[Finding]:
+    findings: List[Finding] = []
+
+    # Einzeilige TODOs
+    for m in RE_TODO_LINE.finditer(text):
+        msg_tail = (m.group(1) or "").strip()
+        line = _line_of_match(text, m)
+        # Zeile extrahieren
+        line_text = text.splitlines()[line - 1] if 0 <= line - 1 < len(text.splitlines()) else ""
+        summary = msg_tail if msg_tail else "TODO (single-line)"
+        findings.append(
+            Finding(
+                kind=TODO_FINDING,
+                file=path,
+                line=line,
+                symbol="// TODO",
+                message=f"{summary}\n\n```text\n{line_text.strip()}\n```",
+            )
+        )
+
+    # generische Blockvariante aber vermeide Doppelzählung:
+    # Wir matchen nur Blöcke, die NICHT bereits vom END-Pattern erfasst wurden.
+    # (Ein simpler Ansatz: erneutes Suchen auf Text, aus dem END-Blocks temporär entfernt sind.)
+    for m in RE_TODO_BLOCK_GENERIC.finditer(text):
+        start_line, end_line = _line_range_of_match(text, m)
+        whole_block = text[m.start():m.end()]
+        # Kurzes Snippet (max 8 Zeilen), ohne führende Kommentarsterne säubern
+        raw_lines = whole_block.splitlines()
+        cleaned = [ln.strip(" /*\t") for ln in raw_lines]
+        snippet = "\n".join(cleaned[:8])
+        if len(cleaned) > 8:
+            snippet += "\n…"
+
+        # Erste sinnvolle Zeile NACH dem Wort TODO als kurze Summary
+        # (Wir suchen ab der TODO-Position im match)
+        inner = m.group(1) or ""
+        summary = _first_meaningful_line(inner) or "TODO block"
+
+        findings.append(
+            Finding(
+                kind=TODO_FINDING,
+                file=path,
+                line=start_line,  # Start des Blocks
+                symbol=f"/* TODO block {start_line}-{end_line} */",
+                message=f"{summary}\n\n```text\n{snippet}\n```",
+            )
+        )
+
+    return findings
 
 def check_missing_summary(path: str, text: str) -> List[Finding]:
     """
@@ -490,6 +574,7 @@ def run_review() -> List[Finding]:
         findings.extend(check_missing_summary(f, text))
         findings.extend(check_debug_language(f, text))
         findings.extend(check_wrong_debug_logger(f, text))
+        findings.extend(check_todos(f, text))
 
     return findings
 
