@@ -33,10 +33,17 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install openai gitpython
+          pip install requests openai gitpython
 
       - name: Run doc generator
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          BASE_BRANCH: master
+          DOCGEN_DRY_RUN: "false"      # ggf. "true" für Test ohne PR
+          DOCGEN_EXCLUDE_DIRS: "BayatGames,MatthewAssets,ThirdParty,Packages,Plugins,External"
+          DOCGEN_ALLOWED_NS: "CHAL,global"
+          DOCGEN_EXCLUDE_NS: "BayatGames,MatthewAssets"
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           FULL_SCAN: ${{ github.event.inputs.FULL_SCAN }}
         run: |

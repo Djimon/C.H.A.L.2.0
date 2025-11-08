@@ -2,13 +2,13 @@ import os, pathlib
 import re
 import time
 import subprocess
-import requests
 import tempfile
 import shutil
 from datetime import datetime
 from git import Repo
 from openai import OpenAI
 from difflib import SequenceMatcher
+import requests
 
 
 # ----- Einstellungen -----
