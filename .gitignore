@@ -104,3 +104,7 @@ InitTestScene*.unity*
 **/missing/
 /Assets/Resources/data/Items/remains/missing.meta
 stub
+*.toc
+*.aux
+*.pdf
+*.gz
