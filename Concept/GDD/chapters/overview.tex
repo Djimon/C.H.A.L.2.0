@@ -1,10 +1,191 @@
 
-\section{Overview}
+\section{Game Overview}
+\label{sec:game-overview}
 
-\subsection{Summary}
+\subsection{Elevator Pitch}
 
-\subsection{Vision}
+% Kurzfassung in 2--3 Sätzen
+\textbf{Arbeitstitel:} \emph{[TBD]} % ASSUMPTION (70\%): Arbeitstitel noch offen.
 
-\subsection{Scope} % + Out-of-Scope
+Ein Auto-Battler / Team-Builder mit Third-Person-Top-Down-Kamera, in dem der Spieler als \emph{Team-Architekt} und \emph{Build-Alchemist} agiert. Die Kämpfe laufen vollautomatisch ab, während der Spieler seine Helden, Items und Skillbäume wie in einem ARPG optimiert und über eine Meta-Forschung dauerhaft stärker wird.  
 
-\subsection{Glossary}
+Maps bestehen aus zunehmend schwierigeren Wellen, höheren Schwierigkeitsgraden und besserem Loot, ohne klassischen Gear-Grind und ohne permantenen Verlust von Fortschritt nach vielen Stunden Spielzeit.
+
+\subsubsection*{Tags}
+
+\begin{itemize}
+	\item Genre: Auto-Battler, Team-Builder, ARPG-Progression
+	\item Struktur: Wave- und Map-basiert, steigende Schwierigkeitsgrade
+	\item Perspektive: Third-Person, Top-Down, Beobachter-Rolle
+	\item Progression: Charakter-Level, Items, Skillbäume, Meta-Forschung
+	\item Modus: Primär Singleplayer % ASSUMPTION (90\%): Fokus liegt auf Singleplayer
+\end{itemize}
+
+\subsection{Product Summary}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{p{4cm}p{9cm}}
+		\textbf{Aspekt} & \textbf{Beschreibung} \\
+		\hline
+		Genre & Auto-Battler / Team-Builder mit ARPG-artiger Charakterprogression \\
+		Kernfantasie & Spieler als Team-Architekt und Build-Alchemist, der immer mächtigere Heldenkombinationen erschafft \\
+		Struktur & Maps mit ansteigendem Schwierigkeitsgrad, unterteilt in Wellen (Waves) \\
+		Kamera & Third-Person / Top-Down, keine direkte Steuerung der Helden \\
+		Steuerung & Fokus auf Vorbereitung (Builds, Crafting, Forschung), Kämpfe laufen automatisiert \\
+		Sessions & Wechsel aus konzentrierter Planungsphase und entspannter Beobachtungsphase \\
+		Progressionsarten & Helden-Level, Items, Skillbäume, deterministisches Crafting, Meta-Forschung \\
+		Plattform (geplant) & PC (Option: später Mobile-Port) \\
+		Geschäftsmodell & Buy-to-Play, mit Option auf rein kosmetische Skins als Microtransactions \\
+	\end{tabular}
+	\caption{Produktübersicht}
+	\label{tab:product-summary}
+\end{table}
+
+\subsection{Vision \& Designziele}
+
+\subsubsection*{Design-Pillars}
+
+\begin{itemize}
+	\item \textbf{Unaufhaltsame Progression ohne Micromanagement:} Der Spieler erlebt einen klaren, spürbaren Machtzuwachs, ohne im Kampf ständig Eingaben machen zu müssen.
+	\item \textbf{Taktische Tiefe durch Team- und Build-Kombinationen:} Komplexität liegt in der Auswahl und Synergie von Helden, Items und Skillbäumen, nicht in der APM.
+	\item \textbf{Jedes Build soll „spielbar gut“ sein:} Es gibt schwächere und stärkere Kombinationen, aber möglichst keine Build-Einbahnstraßen, die sich wie Fallen anfühlen.
+	\item \textbf{Deterministisches / kontrollierbares Crafting statt reinem Gear-Grind:} Fortschritt ist planbar; der Spieler arbeitet auf konkrete Ziele hin.
+	\item \textbf{Klarer Loop aus Fokus und Belohnung:} 
+	\begin{itemize}
+		\item Fokus-Phase: Crafting, Teambau, Skillung, Forschung.
+		\item Belohnungs-Phase: Auto-Battles beobachten, Effekte genießen, Loot einsammeln.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Anti-Ziele}
+
+\begin{itemize}
+	\item \textbf{Kein harter Verlust von Langzeit-Fortschritt:} Keine Systeme, bei denen der Spieler nach vielen Stunden das Gefühl hat, „alles verloren“ zu haben (z.\,B. Permadeath über die komplette Meta-Progression hinweg).
+	\item \textbf{Kein aktionslastiges High-APM-Spiel:} Spieler-Skill liegt in Planung und Entscheidungen vor dem Kampf, nicht in Reaktionszeit oder präzisem Timing während des Kampfes.
+	\item \textbf{Kein stumpfer Gear-Grind:} Reines Farmen derselben Inhalte für minimale Loot-Upgrades soll vermieden werden; Fortschritt soll über Systeme wie Forschung und deterministisches Crafting kommen.
+	\item \textbf{Keine Pay-to-Win-Mechaniken:} Monetarisierung (falls vorhanden) beschränkt sich auf kosmetische Optionen.
+\end{itemize}
+
+% RISK: „Jedes Build soll spielbar gut sein“ + deterministisches Crafting erhöht Balancing-Aufwand massiv.
+% RISK: Auto-Battler + ARPG-Progression mit Forschung + Crafting ist für 1-Dev-Projekt ambitioniert.
+
+\subsection{Target Audience}
+
+\subsubsection*{Zielgruppe}
+
+Die primäre Zielgruppe sind Spieler mit begrenzter Zeit, die dennoch ein starkes Progressions- und Belohnungsgefühl suchen:
+
+\begin{itemize}
+	\item \textbf{Casual bis Midcore-Spieler}, die wenig Lust auf endlosen Grind haben.
+	\item Spieler mit \textbf{hohem Bedarf an Belohnungs-Feedback} (Endorphin-Kicks durch sichtbare Fortschritte, neue Builds, deutliche Power-Spikes).
+	\item Spieler, die gerne \textbf{Konzentrationsphasen} (Planen, Optimieren) mit \textbf{Entspannungsphasen} (Zuschauen, Loot kassieren) abwechseln.
+\end{itemize}
+
+Kurz zusammengefasst: \emph{„Wenig Zeit, aber Lust auf starke Builds und befriedigende Power-Fantasy.“}
+
+\subsubsection*{Spielertypen-Übersicht}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{p{3cm}p{4.5cm}p{4cm}p{3.5cm}}
+		\textbf{Spielertyp} & \textbf{Beschreibung} & \textbf{Motivation} & \textbf{Risiken} \\
+		\hline
+		Progression-Junkie &
+		Spielt wenige Stunden pro Woche, erwartet jedoch deutliche Fortschritts-Sprünge. &
+		Schnelle Power-Spikes, sichtbare Upgrades, neue Maps/Waves freischalten. &
+		Frust, wenn Fortschritt zu langsam oder zu RNG-lastig ist. \\
+		\hline
+		Build-Tüftler / Team-Architekt &
+		Experimentiert gerne mit Helden-Kombinationen, Skillbäumen und Items. &
+		Synergien finden, „geheime“ starke Kombinationen entdecken. &
+		Überforderung bei zu komplizierten Systemen oder Build-Fallen. \\
+		\hline
+		Entspannter Beobachter &
+		Nutzt die Battles als „Lehn dich zurück und schau zu“-Phase. &
+		Visuelles Feedback, Effekte, klares Verständnis, warum etwas gewinnt/verliert. &
+		Lange Downtimes oder unklare Kämpfe ohne erkennbare Ursache für Sieg/Niederlage. \\
+	\end{tabular}
+	\caption{Zielgruppen-Übersicht}
+	\label{tab:target-audience}
+\end{table}
+
+% RISK: Progression-Junkies und Build-Tüftler haben teils gegensätzliche Bedürfnisse: schnelle Fortschritte vs. komplexe Optimierung.
+% TODO: Später klarer definieren, ob das Spiel mehr in Richtung „Progression-Spiel“ oder „Build-Sandbox“ kippen soll.
+
+\subsection{Product Positioning \& Referenztitel}
+
+\subsubsection*{Referenzen}
+
+\begin{itemize}
+	\item \textbf{Backpack Battles / Teamfight Tactics} (Spielgefühl)
+	\item \textbf{Path of Exile 2} (Progressionstiefe, Skillbäume, Loot-Fantasie)
+	\item \textbf{Forschungs- / Battlepass-Systeme} (Meta-Progression, ohne Geldkomponente)
+\end{itemize}
+
+\subsubsection*{Differenzierung}
+
+Im Vergleich zu diesen Referenzen legt das Spiel den Fokus auf:
+
+\begin{itemize}
+	\item \textbf{Kein aktiver Player-Skill im Kampf:} Im Gegensatz zu vielen ARPGs steht nicht das Ausführen von Skills im Vordergrund, sondern die Vorbereitung und Konfiguration der Helden und Builds.
+	\item \textbf{Deterministisches Crafting statt Loot-Lotterie:} 
+	\begin{itemize}
+		\item Der Spieler kann gezielt auf bestimmte Items und Effekte hinarbeiten.
+		\item Zufall existiert, aber soll nicht der dominante Faktor für Fortschritt sein.
+	\end{itemize}
+	\item \textbf{Jedes Build soll „brauchbar“ sein:} 
+	\begin{itemize}
+		\item Es gibt stärkere und schwächere Setups, aber möglichst keine komplett toten Optionen.
+		\item Ziel ist, Experimentierfreude zu fördern statt Builds durch „Trap Choices“ zu bestrafen.
+	\end{itemize}
+\end{itemize}
+
+% RISK: „Jedes Build spielbar“ + komplexe Systeme = hoher Balancing-Aufwand, insbesondere als Solo-Dev.
+% RISK: Deterministisches Crafting könnte Loot-Spannung reduzieren, wenn es zu planbar wird.
+
+\subsection{Platform \& Business Model}
+
+\subsubsection*{Plattformen}
+
+\begin{itemize}
+	\item \textbf{Primär:} PC
+	\item \textbf{Option:} Späterer Mobile-Port, falls UI/UX und Performance es sinnvoll zulassen.
+\end{itemize}
+
+% ASSUMPTION (80\%): Fokus liegt zunächst auf PC mit Maus/Keyboard-Eingaben für Management-Phase.
+
+\subsubsection*{Geschäftsmodell}
+
+\begin{itemize}
+	\item \textbf{Buy-to-Play:} Einmaliger Kaufpreis für das vollständige Spiel.
+	\item \textbf{Optionale Monetarisierung:} Rein kosmetische Skins / visuelle Anpassungen der Helden oder Effekte.
+	\item \textbf{No-Gos:} Keine Pay-to-Win-Mechaniken, keine Lootboxen mit spielrelevanten Vorteilen, kein verpflichtender Battle Pass.
+\end{itemize}
+
+\subsection{Scope \& Constraints}
+
+\subsubsection*{Team \& Ressourcen}
+
+\begin{itemize}
+	\item \textbf{Entwicklung:} 
+	\begin{itemize}
+		\item 1 Hauptentwickler (Game Design, Programmierung, Playtesting).
+		\item KI-Unterstützung für Coding, Testing und Dokumentation.
+	\end{itemize}
+	\item \textbf{Art \& Content:}
+	\begin{itemize}
+		\item Asset-Kauf für 3D-Modelle, Animationen und Texturen.
+		\item Fokus auf Wiederverwendung und systemische Designs statt massiver Einzel-Content-Produktion.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Risiken und Grenzen}
+
+\begin{itemize}
+	\item \textbf{Ambitionierte Systemtiefe:} Auto-Battler, ARPG-Progression, deterministisches Crafting und Meta-Forschung sind zusammen für ein Solo-Projekt sehr anspruchsvoll.
+	\item \textbf{Balancing-Aufwand:} Der Anspruch, dass „jedes Build einigermaßen stark“ sein soll, macht Balancing und Content-Erstellung deutlich komplexer.
+	\item \textbf{Art- und UX-Aufwand:} Third-Person-Top-Down mit klar lesbaren Auto-Battles erfordert gute Lesbarkeit, Effekte und UI-Kommunikation, trotz Asset-Kauf.
+\end{itemize}
+
+% TODO: Später in einem eigenen Kapitel konkretisieren, welche Systeme für v1 (MVP) zwingend sind und welche für spätere Versionen verschoben werden.

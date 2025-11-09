@@ -1,11 +1,336 @@
+\section{Core Gameplay Loop}
+\label{sec:core-gameplay-loop}
 
-\section{Core Loop}
+\subsection{High-Level Core Loop}
 
-\subsection{Game Progression}
+Der zentrale Spielablauf ist in zwei deutlich getrennte Phasen unterteilt:
 
-\subsection{Player Interaction}
+\begin{itemize}
+	\item \textbf{Active Loop (Hub / Vorbereitung):} Der Spieler trifft Entscheidungen, baut sein Team und verbessert seine Ressourcen.
+	\item \textbf{Passive Loop (Map / Kampf):} Der Spieler beobachtet Auto-Battles, sammelt Loot ein und treibt damit den nächsten Active Loop an.
+\end{itemize}
 
-\subsection{Reward an Motivations} %short/mid/lonmg-term
+\subsubsection*{Hub-Struktur}
 
-\subsection{Content Roadmap}
+Der Spieler startet jede Session im \textbf{Hub}, der die zentralen Stations-Elemente enthält:
 
+\begin{itemize}
+	\item \textbf{CraftingBench:} Nutzung von Loot aus vergangenen Runden, um stärkeres Gear zu craften.
+	\item \textbf{ReforgeStation:} Verstärkung vorhandenen Gears durch neue Affixe unter Einsatz einer Meta-Währung.
+	\item \textbf{ResearchLab:} Auswahl einer aktiven Forschung; Fortschritt wird durch Kill-Counts (monster-typ-sensitiv), Map-Abschlüsse (schwierigkeits-sensitiv) und ähnliche Metriken erzeugt.
+	\item \textbf{HeroPanel:} Verwaltung der Helden:
+	\begin{itemize}
+		\item Helden leveln (passive Boni).
+		\item Skills verteilen / umskillen.
+		\item Gear wechseln.
+		\item Teamzusammenstellung (Wer nimmt an der Map teil?).
+	\end{itemize}
+	\item \textbf{MapDevice:} Auswahl von Map und Difficulty / Wellenkonfiguration, Start der Map (= Übergang in den Passive Loop).
+\end{itemize}
+
+\subsubsection*{High-Level-Loop}
+
+\begin{verbatim}
+	[Hub / Active Loop]
+	-> CraftingBench / ReforgeStation
+	-> ResearchLab (Forschung wählen/fortsetzen)
+	-> HeroPanel (Level, Skillung, Team-Build)
+	-> MapDevice (Map + Difficulty wählen)
+	[Map / Passive Loop]
+	-> Waves spielen (Auto-Battle, Loot, XP)
+	-> Map abgeschlossen oder gescheitert
+	-> zurück zum Hub (Active Loop)
+\end{verbatim}
+
+% RISK: Viele Stationen im Hub erhöhen UI- und Onboarding-Komplexität.
+% RISK: Für Casuals könnte die Entscheidungsdichte im Active Loop zu hoch werden, wenn alle Systeme früh freigeschaltet sind.
+
+\subsection{Combat Loop (pro Wave)}
+
+Der Combat Loop beschreibt den Ablauf innerhalb einer einzelnen Wave auf einer Map. Kämpfe sind vollständig automatisiert; Spielerentscheidungen finden vor Wave-Start statt.
+
+\subsubsection*{Vor Wave-Start}
+
+\begin{itemize}
+	\item Der Spieler \textbf{positioniert seine Helden} auf festen Slots der Map.
+	\item Positionierung ist ein Teil der taktischen Komponente (z.\,B. Frontline/Backline, AoE-Positionierung, Schutz empfindlicher Helden).
+\end{itemize}
+
+\subsubsection*{Wave-Ablauf}
+
+\begin{enumerate}
+	\item \textbf{Wave-Start:} Gegner-Welle wird basierend auf der Map-Konfiguration automatisch gespawnt.
+	\item \textbf{Auto-Battle:}
+	\begin{itemize}
+		\item Helden und Gegner agieren komplett autark; keine direkte Kontrolle durch den Spieler.
+		\item Helden nutzen ihre Fähigkeiten, Bewegung, Targeting und AI-Verhalten ohne Input.
+	\end{itemize}
+	\item \textbf{Loot-Drops:}
+	\begin{itemize}
+		\item Gegner lassen Loot fallen.
+		\item Der Spieler kann Loot während oder nach der Wave aktiv einsammeln (\emph{Belohnungszentrum-Trigger}).
+	\end{itemize}
+	\item \textbf{Erfahrungsgewinn:}
+	\begin{itemize}
+		\item Helden erhalten XP für eine erfolgreich abgeschlossene Wave.
+		\item Stirbt ein Held innerhalb der Wave, gehen die XP dieser Wave für diesen Held verloren.
+		\item Es gibt \textbf{kein Auto-Heal zwischen Waves}; Heilung erfolgt ausschließlich über Skills/Helden, die aktiv heilen können.
+	\end{itemize}
+\end{enumerate}
+
+\subsubsection*{Win / Lose pro Wave und Map}
+
+\begin{itemize}
+	\item \textbf{Wave gewonnen:}
+	\begin{itemize}
+		\item XP der Wave für überlebende Helden wird gespeichert.
+		\item Loot der Wave kann eingesammelt und später im Hub verwendet werden.
+		\item Der Spieler kann:
+		\begin{itemize}
+			\item zur nächsten Wave übergehen, oder
+			\item nach der Wave den Lauf abbrechen und in den Hub zurückkehren (Fortschritt bis zur letzten erfolgreichen Wave bleibt erhalten).
+		\end{itemize}
+	\end{itemize}
+	\item \textbf{Wave verloren (alle Helden tot):}
+	\begin{itemize}
+		\item Die aktuelle Wave gilt als gescheitert.
+		\item Loot, Gold und XP dieser Wave sind verloren.
+		\item Die Map kann erneut versucht werden (ggf. nach Anpassungen im Hub).
+	\end{itemize}
+\end{itemize}
+
+\begin{itemize}
+	\item \textbf{Map gewonnen (alle Waves besiegt):}
+	\begin{itemize}
+		\item Die Map wird als \emph{abgeschlossen} gekennzeichnet.
+		\item Neue Schwierigkeitsstufen (Difficulties) für diese Map werden freigeschaltet.
+		\item Abschlussbelohnungen werden gewährt:
+		\begin{itemize}
+			\item Meta-Währung,
+			\item Fortschritt in Forschung / Battlepass-artigen Systemen,
+			\item ggf. spezielle einmalige Rewards (z.\,B. neue Hero- oder Map-Freischaltungen).
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+
+% RISK: XP-Verlust bei Heldentod in Wave kann zu defensiven, risikoarmen Builds führen.
+% RISK: Kein Auto-Heal zwischen Waves erhöht die Bedeutung von Healing-Skills stark (Balancing-Gefahr).
+
+\subsection{Map-Struktur}
+
+\subsubsection*{Wave- und Gegner-Konfiguration}
+
+\begin{itemize}
+	\item Jede Map besitzt eine \textbf{fixe Wave-Struktur}:
+	\begin{itemize}
+		\item Anzahl und Reihenfolge der Waves sind vordefiniert.
+		\item Wellen können unterschiedliche Gegnertypen, EnemyRanks und Tags enthalten.
+	\end{itemize}
+	\item Innerhalb einer Map ist die Gegnerstruktur \textbf{semifx}:
+	\begin{itemize}
+		\item Basiskompositionen werden über Konfigurationsdaten (EnemyRanks, Types, Tags) festgelegt.
+		\item Platz für Variation durch Modifikatoren (z.\,B. Meta-Progression, Map-Mods) ist vorgesehen.
+	\end{itemize}
+	\item Typische Struktur (konfigurierbar):
+	\begin{itemize}
+		\item Frühe Waves mit Standard- und Normal-Gegnern.
+		\item Mittlere Waves mit vermehrten Magic-/Elite-Gegnern.
+		\item Späte Waves mit Bossen oder stark verstärkten Gegnerkombinationen.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Map-Difficulties}
+
+\begin{itemize}
+	\item Jede Map verfügt über mehrere \textbf{Schwierigkeitsstufen}.
+	\item Freischaltung erfolgt:
+	\begin{itemize}
+		\item durch Abschluss der vorherigen Difficulty,
+		\item und/oder durch Fortschritt in der Forschung (Research) als zusätzlicher Gate-Mechanismus.
+	\end{itemize}
+	\item Höhere Difficulties bieten:
+	\begin{itemize}
+		\item härtere Gegner (mehr Leben, mehr Schaden, neue Gegnertypen),
+		\item besseren Loot und stärkere Progressionsbelohnungen.
+	\end{itemize}
+\end{itemize}
+
+% RISK: Kombination aus fixen Waves + Difficulties + Modifikatoren kann Content-Produktion und Balancing stark strecken.
+% TODO: Später definieren, wie stark meta-basierte Modifikatoren Maps „umbauen“ dürfen, ohne Lesbarkeit zu verlieren.
+
+\subsection{Forschung \& Meta-Progression im Loop}
+
+\subsubsection*{Forschungsaktivierung}
+
+\begin{itemize}
+	\item Forschung wird im \textbf{ResearchLab} im Hub \emph{aktiv gewählt}.
+	\item Pro Zeit/Run kann eine oder mehrere Forschungsaufgaben parallel laufen (Design-Detail später zu präzisieren).
+	\item Fortschritt erfolgt über:
+	\begin{itemize}
+		\item Kill-Counts, die spezifisch nach Monstertypen oder Tags unterscheiden,
+		\item abgeschlossene Maps und Difficulties,
+		\item ggf. weitere In-Game-Metriken (z.\,B. verbrauchte Ressourcen, erfolgreich eingesetzte Mechaniken).
+	\end{itemize}
+	\item Ein \textbf{HUD-Element} (z.\,B. oben links) zeigt jederzeit den aktuellen Stand der aktiven Forschung an.
+\end{itemize}
+
+\subsubsection*{Forschungs-Belohnungen (Unlocks)}
+
+Forschung schaltet systematisch neue Elemente frei und dient als Leitfaden durch die Systemlandschaft:
+
+\begin{itemize}
+	\item \textbf{Neue Hideout-Elemente:}
+	\begin{itemize}
+		\item Stationen oder Features im Hub werden nacheinander freigeschaltet (Tutorial-artig).
+	\end{itemize}
+	\item \textbf{Neue Helden:}
+	\begin{itemize}
+		\item Zugriff auf weitere Heldentypen, Archetypen oder Spezialisierungen.
+	\end{itemize}
+	\item \textbf{Neue Item-Tiers:}
+	\begin{itemize}
+		\item Höhere Qualitätsstufen und stärkere Basis- oder Affix-Werte.
+	\end{itemize}
+	\item \textbf{Neue Crafting-Optionen:}
+	\begin{itemize}
+		\item Zusätzliche Reforge-Methoden, spezialisierte Crafting-Rezepte, deterministischere Upgrades.
+	\end{itemize}
+	\item \textbf{Neue Map-Stufen:}
+	\begin{itemize}
+		\item Lineare Freischaltung neuer Maps.
+		\item Freischaltung höherer Difficulties innerhalb bestehender Maps.
+	\end{itemize}
+\end{itemize}
+
+% RISK: Forschung als Gate für fast alle Systeme kann bei langsamen Fortschritt wie „Progress-Lock“ wirken.
+% TODO: Forschungs-Progression später mit realistischen Zeitbudgets pro Session abgleichen.
+
+\subsection{Session-Struktur (Planung vs. Beobachtung)}
+
+\subsubsection*{Typische Planungsphasen im Hub}
+
+\begin{itemize}
+	\item \textbf{Standard-Planung (2--5 Minuten):}
+	\begin{itemize}
+		\item Kleine Crafting-Entscheidungen.
+		\item Ein Level-Up und Skillpunktvergabe.
+		\item Kleinere Gear-Anpassungen.
+		\item Zurück in die Map.
+	\end{itemize}
+	\item \textbf{Planungsphase „Changes“ (5--10 Minuten):}
+	\begin{itemize}
+		\item Einführung eines neuen Helden ins Team.
+		\item Signifikante Änderungen an Gear und Skills.
+		\item Erste Tests neuer Synergien.
+	\end{itemize}
+	\item \textbf{Planungsphase „Makeover“ (\(\approx\) 20 Minuten):}
+	\begin{itemize}
+		\item Kompletter Umbau des Teams.
+		\item Umverteilung von Skillpunkten.
+		\item Gear-Optimierung auf ein neues Ziel-Build.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Typische Battlephasen auf Maps}
+
+\begin{itemize}
+	\item \textbf{Early Game:} 
+	\begin{itemize}
+		\item \(\sim\) 5 Minuten.
+		\item ca. 5 Waves.
+	\end{itemize}
+	\item \textbf{Midgame:}
+	\begin{itemize}
+		\item 5--10 Minuten.
+		\item ca. 10--20 Waves.
+	\end{itemize}
+	\item \textbf{Early Endgame:}
+	\begin{itemize}
+		\item 10--20 Minuten.
+		\item 10--20 Waves bei höherer Difficulty.
+	\end{itemize}
+	\item \textbf{End-Endgame:}
+	\begin{itemize}
+		\item 20+ Minuten.
+		\item härteste Maps; Option auf Endlos-Modus (\emph{Endless Mode}) ist vorgesehen.
+	\end{itemize}
+\end{itemize}
+
+\begin{itemize}
+	\item Nach \textbf{jeder Wave} (erfolgreich oder verloren) kann der Spieler aussteigen.
+	\item Fortschritt wird bis zur letzten erfolgreich abgeschlossenen Wave gespeichert.
+\end{itemize}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{p{3.5cm}p{3.5cm}p{5cm}p{3cm}}
+		\textbf{Phase} & \textbf{Dauer (typisch)} & \textbf{Spieleraktivität} & \textbf{Kognitive Last} \\
+		\hline
+		Hub: Standard-Planung & 2--5 Minuten & kleine Anpassungen (Crafting, Level, Gear) & mittel \\
+		Hub: Changes & 5--10 Minuten & neue Helden, Builds testen & hoch \\
+		Hub: Makeover & \(\approx\) 20 Minuten & kompletter Team-Umbau & sehr hoch \\
+		Map: Early Game & \(\sim\) 5 Minuten & Beobachten, Loot einsammeln & niedrig \\
+		Map: Midgame & 5--10 Minuten & Beobachten, erste Schwierigkeiten lesen & niedrig--mittel \\
+		Map: Endgame & 10--20+ Minuten & kritische Kämpfe, Loot-Entscheidungen & mittel \\
+	\end{tabular}
+	\caption{Session-Struktur: Planungs- vs. Battlephasen}
+	\label{tab:session-structure}
+\end{table}
+
+% RISK: Lange Makeover-Phasen könnten für „Wenig-Zeit-Spieler“ zu selten auftreten oder zu anstrengend sein.
+% TODO: Später prüfen, ob ein „Light Mode“ für schnelle Sessions sinnvoll ist (weniger Systeme gleichzeitig).
+
+\subsection{Failure \& Recovery}
+
+\subsubsection*{Failure-Philosophie}
+
+\begin{itemize}
+	\item \textbf{Grundhaltung:} Scheitern soll ein \emph{kleiner, verkraftbarer Schmerz} sein, der signalisiert:
+	\begin{quote}
+		„Okay, ich muss mein Build updaten.“
+	\end{quote}
+	\item Keine harten Resets über die Meta-Ebene:
+	\begin{itemize}
+		\item Forschung, Gear, Skills, Hero-Level und Map-Fortschritte sind \textbf{dauerhaft}.
+		\item Niederlagen betreffen primär die aktuelle Map/Wave und die kurzfristigen Rewards (XP/ Loot der Wave).
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Was bleibt immer erhalten?}
+
+\begin{itemize}
+	\item \textbf{Forschung} (Research-Fortschritt und freigeschaltete Systeme).
+	\item \textbf{Gear-Inventar} (bereits gecraftete/erbeutete Items).
+	\item \textbf{Skills und Helden-Level} (inkl. freigeschalteter Skills/Passives).
+	\item \textbf{Map-Fortschritte} (freigeschaltete Maps und Difficulties).
+\end{itemize}
+
+% RISK: Dauerhafte Progression + geringer Failure-Schmerz können das Spiel sehr „forgiving“ machen und Spannung reduzieren.
+% TODO: Später definieren, ob zusätzliche Soft-Sinks (z.B. Reparaturkosten, Opportunity Costs) nötig sind, um Entscheidungen bedeutsam zu halten.
+
+\subsection{Loop-Ende \& Langzeitmotivation}
+
+\subsubsection*{Natürliche Session-Endpunkte}
+
+Eine Session endet typischerweise, wenn einer oder mehrere der folgenden Punkte erreicht sind:
+
+\begin{itemize}
+	\item Der Spieler hat \textbf{genug Loot} gesammelt, um das nächste relevante Gear-Upgrade anzustreben.
+	\item Der Spieler hat \textbf{genug XP} für bedeutende Level-Ups einzelner Helden und damit neue Skills/Passives freigeschaltet.
+	\item Neue \textbf{Maps oder Helden} sind freigeschaltet und bilden klare „nächste Ziele“.
+	\item Ein größeres Build-Ziel (z.\,B. bestimmter Archetyp oder Synergie) ist erreicht oder steht kurz bevor.
+\end{itemize}
+
+\subsubsection*{Langzeitmotivation}
+
+Langfristig wird der Spieler motiviert durch:
+
+\begin{itemize}
+	\item Das Erreichen \textbf{immer stärkerer Builds} über Crafting, Reforge und Forschung.
+	\item Das \textbf{Freischalten neuer Helden} und das Testen neuer Team-Kombinationen.
+	\item Das \textbf{Durchspielen neuer Maps und höherer Difficulties} als klare Progressionsmarker.
+	\item Das Experimentieren mit \textbf{Build-Varianten}, die zwar unterschiedlich stark, aber alle spielbar sein sollen.
+\end{itemize}
+
+% RISK: Wenn „immer stärker“ nicht klar begrenzt oder in Phasen strukturiert wird, kann das langfristig zu einer flachen Power-Kurve oder zu extremen Zahlenaufblähungen führen.
+% TODO: Im Balance-Kapitel später definieren, wie stark Power-Spikes pro Progressionsschicht sein dürfen (Helden-Level, Gear-Tier, Forschung, etc.).
