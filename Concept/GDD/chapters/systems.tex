@@ -352,7 +352,7 @@ It is split by item type into dedicated sub-inventories, but presented as a sing
 	\item \textbf{Single Inventory Menu:} all sub-inventories are accessible via tabs in one consolidated screen for clarity.
 	\item \textbf{Hero Gear Slots:} each Hero has 6 equipment slots that are filled from the Gear inventory:
 	\begin{itemize}
-		\item Head, Chest, Arm, Leg, Boots, Charm.
+		\item Head, Chest, Gloves, Leg, Boots, Amulet.
 	\end{itemize}
 	\item \textbf{Hideout-only Access:} inventory management (equipping, moving, crafting usage) is only available in the Hideout, not during Maps.
 \end{itemize}
@@ -547,6 +547,273 @@ The Inventory System itself is intentionally designed as a \emph{comfort contain
 
 
 %----------------------------------------
+\section{Map System}
+\label{sec:map-system}
+
+\subsection{Overview}
+
+The Map System provides the combat stage for all auto-battles. 
+Each Map is an arena-style combat area with a fixed Wave structure and one or more Difficulty levels. 
+The MapDevice in the Hideout acts as the entry point: the player selects a Map, a Difficulty (if unlocked) and optionally empowerment modifiers before starting a run.
+
+Maps are tightly integrated with:
+\begin{itemize}
+	\item the \textbf{Hero \& Skill System} (which team and build enters the Map),
+	\item the \textbf{Loot System} (which rewards are generated from enemies and completion),
+	\item the \textbf{Research System} (which Maps and Difficulties are available, and which enemy variants exist),
+	\item the \textbf{Inventory System} (where all drops are ultimately stored).
+\end{itemize}
+
+The Map System itself does not generate items or currencies directly; it defines when and how enemies spawn and which combat events feed into the Loot System.
+
+% RISK: High coupling between Map, Research, Loot and Hero Systems can make iterative balancing slow.
+% TODO: Keep MVP Map feature set tight to avoid overdesigning early.
+
+\subsection{Map Types and Layout}
+
+\subsubsection*{Arena Structure}
+
+\begin{itemize}
+	\item Maps are \textbf{arena-like}: one main combat area per Map.
+	\item There is no free player movement during combat; heroes and enemies move and act autonomously within the arena.
+	\item Within this arena, different \textbf{layouts and obstacles} exist per Map:
+	\begin{itemize}
+		\item terrain features,
+		\item obstacles,
+		\item lanes and choke points.
+	\end{itemize}
+	\item Layout influences:
+	\begin{itemize}
+		\item hero positioning decisions,
+		\item pathing and clustering of enemies,
+		\item effectiveness of area-based skills and auras.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Themes and Map Variety}
+
+\begin{itemize}
+	\item For MVP, the game targets \textbf{3 high-level themes} (e.g. different fantasy / dungeon styles).
+	\item Per theme, there are \textbf{3--5 Maps} with distinct terrain/obstacle layouts:
+	\begin{itemize}
+		\item visual variation (biomes, architecture),
+		\item gameplay variation (different chokepoints, open areas, spawn positions).
+	\end{itemize}
+	\item In total, MVP aims for \textbf{around 10 Maps} with varied Wave setups and enemy mixes.
+\end{itemize}
+
+% RISK: Even arena-only maps with multiple layouts require art and collision work; 10+ maps is ambitious for MVP.
+
+\subsection{Map Selection (MapDevice)}
+
+\subsubsection*{Selection Flow}
+
+From the MapDevice in the Hideout, the player selects:
+
+\begin{itemize}
+	\item \textbf{Map:} any Map that has been unlocked via Research or previous completions.
+	\item \textbf{Difficulty:} a Difficulty level for that Map (if unlocked).
+	\item \textbf{Wave Range (optional):} within a Map, specific Wave ranges or starting points may be selected if previously reached.
+\end{itemize}
+
+Maps are presented as a \textbf{fixed list of unlocked Maps}, not as a rotating offer. 
+Map and Difficulty are selected separately: a Map has a base identity (theme, layout, enemy families), while its Difficulties add scaling and modifications.
+
+% TODO: Later define exact UI structure (e.g. Map grid + Difficulty panel, or combined card layout).
+
+\subsection{Wave System}
+
+\subsubsection*{Wave Structure}
+
+\begin{itemize}
+	\item Each Map has a \textbf{fixed Wave structure}:
+	\begin{itemize}
+		\item total number of Waves,
+		\item base composition per Wave (enemy types, ranks, tags),
+		\item temporal pacing (early/mid/late Waves).
+	\end{itemize}
+	\item Wave blueprints are \textbf{finely configurable}:
+	\begin{itemize}
+		\item relative amount of basic vs. Magic vs. Elite enemies,
+		\item which Waves can spawn Bosses,
+		\item where higher-density or special packs appear.
+	\end{itemize}
+	\item Design guideline for early MVP Maps:
+	\begin{itemize}
+		\item early Waves: mostly basic enemies, low pressure,
+		\item mid Waves: increasing number of Elite enemies and more complex packs,
+		\item late Waves: Bosses and high-pressure encounters.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Bosses and Champions}
+
+\begin{itemize}
+	\item \textbf{Bosses:}
+	\begin{itemize}
+		\item are boosted versions of regular units with significantly higher stats,
+		\item have more skills and more complex behaviour,
+		\item typically appear in later Waves of a Map, but are not restricted to a single final Wave.
+	\end{itemize}
+	\item \textbf{Champions:}
+	\begin{itemize}
+		\item are \emph{legendary Bosses} with distinct move sets, potentially phase-based encounters,
+		\item are intended as \textbf{endgame gates}, not standard MVP content,
+		\item can be used to gate higher Difficulties or Tier 3 recipes and similar high-value unlocks.
+	\end{itemize}
+	\item Any Wave can, in principle, contain special enemies (Boss, Champion, Elite clusters), 
+	but MVP Maps will follow a more predictable escalation pattern to keep learning curves manageable.
+\end{itemize}
+
+% RISK: Champions with unique movesets are content-expensive; should be late in the production pipeline.
+
+\subsection{Difficulties and Empowerment}
+
+\subsubsection*{Map Difficulties}
+
+\begin{itemize}
+	\item Each Map has multiple \textbf{Difficulty levels}.
+	\item Higher Difficulties:
+	\begin{itemize}
+		\item increase enemy stats (HP, damage),
+		\item may unlock additional enemy types or tags,
+		\item increase rewards (loot quantity/quality, XP, research progress).
+	\end{itemize}
+	\item Difficulties are unlocked by:
+	\begin{itemize}
+		\item completing the previous Difficulty of the same Map,
+		\item and/or unlocking via Research (World Tree, Heroes Tree, etc.).
+	\end{itemize}
+	\item Lower Difficulties remain \textbf{relevant for farming}:
+	\begin{itemize}
+		\item each Map has partially \emph{map-specific enemy types},
+		\item Research goals may require killing specific enemy families/tags that are more common on lower tiers.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Empower Maps}
+
+\begin{itemize}
+	\item \textbf{Empower Maps} adds optional modifiers on top of base Difficulty:
+	\begin{itemize}
+		\item more monsters,
+		\item increased enemy stats,
+		\item additional modifiers expressed as tags (e.g. +Projectiles, +Speed, Leech Aura, etc.).
+	\end{itemize}
+	\item Empowerment \textbf{costs meta-materials/meta-currency} (e.g. Remains, special tokens):
+	\begin{itemize}
+		\item this ties risk/reward tuning to the economy,
+		\item prevents spamming high-reward setups without cost.
+	\end{itemize}
+	\item For MVP, Empowerment is considered an \emph{endgame feature}:
+	\begin{itemize}
+		\item can be included with lower priority,
+		\item base Difficulties should function without Empower being required.
+	\end{itemize}
+\end{itemize}
+
+% RISK: Empower + Difficulties + Map variants can explode combinatorially.
+% TODO: Limit the number of stacked modifiers for MVP to keep tuning manageable.
+
+\subsection{Live Events (Future)}
+
+Map Live-Events are concepted as a future extension, not part of the MVP baseline.
+
+Two main variants are envisioned:
+
+\begin{itemize}
+	\item \textbf{Variant A – Kill-based Quick-Time Choices (Vampire Survivors-like):}
+	\begin{itemize}
+		\item Events triggered based on kill thresholds or Wave milestones.
+		\item Present the player with quick choices (e.g. temporary buffs, extra enemies for extra loot).
+	\end{itemize}
+	\item \textbf{Variant B – POE-style Interaction Objects:}
+	\begin{itemize}
+		\item In-Map interactables such as strongboxes, rituals, abysses.
+		\item On click, additional enemy waves or mini-encounters spawn with improved loot rewards.
+	\end{itemize}
+\end{itemize}
+
+For MVP these remain out of scope or very limited prototypes; core progression and difficulty should work without Live-Events.
+
+% RISK: Live-Events add another layer of complexity on top of Waves and Empowerment.
+%       Best introduced after core Map/Wave/Difficulty loop is stable.
+
+\subsection{Rewards and Progression}
+
+\subsubsection*{Per-Wave Rewards}
+
+\begin{itemize}
+	\item Regular enemies drop:
+	\begin{itemize}
+		\item Parts,
+		\item Remains,
+		\item currencies (primarily Gold).
+	\end{itemize}
+	\item Drops are handled by the Loot System; Maps define when and where drops are triggered.
+	\item After each successful Wave:
+	\begin{itemize}
+		\item XP for surviving heroes is granted,
+		\item the player may pick up all remaining loot or exit back to the Hideout,
+		\item progress is saved up to the last successful Wave.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Map Completion Rewards}
+
+\begin{itemize}
+	\item Completing all Waves of a Map:
+	\begin{itemize}
+		\item marks the Map as completed on that Difficulty,
+		\item unlocks higher Difficulties for that Map (if available),
+		\item yields an additional completion reward:
+		\begin{itemize}
+			\item meta-currency (e.g. for Research or Empowerment),
+			\item progress in Research or Battlepass-like tracks,
+			\item chance to unlock new recipes, heroes or Map variants (depending on design).
+		\end{itemize}
+	\end{itemize}
+	\item Failure on a Map (all heroes dead) forfeits loot and XP of the current Wave, 
+	but does not roll back global progression (research, unlocked Maps, etc.).
+\end{itemize}
+
+% RISK: If completion rewards are much better than per-wave rewards, players may feel forced to push beyond comfort.
+% TODO: Balance per-wave vs. completion rewards so early exits still feel respectable for low-time players.
+
+\subsection{MVP Scope for the Map System}
+
+For the initial playable version (MVP), the Map System should deliver:
+
+\begin{itemize}
+	\item \textbf{Around 10 Maps}:
+	\begin{itemize}
+		\item spread across 3 themes,
+		\item each Map with distinct layout/obstacle configuration,
+		\item with fixed but varied Wave structures and enemy mixes.
+	\end{itemize}
+	\item \textbf{Multiple Difficulties} per Map:
+	\begin{itemize}
+		\item at least 2--3 tiers of Difficulty for core Maps,
+		\item fully playable without Empowerment.
+	\end{itemize}
+	\item \textbf{Basic Boss implementation:}
+	\begin{itemize}
+		\item boosted enemies with more stats and skills.
+		\item Champions and multi-phase bosses can be postponed or introduced as late MVP/endgame pieces.
+	\end{itemize}
+	\item \textbf{Empower Maps:}
+	\begin{itemize}
+		\item optional, low-priority endgame feature for MVP,
+		\item only a small, curated set of modifiers initially.
+	\end{itemize}
+	\item \textbf{Live-Events:}
+	\begin{itemize}
+		\item considered \emph{Future}, not core MVP.
+		\item optional to prototype a single simple event type for testing.
+	\end{itemize}
+\end{itemize}
+
+% TODO: Cross-check final MVP Map count and Difficulty tiers with production capacity and balancing schedule.
 
 %----------------------------------------
 
@@ -555,14 +822,19 @@ The Inventory System itself is intentionally designed as a \emph{comfort contain
 
 \paragraph{Overview}
 The Gear Crafting System combines deterministic player-driven modification (Affixes) with random initial base generation (Implicits). 
-Each gear item is defined by its \textbf{Gear Type} (Head, Chest, Leg, Foot, Gloves, Amulet) and can contain:
+Each gear item is defined by its \textbf{Gear Type} (Head, Chest, Leg, Boots, Gloves, Amulet) and can contain:
 \begin{itemize}
 	\item Up to \textbf{N Implicits} (rolled automatically on creation)
 	\item Up to \textbf{M Affixes} (player-crafted and upgradable)\\
 \end{itemize}
 
 Each mechanic type has its own input/output schema, cost structure, and scaling formula.
-All crafting transactions are atomic (no partial resource loss).
+All crafting transactions are atomic (no partial resource loss).\\
+Access to specific crafting mechanics (Infuse, Re-Infuse, Tempering, Over-Tempering) is gated by the Crafting Research Tree (see Section~\ref{subsec:research-system}).
+Early game only basic recipes are available; advanced mechanics unlock gradually.\\
+
+Ingredients are always Materials (Parts, Remains). 
+Currencies are account-wide resources (e.g. Gold, Crystals) and are not stored in the item inventory.
 
 \vspace{0.5em}
 \noindent
@@ -579,7 +851,7 @@ Convert raw materials (and optional boosters) into finished base gear items.
 
 \begin{minipage}[t]{0.48\textwidth}
 	\vspace{0pt}\centering
-	Flow: Add Affix
+	Flow: Basic Gear Crafting
 	\resizebox{\linewidth}{!}{
 	\begin{tikzpicture}
 		\node[draw,rounded corners,fill=gray!15,minimum width=3.5cm] (select) {Select Recipe};
@@ -601,10 +873,10 @@ Convert raw materials (and optional boosters) into finished base gear items.
 	\begin{tabular}{|l|l|}
 		\hline
 		\textbf{Element} & \textbf{Description / Constraints} \\ \hline
-		Ingredients & Up to 4 material items (each with quantity). \\
-		Booster & Max 1 optional booster item (may modify tier/roll bias). \\
-		Currency & Any number of currency types (wallet-based). \\
-		Output & 1 gear item (ItemBaseDef reference). \\ \hline
+		Ingredients & Up to 4 \textbf{Materials} (Parts / Remains, each with quantity). \\
+		Booster    & Max 1 optional \textbf{Booster Material} (typically high-tier Remains). \\
+		Currency   & Any number of \textbf{Currencies} (Gold, Crystals or similar). \\
+		Output     & 1 Gear \textbf{item}. \\
 	\end{tabular}
 \end{center}
 
@@ -704,7 +976,7 @@ Allows the player to add new affixes, upgrade existing tiers, or perform one rer
 			\node[draw,rounded corners,fill=gray!15,below of=select] (check) {Check Affix Slots};
 			\node[draw,rounded corners,fill=gray!15,below of=check] (select2) {Select Affix Family};
 			\node[draw,rounded corners,fill=gray!15,below of=select2] (consume) {Consume Items + Currency};
-			\node[draw,rounded corners,fill=gray!15,below of=consume] (generate) {Generate new Implicits};
+			\node[draw,rounded corners,fill=gray!15,below of=consume] (generate) {Add Affix Roll};
 			\node[draw,rounded corners,fill=gray!15,below of=generate] (output) {Place Output in Inventory};
 			
 			\path[->] (select) edge (check)
@@ -721,12 +993,10 @@ Allows the player to add new affixes, upgrade existing tiers, or perform one rer
 	\resizebox{\linewidth}{!}{
 		\begin{tikzpicture}[node distance=1.2cm]
 			\node[draw,rounded corners,fill=gray!15,minimum width=3.5cm] (select) {Select Gear};
-			\node[draw,rounded corners,fill=gray!15,below of=select] (slot) {Select Reroll Slot};
-			\node[draw,rounded corners,fill=gray!15,below of=slot] (consume) {Consume Items + Currency};
+			\node[draw,rounded corners,fill=gray!15,below of=select] (consume) {Consume Items + Currency};
 			\node[draw,rounded corners,fill=gray!15,below of=consume] (recalc) {Recalculate Roll Value};
 			\node[draw,rounded corners,fill=gray!15,below of=recalc] (save) {Apply + Output};
-			\path[->] (select) edge (slot)
-			(slot) edge (consume)
+			\path[->] (select) edge (consume)
 			(consume) edge (recalc)
 			(recalc) edge (save);
 			\end{tikzpicture}
@@ -750,7 +1020,7 @@ Allows the player to add new affixes, upgrade existing tiers, or perform one rer
 
 \begin{itemize}
 	\item \textbf{Add Affix:} base cost plus weighted RNG PickSize (2--4).    
-	\item \textbf{Reroll:} 1 time per item: high base csot, escalating with tier.   
+	\item \textbf{Reroll:} 1 time per item: high base cost that scales further with the item tier 
 \end{itemize}
 
 \subparagraph{Cost Scaling}
@@ -840,7 +1110,8 @@ tbd
 \paragraph{Reroll Affix}
 
 \begin{itemize}
-	\item Only one slot can be rerolled.
+	\item Only one slot per item can be rerolled
+	\item slot is chosen randomly
 	\item Rerolls the Affix effect
 	\item no duplicate of existent Affixes
 	\item the more Affixes are on the item, the smaller the Reroll-Range of which Affix will be rolled
@@ -853,9 +1124,9 @@ tbd
 \subsubsection{Mechanic III – Hardening (Tier Enhancement)}
 
 \paragraph{Purpose}
-A late-game mechanic that permanently increases item potential through tier reinforcement.
+A late-game mechanic that permanently increases item potential through tier reinforcement and needs a late-game research to be finsihed.
 
-\paragraph{sequence}
+\paragraph{Sequence}
 
 \begin{center}
 	\begin{tikzpicture}[node distance=1.2cm]
@@ -899,7 +1170,7 @@ A late-game mechanic that permanently increases item potential through tier rein
 		9 & x28 & +1 Tier &  \\ 
 		10& x29 & increase roll within the tier & \\
 		11& x30 & increase roll within the tier & \\
-		12& x60 & Overroll (over Max) & extreme high cost for alte endgame\\ \hline
+		12& x60 & Overroll (over Max) & extreme high cost for late endgame\\ \hline
 	\end{tabular}
 \end{center}
 
@@ -907,7 +1178,7 @@ A late-game mechanic that permanently increases item potential through tier rein
 
 \begin{itemize}
 	\item Each hardening level multiplies base material and currency cost.
-	\item Rare reagents required (e.g., Essence, Soul Alloy).
+	\item Rare materials required (e.g., Essence, Soul Alloy).
 \end{itemize}
 
 \subparagraph{Cost Scaling}
@@ -930,13 +1201,400 @@ see Cost Multiplicator in Hardening Tiers
 
 %----------------------------------------
 
-%----------------------------------------
+\section{Skill System}
+\label{sec:skill-system}
+
+\subsection{Overview}
+
+The Skill System defines how Heroes and Monsters act in combat. 
+It is built on a unified model for Skills, Impacts, Status effects and Modifiers, shared by both sides:
+
+\begin{itemize}
+	\item \textbf{SkillData} -- base definition: cooldown, range, tags, base damage, target rules.
+	\item \textbf{Impacts} -- actions executed on cast / hit: deal damage, apply status, trigger other skills.
+	\item \textbf{Status} -- buffs, debuffs, damage-over-time and similar timed effects attached to units.
+	\item \textbf{ModifierData} -- generic numeric changes applied by gear, passives, buffs, debuffs, runes, crowns, etc.
+\end{itemize}
+
+Heroes and Monsters use the same SkillData and Status/Modifier framework. 
+The difference lies in where these Skills come from (Hero archetypes, Modules, enemy definition) and which Modifiers apply.
+
+\subsection{Shared Stat Model}
+
+The Skill System relies on a fixed set of five core stats:
+
+\begin{itemize}
+	\item \textbf{STR} -- physical power (melee damage, strength-based scaling).
+	\item \textbf{DEX} -- agility (attack speed, accuracy, evasion-style interactions).
+	\item \textbf{CON} -- resilience (life, barrier, physical toughness).
+	\item \textbf{INT} -- mental power (spell power, elemental scaling, complex skills).
+	\item \textbf{WIL} -- willpower (resistance to control, resource sustain, thematic „will“ effects).
+\end{itemize}
+
+All Skill and Modifier calculations ultimately work on this stat set and derived combat stats (damage, crit, armor, resistances, etc.).
+
+% RISK: Any later change to this stat set will ripple into all systems (Heroes, Skills, Gear, Crafting, Balance).
+
+\subsection{Skill Model (Heroes and Enemies)}
+
+\subsubsection*{SkillData}
+
+Each Skill is defined by a SkillData object, including:
+
+\begin{itemize}
+	\item base damage (physical/elemental or mixed),
+	\item cooldown and cast time,
+	\item range and target rules (single target, AoE, line, cone, self),
+	\item tags (e.g. melee, projectile, DoT, aura, summon, fire, holy, undead),
+	\item scaling hooks (which stats modify what parts of the skill).
+\end{itemize}
+
+\subsubsection*{Impacts and Status}
+
+\begin{itemize}
+	\item \textbf{Impacts} define what happens when a Skill is cast or hits:
+	\begin{itemize}
+		\item damage instances,
+		\item application of Status effects,
+		\item triggering of chained skills (e.g. nova on hit, projectiles on kill).
+	\end{itemize}
+	\item \textbf{Status} objects represent ongoing effects:
+	\begin{itemize}
+		\item buffs (e.g. increased armor, haste),
+		\item debuffs (e.g. slow, vulnerability),
+		\item DoTs (e.g. bleeding, burning),
+		\item other persistent states (e.g. taunt, mark).
+	\end{itemize}
+	\item Status effects apply \textbf{ModifierData} to stats or skills while active.
+\end{itemize}
+
+\subsubsection*{ModifierData}
+
+ModifierData is the unified language for numeric changes:
+
+\begin{itemize}
+	\item flat additions (e.g. +10 armor),
+	\item additive \% increases (e.g. +20\% damage),
+	\item multiplicative „more“ multipliers (e.g. 30\% more damage),
+	\item caps and clamps (e.g. resistances up to 75\%),
+	\item occasional replacements or transformations (e.g. convert physical to fire, replace basic attack).
+\end{itemize}
+
+All systems (Gear, Skill Orbits, Runes, Crowns, Research) ultimately output ModifierData.
+
+\subsection{Hero Skill Layers}
+
+Hero power and behaviour in combat is defined through several stacked layers:
+
+\begin{enumerate}
+	\item Hero archetype and base stats (STR, DEX, CON, INT, WIL).
+	\item Gear (from the Crafting System).
+	\item Skill Modules in Sockets.
+	\item Socket Orbits (passive progression around each socket).
+	\item Hero-wide Runes.
+	\item Endgame Crowns.
+\end{enumerate}
+
+Details about Hero archetypes, roles and progression (HeroDef, HeroInstance, AI profiles) are described in Section~\ref{sec:heroes-system}. 
+This section focuses on how Heroes interface with the Skill System via sockets, modules and orbits.
+
+
+\subsubsection{Skill Modules and Sockets}
+
+Heroes do not „learn“ traditional skill trees; instead, they use \textbf{Skill Modules} socketed into fixed positions.
+
+\begin{itemize}
+	\item Each Hero has \textbf{4--5 chakra-style sockets}, not bound to gear:
+	\begin{itemize}
+		\item e.g. Torso, Left Hand, Right Hand, Head (+ optional Will/Chest).
+	\end{itemize}
+	\item Sockets are \textbf{semantically distinct}, not statistically tied to gear slots:
+	\begin{itemize}
+		\item e.g. a socket may be associated with crit/burst, sustain, mobility, defence.
+	\end{itemize}
+	\item Each socket can hold \textbf{exactly one Skill Module item} from the Inventory.
+	\item Socket progression:
+	\begin{itemize}
+		\item start with 1 active socket at low level,
+		\item additional sockets unlock as the Hero levels up (e.g. at level milestones).
+	\end{itemize}
+	\item When a Module is socketed:
+	\begin{itemize}
+		\item the Hero gains a SkillData instance, based on:
+		\begin{itemize}
+			\item the abstract Module definition,
+			\item the Hero archetype (which may skin or specialise the skill),
+			\item socket-specific modifiers (see Orbits).
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Module Role}
+
+Modules represent the main active skill layer for Heroes:
+
+\begin{itemize}
+	\item they define \textbf{what} a skill does (projectile, aura, buff, summon, etc.),
+	\item archetypes define \textbf{how} it feels (e.g. same Module might be a burning nova for an Arcanist and a physical shockwave for a Vanguard),
+	\item Orbits, Gear and Runes further modify behaviour and scaling.
+\end{itemize}
+
+% RISK: If Modules are too numerous or too similar, the system loses clarity.
+% TODO: For MVP, keep Module count per archetype low and strongly themed.
+
+\subsubsection{Socket Orbits (Passive Progression)}
+
+Each socket has its own \textbf{Orbit}: a layered progression ring around the socket that works similar to electron shells in an atom model:
+
+\begin{itemize}
+	\item the \emph{socket} is the core,
+	\item each \emph{orbit tier} is an electron shell around that core,
+	\item orbit \emph{points} are the electrons on that shell.
+	\item an orbit \emph{Mod} is a "Super-electron" (not scientific related) unlocked when electron hsell full
+\end{itemize}
+
+\paragraph{Structure}
+
+\begin{itemize}
+	\item Each socket orbit contains a fixed number of points (e.g. 22 points) spread across multiple tiers (Tier~1, Tier~2, Tier~3).
+	\item Points are \textbf{small, incremental stat buffs}:
+	\begin{itemize}
+		\item e.g. +\% damage, +\% life, +crit chance, +status effect, +resource regen,
+		\item tuned per socket identity (crit/burst vs. sustain vs. utility, etc.).
+	\end{itemize}
+	\item Points are invested in free order along the orbit path for that socket.
+\end{itemize}
+
+\paragraph{Tier Gates and Orbit Mods}
+
+Orbit progression is divided into tiers, each with a gate:
+
+\begin{itemize}
+	\item After investing a required number of points on the current tier (e.g. 6--8 points on Tier~1),
+	the player unlocks a \textbf{Tier Mod Choice} for that tier.
+	\item A Tier Mod is a \textbf{behaviour/synergy modifier}, not a small stat buff. Examples:
+	\begin{itemize}
+		\item convert a single-target skill into a small AoE,
+		\item add a nova or chain effect on hit,
+		\item add a DoT component or a mark on hit,
+		\item convert damage type (e.g. phys to fire) or add penetration,
+		\item change targeting logic (e.g. prioritise bosses / clusters).
+	\end{itemize}
+	\item When a Tier Mod is chosen:
+	\begin{itemize}
+		\item its effect is applied permanently to the socketed skill,
+		\item the next outer orbit tier is unlocked and becomes available for point investment.
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Socket Identity}
+
+Each socket has its own themed orbit and Tier Mod pools:
+
+\begin{itemize}
+	\item \textbf{Example (conceptual only):}
+	\begin{itemize}
+		\item Torso socket: sustain/defence (life, barrier, mitigation, „on damage taken“ effects).
+		\item Right Hand: crit and burst (crit chance/multi, „execute“ style effects, high-risk/high-reward).
+		\item Left Hand: utility/control (crowd control, debuffs, resource manipulation).
+		\item Head: AoE/range/complex mechanics (larger areas, extra projectiles, complex triggers).
+	\end{itemize}
+	\item Tier Mods are drawn from socket-specific pools to reinforce the identity of that slot.
+\end{itemize}
+
+\paragraph{Progression Source}
+
+Orbit points are gained through levle-ups of the Heroe:
+
+\begin{itemize}
+	\item Hero level ups,
+	\item Research unlocks (Skill Tiers in the Heroes Tree),
+	\item possibly specific achievements or milestones (future).
+\end{itemize}
+
+The intended pattern is:
+
+\begin{itemize}
+	\item frequent \textbf{small numeric gains} through orbit points,
+	\item occasional \textbf{big behavioural steps} when a Tier Mod is unlocked,
+	\item each unlocked Tier Mod both upgrades the current skill and opens access to the next orbit tier.
+\end{itemize}
+
+% RISK: Too many small points per orbit can feel grindy; tier mod unlock thresholds must be tuned to feel meaningful.
+% TODO: Define exact points-per-tier and thresholds per socket in the Heroes chapter / balance sheets.
+
+\subsubsection{Crowns (Endgame)}
+
+Crowns are an \textbf{endgame progression layer}:
+
+\begin{itemize}
+	\item Crown sockets are unlocked via the Heroes Research Tree (see Research System).
+	\item Crowns apply \textbf{large, rare, endgame-level modifiers}, such as:
+	\begin{itemize}
+		\item transforming a core skill in a fundamental way,
+		\item adding strong, unique effects with clear downsides,
+		\item pushing certain stats beyond normal caps.
+	\end{itemize}
+	\item Crowns are intentionally rare and limited; they are not part of the early game.
+\end{itemize}
+
+For MVP, Crowns can be treated as \emph{future or late} content and do not need full implementation.
+
+% RISK: Too many overlapping layers (Orbits, Runes, Crowns, Gear) can overwhelm players.
+% TODO: Crowns should be reserved for clearly signposted endgame goals.
+
+\subsection{Skill Loadout and Combat Usage}
+
+\subsubsection*{Hero Loadout}
+
+A Hero's combat loadout is defined by:
+
+\begin{itemize}
+	\item the number of \textbf{active sockets} (unlocked by level),
+	\item which \textbf{Modules} are slotted into those sockets,
+	\item which \textbf{Orbit mods} have been chosen around each socket,
+	\item hero-wide \textbf{Runes} and possible \textbf{Crowns},
+	\item equipped Gear and its interactions with skill tags.
+\end{itemize}
+
+In practice:
+
+\begin{itemize}
+	\item early game: 1 active socket → 1 major skill per Hero,
+	\item mid game: 2--3 sockets → 2--3 major skills per Hero,
+	\item late game: 3--4 (5) sockets with fully developed Orbits.
+\end{itemize}
+
+\subsubsection*{AI-Driven Skill Usage}
+
+There is no direct player control over skill priority in combat:
+
+\begin{itemize}
+	\item each Hero follows an \textbf{archetype-specific AI profile}:
+	\begin{itemize}
+		\item tanks prioritise taunts/defensive skills and high-HP targets,
+		\item damage dealers prioritise high-value or low-HP targets,
+		\item support archetypes prioritise buffs and heals.
+	\end{itemize}
+	\item AI rules consider:
+	\begin{itemize}
+		\item skill tags (e.g. „heal“, „buff“, „AoE nuke“),
+		\item cooldown states,
+		\item simple conditions (e.g. ally HP, enemy clustering).
+	\end{itemize}
+\end{itemize}
+
+The player expresses build intent primarily through:
+
+\begin{itemize}
+	\item module choices (which skills exist at all),
+	\item orbit mods (how those skills behave),
+	\item gear and runes (which stats and tags are favoured).
+\end{itemize}
+
+% RISK: Lack of explicit skill priority control can frustrate highly engaged players.
+% TODO: Evaluate later whether a simple „priority list“ per Hero is needed, once AI is stable.
+
+\subsection{Interactions with Other Systems}
+
+\subsubsection*{Research System}
+
+\begin{itemize}
+	\item The \textbf{Heroes Research Tree} unlocks:
+	\begin{itemize}
+		\item new Hero archetypes (Hero packs),
+		\item deeper Skill tiers (access to higher Orbit tiers),
+		\item Crown sockets as endgame goals.
+	\end{itemize}
+	\item Research does not grant direct one-run buffs, but expands long-term build options.
+\end{itemize}
+
+\subsubsection*{Gear and Crafting}
+
+\begin{itemize}
+	\item Gear affects Skills primarily via:
+	\begin{itemize}
+		\item stats that scale skills (STR, INT, crit, penetration),
+		\item tag-based bonuses (e.g. increased projectile skill power, increased AoE, reduced cooldown).
+	\end{itemize}
+	\item The Crafting System defines how gear is created and upgraded; Skill System uses the resulting stats and tags.
+\end{itemize}
+
+\subsubsection*{Inventory and Modules}
+
+\begin{itemize}
+	\item Skill Modules and Runes are inventory items:
+	\begin{itemize}
+		\item Modules and Runes are managed in the Hideout inventory screen,
+		\item equipping is done via sockets on the Hero panel.
+	\end{itemize}
+	\item No inventory management is available during Maps; skill loadouts are fixed for the duration of a run.
+\end{itemize}
+
+\subsubsection*{Map \& Combat System}
+
+\begin{itemize}
+	\item The Map \& Combat System calls into the Skill System to:
+	\begin{itemize}
+		\item execute Skills for Heroes and Monsters,
+		\item resolve Impacts and Status effects,
+		\item track kills, damage and other metrics for Research.
+	\end{itemize}
+\end{itemize}
+
+\subsection{MVP Scope for the Skill System}
+
+For the MVP, the Skill System should deliver:
+
+\begin{itemize}
+	\item A stable \textbf{SkillData / Status / Modifier} framework used by Heroes and Monsters.
+	\item A limited set of \textbf{Hero archetypes} (e.g. 3--5) with:
+	\begin{itemize}
+		\item clear roles,
+		\item 1--3 key Skill Modules each,
+		\item basic Orbit layouts (Tier I/II, Tier III optional).
+	\end{itemize}
+	\item \textbf{Sockets and Modules}:
+	\begin{itemize}
+		\item start with 1 active socket per Hero,
+		\item unlock up to 2--3 sockets for MVP,
+		\item small, strongly themed Module pool.
+	\end{itemize}
+	\item \textbf{Orbits}:
+	\begin{itemize}
+		\item functional Tier I/II for each socket,
+		\item Tier III and complex mutations may be endgame or future additions.
+	\end{itemize}
+	\item \textbf{Runes}:
+	\begin{itemize}
+		\item optional, simple hero-wide bonuses (1 slot is sufficient for MVP),
+		\item complex interactions can be postponed.
+	\end{itemize}
+	\item \textbf{Crowns}:
+	\begin{itemize}
+		\item treated as late-game or future content,
+		\item only minimal scaffolding needed in MVP.
+	\end{itemize}
+\end{itemize}
+
+% TODO: Finalise MVP archetype list and per-archetype Module/Orbit designs in a dedicated Heroes chapter.
+
 
 %----------------------------------------
 
+%----------------------------------------
 
-\section{Perks and Traits}
 
+\section{Loot and Drop System}
+\label{sec:loot-system}
+
+\subsection{Loot Flow and Rarities}
+
+\paragraph{Overview}
+This subsection defines the generic loot flow from enemy death (and wave resolution) to final rewards.
+It connects the Map \& Combat System with the Inventory System and the Item/Material categories
+(Items: Gear, Modules, Runes; Materials: Parts, Remains; Currencies: Gold, Crystals),
+but is implementation-agnostic and focuses on inputs, order of operations and balancing knobs.
 
 \subsection{Loot and Rarities}
 \subsubsection*{Purpose}
@@ -1022,6 +1680,418 @@ Evaluate secret/conditional drops (e.g., specific tag combinations). These are a
 
 %----------------------------------------
 
-%----------------------------------------
+\section{Meta Progression and Battlepass}
+\label{sec:meta-progression}
 
-\subsection{Meta Progression}
+\subsection{Overview}
+
+The Meta Progression / Battlepass System provides long-term goals across multiple sessions.
+It runs in parallel to the core progression systems (Research, Heroes, Crafting, Maps) and rewards
+regular play with additional resources.
+
+This system is \textbf{not monetised} (no paid track). It is designed purely as
+a long-term motivation layer and a light „quest wrapper“ around the existing gameplay.
+
+\subsection{Design Goals}
+
+\begin{itemize}
+	\item \textbf{Structured Long-Term Goals:}
+	Provide clear, mid-term targets beyond „more damage / higher difficulty“.
+	\item \textbf{Soft Onboarding / Tutorial Replacement:}
+	Early Battlepass objectives can guide new players through key systems
+	(Maps, Research, Crafting, Heroes) instead of a rigid tutorial.
+	\item \textbf{Daily / Weekly Engagement:}
+	Offer small, optional tasks on a daily/weekly basis for players who enjoy checklists and routines.
+	\item \textbf{Non-Essential Power:}
+	Rewards support progression (materials, currencies) but must not be the only source for critical power.
+\end{itemize}
+
+\subsection{Structure}
+
+The Meta Progression is structured as a \textbf{season-neutral} track with recurring objectives:
+
+\begin{itemize}
+	\item \textbf{Core Track (Account-Wide):}
+	\begin{itemize}
+		\item A linear progression bar with levels.
+		\item Progress gained by completing Maps, Waves and simple objectives.
+		\item Each level grants a small reward bundle.
+	\end{itemize}
+	\item \textbf{Objectives / Quests:}
+	\begin{itemize}
+		\item Simple, gameplay-aligned goals, such as:
+		\begin{itemize}
+			\item „Defeat X enemies on Map type Y.“
+			\item „Complete N Waves without losing a Hero.“
+			\item „Craft or upgrade an item.“
+		\end{itemize}
+		\item Objectives exist in three scopes:
+		\begin{itemize}
+			\item \textbf{Intro Objectives:} early, tutorial-like tasks introducing core systems.
+			\item \textbf{Daily Objectives:} small tasks meant to be completed in a short session.
+			\item \textbf{Weekly Objectives:} slightly larger goals for regular players.
+		\end{itemize}
+		\item Completing objectives grants Battlepass XP (progress on the core track) and sometimes direct rewards.
+	\end{itemize}
+\end{itemize}
+
+\subsection{Rewards}
+
+Battlepass rewards should be „nice to have“, not mandatory:
+
+\begin{itemize}
+	\item \textbf{Primary Rewards (Economy-Oriented):}
+	\begin{itemize}
+		\item rare Materials (higher-tier Remains, special crafting reagents),
+		\item rare Currencies,
+		\item Gold bundles.
+	\end{itemize}
+	\item \textbf{Secondary Rewards (Future / Optional):}
+	\begin{itemize}
+		\item cosmetic variations (skins, visual effects),
+		\item cosmetic Hideout decorations or UI themes.
+	\end{itemize}
+\end{itemize}
+
+The Battlepass must not be the only reliable source for:
+\begin{itemize}
+	\item key unlocks (Maps, Heroes, basic crafting),
+	\item core power spikes (Gear tiers, base stat growth).
+\end{itemize}
+
+It is an \emph{accelerator} and a „reward wrapper“ around what the player already does, not a mandatory grind path.
+
+\subsection{Interaction with Other Systems}
+
+\begin{itemize}
+	\item \textbf{Research System:}
+	\begin{itemize}
+		\item Objectives can reference Research milestones (e.g. „Start a new research project“, „Complete X kills for research“),
+		\item but Research unlocks remain independent from Battlepass progression.
+	\end{itemize}
+	\item \textbf{Map System:}
+	\begin{itemize}
+		\item Many objectives are Map/Wave based (kills, completions, difficulty tiers).
+		\item Map variety (themes, enemy families) can be reflected in specific objectives.
+	\end{itemize}
+	\item \textbf{Crafting and Inventory:}
+	\begin{itemize}
+		\item Objectives can reward and require basic crafting actions (craft an item, infuse gear),
+		\item Reward bundles contain Materials and currencies that directly feed into crafting.
+	\end{itemize}
+\end{itemize}
+
+\subsection{MVP Scope}
+
+For MVP, the Battlepass / Meta Progression should remain simple:
+
+\begin{itemize}
+	\item \textbf{Single Core Track:}
+	\begin{itemize}
+		\item one account-wide bar with a limited number of levels,
+		\item no seasonal reset logic required initially.
+	\end{itemize}
+	\item \textbf{Basic Objective Sets:}
+	\begin{itemize}
+		\item a small set of Intro Objectives that guide the player through:
+		\begin{itemize}
+			\item playing Maps,
+			\item using the MapDevice,
+			\item starting Research,
+			\item crafting basic gear,
+			\item equipping Heroes.
+		\end{itemize}
+		\item a limited pool of Daily/Weekly objectives rotating randomly.
+	\end{itemize}
+	\item \textbf{Reward Types:}
+	\begin{itemize}
+		\item bundles of Gold,
+		\item mid-tier Materials,
+		\item small amounts of rare Currencies.
+	\end{itemize}
+\end{itemize}
+
+Further extensions (cosmetics, advanced objective chains, seasonal structure) can be added once core progression and economy are stable.
+
+
+%----------------------------------------
+\section{Heroes and Archetypes}
+\label{sec:heroes-system}
+
+\subsection{Overview}
+
+Heroes are the core units the player builds, equips and sends into Maps. 
+Each Hero belongs to an \textbf{Archetype} which defines their role, core stats, AI behaviour and passive traits. 
+Heroes do not have traditional skill trees; instead, they use the Skill System via sockets, modules and orbits 
+(see Section~\ref{sec:skill-system}).
+
+\begin{itemize}
+	\item \textbf{Archetype} = role, stat focus, base behaviour, passive identity.
+	\item \textbf{Hero} = instance of an archetype with a level, gear, skill modules, orbits, runes and crowns.
+	\item \textbf{Team} = up to 4 Heroes fielded together in combat.
+\end{itemize}
+
+\subsection{Team Size and Hero Unlocks}
+
+\subsubsection*{Team Size}
+
+\begin{itemize}
+	\item The player starts with a \textbf{single Hero slot} (team size 1).
+	\item Additional team slots are unlocked over time (via progression or research) up to a maximum of \textbf{4 Heroes per team}.
+	\item The game is balanced around 1--4 Heroes auto-battling together.
+\end{itemize}
+
+\subsubsection*{Hero Unlocks}
+
+Heroes are not all available from the start:
+
+\begin{itemize}
+	\item The player starts with exactly \textbf{one archetype} (starter Hero).
+	\item Additional Heroes are unlocked in \textbf{packs of 2--3 archetypes}, themed together (e.g. „ranged pack“, „support pack“).
+	\item Unlocking and owning are separate:
+	\begin{itemize}
+		\item \emph{Unlock} makes an archetype available to be recruited.
+		\item \emph{Recruitment} may cost a rare currency.
+	\end{itemize}
+	\item The first few (approx.\ 5) Heroes are granted through story/progression without heavy cost.
+	\item Further Heroes are primarily unlocked via the Heroes Research Tree and then purchased with rare currency.
+\end{itemize}
+
+\subsection{Archetype Roster}
+
+Table~\ref{tab:archetype-roster} lists the planned archetypes, their primary role and core stat focus. 
+This roster is larger than the MVP set; the MVP subset is marked explicitly.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{p{2.8cm}p{3.2cm}p{2.5cm}p{5cm}p{1.5cm}}
+		\textbf{Archetype} & \textbf{Role} & \textbf{Core Stat} & \textbf{Identity (Short)} & \textbf{MVP} \\
+		\hline
+		Vanguard & Tank / Frontline & CON & High durability, control, damage mitigation, „front wall“. & Yes \\
+		Piercer & STR DPS / Execute & STR & Physical single-target burst, armor penetration, executes. & Future \\
+		Arcanist & Caster / Control & INT & Elemental damage, DoTs, debuffs and control. & Yes \\
+		Ranger & Ranged Hybrid & DEX & Mobile ranged attacker, projectiles, kiting tools. & Yes \\
+		Marksman & Ranged Single-Target & DEX & Long-range precision, crit-focused, positional bonuses. & Future \\
+		Alchemist & DoT / Zone Control & INT & Damage-over-time, ground effects, debuffs. & Future \\
+		Summoner & Minion Master & WIL & Summoned allies, scaling with minion count and survival. & Yes \\
+		Hierophant & Support / Nature & WIL & Healing, auras, protection, buff duration. & Future \\
+		Bruiser & Sustain Melee & STR & Melee DPS with self-sustain and high HP. & Future \\
+		Saboteur & Traps / Procs & INT & Traps, delayed damage, proc-based synergies. & Future \\
+		Oracle & Buff / Debuff Support & WIL & Team-wide buffs and enemy debuffs, predictive flavour. & Future \\
+	\end{tabular}
+	\caption{Archetype roster and core roles}
+	\label{tab:archetype-roster}
+\end{table}
+
+For MVP, the core playable set is: \textbf{Vanguard}, \textbf{Arcanist}, \textbf{Ranger}, \textbf{Summoner}. 
+Additional archetypes are planned for later iterations once core systems are stable.
+
+\subsection{Stats and Growth}
+
+All archetypes share the same five core stats:
+
+\begin{itemize}
+	\item STR, DEX, CON, INT, WIL (see Section~\ref{sec:skill-system}).
+\end{itemize}
+
+Each archetype defines:
+
+\begin{itemize}
+	\item 1 primary \textbf{Core stat} (e.g. CON for Vanguard, INT for Arcanist),
+	\item 1--2 secondary stats,
+	\item remaining stats as low-impact for that archetype.
+\end{itemize}
+
+Exact numeric growth per level and per-stat distributions are defined in the balance sheets. 
+For the GDD, it is sufficient that:
+
+\begin{itemize}
+	\item Vanguard and Bruiser lean heavily into \textbf{CON/STR},
+	\item Ranger and Marksman lean into \textbf{DEX} (with some INT or STR depending on design),
+	\item Arcanist, Alchemist, Saboteur rely on \textbf{INT},
+	\item Summoner, Hierophant, Oracle rely on \textbf{WIL}.
+\end{itemize}
+
+\subsection{Archetype Passives}
+
+Each archetype has a small set of defining passive traits. 
+These are always active once the Hero is in the team and help differentiate playstyle and build direction.
+
+\subsubsection*{Vanguard (Tank, CON Core)}
+
+\begin{itemize}
+	\item \textbf{Bulwark:} +20\% Armor.
+	\item \textbf{Stand Your Ground:} reduced impact from slows / stuns and/or can move through enemies without being body-blocked (exact implementation to be decided).
+	\item \textbf{First Hit Guard:} the first hit taken from each enemy is reduced by 50\% (subject to implementation feasibility).
+\end{itemize}
+
+\subsubsection*{Piercer (STR Core, Execute)}
+
+\begin{itemize}
+	\item \textbf{Deadly Precision:} +50\% critical damage multiplier.
+	\item \textbf{Hemorrhage:} unlocks a stackable Bleed DoT effect on hits.
+	\item \textbf{Merciless:} enemies below 40\% HP take +15\% damage from Piercer.
+\end{itemize}
+
+\subsubsection*{Arcanist (INT Core, DoT/Control)}
+
+\begin{itemize}
+	\item \textbf{Arcane Echo:} +25\% debuff duration.
+	\item \textbf{Overchannel:} +20\% spell damage.
+	\item \textbf{Flow of Mana:} skills have -15\% cooldown.
+\end{itemize}
+
+\subsubsection*{Ranger (DEX Core, Projectiles/Kiting)}
+
+\begin{itemize}
+	\item \textbf{Volley:} +1 projectile count for applicable skills.
+	\item \textbf{Through the Line:} +25\% pierce chance (projectiles can hit multiple enemies).
+	\item \textbf{Hunter’s Focus:} +15\% range.
+\end{itemize}
+
+\subsubsection*{Marksman (DEX Core, Precision)}
+
+\begin{itemize}
+	\item \textbf{Headshot:} +20\% critical chance.
+	\item \textbf{Longshot:} +20\% damage against targets further than a threshold distance (e.g. 8m).
+	\item \textbf{Sniper Discipline:} +10\% attack speed while stationary (after not moving for a short duration, e.g. 5s).
+\end{itemize}
+
+\subsubsection*{Alchemist (INT Core, DoTs/Zones)}
+
+\begin{itemize}
+	\item \textbf{Virulent Concoction:} DoTs can stack +10 additional times.
+	\item \textbf{Toxic Spread:} on kill, existing DoTs can spread to a nearby target.
+	\item \textbf{Lingering Poison:} +25\% DoT duration.
+\end{itemize}
+
+\subsubsection*{Summoner (WIL Core, Minions)}
+
+\begin{itemize}
+	\item \textbf{Broodmaster:} +2 summon count (base summon count = 3).
+	\item \textbf{Empowered Minions:} minions have +20\% HP and +15\% damage.
+	\item \textbf{Hive Mind:} +5\% damage per living minion.
+\end{itemize}
+
+\subsubsection*{Hierophant (WIL Core, Support/Nature)}
+
+\begin{itemize}
+	\item \textbf{Blessing Aura:} allies in a small radius (e.g. 4m) regenerate 1\% HP/sec.
+	\item \textbf{Sanctuary:} the next attack against nearby allies is negated (cooldown, e.g. every 10s).
+	\item \textbf{Spirit Bond:} buffs applied by Hierophant last +25\% longer.
+\end{itemize}
+
+\subsubsection*{Bruiser (STR Core, Sustain Melee)}
+
+\begin{itemize}
+	\item \textbf{Brawler’s Might:} +20\% attack damage.
+	\item \textbf{Blood for Strength:} +10\% life leech factor.
+	\item \textbf{Thick Skin:} +15\% maximum HP.
+\end{itemize}
+
+\subsubsection*{Saboteur (INT Core, Traps/Procs)}
+
+\begin{itemize}
+	\item \textbf{Tinker’s Reserve:} traps have +1 charge.
+	\item \textbf{Suspicious Gear:} increased chance to apply additional DoT stacks.
+	\item \textbf{Expertise:} increased area of effect for trap-triggered effects.
+\end{itemize}
+
+\subsubsection*{Oracle (WIL Core, Buff/Debuff)}
+
+\begin{itemize}
+	\item \textbf{Prophetic Weakness:} enemy debuffs last +25\% longer.
+	\item \textbf{Battle Clairvoyance:} allies in a radius (e.g. 6m) gain +10\% critical chance.
+	\item \textbf{Foretold Resilience:} allies in a radius gain +10\% elemental resistance.
+\end{itemize}
+
+% NOTE: Numerical values are initial design targets and will be tuned in the balance phase.
+
+\subsection{Sockets and Orbit Progression (Hero Perspective)}
+
+Details of sockets, modules and orbits are defined in the Skill System (Section~\ref{sec:skill-system}). 
+From the Heroes perspective, the important points are:
+
+\begin{itemize}
+	\item Each Hero has a fixed set of \textbf{4--5 skill sockets} (chakra-style, not tied to gear).
+	\item The Hero starts with \textbf{1 active socket} at level 1.
+	\item Additional sockets unlock as the Hero levels up:
+	\begin{itemize}
+		\item all sockets should be unlocked by approximately \textbf{level 60},
+		\item the remaining levels (60--100) primarily increase orbit progression and prepare for the Crown system.
+	\end{itemize}
+	\item Each level grants orbit points that can be spent on socket orbits; exact points-per-level and bonus sources are defined in the Skill/Balance sections, but the intent is:
+	\begin{itemize}
+		\item base: around 1--2 orbit points per level,
+		\item additional points from Map milestones and socket set completion,
+		\item a „pure“ level 100 build should be able to complete the intended orbit path.
+	\end{itemize}
+\end{itemize}
+
+Level 100 marks the end of regular Hero progression: after that, only Crowns and meta systems extend power.
+
+\subsection{AI Profiles (Behaviour)}
+
+Heroes are fully AI-driven in combat. The player does not manually set skill priorities. 
+Instead, each archetype has a characteristic AI profile:
+
+\begin{itemize}
+	\item \textbf{Vanguard / Bruiser:} 
+	\begin{itemize}
+		\item prioritise enemies that threaten allies or are closest to the front,
+		\item use defensive and control skills early in fights,
+		\item stay near the main enemy cluster.
+	\end{itemize}
+	\item \textbf{Piercer / Marksman / Ranger:}
+	\begin{itemize}
+		\item prioritise low-HP or high-value targets,
+		\item maintain distance when possible (Ranger/Marksman),
+		\item use burst skills on high-HP targets or bosses.
+	\end{itemize}
+	\item \textbf{Arcanist / Alchemist / Saboteur:}
+	\begin{itemize}
+		\item prioritise clustering (AoE) and debuff application,
+		\item use control skills on elites/bosses when available,
+		\item Saboteur places traps ahead of enemy movement paths.
+	\end{itemize}
+	\item \textbf{Summoner:}
+	\begin{itemize}
+		\item maintains minion count as a priority,
+		\item uses skills that buff or reposition minions when possible,
+		\item stays behind frontline Heroes.
+	\end{itemize}
+	\item \textbf{Hierophant / Oracle:}
+	\begin{itemize}
+		\item prioritise healing and shielding low-HP allies,
+		\item apply buffs early in encounters and keep them up,
+		\item apply key debuffs to high-HP or elite targets.
+	\end{itemize}
+\end{itemize}
+
+Exact AI rules, thresholds and target selection weights are part of the Technical Design Document, 
+but this section defines the intended behaviour per archetype from a design perspective.
+
+\subsection{MVP Hero Set}
+
+For the MVP, the target is:
+
+\begin{itemize}
+	\item \textbf{4 core archetypes} fully implemented:
+	\begin{itemize}
+		\item Vanguard (tank),
+		\item Arcanist (full caster),
+		\item Ranger (bow/ranged fighter),
+		\item Summoner (minion-focused).
+	\end{itemize}
+	\item Each with:
+	\begin{itemize}
+		\item a functional set of 2--3 key Skill Modules,
+		\item full socket unlocks by around level 60,
+		\item a meaningful orbit layout (Tier I/II, with Tier III and Crowns optional as late/endgame).
+	\end{itemize}
+	\item Additional archetypes (Marksman, Alchemist, Hierophant, Bruiser, Saboteur, Oracle) 
+	are planned as \textbf{post-MVP extensions}.
+\end{itemize}
+
+% TODO: Link to concrete archetype balance sheets (stat spreads, module lists, orbit designs) once available.
+
