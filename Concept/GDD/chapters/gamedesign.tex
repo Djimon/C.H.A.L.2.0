@@ -3,334 +3,347 @@
 
 \subsection{High-Level Core Loop}
 
-Der zentrale Spielablauf ist in zwei deutlich getrennte Phasen unterteilt:
+The central game flow is divided into two clearly separated phases:
 
 \begin{itemize}
-	\item \textbf{Active Loop (Hub / Vorbereitung):} Der Spieler trifft Entscheidungen, baut sein Team und verbessert seine Ressourcen.
-	\item \textbf{Passive Loop (Map / Kampf):} Der Spieler beobachtet Auto-Battles, sammelt Loot ein und treibt damit den nächsten Active Loop an.
+	\item \textbf{Active loop (hub / preparation):} The player makes decisions, builds their team, and improves their resources.
+	\item \textbf{Passive loop (map / combat):} The player watches auto-battles, collects loot, and fuels the next active loop with it.
 \end{itemize}
 
-\subsubsection*{Hub-Struktur}
+\subsubsection*{Hub Structure}
 
-Der Spieler startet jede Session im \textbf{Hub}, der die zentralen Stations-Elemente enthält:
+The player starts each session in the \textbf{hub}, which contains several station elements.  
+To reduce early complexity, these stations are \textbf{introduced in tiers} over the course of the game:
+
 
 \begin{itemize}
-	\item \textbf{CraftingBench:} Nutzung von Loot aus vergangenen Runden, um stärkeres Gear zu craften.
-	\item \textbf{ReforgeStation:} Verstärkung vorhandenen Gears durch neue Affixe unter Einsatz einer Meta-Währung.
-	\item \textbf{ResearchLab:} Auswahl einer aktiven Forschung; Fortschritt wird durch Kill-Counts (monster-typ-sensitiv), Map-Abschlüsse (schwierigkeits-sensitiv) und ähnliche Metriken erzeugt.
-	\item \textbf{HeroPanel:} Verwaltung der Helden:
+	\item \textbf{Tier 1 – Core loop stations (always available early):}
 	\begin{itemize}
-		\item Helden leveln (passive Boni).
-		\item Skills verteilen / umskillen.
-		\item Gear wechseln.
-		\item Teamzusammenstellung (Wer nimmt an der Map teil?).
+		\item \textbf{MapDevice:} Select map and difficulty / wave configuration, start the map (= transition into the passive loop).
+		\item \textbf{HeroPanel:} Core hero management:
+		\begin{itemize}
+			\item Level up heroes (passive bonuses).
+			\item Assign / respec skills.
+			\item Change gear.
+			\item Team composition (who participates in the map?).
+		\end{itemize}
 	\end{itemize}
-	\item \textbf{MapDevice:} Auswahl von Map und Difficulty / Wellenkonfiguration, Start der Map (= Übergang in den Passive Loop).
+	
+	\item \textbf{Tier 2 – Progression and item depth:}
+	\begin{itemize}
+		\item \textbf{CraftingBench:} Use loot from previous runs to craft stronger gear.
+		\item \textbf{ResearchLab:} Select an active research project; progress is generated through kill counts (monster-type-sensitive), map completions (difficulty-sensitive), and similar metrics.
+	\end{itemize}
+	
+	\item \textbf{Tier 3 – Advanced optimization systems:}
+	\begin{itemize}
+		\item \textbf{ReforgeStation:} Enhance existing gear with new affixes using a meta-currency; intended as a late-early-/midgame optimization tool rather than a starter system.
+	\end{itemize}
 \end{itemize}
 
-\subsubsection*{High-Level-Loop}
+\subsubsection*{High-Level Loop}
 
 \begin{verbatim}
 	[Hub / Active Loop]
 	-> CraftingBench / ReforgeStation
-	-> ResearchLab (Forschung wählen/fortsetzen)
-	-> HeroPanel (Level, Skillung, Team-Build)
-	-> MapDevice (Map + Difficulty wählen)
+	-> ResearchLab (select/continue research)
+	-> HeroPanel (level, skills, team build)
+	-> MapDevice (select map + difficulty)
 	[Map / Passive Loop]
-	-> Waves spielen (Auto-Battle, Loot, XP)
-	-> Map abgeschlossen oder gescheitert
-	-> zurück zum Hub (Active Loop)
+	-> Play waves (auto-battle, loot, XP)
+	-> Map completed or failed
+	-> back to hub (Active Loop)
 \end{verbatim}
 
-% RISK: Viele Stationen im Hub erhöhen UI- und Onboarding-Komplexität.
-% RISK: Für Casuals könnte die Entscheidungsdichte im Active Loop zu hoch werden, wenn alle Systeme früh freigeschaltet sind.
+% RISK: Many stations in the hub increase UI and onboarding complexity.
+% RISK: For casual players, decision density in the active loop may be too high if all systems unlock early.
 
-\subsection{Combat Loop (pro Wave)}
+\subsection{Combat Loop (per Wave)}
 
-Der Combat Loop beschreibt den Ablauf innerhalb einer einzelnen Wave auf einer Map. Kämpfe sind vollständig automatisiert; Spielerentscheidungen finden vor Wave-Start statt.
+The combat loop describes the flow within a single wave on a map. Battles are fully automated; player decisions happen before the wave starts.
 
-\subsubsection*{Vor Wave-Start}
+\subsubsection*{Before the Wave Starts}
 
 \begin{itemize}
-	\item Der Spieler \textbf{positioniert seine Helden} auf festen Slots der Map.
-	\item Positionierung ist ein Teil der taktischen Komponente (z.\,B. Frontline/Backline, AoE-Positionierung, Schutz empfindlicher Helden).
+	\item The player \textbf{positions their heroes} on fixed slots on the map.
+	\item Positioning is part of the tactical layer (e.g. frontline/backline, AoE positioning, protecting fragile heroes).
 \end{itemize}
 
-\subsubsection*{Wave-Ablauf}
+\subsubsection*{Wave Flow}
 
 \begin{enumerate}
-	\item \textbf{Wave-Start:} Gegner-Welle wird basierend auf der Map-Konfiguration automatisch gespawnt.
-	\item \textbf{Auto-Battle:}
+	\item \textbf{Wave start:} The enemy wave is spawned automatically based on the map configuration.
+	\item \textbf{Auto-battle:}
 	\begin{itemize}
-		\item Helden und Gegner agieren komplett autark; keine direkte Kontrolle durch den Spieler.
-		\item Helden nutzen ihre Fähigkeiten, Bewegung, Targeting und AI-Verhalten ohne Input.
+		\item Heroes and enemies act fully autonomously; there is no direct control by the player.
+		\item Heroes use their abilities, movement, targeting, and AI behavior without input.
 	\end{itemize}
-	\item \textbf{Loot-Drops:}
+	\item \textbf{Loot drops:}
 	\begin{itemize}
-		\item Gegner lassen Loot fallen.
-		\item Der Spieler kann Loot während oder nach der Wave aktiv einsammeln (\emph{Belohnungszentrum-Trigger}).
+		\item Enemies drop loot.
+		\item The player can actively pick up loot during or after the wave (\emph{reward center trigger}).
 	\end{itemize}
-	\item \textbf{Erfahrungsgewinn:}
+	\item \textbf{Experience gain:}
 	\begin{itemize}
-		\item Helden erhalten XP für eine erfolgreich abgeschlossene Wave.
-		\item Stirbt ein Held innerhalb der Wave, gehen die XP dieser Wave für diesen Held verloren.
-		\item Es gibt \textbf{kein Auto-Heal zwischen Waves}; Heilung erfolgt ausschließlich über Skills/Helden, die aktiv heilen können.
+		\item Heroes gain XP for a successfully completed wave.
+		\item If a hero dies during the wave, that hero loses the XP from this wave.
+		\item There is \textbf{no auto-heal between waves}; healing only occurs via skills/heroes that can actively heal.
 	\end{itemize}
 \end{enumerate}
 
-\subsubsection*{Win / Lose pro Wave und Map}
+\subsubsection*{Win / Loss per Wave and Map}
 
 \begin{itemize}
-	\item \textbf{Wave gewonnen:}
+	\item \textbf{Wave won:}
 	\begin{itemize}
-		\item XP der Wave für überlebende Helden wird gespeichert.
-		\item Loot der Wave kann eingesammelt und später im Hub verwendet werden.
-		\item Der Spieler kann:
+		\item The wave XP for surviving heroes is saved.
+		\item The wave’s loot can be collected and used later in the hub.
+		\item The player can:
 		\begin{itemize}
-			\item zur nächsten Wave übergehen, oder
-			\item nach der Wave den Lauf abbrechen und in den Hub zurückkehren (Fortschritt bis zur letzten erfolgreichen Wave bleibt erhalten).
+			\item proceed to the next wave, or
+			\item end the run after the wave and return to the hub (progress up to the last successful wave is preserved).
 		\end{itemize}
 	\end{itemize}
-	\item \textbf{Wave verloren (alle Helden tot):}
+	\item \textbf{Wave lost (all heroes dead):}
 	\begin{itemize}
-		\item Die aktuelle Wave gilt als gescheitert.
-		\item Loot, Gold und XP dieser Wave sind verloren.
-		\item Die Map kann erneut versucht werden (ggf. nach Anpassungen im Hub).
+		\item The current wave counts as failed.
+		\item Loot, gold, and XP from this wave are lost.
+		\item The map can be attempted again (optionally after adjustments in the hub).
 	\end{itemize}
 \end{itemize}
 
 \begin{itemize}
-	\item \textbf{Map gewonnen (alle Waves besiegt):}
+	\item \textbf{Map won (all waves defeated):}
 	\begin{itemize}
-		\item Die Map wird als \emph{abgeschlossen} gekennzeichnet.
-		\item Neue Schwierigkeitsstufen (Difficulties) für diese Map werden freigeschaltet.
-		\item Abschlussbelohnungen werden gewährt:
+		\item The map is marked as \emph{completed}.
+		\item New difficulty tiers for this map are unlocked.
+		\item Completion rewards are granted:
 		\begin{itemize}
-			\item Meta-Währung,
-			\item Fortschritt in Forschung / Battlepass-artigen Systemen,
-			\item ggf. spezielle einmalige Rewards (z.\,B. neue Hero- oder Map-Freischaltungen).
+			\item meta-currency,
+			\item progress in research / battle-pass-like systems,
+			\item possibly special one-time rewards (e.g. unlocking new heroes or maps).
 		\end{itemize}
 	\end{itemize}
 \end{itemize}
 
-% RISK: XP-Verlust bei Heldentod in Wave kann zu defensiven, risikoarmen Builds führen.
-% RISK: Kein Auto-Heal zwischen Waves erhöht die Bedeutung von Healing-Skills stark (Balancing-Gefahr).
+% RISK: XP loss on hero death within a wave may push players toward overly defensive, low-risk builds.
+% RISK: No auto-heal between waves greatly increases the importance of healing skills (balancing risk).
 
-\subsection{Map-Struktur}
+\subsection{Map Structure}
 
-\subsubsection*{Wave- und Gegner-Konfiguration}
+\subsubsection*{Wave and Enemy Configuration}
 
 \begin{itemize}
-	\item Jede Map besitzt eine \textbf{fixe Wave-Struktur}:
+	\item Each map has a \textbf{fixed wave structure}:
 	\begin{itemize}
-		\item Anzahl und Reihenfolge der Waves sind vordefiniert.
-		\item Wellen können unterschiedliche Gegnertypen, EnemyRanks und Tags enthalten.
+		\item Number and order of waves are predefined.
+		\item Waves can contain different enemy types, enemy ranks, and tags.
 	\end{itemize}
-	\item Innerhalb einer Map ist die Gegnerstruktur \textbf{semifx}:
+	\item Within a map, the enemy structure is \textbf{semi-fixed}:
 	\begin{itemize}
-		\item Basiskompositionen werden über Konfigurationsdaten (EnemyRanks, Types, Tags) festgelegt.
-		\item Platz für Variation durch Modifikatoren (z.\,B. Meta-Progression, Map-Mods) ist vorgesehen.
+		\item Base compositions are defined via configuration data (enemy ranks, types, tags).
+		\item There is room for variation through modifiers (e.g. meta-progression, map mods).
 	\end{itemize}
-	\item Typische Struktur (konfigurierbar):
+	\item Typical structure (configurable):
 	\begin{itemize}
-		\item Frühe Waves mit Standard- und Normal-Gegnern.
-		\item Mittlere Waves mit vermehrten Magic-/Elite-Gegnern.
-		\item Späte Waves mit Bossen oder stark verstärkten Gegnerkombinationen.
+		\item Early waves with standard and normal enemies.
+		\item Mid waves with increased magic/elite enemies.
+		\item Late waves with bosses or heavily buffed enemy combinations.
 	\end{itemize}
 \end{itemize}
 
-\subsubsection*{Map-Difficulties}
+\subsubsection*{Map Difficulties}
 
 \begin{itemize}
-	\item Jede Map verfügt über mehrere \textbf{Schwierigkeitsstufen}.
-	\item Freischaltung erfolgt:
+	\item Each map features several \textbf{difficulty tiers}.
+	\item Unlocking occurs:
 	\begin{itemize}
-		\item durch Abschluss der vorherigen Difficulty,
-		\item und/oder durch Fortschritt in der Forschung (Research) als zusätzlicher Gate-Mechanismus.
+		\item by completing the previous difficulty,
+		\item and/or through progress in research as an additional gating mechanism.
 	\end{itemize}
-	\item Höhere Difficulties bieten:
+	\item Higher difficulties offer:
 	\begin{itemize}
-		\item härtere Gegner (mehr Leben, mehr Schaden, neue Gegnertypen),
-		\item besseren Loot und stärkere Progressionsbelohnungen.
+		\item tougher enemies (more health, more damage, new enemy types),
+		\item better loot and stronger progression rewards.
 	\end{itemize}
 \end{itemize}
 
-% RISK: Kombination aus fixen Waves + Difficulties + Modifikatoren kann Content-Produktion und Balancing stark strecken.
-% TODO: Später definieren, wie stark meta-basierte Modifikatoren Maps „umbauen“ dürfen, ohne Lesbarkeit zu verlieren.
+% RISK: The combination of fixed waves + difficulties + modifiers can stretch content production and balancing significantly.
+% TODO: Later define how strongly meta-based modifiers are allowed to “reshape” maps without hurting readability.
 
-\subsection{Forschung \& Meta-Progression im Loop}
+\subsection{Research \& Meta-Progression in the Loop}
 
-\subsubsection*{Forschungsaktivierung}
+\subsubsection*{Research Activation}
 
 \begin{itemize}
-	\item Forschung wird im \textbf{ResearchLab} im Hub \emph{aktiv gewählt}.
-	\item Pro Zeit/Run kann eine oder mehrere Forschungsaufgaben parallel laufen (Design-Detail später zu präzisieren).
-	\item Fortschritt erfolgt über:
+	\item Research is \emph{actively selected} in the \textbf{ResearchLab} in the hub.
+	\item Per unit of time/run, one or several research tasks may run in parallel (design detail to be refined later).
+	\item Progress occurs through:
 	\begin{itemize}
-		\item Kill-Counts, die spezifisch nach Monstertypen oder Tags unterscheiden,
-		\item abgeschlossene Maps und Difficulties,
-		\item ggf. weitere In-Game-Metriken (z.\,B. verbrauchte Ressourcen, erfolgreich eingesetzte Mechaniken).
+		\item kill counts that differentiate by monster types or tags,
+		\item completed maps and difficulties,
+		\item optionally further in-game metrics (e.g. resources spent, mechanics successfully used).
 	\end{itemize}
-	\item Ein \textbf{HUD-Element} (z.\,B. oben links) zeigt jederzeit den aktuellen Stand der aktiven Forschung an.
+	\item A \textbf{HUD element} (e.g. top left) always shows the current progress of the active research.
 \end{itemize}
 
-\subsubsection*{Forschungs-Belohnungen (Unlocks)}
+\subsubsection*{Research Rewards (Unlocks)}
 
-Forschung schaltet systematisch neue Elemente frei und dient als Leitfaden durch die Systemlandschaft:
-
-\begin{itemize}
-	\item \textbf{Neue Hideout-Elemente:}
-	\begin{itemize}
-		\item Stationen oder Features im Hub werden nacheinander freigeschaltet (Tutorial-artig).
-	\end{itemize}
-	\item \textbf{Neue Helden:}
-	\begin{itemize}
-		\item Zugriff auf weitere Heldentypen, Archetypen oder Spezialisierungen.
-	\end{itemize}
-	\item \textbf{Neue Item-Tiers:}
-	\begin{itemize}
-		\item Höhere Qualitätsstufen und stärkere Basis- oder Affix-Werte.
-	\end{itemize}
-	\item \textbf{Neue Crafting-Optionen:}
-	\begin{itemize}
-		\item Zusätzliche Reforge-Methoden, spezialisierte Crafting-Rezepte, deterministischere Upgrades.
-	\end{itemize}
-	\item \textbf{Neue Map-Stufen:}
-	\begin{itemize}
-		\item Lineare Freischaltung neuer Maps.
-		\item Freischaltung höherer Difficulties innerhalb bestehender Maps.
-	\end{itemize}
-\end{itemize}
-
-% RISK: Forschung als Gate für fast alle Systeme kann bei langsamen Fortschritt wie „Progress-Lock“ wirken.
-% TODO: Forschungs-Progression später mit realistischen Zeitbudgets pro Session abgleichen.
-
-\subsection{Session-Struktur (Planung vs. Beobachtung)}
-
-\subsubsection*{Typische Planungsphasen im Hub}
+Research systematically unlocks new elements and serves as a guide through the system landscape:
 
 \begin{itemize}
-	\item \textbf{Standard-Planung (2--5 Minuten):}
+	\item \textbf{New hideout elements:}
 	\begin{itemize}
-		\item Kleine Crafting-Entscheidungen.
-		\item Ein Level-Up und Skillpunktvergabe.
-		\item Kleinere Gear-Anpassungen.
-		\item Zurück in die Map.
+		\item Stations or features in the hub are unlocked step by step (tutorial-like).
 	\end{itemize}
-	\item \textbf{Planungsphase „Changes“ (5--10 Minuten):}
+	\item \textbf{New heroes:}
 	\begin{itemize}
-		\item Einführung eines neuen Helden ins Team.
-		\item Signifikante Änderungen an Gear und Skills.
-		\item Erste Tests neuer Synergien.
+		\item Access to additional hero types, archetypes, or specializations.
 	\end{itemize}
-	\item \textbf{Planungsphase „Makeover“ (\(\approx\) 20 Minuten):}
+	\item \textbf{New item tiers:}
 	\begin{itemize}
-		\item Kompletter Umbau des Teams.
-		\item Umverteilung von Skillpunkten.
-		\item Gear-Optimierung auf ein neues Ziel-Build.
+		\item Higher quality levels and stronger base or affix values.
+	\end{itemize}
+	\item \textbf{New crafting options:}
+	\begin{itemize}
+		\item Additional reforge methods, specialized crafting recipes, more deterministic upgrades.
+	\end{itemize}
+	\item \textbf{New map tiers:}
+	\begin{itemize}
+		\item Linear unlocking of new maps.
+		\item Unlocking higher difficulties within existing maps.
 	\end{itemize}
 \end{itemize}
 
-\subsubsection*{Typische Battlephasen auf Maps}
+% RISK: Using research as a gate for almost all systems can feel like “progress lock” if progress is too slow.
+% TODO: Later align research progression with realistic session time budgets.
+
+\subsection{Session Structure (Planning vs. Observation)}
+
+\subsubsection*{Typical Planning Phases in the Hub}
 
 \begin{itemize}
-	\item \textbf{Early Game:} 
+	\item \textbf{Standard planning (2--5 minutes):}
 	\begin{itemize}
-		\item \(\sim\) 5 Minuten.
-		\item ca. 5 Waves.
+		\item Small crafting decisions.
+		\item One level-up and skill point allocation.
+		\item Minor gear adjustments.
+		\item Back to the map.
+	\end{itemize}
+	\item \textbf{Planning phase “Changes” (5--10 minutes):}
+	\begin{itemize}
+		\item Introducing a new hero into the team.
+		\item Significant changes to gear and skills.
+		\item First tests of new synergies.
+	\end{itemize}
+	\item \textbf{Planning phase “Makeover” (\(\approx\) 20 minutes):}
+	\begin{itemize}
+		\item Complete team overhaul.
+		\item Redistribution of skill points.
+		\item Gear optimization towards a new target build.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Typical Battle Phases on Maps}
+
+\begin{itemize}
+	\item \textbf{Early game:} 
+	\begin{itemize}
+		\item \(\sim\) 5 minutes.
+		\item approx. 5 waves.
 	\end{itemize}
 	\item \textbf{Midgame:}
 	\begin{itemize}
-		\item 5--10 Minuten.
-		\item ca. 10--20 Waves.
+		\item 5--10 minutes.
+		\item approx. 10--20 waves.
 	\end{itemize}
-	\item \textbf{Early Endgame:}
+	\item \textbf{Early endgame:}
 	\begin{itemize}
-		\item 10--20 Minuten.
-		\item 10--20 Waves bei höherer Difficulty.
+		\item 10--20 minutes.
+		\item 10--20 waves at higher difficulty.
 	\end{itemize}
-	\item \textbf{End-Endgame:}
+	\item \textbf{Late endgame:}
 	\begin{itemize}
-		\item 20+ Minuten.
-		\item härteste Maps; Option auf Endlos-Modus (\emph{Endless Mode}) ist vorgesehen.
+		\item 20+ minutes.
+		\item hardest maps; an \emph{endless mode} option is planned.
 	\end{itemize}
 \end{itemize}
 
 \begin{itemize}
-	\item Nach \textbf{jeder Wave} (erfolgreich oder verloren) kann der Spieler aussteigen.
-	\item Fortschritt wird bis zur letzten erfolgreich abgeschlossenen Wave gespeichert.
+	\item After \textbf{each wave} (successful or failed), the player can exit.
+	\item Progress is saved up to the last successfully completed wave.
 \end{itemize}
 
 \begin{table}[h]
 	\centering
 	\begin{tabular}{p{3.5cm}p{3.5cm}p{5cm}p{3cm}}
-		\textbf{Phase} & \textbf{Dauer (typisch)} & \textbf{Spieleraktivität} & \textbf{Kognitive Last} \\
+		\textbf{Phase} & \textbf{Typical duration} & \textbf{Player activity} & \textbf{Cognitive load} \\
 		\hline
-		Hub: Standard-Planung & 2--5 Minuten & kleine Anpassungen (Crafting, Level, Gear) & mittel \\
-		Hub: Changes & 5--10 Minuten & neue Helden, Builds testen & hoch \\
-		Hub: Makeover & \(\approx\) 20 Minuten & kompletter Team-Umbau & sehr hoch \\
-		Map: Early Game & \(\sim\) 5 Minuten & Beobachten, Loot einsammeln & niedrig \\
-		Map: Midgame & 5--10 Minuten & Beobachten, erste Schwierigkeiten lesen & niedrig--mittel \\
-		Map: Endgame & 10--20+ Minuten & kritische Kämpfe, Loot-Entscheidungen & mittel \\
+		Hub: standard planning & 2--5 minutes & small tweaks (crafting, level, gear) & medium \\
+		Hub: Changes & 5--10 minutes & add new heroes, test builds & high \\
+		Hub: Makeover & \(\approx\) 20 minutes & complete team overhaul & very high \\
+		Map: early game & \(\sim\) 5 minutes & watching, picking up loot & low \\
+		Map: midgame & 5--10 minutes & watching, reading early challenges & low--medium \\
+		Map: endgame & 10--20+ minutes & critical fights, loot decisions & medium \\
 	\end{tabular}
-	\caption{Session-Struktur: Planungs- vs. Battlephasen}
+	\caption{Session structure: planning vs. battle phases}
 	\label{tab:session-structure}
 \end{table}
 
-% RISK: Lange Makeover-Phasen könnten für „Wenig-Zeit-Spieler“ zu selten auftreten oder zu anstrengend sein.
-% TODO: Später prüfen, ob ein „Light Mode“ für schnelle Sessions sinnvoll ist (weniger Systeme gleichzeitig).
+% RISK: Long makeover phases may occur too rarely or feel too exhausting for “low-time” players.
+% TODO: Later evaluate whether a “light mode” for quick sessions is useful (fewer systems active at once).
 
 \subsection{Failure \& Recovery}
 
-\subsubsection*{Failure-Philosophie}
+\subsubsection*{Failure Philosophy}
 
 \begin{itemize}
-	\item \textbf{Grundhaltung:} Scheitern soll ein \emph{kleiner, verkraftbarer Schmerz} sein, der signalisiert:
+	\item \textbf{Core stance:} Failure should be a \emph{small, manageable pain} that signals:
 	\begin{quote}
-		„Okay, ich muss mein Build updaten.“
+		“Okay, I need to update my build.”
 	\end{quote}
-	\item Keine harten Resets über die Meta-Ebene:
+	\item No hard resets on the meta layer:
 	\begin{itemize}
-		\item Forschung, Gear, Skills, Hero-Level und Map-Fortschritte sind \textbf{dauerhaft}.
-		\item Niederlagen betreffen primär die aktuelle Map/Wave und die kurzfristigen Rewards (XP/ Loot der Wave).
+		\item Research, gear, skills, hero levels, and map progress are \textbf{permanent}.
+		\item Defeats primarily affect the current map/wave and the short-term rewards (XP/loot from that wave).
 	\end{itemize}
 \end{itemize}
 
-\subsubsection*{Was bleibt immer erhalten?}
+\subsubsection*{What Is Always Preserved?}
 
 \begin{itemize}
-	\item \textbf{Forschung} (Research-Fortschritt und freigeschaltete Systeme).
-	\item \textbf{Gear-Inventar} (bereits gecraftete/erbeutete Items).
-	\item \textbf{Skills und Helden-Level} (inkl. freigeschalteter Skills/Passives).
-	\item \textbf{Map-Fortschritte} (freigeschaltete Maps und Difficulties).
+	\item \textbf{Research} (research progress and unlocked systems).
+	\item \textbf{Gear inventory} (already crafted/looted items).
+	\item \textbf{Skills and hero levels} (including unlocked skills/passives).
+	\item \textbf{Map progress} (unlocked maps and difficulties).
 \end{itemize}
 
-% RISK: Dauerhafte Progression + geringer Failure-Schmerz können das Spiel sehr „forgiving“ machen und Spannung reduzieren.
-% TODO: Später definieren, ob zusätzliche Soft-Sinks (z.B. Reparaturkosten, Opportunity Costs) nötig sind, um Entscheidungen bedeutsam zu halten.
+% RISK: Permanent progression + low failure pain can make the game very forgiving and reduce tension.
+% TODO: Later define whether additional soft sinks (e.g. repair costs, opportunity costs) are needed to keep decisions meaningful.
 
-\subsection{Loop-Ende \& Langzeitmotivation}
+\subsection{Loop End \& Long-Term Motivation}
 
-\subsubsection*{Natürliche Session-Endpunkte}
+\subsubsection*{Natural Session Endpoints}
 
-Eine Session endet typischerweise, wenn einer oder mehrere der folgenden Punkte erreicht sind:
+A session typically ends when one or more of the following points are reached:
 
 \begin{itemize}
-	\item Der Spieler hat \textbf{genug Loot} gesammelt, um das nächste relevante Gear-Upgrade anzustreben.
-	\item Der Spieler hat \textbf{genug XP} für bedeutende Level-Ups einzelner Helden und damit neue Skills/Passives freigeschaltet.
-	\item Neue \textbf{Maps oder Helden} sind freigeschaltet und bilden klare „nächste Ziele“.
-	\item Ein größeres Build-Ziel (z.\,B. bestimmter Archetyp oder Synergie) ist erreicht oder steht kurz bevor.
+	\item The player has \textbf{enough loot} to aim for the next relevant gear upgrade.
+	\item The player has \textbf{enough XP} for significant level-ups of individual heroes and thus unlocks new skills/passives.
+	\item New \textbf{maps or heroes} are unlocked and form clear “next goals”.
+	\item A major build goal (e.g. a specific archetype or synergy) has been reached or is close.
 \end{itemize}
 
-\subsubsection*{Langzeitmotivation}
+\subsubsection*{Long-Term Motivation}
 
-Langfristig wird der Spieler motiviert durch:
+In the long run, the player is motivated by:
 
 \begin{itemize}
-	\item Das Erreichen \textbf{immer stärkerer Builds} über Crafting, Reforge und Forschung.
-	\item Das \textbf{Freischalten neuer Helden} und das Testen neuer Team-Kombinationen.
-	\item Das \textbf{Durchspielen neuer Maps und höherer Difficulties} als klare Progressionsmarker.
-	\item Das Experimentieren mit \textbf{Build-Varianten}, die zwar unterschiedlich stark, aber alle spielbar sein sollen.
+	\item Achieving \textbf{ever stronger builds} through crafting, reforging, and research.
+	\item \textbf{Unlocking new heroes} and testing new team compositions.
+	\item \textbf{Beating new maps and higher difficulties} as clear progression markers.
+	\item Experimenting with \textbf{build variants} that differ in strength but all remain playable.
 \end{itemize}
 
-% RISK: Wenn „immer stärker“ nicht klar begrenzt oder in Phasen strukturiert wird, kann das langfristig zu einer flachen Power-Kurve oder zu extremen Zahlenaufblähungen führen.
-% TODO: Im Balance-Kapitel später definieren, wie stark Power-Spikes pro Progressionsschicht sein dürfen (Helden-Level, Gear-Tier, Forschung, etc.).
+% RISK: If “ever stronger” is not clearly bounded or structured into phases, this can lead to a very flat power curve or extreme number inflation in the long term.
+% TODO: In the balance chapter, later define how strong power spikes per progression layer are allowed to be (hero level, gear tier, research, etc.).

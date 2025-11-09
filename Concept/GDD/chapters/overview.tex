@@ -1,24 +1,27 @@
-
 \section{Game Overview}
 \label{sec:game-overview}
 
 \subsection{Elevator Pitch}
 
-% Kurzfassung in 2--3 Sätzen
-\textbf{Arbeitstitel:} \emph{[TBD]} % ASSUMPTION (70\%): Arbeitstitel noch offen.
+% Short version in 2--3 sentences
+\textbf{Working Title: C.H.A.L. - Customized Hero Arena Looter} \emph{[TBD]} % ASSUMPTION (70\%): Working title not yet defined.
 
-Ein Auto-Battler / Team-Builder mit Third-Person-Top-Down-Kamera, in dem der Spieler als \emph{Team-Architekt} und \emph{Build-Alchemist} agiert. Die Kämpfe laufen vollautomatisch ab, während der Spieler seine Helden, Items und Skillbäume wie in einem ARPG optimiert und über eine Meta-Forschung dauerhaft stärker wird.  
+An auto-battler / team-builder with a third-person top-down camera in which the player acts as a \emph{team architect} and \emph{build alchemist}. Battles play out fully automatically, while the player optimizes their heroes, items, and skill trees like in an ARPG and becomes permanently stronger through meta-research.
 
-Maps bestehen aus zunehmend schwierigeren Wellen, höheren Schwierigkeitsgraden und besserem Loot, ohne klassischen Gear-Grind und ohne permantenen Verlust von Fortschritt nach vielen Stunden Spielzeit.
+Maps consist of increasingly difficult waves, higher difficulty tiers, and better loot — without classic gear grind and without permanent loss of progress after many hours of play.
+\\
+\begin{center}
+	\textit{“A chill auto-battler where you obsess over builds, not button presses.”}
+\end{center}
 
 \subsubsection*{Tags}
 
 \begin{itemize}
-	\item Genre: Auto-Battler, Team-Builder, ARPG-Progression
-	\item Struktur: Wave- und Map-basiert, steigende Schwierigkeitsgrade
-	\item Perspektive: Third-Person, Top-Down, Beobachter-Rolle
-	\item Progression: Charakter-Level, Items, Skillbäume, Meta-Forschung
-	\item Modus: Primär Singleplayer % ASSUMPTION (90\%): Fokus liegt auf Singleplayer
+	\item Genre: Auto-battler, team-builder, ARPG-style progression
+	\item Structure: Wave- and map-based, increasing difficulty tiers
+	\item Perspective: Third-person, top-down, observer role
+	\item Progression: Character levels, items, skill trees, meta-research
+	\item Mode: Primarily singleplayer % ASSUMPTION (90\%): Focus is on singleplayer
 \end{itemize}
 
 \subsection{Product Summary}
@@ -26,166 +29,167 @@ Maps bestehen aus zunehmend schwierigeren Wellen, höheren Schwierigkeitsgraden 
 \begin{table}[h]
 	\centering
 	\begin{tabular}{p{4cm}p{9cm}}
-		\textbf{Aspekt} & \textbf{Beschreibung} \\
+		\textbf{Aspect} & \textbf{Description} \\
 		\hline
-		Genre & Auto-Battler / Team-Builder mit ARPG-artiger Charakterprogression \\
-		Kernfantasie & Spieler als Team-Architekt und Build-Alchemist, der immer mächtigere Heldenkombinationen erschafft \\
-		Struktur & Maps mit ansteigendem Schwierigkeitsgrad, unterteilt in Wellen (Waves) \\
-		Kamera & Third-Person / Top-Down, keine direkte Steuerung der Helden \\
-		Steuerung & Fokus auf Vorbereitung (Builds, Crafting, Forschung), Kämpfe laufen automatisiert \\
-		Sessions & Wechsel aus konzentrierter Planungsphase und entspannter Beobachtungsphase \\
-		Progressionsarten & Helden-Level, Items, Skillbäume, deterministisches Crafting, Meta-Forschung \\
-		Plattform (geplant) & PC (Option: später Mobile-Port) \\
-		Geschäftsmodell & Buy-to-Play, mit Option auf rein kosmetische Skins als Microtransactions \\
+		Genre & Auto-battler / team-builder with ARPG-style character progression \\
+		Core fantasy & Player as team architect and build alchemist who creates ever more powerful hero combinations \\
+		Structure & Maps with increasing difficulty, divided into waves \\
+		Camera & Third-person / top-down, no direct control of heroes \\
+		Controls & Focus on preparation (builds, crafting, research), battles run automatically \\
+		Sessions & Alternation between focused planning phases and relaxed spectator phases \\
+		Types of progression & Hero levels, items, skill trees, deterministic crafting, meta-research \\
+		Platform (planned) & PC (option: mobile port later) \\
+		Business model & Buy-to-play, with optional cosmetic-only skins as microtransactions \\
 	\end{tabular}
-	\caption{Produktübersicht}
+	\caption{Product overview}
 	\label{tab:product-summary}
 \end{table}
 
-\subsection{Vision \& Designziele}
+\subsection{Vision \& Design Goals}
 
-\subsubsection*{Design-Pillars}
+\subsubsection*{Design Pillars}
 
 \begin{itemize}
-	\item \textbf{Unaufhaltsame Progression ohne Micromanagement:} Der Spieler erlebt einen klaren, spürbaren Machtzuwachs, ohne im Kampf ständig Eingaben machen zu müssen.
-	\item \textbf{Taktische Tiefe durch Team- und Build-Kombinationen:} Komplexität liegt in der Auswahl und Synergie von Helden, Items und Skillbäumen, nicht in der APM.
-	\item \textbf{Jedes Build soll „spielbar gut“ sein:} Es gibt schwächere und stärkere Kombinationen, aber möglichst keine Build-Einbahnstraßen, die sich wie Fallen anfühlen.
-	\item \textbf{Deterministisches / kontrollierbares Crafting statt reinem Gear-Grind:} Fortschritt ist planbar; der Spieler arbeitet auf konkrete Ziele hin.
-	\item \textbf{Klarer Loop aus Fokus und Belohnung:} 
+	\item \textbf{Relentless progression without micromanagement:} The player experiences a clear, tangible increase in power without having to constantly issue commands during combat.
+	\item \textbf{Tactical depth through team and build combinations:} Complexity lies in the choice and synergy of heroes, items, and skill trees, not in APM.
+	\item \textbf{Every build should be “playably good”:} There are weaker and stronger combinations, but ideally no build dead-ends that feel like traps.
+	\item \textbf{Deterministic / controllable crafting instead of pure gear grind:} Progress is predictable; the player works toward concrete goals.
+	\item \textbf{Clear loop of focus and reward:} 
 	\begin{itemize}
-		\item Fokus-Phase: Crafting, Teambau, Skillung, Forschung.
-		\item Belohnungs-Phase: Auto-Battles beobachten, Effekte genießen, Loot einsammeln.
+		\item Focus phase: Crafting, team-building, skill allocation, research.
+		\item Reward phase: Watching auto-battles, enjoying effects, collecting loot.
 	\end{itemize}
 \end{itemize}
 
-\subsubsection*{Anti-Ziele}
+\subsubsection*{Anti-Goals}
 
 \begin{itemize}
-	\item \textbf{Kein harter Verlust von Langzeit-Fortschritt:} Keine Systeme, bei denen der Spieler nach vielen Stunden das Gefühl hat, „alles verloren“ zu haben (z.\,B. Permadeath über die komplette Meta-Progression hinweg).
-	\item \textbf{Kein aktionslastiges High-APM-Spiel:} Spieler-Skill liegt in Planung und Entscheidungen vor dem Kampf, nicht in Reaktionszeit oder präzisem Timing während des Kampfes.
-	\item \textbf{Kein stumpfer Gear-Grind:} Reines Farmen derselben Inhalte für minimale Loot-Upgrades soll vermieden werden; Fortschritt soll über Systeme wie Forschung und deterministisches Crafting kommen.
-	\item \textbf{Keine Pay-to-Win-Mechaniken:} Monetarisierung (falls vorhanden) beschränkt sich auf kosmetische Optionen.
+	\item \textbf{No hard loss of long-term progress:} No systems where the player feels they have “lost everything” after many hours (e.g. permadeath across the entire meta-progression).
+	\item \textbf{No action-heavy high-APM gameplay:} Player skill lies in planning and pre-combat decisions, not in reaction time or precise timing during combat.
+	\item \textbf{No braindead gear grind:} Purely farming the same content for tiny loot upgrades should be avoided; progress should come from systems like research and deterministic crafting.
+	\item \textbf{No pay-to-win mechanics:} Monetization (if present) is limited to cosmetic options.
 \end{itemize}
 
-% RISK: „Jedes Build soll spielbar gut sein“ + deterministisches Crafting erhöht Balancing-Aufwand massiv.
-% RISK: Auto-Battler + ARPG-Progression mit Forschung + Crafting ist für 1-Dev-Projekt ambitioniert.
+% RISK: “Every build should be playably good” + deterministic crafting massively increases balancing effort.
+% RISK: Auto-battler + ARPG progression with research + crafting is ambitious for a 1-dev project.
 
 \subsection{Target Audience}
 
-\subsubsection*{Zielgruppe}
+\subsubsection*{Primary Audience}
 
-Die primäre Zielgruppe sind Spieler mit begrenzter Zeit, die dennoch ein starkes Progressions- und Belohnungsgefühl suchen:
+The primary target audience are players with limited time who still want a strong sense of progression and reward:
 
 \begin{itemize}
-	\item \textbf{Casual bis Midcore-Spieler}, die wenig Lust auf endlosen Grind haben.
-	\item Spieler mit \textbf{hohem Bedarf an Belohnungs-Feedback} (Endorphin-Kicks durch sichtbare Fortschritte, neue Builds, deutliche Power-Spikes).
-	\item Spieler, die gerne \textbf{Konzentrationsphasen} (Planen, Optimieren) mit \textbf{Entspannungsphasen} (Zuschauen, Loot kassieren) abwechseln.
+	\item \textbf{Casual to midcore players} who have little interest in endless grind.
+	\item Players with a \textbf{high need for reward feedback} (endorphin hits from visible progress, new builds, clear power spikes).
+	\item Players who enjoy alternating \textbf{concentration phases} (planning, optimizing) with \textbf{relaxation phases} (watching, cashing in loot).
 \end{itemize}
 
-Kurz zusammengefasst: \emph{„Wenig Zeit, aber Lust auf starke Builds und befriedigende Power-Fantasy.“}
+In short: \emph{“Not much time, but a craving for strong builds and a satisfying power fantasy.”}
 
-\subsubsection*{Spielertypen-Übersicht}
+\subsubsection*{Player Type Overview}
 
 \begin{table}[h]
 	\centering
 	\begin{tabular}{p{3cm}p{4.5cm}p{4cm}p{3.5cm}}
-		\textbf{Spielertyp} & \textbf{Beschreibung} & \textbf{Motivation} & \textbf{Risiken} \\
+		\textbf{Player type} & \textbf{Description} & \textbf{Motivation} & \textbf{Risks} \\
 		\hline
-		Progression-Junkie &
-		Spielt wenige Stunden pro Woche, erwartet jedoch deutliche Fortschritts-Sprünge. &
-		Schnelle Power-Spikes, sichtbare Upgrades, neue Maps/Waves freischalten. &
-		Frust, wenn Fortschritt zu langsam oder zu RNG-lastig ist. \\
+		Progression junkie &
+		Plays a few hours per week but expects noticeable jumps in progress. &
+		Fast power spikes, visible upgrades, unlocking new maps/waves. &
+		Frustration if progress is too slow or too RNG-heavy. \\
 		\hline
-		Build-Tüftler / Team-Architekt &
-		Experimentiert gerne mit Helden-Kombinationen, Skillbäumen und Items. &
-		Synergien finden, „geheime“ starke Kombinationen entdecken. &
-		Überforderung bei zu komplizierten Systemen oder Build-Fallen. \\
+		Build tinkerer / team architect &
+		Likes to experiment with hero combinations, skill trees, and items. &
+		Finding synergies, discovering “secret” strong combinations. &
+		Overwhelm if systems are too complex or full of build traps. \\
 		\hline
-		Entspannter Beobachter &
-		Nutzt die Battles als „Lehn dich zurück und schau zu“-Phase. &
-		Visuelles Feedback, Effekte, klares Verständnis, warum etwas gewinnt/verliert. &
-		Lange Downtimes oder unklare Kämpfe ohne erkennbare Ursache für Sieg/Niederlage. \\
+		Relaxed spectator &
+		Uses battles as a “lean back and watch” phase. &
+		Visual feedback, effects, clear understanding of why something wins/loses. &
+		Long downtimes or unclear fights without an obvious reason for victory/defeat. \\
 	\end{tabular}
-	\caption{Zielgruppen-Übersicht}
+	\caption{Target audience overview}
 	\label{tab:target-audience}
 \end{table}
 
-% RISK: Progression-Junkies und Build-Tüftler haben teils gegensätzliche Bedürfnisse: schnelle Fortschritte vs. komplexe Optimierung.
-% TODO: Später klarer definieren, ob das Spiel mehr in Richtung „Progression-Spiel“ oder „Build-Sandbox“ kippen soll.
+% RISK: Progression junkies and build tinkerers sometimes have opposing needs: fast progress vs. complex optimization.
+% TODO: Later define more clearly whether the game leans more toward a “progression game” or a “build sandbox”.
 
-\subsection{Product Positioning \& Referenztitel}
+\subsection{Product Positioning \& Reference Titles}
 
-\subsubsection*{Referenzen}
-
-\begin{itemize}
-	\item \textbf{Backpack Battles / Teamfight Tactics} (Spielgefühl)
-	\item \textbf{Path of Exile 2} (Progressionstiefe, Skillbäume, Loot-Fantasie)
-	\item \textbf{Forschungs- / Battlepass-Systeme} (Meta-Progression, ohne Geldkomponente)
-\end{itemize}
-
-\subsubsection*{Differenzierung}
-
-Im Vergleich zu diesen Referenzen legt das Spiel den Fokus auf:
+\subsubsection*{References}
 
 \begin{itemize}
-	\item \textbf{Kein aktiver Player-Skill im Kampf:} Im Gegensatz zu vielen ARPGs steht nicht das Ausführen von Skills im Vordergrund, sondern die Vorbereitung und Konfiguration der Helden und Builds.
-	\item \textbf{Deterministisches Crafting statt Loot-Lotterie:} 
+	\item \textbf{Backpack Battles / Teamfight Tactics} (game feel)
+	\item \textbf{Path of Exile 2} (depth of progression, skill trees, loot fantasy)
+	\item \textbf{Research / battle pass systems} (meta-progression without the monetization component)
+\end{itemize}
+
+\subsubsection*{Differentiation}
+
+Compared to these references, the game focuses on:
+
+\begin{itemize}
+	\item \textbf{No active player skill during combat:} In contrast to many ARPGs, the emphasis is not on manually executing skills but on preparing and configuring heroes and builds.
+	\item \textbf{Semi-deterministic crafting with small RNG layer instead of loot lottery:} 
 	\begin{itemize}
-		\item Der Spieler kann gezielt auf bestimmte Items und Effekte hinarbeiten.
-		\item Zufall existiert, aber soll nicht der dominante Faktor für Fortschritt sein.
+		\item The player can deliberately work toward specific items and effects.
+		\item Crafting targets are deterministic, but rolls within a controlled range keep items exciting without derailing progression
+		\item Randomness exists but should not be the dominant factor for progression.
 	\end{itemize}
-	\item \textbf{Jedes Build soll „brauchbar“ sein:} 
+	\item \textbf{Every build should be “viable”:} 
 	\begin{itemize}
-		\item Es gibt stärkere und schwächere Setups, aber möglichst keine komplett toten Optionen.
-		\item Ziel ist, Experimentierfreude zu fördern statt Builds durch „Trap Choices“ zu bestrafen.
+		\item There are stronger and weaker setups, but ideally no completely dead options.
+		\item The goal is to encourage experimentation instead of punishing it with trap choices.
 	\end{itemize}
 \end{itemize}
 
-% RISK: „Jedes Build spielbar“ + komplexe Systeme = hoher Balancing-Aufwand, insbesondere als Solo-Dev.
-% RISK: Deterministisches Crafting könnte Loot-Spannung reduzieren, wenn es zu planbar wird.
+% RISK: “Every build is playable” + complex systems = high balancing effort, especially for a solo dev.
+% RISK: Deterministic crafting may reduce loot excitement if it becomes too predictable.
 
 \subsection{Platform \& Business Model}
 
-\subsubsection*{Plattformen}
+\subsubsection*{Platforms}
 
 \begin{itemize}
-	\item \textbf{Primär:} PC
-	\item \textbf{Option:} Späterer Mobile-Port, falls UI/UX und Performance es sinnvoll zulassen.
+	\item \textbf{Primary:} PC
+	\item \textbf{Option:} Later mobile port if UI/UX and performance make it sensible.
 \end{itemize}
 
-% ASSUMPTION (80\%): Fokus liegt zunächst auf PC mit Maus/Keyboard-Eingaben für Management-Phase.
+% ASSUMPTION (80\%): Initial focus on PC with mouse/keyboard inputs for the management phase.
 
-\subsubsection*{Geschäftsmodell}
+\subsubsection*{Business Model}
 
 \begin{itemize}
-	\item \textbf{Buy-to-Play:} Einmaliger Kaufpreis für das vollständige Spiel.
-	\item \textbf{Optionale Monetarisierung:} Rein kosmetische Skins / visuelle Anpassungen der Helden oder Effekte.
-	\item \textbf{No-Gos:} Keine Pay-to-Win-Mechaniken, keine Lootboxen mit spielrelevanten Vorteilen, kein verpflichtender Battle Pass.
+	\item \textbf{Buy-to-play:} One-time purchase for the full game.
+	\item \textbf{Optional monetization:} Cosmetic-only skins / visual customization for heroes or effects.
+	\item \textbf{No-gos:} No pay-to-win mechanics, no loot boxes with gameplay-relevant advantages, no mandatory battle pass.
 \end{itemize}
 
 \subsection{Scope \& Constraints}
 
-\subsubsection*{Team \& Ressourcen}
+\subsubsection*{Team \& Resources}
 
 \begin{itemize}
-	\item \textbf{Entwicklung:} 
+	\item \textbf{Development:} 
 	\begin{itemize}
-		\item 1 Hauptentwickler (Game Design, Programmierung, Playtesting).
-		\item KI-Unterstützung für Coding, Testing und Dokumentation.
+		\item 1 lead developer (game design, programming, playtesting).
+		\item AI support for coding, testing, and documentation.
 	\end{itemize}
-	\item \textbf{Art \& Content:}
+	\item \textbf{Art \& content:}
 	\begin{itemize}
-		\item Asset-Kauf für 3D-Modelle, Animationen und Texturen.
-		\item Fokus auf Wiederverwendung und systemische Designs statt massiver Einzel-Content-Produktion.
+		\item Asset purchases for 3D models, animations, and textures.
+		\item Focus on reuse and systemic designs instead of massive one-off content production.
 	\end{itemize}
 \end{itemize}
 
-\subsubsection*{Risiken und Grenzen}
+\subsubsection*{Risks and Constraints}
 
 \begin{itemize}
-	\item \textbf{Ambitionierte Systemtiefe:} Auto-Battler, ARPG-Progression, deterministisches Crafting und Meta-Forschung sind zusammen für ein Solo-Projekt sehr anspruchsvoll.
-	\item \textbf{Balancing-Aufwand:} Der Anspruch, dass „jedes Build einigermaßen stark“ sein soll, macht Balancing und Content-Erstellung deutlich komplexer.
-	\item \textbf{Art- und UX-Aufwand:} Third-Person-Top-Down mit klar lesbaren Auto-Battles erfordert gute Lesbarkeit, Effekte und UI-Kommunikation, trotz Asset-Kauf.
+	\item \textbf{Ambitious system depth:} Auto-battler, ARPG progression, deterministic crafting, and meta-research together are very demanding for a solo project.
+	\item \textbf{Balancing effort:} The claim that “every build should be reasonably strong” makes balancing and content creation significantly more complex.
+	\item \textbf{Art and UX effort:} Third-person top-down with clearly readable auto-battles requires good readability, effects, and UI communication, even when relying on purchased assets.
 \end{itemize}
 
-% TODO: Später in einem eigenen Kapitel konkretisieren, welche Systeme für v1 (MVP) zwingend sind und welche für spätere Versionen verschoben werden.
+% TODO: In a separate chapter, specify which systems are mandatory for v1 (MVP) and which can be postponed to later versions.
