@@ -277,9 +277,30 @@ def change_rate(a: str, b: str) -> float:
     ratio = SequenceMatcher(None, a.strip(), b.strip()).ratio()
     return 1.0 - ratio
 
-def write_if_changed(path: pathlib.Path, content: str) -> bool:
+def _last_commit_message() -> str:
+    try:
+        r = subprocess.run(
+            ["git", "log", "-1", "--pretty=%B"],
+            capture_output=True, text=True, check=True
+        )
+        return (r.stdout or "").strip()
+    except Exception:
+        return ""
+
+def _parse_docgen_flags(msg: str) -> dict:
+    """
+    Erlaubte Steuer-Tags in der Commit-Message:
+      [docgen:force]  -> erzwingt Regeneration & Write (übergeht beide Thresholds)
+    """
+    m = msg.lower()
+    return {
+        "force": "[docgen:force]" in m or "docgen:force" in m,
+    }
+
+def write_if_changed(path: pathlib.Path, content: str, force: bool = False) -> bool:
     """
     Schreibt nur, wenn die Änderungsrate >= Schwelle ist (oder Datei neu).
+    Bei force=True wird immer geschrieben (wenn Inhalt überhaupt anders ist).
     """
     if not path.exists():
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -287,6 +308,12 @@ def write_if_changed(path: pathlib.Path, content: str) -> bool:
         return True
 
     old = path.read_text(encoding="utf-8")
+    if force:
+        if old.strip() != content.strip():
+            path.write_text(content, encoding="utf-8")
+            return True
+        return False
+    
     delta = change_rate(old, content)
 
     if delta >= CHANGE_RATE_THRESHOLD:
@@ -449,6 +476,11 @@ def main():
     print(f"[docgen] ALLOWED_NS={ALLOWED_NAMESPACE_PREFIXES}")
     print(f"[docgen] EXCLUDE_NS={EXCLUDE_NAMESPACE_PREFIXES}")
     print(f"[docgen] EXCLUDE_DIRS={EXCLUDE_DIRS}")
+    # Commit-Message lesen und docgen-Steuerflags erkennen
+    cm = _last_commit_message()
+    flags = _parse_docgen_flags(cm)
+    DOCGEN_FORCE_ALL = flags.get("force", False)
+    print(f"[docgen] flags: force={DOCGEN_FORCE_ALL}")
 
     # 1) EIN Worktree & EIN OUT_DIR
     doc_branch = _docgen_branch_name()
@@ -472,20 +504,22 @@ def main():
             if not is_allowed_namespace(ns):
                 continue
 
-            out_rel = out_markdown_path_for(ns, pub_types, f) # deine bestehende Logik
-            out_path = OUT_DIR / out_rel
+            out_rel = out_markdown_path_for(ns, pub_types, f) 
+            p = out_markdown_path_for(ns, pub_types, f)
+            out_path = p if p.is_absolute() else (OUT_DIR / p)
 
             must_generate = not out_path.exists()
-            if not must_generate:
+            if not must_generate and not DOCGEN_FORCE_ALL:
                 delta_code = code_change_rate(f, compare_ref=os.getenv("DOCGEN_COMPARE_REF", "HEAD~1"))
                 if delta_code < CODE_CHANGE_THRESHOLD:
                     # zu wenig Code-Änderung: LLM SKIPPEN
                     # (Optional: Touch/Index unverändert lassen)
                     continue
 
-            md_body = llm_markdown_for(f, code, "")
+            old_body = load_existing_doc_body(out_path)  
+            md_body = llm_markdown_for(f, code, old_body)
             header = build_header_for(f)  # falls vorhanden; sonst leer
-            changed = write_if_changed(out_path, header + md_body + "\n")
+            changed = write_if_changed(out_path, header + md_body + "\n",force=DOCGEN_FORCE_ALL)
 
             any_change |= changed
 
