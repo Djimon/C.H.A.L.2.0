@@ -14,13 +14,13 @@ _Automatically generated/updated from `Assets/src/Core/GameManager.cs`._
       - `public HeroCatalog HeroCatalogue => heroCatalog;`
       - `public static GameManager Instance { get; private set; }`
       - `public PlayerProfile Profile { get; private set; }`
+      - `public StatisticsService Stats { get; private set; }`
       - `public UnluckyProtection Unlucky { get; private set; }`
       - `public MapDef pendingMap { get; private set; }`
       - `public InventoryDomain Inventory { get; private set; }`
       - `public bool InventoryReady { get; private set; }`
       - `public ResearchService researchService { get; private set; }`
       - `public ResearchUnlockRegistry ResearchUnlocks { get; private set; }`
-      - `public ResearchEventBridge ResearchBridge { get; private set; }`
       - `public GameBalanceConfig Config { get; }`
       - `public GameState CurrentState { get; private set; }`
     - Public methods:
@@ -60,4 +60,3 @@ GameManager.Instance.GoToMainMenu();
 
 # Unknowns
 - The exact structure and contents of `PlayerProfile`, `InventoryDomain`, `ResearchService`, and other referenced types are not defined in this file.
-

@@ -12,7 +12,7 @@ _Automatically generated/updated from `Assets/src/Core/StatisticService.cs`._
   - `sealed class StatisticsSnapshot`
     - Public fields/properties:
       - `Dictionary<string, long> Counters`: Stores counters for various statistics.
-  - `sealed class StatisticsService : IStatisticsService`
+  - `sealed class StatisticsService`
     - Public fields/properties:
       - `IReadOnlyDictionary<string, long> Counters`: Exposes the current counters.
     - Public methods:
@@ -22,7 +22,13 @@ _Automatically generated/updated from `Assets/src/Core/StatisticService.cs`._
       - `void OnMapCompleted(int mapId, MapDifficulty difficultyId)`: Records completion of a map.
       - `void OnCraftExecuted(string recipeId)`: Records execution of a crafting recipe.
       - `void OnHeroGainedXp(string heroId, long amount)`: Records experience gained by a hero.
+      - `void OnHeroLeveledUp(string heroId, int level)`: Records leveling up of a hero.
       - `void OnSessionStarted()`: Records the start of a session.
+    - Public events:
+      - `event Action<string, EnemyRank, List<string>, List<string>> OnEnemyKilledEvent`: Triggered when an enemy is killed.
+      - `event Action<int, int, MapDifficulty> OnWaveCompletedEvent`: Triggered when a wave is completed.
+      - `event Action<int, MapDifficulty> OnMapCompletedEvent`: Triggered when a map is completed.
+      - `event Action<string> OnCraftExecutedEvent`: Triggered when a crafting recipe is executed.
 
 # Key Behavior & Side Effects
 - Increments counters for various events such as enemy kills, wave completions, map completions, crafting, hero experience gain, and session starts.
@@ -42,4 +48,3 @@ var snapshot = statsService.CreateSnapshot();
 # Unknowns
 - The implementation details of `IStatisticsService`, `EnemyRank`, and `MapDifficulty` are not provided in this file.
 - The potential use of dependency injection for accessing other systems is mentioned but not implemented.
-
