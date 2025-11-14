@@ -1,4 +1,4 @@
-﻿using CHAL.Core;  // IWallet
+using CHAL.Core;  // IWallet
 using CHAL.Data;
 using CHAL.Systems.Inventory; // IInventoryDomain, ItemStack
 using CHAL.Systems.Items;
@@ -293,6 +293,8 @@ namespace CHAL.Systems.Crafting
                 failReason = $"Output inventory full: {outputInventoryId}";
                 return false;
             }
+
+            GameManager.Instance.Stats.OnCraftExecuted(recipe.Id);
 
             return true;
         }

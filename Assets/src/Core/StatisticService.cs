@@ -10,9 +10,8 @@ namespace CHAL.Systems.Stats
     }
 
 
-    public sealed class StatisticsService : IStatisticsService
+    public sealed class StatisticsService
     {
-        // TODO: Falls du DI verwendest, hier ggf. DebugManager / Config / SaveSystem-Access injizieren.
         private readonly Dictionary<string, long> _counters = new Dictionary<string, long>();
 
         
@@ -30,7 +29,7 @@ namespace CHAL.Systems.Stats
             /* TODO
              * - Optional: Initiale Counter aus einem SaveDTO laden
              * - Optional: Basis-Counter vordefinieren (kills.total, maps.completed, etc.)
-             * END TODO */
+            */
         }
 
         
@@ -47,20 +46,22 @@ namespace CHAL.Systems.Stats
 
         public void OnEnemyKilled(string enemyId, EnemyRank rank, List<string> basetags, List<string> bonustags)
         {
-            // TODO: Feingranulare Counter-Strategie definieren (nach Tags, Map, Rank, etc.).
             Increment("kills.total");
             Increment($"kills.id.{enemyId}");
             Increment($"kills.rank.{rank}");
             //Increment($"kills.map.{mapId}");
             //Increment($"kills.wave.{mapId}.{waveIndex}");
-            foreach (string tag in basetags)
-            { 
-                Increment($"kills.tag.{tag}");
-            }
-            foreach (string t in bonustags)
-            {
-                Increment($"kills.bonustag.{t}");
-            }
+            if (basetags != null)
+                foreach (string tag in basetags)
+                { 
+                    Increment($"kills.tag.{tag}");
+                }
+
+            if (bonustags != null)
+                foreach (string t in bonustags)
+                {
+                    Increment($"kills.bonustag.{t}");
+                }
 
             OnEnemyKilledEvent?.Invoke(enemyId, rank, basetags, bonustags);
 
@@ -100,6 +101,12 @@ namespace CHAL.Systems.Stats
         {
             Increment("hero.xp.total", amount);
             Increment($"hero.{heroId}.xp.total", amount);
+        }
+
+        public void OnHeroLeveledUp(string heroId,int level)
+        {
+            Increment("hero.level.total");
+            Replace($"hero.{heroId}.level", level);
         }
 
 

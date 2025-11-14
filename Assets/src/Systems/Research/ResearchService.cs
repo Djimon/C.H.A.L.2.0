@@ -30,8 +30,8 @@ namespace CHAL.Systems.Research
         };
 
         // Elites/Bosses fÃ¼r "eliteCount"/"bossCount"-Requirements
-        private static bool IsEliteLike(EnemyRank r) => r == EnemyRank.Elite || r == EnemyRank.Champion;
-        private static bool IsBoss(EnemyRank r) => r == EnemyRank.Boss;
+        private static bool IsEliteLike(EnemyRank r) => r == EnemyRank.Elite || r == EnemyRank.Champion || r == EnemyRank.Boss;
+        private static bool IsBoss(EnemyRank r) => r == EnemyRank.Boss || r == EnemyRank.Champion;
 
         private static bool IsChamp(EnemyRank r) => r == EnemyRank.Champion;
 

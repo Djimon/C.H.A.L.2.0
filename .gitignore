@@ -108,3 +108,7 @@ stub
 *.aux
 *.pdf
 *.gz
+*.aux
+*.pdf
+*.gz
+*.toc

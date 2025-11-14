@@ -130,12 +130,16 @@ namespace CHAL.Core
         {
             //Preload all registries
             ItemRegistry.Instance.TriggerInstance();
-
-            WiringServices();
         }
 
         private void WiringServices()
         {
+            if (Stats == null || researchService == null)
+            {
+                DebugManager.Warning("WiringServices: Stats oder researchService ist null, Wiring übersprungen.", "System");
+                return;
+            }
+
             Stats.OnEnemyKilledEvent += researchService.OnEnemyKilled;
             Stats.OnWaveCompletedEvent += researchService.OnWaveCompleted;
             Stats.OnMapCompletedEvent += researchService.OnMapCompleted;
@@ -596,6 +600,7 @@ namespace CHAL.Core
             ResearchUnlocks.RebuildFrom(researchNodes, Profile.ResearchRuntime.completedNodeIds);
             ResearchUnlocks.ApplyAlwaysUnlocked(researchTree.alwaysUnlockedIds);
 
+            WiringServices();
 
         }
 
