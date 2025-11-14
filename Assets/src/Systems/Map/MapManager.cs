@@ -224,7 +224,6 @@ namespace CHAL.Systems.Map
                 rewardUI.Show(true);
                 rewardUI.populateText(success);
                 //Show missed rewards
-
                 return;
             }
 
@@ -235,7 +234,7 @@ namespace CHAL.Systems.Map
                 rewardUI.Show(true);
                 rewardUI.populateText(success);
                 //show collected rewards
-
+                GameManager.Instance.Stats.OnWaveCompleted(CurrentMap.mapId, CurrentWave, CurrentMap.difficulty);
             }
             else
             {
@@ -243,8 +242,10 @@ namespace CHAL.Systems.Map
                 var maprewardUI = mapRewardUI.GetComponent<MapRewardUI>();
                 maprewardUI.Show(true);
                 maprewardUI.populateText(success);
-
+                GameManager.Instance.Stats.OnWaveCompleted(CurrentMap.mapId, CurrentWave, CurrentMap.difficulty);
+                GameManager.Instance.Stats.OnMapCompleted(CurrentMap.mapId, CurrentMap.difficulty);
             }
+
         }
 
 /// <summary>

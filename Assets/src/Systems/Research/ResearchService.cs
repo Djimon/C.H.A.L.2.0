@@ -1,4 +1,4 @@
-﻿using CHAL.Data;             // ResearchNodeDef, ResearchRequirement, ResearchUnlockTypes, ResearchTreeDef
+using CHAL.Data;             // ResearchNodeDef, ResearchRequirement, ResearchUnlockTypes, ResearchTreeDef
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -270,7 +270,7 @@ namespace CHAL.Systems.Research
 /// <summary>
 /// Marks the completion of the wave process.
 /// </summary>
-        public void ApplyWaveCompleted()
+        public void ApplyWaveCompleted(MapDifficulty difficulty)
         {
             var id = _state.activeNodeId;
             if (string.IsNullOrEmpty(id) || !_nodesById.TryGetValue(id, out var def)) return;
@@ -281,10 +281,10 @@ namespace CHAL.Systems.Research
             TryComplete(def, p);
         }
 
-/// <summary>
-/// Applies the completion of a map based on its difficulty.
-/// </summary>
-/// <param name="difficulty">The difficulty level of the map.</param>
+        /// <summary>
+        /// Applies the completion of a map based on its difficulty.
+        /// </summary>
+        /// <param name="difficulty">The difficulty level of the map.</param>
         public void ApplyMapCompleted(MapDifficulty difficulty)
         {
             var id = _state.activeNodeId;
@@ -349,6 +349,37 @@ namespace CHAL.Systems.Research
             }
 
             TryComplete(def, p);
+        }
+
+        public void OnWaveCompleted(int mapId, int waveIndex, MapDifficulty difficulty)
+        {
+            // Aktuell ignorieren wir mapId/waveIndex/difficulty für Research.
+            // Wenn du später per-Map oder per-Tier Research machen willst, kannst du das hier auswerten.
+            ApplyWaveCompleted(difficulty);
+        }
+
+        public void OnMapCompleted(int mapId, MapDifficulty difficultyId)
+        {
+            ApplyMapCompleted(difficultyId);
+        }
+
+        public void OnEnemyKilled(string enemyId, EnemyRank rank, List<string> basetags, List<string> bonustags)
+        {
+
+            var allTags = new List<string>();
+            if (basetags != null) allTags.AddRange(basetags);
+            if (bonustags != null) allTags.AddRange(bonustags);
+
+            ApplyEnemyKilled(allTags, rank);
+        }
+
+        public void OnCraftExecuted(string recipeId)
+        {
+            /* TODO
+             * - Wenn du später Research-Requirements für Crafting (z.B. "X mal gear crafted")
+             *   ergänzen willst, kannst du hier NodeProgress erweitern.
+             * - Aktuell: keine Wirkung, Event kommt aber sauber an.
+             * END TODO */
         }
 
 

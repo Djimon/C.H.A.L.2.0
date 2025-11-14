@@ -4,9 +4,11 @@ using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Map;
 using CHAL.Systems.Research;
+using CHAL.Systems.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -42,6 +44,8 @@ namespace CHAL.Core
         public static GameManager Instance { get; private set; }
         public PlayerProfile Profile { get; private set; }
 
+        public StatisticsService Stats { get; private set; }
+
         public UnluckyProtection Unlucky { get; private set; }
 
         public MapDef pendingMap { get; private set; }
@@ -67,7 +71,6 @@ namespace CHAL.Core
 
         public ResearchService researchService { get; private set; }
         public ResearchUnlockRegistry ResearchUnlocks { get; private set; }
-        public ResearchEventBridge ResearchBridge { get; private set; }
 
         public GameBalanceConfig Config
         {
@@ -118,6 +121,8 @@ namespace CHAL.Core
             }
 
             Unlucky ??= new UnluckyProtection();
+
+            Stats = new StatisticsService();
             
         }
 
@@ -125,12 +130,22 @@ namespace CHAL.Core
         {
             //Preload all registries
             ItemRegistry.Instance.TriggerInstance();
+
+            WiringServices();
         }
 
-/// <summary>
-/// Saves the current game state to persistent storage.
-/// This method updates the saved profile with the latest changes.
-/// </summary>
+        private void WiringServices()
+        {
+            Stats.OnEnemyKilledEvent += researchService.OnEnemyKilled;
+            Stats.OnWaveCompletedEvent += researchService.OnWaveCompleted;
+            Stats.OnMapCompletedEvent += researchService.OnMapCompleted;
+            Stats.OnCraftExecutedEvent += researchService.OnCraftExecuted;
+        }
+
+        /// <summary>
+        /// Saves the current game state to persistent storage.
+        /// This method updates the saved profile with the latest changes.
+        /// </summary>
         public void SaveGame()
         {
             MapDomainToProfile();
@@ -548,7 +563,6 @@ namespace CHAL.Core
             // Services erstellen (einmalig)
             researchService ??= new ResearchService();
             ResearchUnlocks ??= new ResearchUnlockRegistry();
-            ResearchBridge = new ResearchEventBridge(researchService);
 
             // Laden oder frischen Stand anlegen
             if (loadExisting)

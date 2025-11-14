@@ -1,72 +1,145 @@
 \babel@toc {english}{}\relax 
-\contentsline {section}{\numberline {1}Overview}{3}{}%
-\contentsline {subsection}{\numberline {1.1}Summary}{3}{}%
-\contentsline {subsection}{\numberline {1.2}Vision}{3}{}%
-\contentsline {subsection}{\numberline {1.3}Scope}{3}{}%
-\contentsline {subsection}{\numberline {1.4}Glossary}{3}{}%
-\contentsline {section}{\numberline {2}Core Loop}{3}{}%
-\contentsline {subsection}{\numberline {2.1}Game Progression}{3}{}%
-\contentsline {subsection}{\numberline {2.2}Player Interaction}{3}{}%
-\contentsline {subsection}{\numberline {2.3}Reward an Motivations}{3}{}%
-\contentsline {subsection}{\numberline {2.4}Content Roadmap}{3}{}%
-\contentsline {section}{\numberline {3}System Specifications}{3}{}%
-\contentsline {section}{\numberline {4}Stats and Formulas}{3}{}%
-\contentsline {section}{\numberline {5}Fighting System}{3}{}%
-\contentsline {section}{\numberline {6}Skill System}{3}{}%
-\contentsline {section}{\numberline {7}Items and Inventory}{3}{}%
-\contentsline {section}{\numberline {8}Crafting System}{3}{}%
-\contentsline {subsection}{\numberline {8.1}Gear Crafting}{3}{}%
-\contentsline {paragraph}{\numberline {8.1.0.1}Overview}{3}{}%
-\contentsline {subsubsection}{\numberline {8.1.1}Mechanic I – Basic Crafting (Gear Recipes)}{4}{}%
-\contentsline {paragraph}{\numberline {8.1.1.1}Purpose}{4}{}%
-\contentsline {paragraph}{\numberline {8.1.1.2}Sequence}{4}{}%
-\contentsline {paragraph}{\numberline {8.1.1.3}Input / Output Schema}{4}{}%
-\contentsline {paragraph}{\numberline {8.1.1.4}Cost Structure}{4}{}%
-\contentsline {subparagraph}{\numberline {8.1.1.4.1}Cost Scaling}{4}{}%
-\contentsline {paragraph}{\numberline {8.1.1.5}Booster Effect}{4}{}%
-\contentsline {paragraph}{\numberline {8.1.1.6}Implicits}{5}{}%
-\contentsline {subsubsection}{\numberline {8.1.2}Mechanic II – Upgrade / Affix Crafting}{5}{}%
-\contentsline {paragraph}{\numberline {8.1.2.1}Purpose}{5}{}%
-\contentsline {paragraph}{\numberline {8.1.2.2}Sequence}{6}{}%
-\contentsline {paragraph}{\numberline {8.1.2.3}Input / Output Schema}{6}{}%
-\contentsline {paragraph}{\numberline {8.1.2.4}Cost Structure}{6}{}%
-\contentsline {subparagraph}{\numberline {8.1.2.4.1}Cost Scaling}{6}{}%
-\contentsline {paragraph}{\numberline {8.1.2.5}Affix Pools}{6}{}%
-\contentsline {subparagraph}{\numberline {8.1.2.5.1}Core Pool}{6}{}%
-\contentsline {subparagraph}{\numberline {8.1.2.5.2}Defensive Pool}{7}{}%
-\contentsline {subparagraph}{\numberline {8.1.2.5.3}Synergy Pool}{7}{}%
-\contentsline {subparagraph}{\numberline {8.1.2.5.4}Utility Pool}{7}{}%
-\contentsline {paragraph}{\numberline {8.1.2.6}Reroll Affix}{7}{}%
-\contentsline {subsubsection}{\numberline {8.1.3}Mechanic III – Hardening (Tier Enhancement)}{7}{}%
-\contentsline {paragraph}{\numberline {8.1.3.1}Purpose}{7}{}%
-\contentsline {paragraph}{\numberline {8.1.3.2}sequence}{8}{}%
-\contentsline {paragraph}{\numberline {8.1.3.3}Input / Output Schema}{8}{}%
-\contentsline {paragraph}{\numberline {8.1.3.4}Hardening Tiers}{8}{}%
-\contentsline {paragraph}{\numberline {8.1.3.5}Cost Structure}{8}{}%
-\contentsline {subparagraph}{\numberline {8.1.3.5.1}Cost Scaling}{8}{}%
-\contentsline {subsubsection}{\numberline {8.1.4}General Validation Rules}{8}{}%
-\contentsline {section}{\numberline {9}Perks and Traits}{9}{}%
-\contentsline {subsection}{\numberline {9.1}Loot and Rarities}{9}{}%
-\contentsline {subsection}{\numberline {9.2}Meta Progression}{11}{}%
-\contentsline {section}{\numberline {10}Content Bible}{11}{}%
-\contentsline {subsection}{\numberline {10.1}Archetypes and Characters}{11}{}%
-\contentsline {subsection}{\numberline {10.2}Skill Catalog}{11}{}%
-\contentsline {subsection}{\numberline {10.3}Modificator Catalog}{11}{}%
-\contentsline {subsection}{\numberline {10.4}Enemy Taxonomy}{11}{}%
-\contentsline {section}{\numberline {11}Technical Design}{11}{}%
-\contentsline {subsection}{\numberline {11.1}Architecture Overview}{11}{}%
-\contentsline {subsection}{\numberline {11.2}Datamodell}{11}{}%
-\contentsline {subsection}{\numberline {11.3}Runtime-Pipelines}{11}{}%
-\contentsline {subsection}{\numberline {11.4}Saving}{11}{}%
-\contentsline {subsection}{\numberline {11.5}Tooling and Debugging}{11}{}%
-\contentsline {subsection}{\numberline {11.6}Performance Budget}{12}{}%
-\contentsline {subsection}{\numberline {11.7}Coding Guidelines}{12}{}%
-\contentsline {section}{\numberline {12}UI/UX Specification}{12}{}%
-\contentsline {subsection}{\numberline {12.1}Information Flow}{12}{}%
-\contentsline {subsection}{\numberline {12.2}Key Screens}{12}{}%
-\contentsline {subsection}{\numberline {12.3}Input Periphery}{12}{}%
-\contentsline {subsection}{\numberline {12.4}Feedback}{12}{}%
-\contentsline {section}{\numberline {13}Balance and Tuning}{12}{}%
-\contentsline {subsection}{\numberline {13.1}Target Values}{12}{}%
-\contentsline {subsection}{\numberline {13.2}Curves}{12}{}%
-\contentsline {subsection}{\numberline {13.3}Test Scenarios}{12}{}%
+\contentsline {section}{\numberline {1}Game Overview}{4}{}%
+\contentsline {subsection}{\numberline {1.1}Elevator Pitch}{4}{}%
+\contentsline {subsection}{\numberline {1.2}Product Summary}{4}{}%
+\contentsline {subsection}{\numberline {1.3}Vision \& Design Goals}{5}{}%
+\contentsline {subsection}{\numberline {1.4}Target Audience}{5}{}%
+\contentsline {subsection}{\numberline {1.5}Product Positioning \& Reference Titles}{6}{}%
+\contentsline {subsection}{\numberline {1.6}Platform \& Business Model}{6}{}%
+\contentsline {subsection}{\numberline {1.7}Scope \& Constraints}{7}{}%
+\contentsline {section}{\numberline {2}Core Gameplay Loop}{7}{}%
+\contentsline {subsection}{\numberline {2.1}High-Level Core Loop}{7}{}%
+\contentsline {subsection}{\numberline {2.2}Combat Loop (per Wave)}{8}{}%
+\contentsline {subsection}{\numberline {2.3}Map Structure}{9}{}%
+\contentsline {subsection}{\numberline {2.4}Research \& Meta-Progression in the Loop}{10}{}%
+\contentsline {subsection}{\numberline {2.5}Session Structure (Planning vs. Observation)}{11}{}%
+\contentsline {subsection}{\numberline {2.6}Failure \& Recovery}{12}{}%
+\contentsline {subsection}{\numberline {2.7}Loop End \& Long-Term Motivation}{13}{}%
+\contentsline {section}{\numberline {3}System Specifications}{13}{}%
+\contentsline {subsection}{\numberline {3.1}System Overview}{13}{}%
+\contentsline {subsection}{\numberline {3.2}System Responsibilities}{13}{}%
+\contentsline {paragraph}{\numberline {3.2.0.1}Responsibility}{13}{}%
+\contentsline {paragraph}{\numberline {3.2.0.2}Non-Goals}{13}{}%
+\contentsline {paragraph}{\numberline {3.2.0.3}Responsibility}{14}{}%
+\contentsline {paragraph}{\numberline {3.2.0.4}Non-Goals}{14}{}%
+\contentsline {paragraph}{\numberline {3.2.0.5}Responsibility}{14}{}%
+\contentsline {paragraph}{\numberline {3.2.0.6}Non-Goals}{14}{}%
+\contentsline {paragraph}{\numberline {3.2.0.7}Responsibility}{14}{}%
+\contentsline {paragraph}{\numberline {3.2.0.8}Non-Goals}{14}{}%
+\contentsline {paragraph}{\numberline {3.2.0.9}Responsibility}{14}{}%
+\contentsline {paragraph}{\numberline {3.2.0.10}Non-Goals}{15}{}%
+\contentsline {paragraph}{\numberline {3.2.0.11}Responsibility}{15}{}%
+\contentsline {paragraph}{\numberline {3.2.0.12}Non-Goals}{15}{}%
+\contentsline {paragraph}{\numberline {3.2.0.13}Responsibility}{15}{}%
+\contentsline {paragraph}{\numberline {3.2.0.14}Non-Goals}{15}{}%
+\contentsline {section}{\numberline {4}Research System}{15}{}%
+\contentsline {subsection}{\numberline {4.1}Overview}{15}{}%
+\contentsline {subsection}{\numberline {4.2}Research Trees (MVP Scope)}{16}{}%
+\contentsline {paragraph}{\numberline {4.2.0.1}Crafting Tree}{16}{}%
+\contentsline {paragraph}{\numberline {4.2.0.2}World Tree}{16}{}%
+\contentsline {paragraph}{\numberline {4.2.0.3}Heroes Tree}{16}{}%
+\contentsline {subsection}{\numberline {4.3}Research Progression and Pacing (MVP-Level)}{16}{}%
+\contentsline {section}{\numberline {5}Inventory System}{16}{}%
+\contentsline {subsection}{\numberline {5.1}Overview}{16}{}%
+\contentsline {subsection}{\numberline {5.2}Resource Types}{17}{}%
+\contentsline {subsection}{\numberline {5.3}Inventory Structure \& Rules}{18}{}%
+\contentsline {subsection}{\numberline {5.4}Loot Pickup \& Interaction}{19}{}%
+\contentsline {subsection}{\numberline {5.5}Economic Role of the Inventory}{19}{}%
+\contentsline {section}{\numberline {6}Map System}{20}{}%
+\contentsline {subsection}{\numberline {6.1}Overview}{20}{}%
+\contentsline {subsection}{\numberline {6.2}Map Types and Layout}{20}{}%
+\contentsline {subsection}{\numberline {6.3}Map Selection (MapDevice)}{21}{}%
+\contentsline {subsection}{\numberline {6.4}Wave System}{21}{}%
+\contentsline {subsection}{\numberline {6.5}Difficulties and Empowerment}{22}{}%
+\contentsline {subsection}{\numberline {6.6}Live Events (Future)}{23}{}%
+\contentsline {subsection}{\numberline {6.7}Rewards and Progression}{23}{}%
+\contentsline {subsection}{\numberline {6.8}MVP Scope for the Map System}{24}{}%
+\contentsline {section}{\numberline {7}Crafting System}{24}{}%
+\contentsline {subsection}{\numberline {7.1}Gear Crafting}{24}{}%
+\contentsline {paragraph}{\numberline {7.1.0.1}Overview}{24}{}%
+\contentsline {subsubsection}{\numberline {7.1.1}Mechanic I – Basic Crafting (Gear Recipes)}{25}{}%
+\contentsline {paragraph}{\numberline {7.1.1.1}Purpose}{25}{}%
+\contentsline {paragraph}{\numberline {7.1.1.2}Sequence}{25}{}%
+\contentsline {paragraph}{\numberline {7.1.1.3}Input / Output Schema}{25}{}%
+\contentsline {paragraph}{\numberline {7.1.1.4}Cost Structure}{25}{}%
+\contentsline {subparagraph}{\numberline {7.1.1.4.1}Cost Scaling}{25}{}%
+\contentsline {paragraph}{\numberline {7.1.1.5}Booster Effect}{25}{}%
+\contentsline {paragraph}{\numberline {7.1.1.6}Implicits}{26}{}%
+\contentsline {subsubsection}{\numberline {7.1.2}Mechanic II – Upgrade / Affix Crafting}{26}{}%
+\contentsline {paragraph}{\numberline {7.1.2.1}Purpose}{26}{}%
+\contentsline {paragraph}{\numberline {7.1.2.2}Sequence}{27}{}%
+\contentsline {paragraph}{\numberline {7.1.2.3}Input / Output Schema}{27}{}%
+\contentsline {paragraph}{\numberline {7.1.2.4}Cost Structure}{27}{}%
+\contentsline {subparagraph}{\numberline {7.1.2.4.1}Cost Scaling}{27}{}%
+\contentsline {paragraph}{\numberline {7.1.2.5}Affix Pools}{27}{}%
+\contentsline {subparagraph}{\numberline {7.1.2.5.1}Core Pool}{27}{}%
+\contentsline {subparagraph}{\numberline {7.1.2.5.2}Defensive Pool}{28}{}%
+\contentsline {subparagraph}{\numberline {7.1.2.5.3}Synergy Pool}{28}{}%
+\contentsline {subparagraph}{\numberline {7.1.2.5.4}Utility Pool}{28}{}%
+\contentsline {paragraph}{\numberline {7.1.2.6}Reroll Affix}{28}{}%
+\contentsline {subsubsection}{\numberline {7.1.3}Mechanic III – Hardening (Tier Enhancement)}{28}{}%
+\contentsline {paragraph}{\numberline {7.1.3.1}Purpose}{28}{}%
+\contentsline {paragraph}{\numberline {7.1.3.2}Sequence}{29}{}%
+\contentsline {paragraph}{\numberline {7.1.3.3}Input / Output Schema}{29}{}%
+\contentsline {paragraph}{\numberline {7.1.3.4}Hardening Tiers}{29}{}%
+\contentsline {paragraph}{\numberline {7.1.3.5}Cost Structure}{29}{}%
+\contentsline {subparagraph}{\numberline {7.1.3.5.1}Cost Scaling}{29}{}%
+\contentsline {subsubsection}{\numberline {7.1.4}General Validation Rules}{29}{}%
+\contentsline {section}{\numberline {8}Skill System}{30}{}%
+\contentsline {subsection}{\numberline {8.1}Overview}{30}{}%
+\contentsline {subsection}{\numberline {8.2}Shared Stat Model}{30}{}%
+\contentsline {subsection}{\numberline {8.3}Skill Model (Heroes and Enemies)}{30}{}%
+\contentsline {subsection}{\numberline {8.4}Hero Skill Layers}{31}{}%
+\contentsline {subsubsection}{\numberline {8.4.1}Skill Modules and Sockets}{32}{}%
+\contentsline {paragraph}{\numberline {8.4.1.1}Module Role}{32}{}%
+\contentsline {subsubsection}{\numberline {8.4.2}Socket Orbits (Passive Progression)}{32}{}%
+\contentsline {paragraph}{\numberline {8.4.2.1}Structure}{33}{}%
+\contentsline {paragraph}{\numberline {8.4.2.2}Tier Gates and Orbit Mods}{33}{}%
+\contentsline {paragraph}{\numberline {8.4.2.3}Socket Identity}{33}{}%
+\contentsline {paragraph}{\numberline {8.4.2.4}Progression Source}{34}{}%
+\contentsline {subsubsection}{\numberline {8.4.3}Crowns (Endgame)}{34}{}%
+\contentsline {subsection}{\numberline {8.5}Skill Loadout and Combat Usage}{34}{}%
+\contentsline {subsection}{\numberline {8.6}Interactions with Other Systems}{35}{}%
+\contentsline {subsection}{\numberline {8.7}MVP Scope for the Skill System}{36}{}%
+\contentsline {section}{\numberline {9}Loot and Drop System}{36}{}%
+\contentsline {subsection}{\numberline {9.1}Loot Flow and Rarities}{36}{}%
+\contentsline {paragraph}{\numberline {9.1.0.1}Overview}{36}{}%
+\contentsline {subsection}{\numberline {9.2}Loot and Rarities}{37}{}%
+\contentsline {section}{\numberline {10}Meta Progression and Battlepass}{39}{}%
+\contentsline {subsection}{\numberline {10.1}Overview}{39}{}%
+\contentsline {subsection}{\numberline {10.2}Design Goals}{39}{}%
+\contentsline {subsection}{\numberline {10.3}Structure}{39}{}%
+\contentsline {subsection}{\numberline {10.4}Rewards}{40}{}%
+\contentsline {subsection}{\numberline {10.5}Interaction with Other Systems}{40}{}%
+\contentsline {subsection}{\numberline {10.6}MVP Scope}{41}{}%
+\contentsline {section}{\numberline {11}Heroes and Archetypes}{41}{}%
+\contentsline {subsection}{\numberline {11.1}Overview}{41}{}%
+\contentsline {subsection}{\numberline {11.2}Team Size and Hero Unlocks}{41}{}%
+\contentsline {subsection}{\numberline {11.3}Archetype Roster}{42}{}%
+\contentsline {subsection}{\numberline {11.4}Stats and Growth}{42}{}%
+\contentsline {subsection}{\numberline {11.5}Archetype Passives}{43}{}%
+\contentsline {subsection}{\numberline {11.6}Sockets and Orbit Progression (Hero Perspective)}{44}{}%
+\contentsline {subsection}{\numberline {11.7}AI Profiles (Behaviour)}{45}{}%
+\contentsline {subsection}{\numberline {11.8}MVP Hero Set}{46}{}%
+\contentsline {section}{\numberline {12}Content Bible}{46}{}%
+\contentsline {subsection}{\numberline {12.1}Archetypes and Characters}{46}{}%
+\contentsline {subsection}{\numberline {12.2}Skill Catalog}{46}{}%
+\contentsline {subsection}{\numberline {12.3}Modificator Catalog}{46}{}%
+\contentsline {subsection}{\numberline {12.4}Enemy Taxonomy}{46}{}%
+\contentsline {section}{\numberline {13}Technical Design}{46}{}%
+\contentsline {subsection}{\numberline {13.1}Architecture Overview}{46}{}%
+\contentsline {subsection}{\numberline {13.2}Datamodell}{46}{}%
+\contentsline {subsection}{\numberline {13.3}Runtime-Pipelines}{46}{}%
+\contentsline {subsection}{\numberline {13.4}Saving}{46}{}%
+\contentsline {subsection}{\numberline {13.5}Tooling and Debugging}{46}{}%
+\contentsline {subsection}{\numberline {13.6}Performance Budget}{46}{}%
+\contentsline {subsection}{\numberline {13.7}Coding Guidelines}{46}{}%
+\contentsline {section}{\numberline {14}UI/UX Specification}{46}{}%
+\contentsline {subsection}{\numberline {14.1}Information Flow}{47}{}%
+\contentsline {subsection}{\numberline {14.2}Key Screens}{47}{}%
+\contentsline {subsection}{\numberline {14.3}Input Periphery}{47}{}%
+\contentsline {subsection}{\numberline {14.4}Feedback}{47}{}%
+\contentsline {section}{\numberline {15}Balance and Tuning}{47}{}%
+\contentsline {subsection}{\numberline {15.1}Target Values}{47}{}%
+\contentsline {subsection}{\numberline {15.2}Curves}{47}{}%
+\contentsline {subsection}{\numberline {15.3}Test Scenarios}{47}{}%

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using CHAL.Core;               // DebugManager
 using CHAL.Data;               // ResearchTreeDef, MapDifficulty, EnemyRank
-using CHAL.Systems.Research;   // ResearchMapView, ResearchService, ResearchEventBridge, ResearchTreeCompiler
+using CHAL.Systems.Research;
+using Unity.VisualScripting;   // ResearchMapView, ResearchService, ResearchEventBridge, ResearchTreeCompiler
 
 
 public sealed class DevResearchFastForward : MonoBehaviour
@@ -12,7 +13,6 @@ public sealed class DevResearchFastForward : MonoBehaviour
     [Header("Wiring (optional)")]
     public ResearchMapView mapView;
     public ResearchTreeDef treeDef;
-    public ResearchEventBridge bridge;
 
     [Header("Modus bei Play (alle optional)")]
     public bool completeAllOnPlay = false;
@@ -45,7 +45,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
             yield return null;
         }
 
-        if (_service == null || bridge == null)
+        if (_service == null )
         {
             DebugManager.Log("DevResearchFastForward: Service or bridge not found – aborted.",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
@@ -75,11 +75,8 @@ public sealed class DevResearchFastForward : MonoBehaviour
             if (treeDef == null) treeDef = mapView.treeDef;
         }
 
-        if (bridge == null)
-            bridge = new ResearchEventBridge(_service);
-
         _tree = treeDef;
-        return _service != null && bridge != null;
+        return _service != null;
     }
 
     private void ApplyCheats()
@@ -195,7 +192,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
         {
             int missing = Mathf.Max(0, req.waves - prog.waves);
             for (int i = 0; i < missing && !_service.IsCompleted(nodeId); i++)
-                bridge.OnWaveCompleted();
+                _service.OnWaveCompleted(1,i,MapDifficulty.Stable);
         }
 
         // 2) Maps per Difficulty zuerst (spezifisch)
@@ -210,7 +207,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
 
                 int missing = Mathf.Max(0, mr.amount - cur);
                 for (int i = 0; i < missing && !_service.IsCompleted(nodeId); i++)
-                    bridge.OnMapCompleted(mr.difficulty);
+                    _service.OnMapCompleted(i,mr.difficulty);
             }
         }
 
@@ -219,7 +216,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
         {
             int missing = Mathf.Max(0, req.maps - _service.GetNodeProgress(nodeId).mapsTotal);
             for (int i = 0; i < missing && !_service.IsCompleted(nodeId); i++)
-                bridge.OnMapCompleted(fallbackDifficulty);
+                _service.OnMapCompleted(i,MapDifficulty.Stable);
         }
 
         // 4) Elites/Bosses (ungewichtet)
@@ -227,13 +224,13 @@ public sealed class DevResearchFastForward : MonoBehaviour
         {
             int missing = Mathf.Max(0, req.eliteCount - _service.GetNodeProgress(nodeId).eliteCount);
             for (int i = 0; i < missing && !_service.IsCompleted(nodeId); i++)
-                bridge.OnEnemyKilled(fallbackKillTags, EnemyRank.Elite);
+                _service.OnEnemyKilled("test", EnemyRank.Elite, fallbackKillTags, fallbackKillTags);
         }
         if (req.bossCount > 0 && !_service.IsCompleted(nodeId))
         {
             int missing = Mathf.Max(0, req.bossCount - _service.GetNodeProgress(nodeId).bossCount);
             for (int i = 0; i < missing && !_service.IsCompleted(nodeId); i++)
-                bridge.OnEnemyKilled(fallbackKillTags, EnemyRank.Boss);
+                _service.OnEnemyKilled("test", EnemyRank.Boss, fallbackKillTags, fallbackKillTags);
         }
 
         // 5) Kills by Tag (gewichtet im Service)
@@ -253,7 +250,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
                     // Tag setzen: Service wertet Gewicht nach Rank; Normal ist meist 1 – passt für Dev-FastForward
                     var tags = new List<string>(fallbackKillTags);
                     if (!tags.Contains(kc.enemyTag)) tags.Add(kc.enemyTag);
-                    bridge.OnEnemyKilled(tags, fallbackKillRank);
+                    _service.OnEnemyKilled("test",EnemyRank.Normal,tags,fallbackKillTags);
                 }
                 if (_service.IsCompleted(nodeId)) break;
             }
@@ -265,7 +262,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
             int cur = _service.GetNodeProgress(nodeId).killsGeneralWeighted;
             int missing = Mathf.Max(0, req.killsGeneral - cur);
             for (int i = 0; i < missing && !_service.IsCompleted(nodeId); i++)
-                bridge.OnEnemyKilled(fallbackKillTags, fallbackKillRank);
+                _service.OnEnemyKilled("test", EnemyRank.Normal, fallbackKillTags, fallbackKillTags);
         }
 
         // Service markiert den Knoten selbst als abgeschlossen, sobald Requirements erfüllt sind.

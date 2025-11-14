@@ -1,4 +1,5 @@
-﻿using CHAL.Data;
+using CHAL.Core;
+using CHAL.Data;
 using CHAL.Systems.AI;
 using CHAL.Systems.Hero;
 using CHAL.Systems.Loot;
@@ -351,6 +352,8 @@ namespace CHAL.Systems.Enemy
 
         private void HandleEnemyDied(EnemyInstance inst)
         {
+            GameManager.Instance.Stats.OnEnemyKilled(EnemyDef.enemyId, EnemyData.Rank, EnemyDef.baseTags, EnemyData.bonusTags);
+
             DebugManager.Log($"Enemy {EnemyData.EnemyId} ({EnemyData.Rank}) killed!", DebugManager.EDebugLevel.Dev, "Combat");
             // Event feuern: sagt nur â€žich bin totâ€œ, inkl. Position
             OnEnemyKilled?.Invoke(this, EnemyDef, EnemyData, transform.position);

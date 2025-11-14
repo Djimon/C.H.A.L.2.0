@@ -1,4 +1,4 @@
-﻿using CHAL.Core;
+using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Items;
 using CHAL.Systems.Loot.Models;
@@ -181,18 +181,6 @@ namespace CHAL.Systems.Loot
                 }
             }
 
-            // SecretRules (Wave-wide) // GameDesign-decision -> To easy to get the secrets with this implementation
-            //var secretDrops = _rules.GetSecretDrops(allTags);
-            //foreach (var sd in secretDrops)
-            //{
-            //    float roll = Random.Range(0f, 100f);
-            //    if (roll < sd.chance)
-            //    {
-            //        var entry = new LootResultEntry { EnemyId = "WaveBonus", PickedTag = "WaveSecret", ItemId = sd.itemId };
-            //        ctx.Drops.Add(entry);
-            //        DebugManager.Log($"Wave secret drop {sd.itemId}",DebugManager.EDebugLevel.Test,"Loot");
-            //    }
-            //}
         }
 
 
