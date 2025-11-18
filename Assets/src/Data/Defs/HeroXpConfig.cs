@@ -3,6 +3,10 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "HeroXPConfig",menuName = "Config/Hero XP Config")]
+/// <summary>
+/// Holds configuration settings for hero experience points.
+/// This includes level cap and experience requirements.
+/// </summary>
     public class HeroXPConfig : ScriptableObject
     {
         [Min(1)]
@@ -15,6 +19,12 @@ namespace CHAL.Data
 
         //TODO: Insert nice Level Curve visual (with movable points) in custom Editor
 
+/// <summary>
+/// Calculates the required experience points for a given level.
+/// Returns 0 if the level is invalid or exceeds the cap.
+/// </summary>
+/// <param name="currentLevel">The current level to calculate XP for.</param>
+/// <returns>The required experience points for the specified level.</returns>
         public int GetRequiredXPForLevel(int currentLevel)
         {
             // Kein XP mehr über dem Cap

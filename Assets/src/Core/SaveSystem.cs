@@ -169,6 +169,12 @@ namespace CHAL.Core
             return true;
         }
 
+/// <summary>
+/// Saves the statistics for a specified profile ID.
+/// If the snapshot is null, a new empty snapshot is saved.
+/// </summary>
+/// <param name="profileId">The ID of the profile to save statistics for.</param>
+/// <param name="snapshot">The statistics snapshot to save.</param>
         public static void SaveStatistics(string profileId, StatisticsSnapshot snapshot)
         {
             ConfigureSaveGame();
@@ -181,6 +187,12 @@ namespace CHAL.Core
             DebugManager.Log($"SaveStatistics → {id}", DebugManager.EDebugLevel.Dev, "Stats", LogType.Log);
         }
 
+/// <summary>
+/// Loads the statistics for a given profile ID.
+/// Returns an empty snapshot if no statistics file exists.
+/// </summary>
+/// <param name="profileId">The ID of the profile to load statistics for.</param>
+/// <returns>A StatisticsSnapshot containing the loaded statistics.</returns>
         public static StatisticsSnapshot LoadStatistics(string profileId)
         {
             ConfigureSaveGame();

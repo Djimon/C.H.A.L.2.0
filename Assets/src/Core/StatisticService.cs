@@ -33,6 +33,10 @@ namespace CHAL.Systems.Stats
         }
 
         
+/// <summary>
+/// Creates a new snapshot of the current statistics.
+/// </summary>
+/// <returns>A new instance of <see cref="StatisticsSnapshot"/> containing the current counters.</returns>
         public StatisticsSnapshot CreateSnapshot()
         {
             var snapshot = new StatisticsSnapshot();
@@ -44,6 +48,11 @@ namespace CHAL.Systems.Stats
             return snapshot;
         }
 
+/// <summary>
+/// Restores the statistics from a given snapshot.
+/// Clears current counters and updates them with values from the snapshot.
+/// </summary>
+/// <param name="snapshot">The snapshot containing the statistics to restore.</param>
         public void RestoreFromSnapshot(StatisticsSnapshot snapshot)
         {
             _counters.Clear();
@@ -57,6 +66,20 @@ namespace CHAL.Systems.Stats
             }
         }
 
+/// <summary>
+/// Increments kill statistics when an enemy is killed.
+/// </summary>
+/// <param name="enemyId">The unique identifier of the enemy.</param>
+/// <param name="rank">The rank of the enemy.</param>
+/// <param name="basetags">A list of base tags associated with the kill.</param>
+/// <param name="bonustags">A list of bonus tags associated with the kill.</param>
+/// <summary>
+/// Handles the event when an enemy is killed, updating various kill statistics.
+/// </summary>
+/// <param name="enemyId">The unique identifier of the enemy that was killed.</param>
+/// <param name="rank">The rank of the enemy that was killed.</param>
+/// <param name="basetags">A list of base tags associated with the kill.</param>
+/// <param name="bonustags">A list of bonus tags associated with the kill.</param>
         public void OnEnemyKilled(string enemyId, EnemyRank rank, List<string> basetags, List<string> bonustags)
         {
             Increment("kills.total");
@@ -81,6 +104,12 @@ namespace CHAL.Systems.Stats
         }
 
 
+/// <summary>
+/// Invoked when a wave is completed in a map.
+/// </summary>
+/// <param name="mapId">The identifier of the completed map.</param>
+/// <param name="waveIndex">The index of the completed wave.</param>
+/// <param name="difficulty">The difficulty level of the completed map.</param>
         public void OnWaveCompleted(int mapId, int waveIndex, MapDifficulty difficulty)
         {
             Increment("waves.completed.total");
@@ -91,6 +120,11 @@ namespace CHAL.Systems.Stats
         }
 
 
+/// <summary>
+/// Called when a map is completed.
+/// </summary>
+/// <param name="mapId">The identifier of the completed map.</param>
+/// <param name="difficultyId">The difficulty level of the completed map.</param>
         public void OnMapCompleted(int mapId, MapDifficulty difficultyId)
         {
             Increment("maps.completed.total");
@@ -101,6 +135,10 @@ namespace CHAL.Systems.Stats
         }
 
 
+/// <summary>
+/// Executes the crafting process for a given recipe.
+/// </summary>
+/// <param name="recipeId">The identifier of the recipe being crafted.</param>
         public void OnCraftExecuted(string recipeId)
         {
             Increment("crafts.total");
