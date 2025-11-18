@@ -98,3 +98,4 @@ MonoBehaviour:
       xpPerLevel: 10
       baseLevelUpXp: 1000
       levelCurveFactor: 6
+  heroXP: {fileID: 11400000, guid: ba47af8497e1787469d7deea83f6bd72, type: 2}

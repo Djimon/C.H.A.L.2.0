@@ -247,5 +247,11 @@ namespace CHAL.Data
         [Header("Economy Settings")]
         public EconomySettings economy;
 
+        // ==========================
+        // HERO PROGRESSION
+        // ==========================
+        [Header("Hero Progression")]
+        public HeroXPConfig heroXP;   // zentrale Config für Helden-XP/Levelkurve
+
     }
 }

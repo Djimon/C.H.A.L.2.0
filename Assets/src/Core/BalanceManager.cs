@@ -52,11 +52,21 @@ namespace CHAL.Core
             }
         }
 
-/// <summary>
-/// Calculates the experience points required for a given level.
-/// </summary>
-/// <param name="level">The level for which to calculate the experience points.</param>
-/// <returns>The experience points needed to reach the specified level.</returns>
+        // NEU: zentraler Zugriff auf HeroXPConfig
+        public HeroXPConfig HeroXPConfig
+            => Config != null ? Config.heroXP : null;
+
+        // Optional: statischer Helfer, falls du aus nicht-Mono-Klassen ranwillst
+        public static HeroXPConfig GetHeroXP()
+        {
+            return Instance != null ? Instance.HeroXPConfig : null;
+        }
+
+        /// <summary>
+        /// Calculates the experience points required for a given level.
+        /// </summary>
+        /// <param name="level">The level for which to calculate the experience points.</param>
+        /// <returns>The experience points needed to reach the specified level.</returns>
         public static int GetXpForLevel(int level)
         {
             var xpConfig = Instance.config.economy.xp;

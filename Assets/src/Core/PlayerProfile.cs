@@ -1,8 +1,10 @@
 using CHAL.Core;
+using CHAL.Systems.Hero;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Research;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static CHAL.Systems.Research.ResearchSnapshot;
 
@@ -33,6 +35,7 @@ namespace CHAL.Data
 
         //  --- Heros/ Roster ---
         public List<string> UnlockedHeroes = new();
+        public List<HeroProgressData> HeroesData = new();
 
         // --- Currencies ---
         public Dictionary<string, int> Currencies = new();
@@ -410,6 +413,53 @@ namespace CHAL.Data
 
                 state.perNodeProgress[e.nodeId] = np;
             }
+        }
+
+        public HeroProgressData GetOrCreateHeroProgress(string heroId)
+        {
+            if (string.IsNullOrEmpty(heroId))
+            {
+                DebugManager.Error("[PlayerProfileDTO] GetOrCreateHeroProgress called with empty heroId.", "Hero");
+                return null;
+            }
+
+            var hp = HeroesData.FirstOrDefault(h => h.HeroId == heroId);
+            if (hp == null)
+            {
+                hp = new HeroProgressData
+                {
+                    HeroId = heroId,
+                    Level = 1,
+                    CurrentXP = 0,
+                    TotalXP = 0,
+                    TotalOrbitPoints = 0,
+                    UnspentOrbitPoints = 0,
+                    UnlockedSockets = 0
+                };
+                HeroesData.Add(hp);
+                DebugManager.Log($"[Profile] Created new HeroProgress for {heroId}.", DebugManager.EDebugLevel.Debug, "Hero");
+            }
+
+            return hp;
+        }
+
+        public void UpdateHeroProgressFromInstance(HeroInstance inst)
+        {
+            if (inst == null || inst.heroDef == null)
+            {
+                DebugManager.Error("[PlayerProfileDTO] UpdateHeroProgressFromInstance called with null.", "Hero");
+                return;
+            }
+
+            var hpd = GetOrCreateHeroProgress(inst.heroDef.HeroId);
+            if (hpd == null) return;
+
+            hpd.Level = inst.Level;
+            hpd.CurrentXP = inst.CurrentXP;
+            hpd.TotalXP = inst.TotalXP;
+            hpd.TotalOrbitPoints = inst.TotalOrbitPointsEarned;
+            hpd.UnspentOrbitPoints = inst.UnspentOrbitPoints;
+            hpd.UnlockedSockets = inst.UnlockedSockets;
         }
 
     }

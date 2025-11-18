@@ -93,11 +93,11 @@ namespace CHAL.Systems.Hero
         }
 
         // Initialisierung
-/// <summary>
-/// Initializes the hero with the specified definition.
-/// </summary>
-/// <param name="def">The hero definition to initialize the hero with.</param>
-        public void Init(HeroDef def)
+        /// <summary>
+        /// Initializes the hero with the specified definition.
+        /// </summary>
+        /// <param name="def">The hero definition to initialize the hero with.</param>
+        public void Init(HeroDef def, HeroProgressData progressData = null)
         {
             if (def == null)
             {
@@ -106,13 +106,16 @@ namespace CHAL.Systems.Hero
             }
 
             HeroDef = def;
-            heroInstance = new HeroInstance(def);
+            heroInstance = new HeroInstance(def, progressData);
             heroInstance.Team = UnitTeam.Player;
 
             heroInstance.Died += OnHeroInstanceDied;
 
-            DebugManager.Log($"[HeroController] Spawned Hero {def.HeroId} ({def.DisplayName})",
-                DebugManager.EDebugLevel.Test, "Hero");
+            DebugManager.Log(
+                $"[HeroController] Spawned Hero {def.HeroId} ({def.DisplayName}) at L{heroInstance.Level} XP={heroInstance.CurrentXP}",
+                DebugManager.EDebugLevel.Test,
+                "Hero"
+            );
         }
 
         private void Update()
