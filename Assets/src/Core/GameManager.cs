@@ -142,7 +142,7 @@ namespace CHAL.Core
         {
             if (Stats == null || researchService == null)
             {
-                DebugManager.Warning("WiringServices: Stats oder researchService ist null, Wiring übersprungen.", "System");
+                DebugManager.Warning("WiringServices: Stats or researchService is null, wiring skipped.", "System");
                 return;
             }
 
