@@ -67,13 +67,6 @@ namespace CHAL.Systems.Stats
         }
 
 /// <summary>
-/// Increments kill statistics when an enemy is killed.
-/// </summary>
-/// <param name="enemyId">The unique identifier of the enemy.</param>
-/// <param name="rank">The rank of the enemy.</param>
-/// <param name="basetags">A list of base tags associated with the kill.</param>
-/// <param name="bonustags">A list of bonus tags associated with the kill.</param>
-/// <summary>
 /// Handles the event when an enemy is killed, updating various kill statistics.
 /// </summary>
 /// <param name="enemyId">The unique identifier of the enemy that was killed.</param>
