@@ -141,12 +141,22 @@ namespace CHAL.Systems.Stats
         }
 
 
+/// <summary>
+/// Invoked when a hero gains experience points.
+/// </summary>
+/// <param name="heroId">The unique identifier of the hero.</param>
+/// <param name="amount">The amount of experience points gained.</param>
         public void OnHeroGainedXp(string heroId, long amount)
         {
             Increment("hero.xp.total", amount);
             Increment($"hero.{heroId}.xp.total", amount);
         }
 
+/// <summary>
+/// Invoked when a hero levels up.
+/// </summary>
+/// <param name="heroId">The unique identifier of the hero.</param>
+/// <param name="level">The new level of the hero.</param>
         public void OnHeroLeveledUp(string heroId,int level)
         {
             Increment("hero.level.total");
@@ -154,6 +164,9 @@ namespace CHAL.Systems.Stats
         }
 
 
+/// <summary>
+/// Called when a session starts.
+/// </summary>
         public void OnSessionStarted()
         {
             Increment("session.starts");
