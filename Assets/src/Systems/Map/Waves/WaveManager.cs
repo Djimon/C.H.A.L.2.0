@@ -507,7 +507,19 @@ namespace CHAL.Systems.Wave
                 profile.AddCurrency(kv.Key, kv.Value);
 
             if (rewards.XP > 0)
+            {
                 profile.AddXP(rewards.XP);
+                // NEU: Hero-XP für diese Wave an Map/Hero-System übergeben
+                if (_MapMangerRef != null)
+                {
+                    _MapMangerRef.GrantHeroXpForWave(rewards.XP);
+                }
+                else
+                {
+                    DebugManager.Warning("[WaveManager] GrantHeroXpForWave: MapManager reference is null.", "Hero");
+                }
+            }
+                
 
             if (_MapMangerRef.CurrentMap != null && _MapMangerRef.CurrentWave == _MapMangerRef.MaxWaves)
             {

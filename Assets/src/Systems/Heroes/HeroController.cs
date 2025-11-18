@@ -29,6 +29,7 @@ namespace CHAL.Systems.Hero
         public Transform target; // aktuelles Target (EnemyController o.Ã¤.)
 
         private HeroInstance heroInstance;
+        public HeroInstance RuntimeHeroInstance => heroInstance;
         private SkillInstance currentSkill;
         private float castRemaining = 0f;
 

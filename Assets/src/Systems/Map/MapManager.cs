@@ -28,6 +28,7 @@ namespace CHAL.Systems.Map
         private Dictionary<string, HeroDef> _heroById;
         private List<string> _pendingSelectedHeroes;
         private List<GameObject> _activeHeroes;
+        private readonly HashSet<string> _heroesDiedThisWave = new HashSet<string>(StringComparer.Ordinal);
 
         private bool _autoStartAllWaves = false;
         public bool AutoStartAllWaves => _autoStartAllWaves;
@@ -109,6 +110,8 @@ namespace CHAL.Systems.Map
         {
             HideUI();
 
+            _heroesDiedThisWave.Clear();
+
             _waveManager = _mapInstancedPrefab.GetComponentInChildren<WaveManager>();
 
             if (_waveManager == null)
@@ -171,7 +174,11 @@ namespace CHAL.Systems.Map
                 var hc = go.GetComponent<HeroController>();
                 if (hc != null)
                 {
-                    hc.Init(def); // setzt Team=Player u.a. und baut AutoAttack/Skills im Start() auf
+                    //Progress übertragen
+                    HeroProgressData hpg = GameManager.Instance.Profile.GetOrCreateHeroProgress(heroId);
+
+                    hc.Init(def,hpg); // setzt Team=Player u.a. und baut AutoAttack/Skills im Start() auf
+                    hc.OnHeroDied += OnHeroDiedInWave;
                 }
                 else
                 {
@@ -223,9 +230,13 @@ namespace CHAL.Systems.Map
                 var rewardUI = waveRewardUI.GetComponent<WaveRewardUI>();
                 rewardUI.Show(true);
                 rewardUI.populateText(success);
-                //Show missed rewards
+                //TODO: Show missed rewards
                 return;
             }
+
+            // Hero-XP wurde bereits in WaveManager.TransferRewardsToProfile → GrantHeroXpForWave verteilt.
+            // Die Runtime-HeroInstanzen haben keine zusätzlichen Änderungen, die zurück ins Profil müssen.
+            //SyncActiveHeroesToProfile();
 
             if (CurrentWave < MaxWaves)
             {
@@ -248,10 +259,160 @@ namespace CHAL.Systems.Map
 
         }
 
-/// <summary>
-/// Sets whether all waves should start automatically.
-/// </summary>
-/// <param name="enabled">True to enable auto-start for all waves; false to disable.</param>
+        private void SyncActiveHeroesToProfile()
+        {
+            var gm = GameManager.Instance;
+            var profile = gm != null ? gm.Profile : null;
+            if (profile == null)
+                return;
+
+            if (_activeHeroes == null || _activeHeroes.Count == 0)
+                return;
+
+            int synced = 0;
+
+            foreach (var go in _activeHeroes)
+            {
+                if (go == null) continue;
+
+                var hc = go.GetComponent<HeroController>();
+                if (hc == null) continue;
+
+                var inst = hc.RuntimeHeroInstance;
+                if (inst == null || inst.heroDef == null) continue;
+
+                profile.UpdateHeroProgressFromInstance(inst);
+                synced++;
+            }
+
+            if (synced > 0)
+            {
+                DebugManager.Log($"[MapManager] Synced progress for {synced} hero instance(s) to PlayerProfile.",
+                    DebugManager.EDebugLevel.Debug, "Hero");
+            }
+        }
+
+        private void ApplyHeroXpViaTempInstance(HeroProgressData progress, int xpAmount)
+        {
+            if (progress == null || xpAmount <= 0)
+                return;
+
+            var gm = GameManager.Instance;
+            if (gm == null || gm.HeroCatalogue == null)
+            {
+                DebugManager.Warning("[MapManager] ApplyHeroXpViaTempInstance: GameManager or HeroCatalogue missing.", "Hero");
+                return;
+            }
+
+            var heroDef = gm.HeroCatalogue.GetById(progress.HeroId);
+            if (heroDef == null)
+            {
+                DebugManager.Warning($"[MapManager] ApplyHeroXpViaTempInstance: No HeroDef found for HeroId='{progress.HeroId}'.", "Hero");
+                return;
+            }
+
+            // temporäre HeroInstance NUR für XP-/Level-Logik
+            var tempInstance = new HeroInstance(heroDef, progress);
+            tempInstance.AddXP(xpAmount);          // nutzt HeroXpConfig
+            tempInstance.FillProgressData(progress); // schreibt Level/XP/Orbit zurück in Progress
+        }
+
+        public void GrantHeroXpForWave(int totalWaveXp)
+        {
+            if (totalWaveXp <= 0)
+                return;
+
+            var gm = GameManager.Instance;
+            var profile = gm != null ? gm.Profile : null;
+            if (profile == null)
+            {
+                DebugManager.Warning("[MapManager] GrantHeroXpForWave: No PlayerProfile available.", "Hero");
+                return;
+            }
+
+            if (_pendingSelectedHeroes == null || _pendingSelectedHeroes.Count == 0)
+            {
+                DebugManager.Warning("[MapManager] GrantHeroXpForWave: No selected heroes for this map.", "Hero");
+                return;
+            }
+
+            // Nur valide IDs zählen
+            int heroCount = 0;
+            foreach (var heroId in _pendingSelectedHeroes)
+            {
+                if (!string.IsNullOrEmpty(heroId))
+                    heroCount++;
+            }
+
+            if (heroCount <= 0)
+                return;
+
+            // Basis-Share pro Held (Team teilt die XP)
+            int baseShare = Mathf.Max(1, totalWaveXp / heroCount);
+
+            // Safety: HeroXPConfig vorhanden?
+            var heroXpConfig = BalanceManager.GetHeroXP();
+            if (heroXpConfig == null)
+            {
+                DebugManager.Warning("[MapManager] GrantHeroXpForWave: No HeroXPConfig set in BalanceManager.", "Hero");
+                return;
+            }
+
+            int aliveCount = 0;
+            int deadCount = 0;
+
+            foreach (var heroId in _pendingSelectedHeroes)
+            {
+                if (string.IsNullOrEmpty(heroId))
+                    continue;
+
+                bool diedThisWave = _heroesDiedThisWave.Contains(heroId);
+
+                int xpForHero = diedThisWave
+                    ? Mathf.FloorToInt(baseShare * 0.25f) // 25% für Tote
+                    : baseShare;                           // 100% für Überlebende
+
+                if (xpForHero <= 0)
+                    continue;
+
+                var progress = profile.GetOrCreateHeroProgress(heroId);
+                if (progress == null)
+                    continue;
+
+                ApplyHeroXpViaTempInstance(progress, xpForHero);
+
+                if (diedThisWave) deadCount++;
+                else aliveCount++;
+            }
+
+            DebugManager.Log(
+                $"[MapManager] Hero XP for wave {CurrentWave}: totalXP={totalWaveXp}, baseShare={baseShare}, alive={aliveCount}, dead={deadCount}.",
+                DebugManager.EDebugLevel.Debug,
+                "Hero");
+        }
+
+        private void OnHeroDiedInWave(HeroController ctrl)
+        {
+            if (ctrl == null || ctrl.HeroDef == null)
+                return;
+
+            var heroId = ctrl.HeroDef.HeroId;
+            if (string.IsNullOrEmpty(heroId))
+                return;
+
+            if (_heroesDiedThisWave.Add(heroId))
+            {
+                DebugManager.Log(
+                    $"[MapManager] Hero {heroId} marked as dead for wave {CurrentWave}.",
+                    DebugManager.EDebugLevel.Debug,
+                    "Hero");
+            }
+        }
+
+        /// <summary>
+        /// Sets whether all waves should start automatically.
+        /// </summary>
+        /// <param name="enabled">True to enable auto-start for all waves; false to disable.</param>
         public void SetAutoStartAllWaves(bool enabled)
         {
             _autoStartAllWaves = enabled;
