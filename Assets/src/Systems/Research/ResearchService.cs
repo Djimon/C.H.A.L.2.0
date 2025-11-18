@@ -351,6 +351,12 @@ namespace CHAL.Systems.Research
             TryComplete(def, p);
         }
 
+/// <summary>
+/// Called when a wave is completed in the specified map.
+/// </summary>
+/// <param name="mapId">The identifier of the map where the wave occurred.</param>
+/// <param name="waveIndex">The index of the completed wave.</param>
+/// <param name="difficulty">The difficulty level of the wave.</param>
         public void OnWaveCompleted(int mapId, int waveIndex, MapDifficulty difficulty)
         {
             // Aktuell ignorieren wir mapId/waveIndex/difficulty für Research.
@@ -358,11 +364,23 @@ namespace CHAL.Systems.Research
             ApplyWaveCompleted(difficulty);
         }
 
+/// <summary>
+/// Called when the map is completed.
+/// </summary>
+/// <param name="mapId">The identifier of the completed map.</param>
+/// <param name="difficultyId">The difficulty level of the map.</param>
         public void OnMapCompleted(int mapId, MapDifficulty difficultyId)
         {
             ApplyMapCompleted(difficultyId);
         }
 
+/// <summary>
+/// Handles the event when an enemy is killed.
+/// </summary>
+/// <param name="enemyId">The identifier of the killed enemy.</param>
+/// <param name="rank">The rank of the killed enemy.</param>
+/// <param name="basetags">A list of base tags associated with the enemy.</param>
+/// <param name="bonustags">A list of bonus tags associated with the enemy.</param>
         public void OnEnemyKilled(string enemyId, EnemyRank rank, List<string> basetags, List<string> bonustags)
         {
 
@@ -373,6 +391,10 @@ namespace CHAL.Systems.Research
             ApplyEnemyKilled(allTags, rank);
         }
 
+/// <summary>
+/// Executes the crafting process for a given recipe.
+/// </summary>
+/// <param name="recipeId">The identifier of the recipe being crafted.</param>
         public void OnCraftExecuted(string recipeId)
         {
             /* TODO

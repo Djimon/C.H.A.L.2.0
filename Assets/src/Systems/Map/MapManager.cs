@@ -317,6 +317,10 @@ namespace CHAL.Systems.Map
             tempInstance.FillProgressData(progress); // schreibt Level/XP/Orbit zurück in Progress
         }
 
+/// <summary>
+/// Grants experience points to the hero for completing a wave.
+/// </summary>
+/// <param name="totalWaveXp">The total experience points to grant.</param>
         public void GrantHeroXpForWave(int totalWaveXp)
         {
             if (totalWaveXp <= 0)
