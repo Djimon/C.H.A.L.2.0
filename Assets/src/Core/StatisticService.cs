@@ -44,6 +44,19 @@ namespace CHAL.Systems.Stats
             return snapshot;
         }
 
+        public void RestoreFromSnapshot(StatisticsSnapshot snapshot)
+        {
+            _counters.Clear();
+
+            if (snapshot == null || snapshot.Counters == null)
+                return;
+
+            foreach (var kvp in snapshot.Counters)
+            {
+                _counters[kvp.Key] = kvp.Value;
+            }
+        }
+
         public void OnEnemyKilled(string enemyId, EnemyRank rank, List<string> basetags, List<string> bonustags)
         {
             Increment("kills.total");

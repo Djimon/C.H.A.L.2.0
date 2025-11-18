@@ -1,6 +1,7 @@
-﻿using BayatGames.SaveGameFree;
+using BayatGames.SaveGameFree;
 using CHAL.Data;
 using CHAL.Systems.Research;
+using CHAL.Systems.Stats;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -168,17 +169,55 @@ namespace CHAL.Core
             return true;
         }
 
+        public static void SaveStatistics(string profileId, StatisticsSnapshot snapshot)
+        {
+            ConfigureSaveGame();
+
+            var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
+            var id = StatisticsFileId(pid);
+
+            SaveGame.Save(id, snapshot ?? new StatisticsSnapshot());
+
+            DebugManager.Log($"SaveStatistics → {id}", DebugManager.EDebugLevel.Dev, "Stats", LogType.Log);
+        }
+
+        public static StatisticsSnapshot LoadStatistics(string profileId)
+        {
+            ConfigureSaveGame();
+
+            var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
+            var id = StatisticsFileId(pid);
+
+            if (!SaveGame.Exists(id))
+            {
+                DebugManager.Log($"LoadStatistics: no file at '{id}', returning empty snapshot.",
+                    DebugManager.EDebugLevel.Dev, "Stats", LogType.Warning);
+                return new StatisticsSnapshot();
+            }
+
+            var snap = SaveGame.Load<StatisticsSnapshot>(id) ?? new StatisticsSnapshot();
+            DebugManager.Log($"LoadStatistics ← {id}", DebugManager.EDebugLevel.Dev, "Stats", LogType.Log);
+            return snap;
+        }
+
+
         private static string ResearchFileId(string profileId)
         {
             // Gleiche Struktur wie beim Profil – SaveGame speichert unter persistentDataPath/<id>
             return $"profiles/{profileId}/research_v1.json";
         }
 
-/// <summary>
-/// Retrieves the current profile ID from a file path.
-/// If no valid ID is found, it returns "main".
-/// </summary>
-/// <returns>The current profile ID as a string.</returns>
+        private static string StatisticsFileId(string profileId)
+        {
+            // Eigene Datei für Statistik-Snapshots
+            return $"profiles/{profileId}/statistics_v1.json";
+        }
+
+        /// <summary>
+        /// Retrieves the current profile ID from a file path.
+        /// If no valid ID is found, it returns "main".
+        /// </summary>
+        /// <returns>The current profile ID as a string.</returns>
         public static string CurrentProfileId()
         {
             var id = FileId(); // z. B. "profiles/main/profile.json"

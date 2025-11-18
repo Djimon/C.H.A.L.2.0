@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bd94d529b97a7fc4ca07476777a83250, type: 3}
-  m_Name: HeroCatalog
+  m_Name: _HeroCatalog
   m_EditorClassIdentifier: 
   allHeroes:
   - {fileID: 11400000, guid: f96dd872c71033e458460914f6e0a931, type: 2}

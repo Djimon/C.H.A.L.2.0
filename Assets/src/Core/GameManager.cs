@@ -123,7 +123,13 @@ namespace CHAL.Core
             Unlucky ??= new UnluckyProtection();
 
             Stats = new StatisticsService();
-            
+
+            if (Profile != null)
+            {
+                var statsSnap = SaveSystem.LoadStatistics(Profile.profileId);
+                Stats.RestoreFromSnapshot(statsSnap);
+            }
+
         }
 
         private void Start()
@@ -154,6 +160,18 @@ namespace CHAL.Core
         {
             MapDomainToProfile();
             SaveSystem.Save(Profile);
+
+            if (Stats != null && Profile != null)
+            {
+                var statsSnap = Stats.CreateSnapshot();
+                SaveSystem.SaveStatistics(Profile.profileId, statsSnap);
+            }
+
+            if (Profile != null && Profile.ResearchRuntime != null)
+            {
+                var snap = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
+                SaveSystem.SaveResearch(Profile.profileId, snap);
+            }
         }
 
 /// <summary>
@@ -291,13 +309,7 @@ namespace CHAL.Core
 
         private void OnApplicationQuit()
         {
-            SaveSystem.Save(Instance?.Profile);
-
-            if (Profile != null && Profile.ResearchRuntime != null)
-            {
-                var snap = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
-                SaveSystem.SaveResearch(Profile.profileId, snap);
-            }
+            SaveGame();
         }
 
         //INVENTORY
