@@ -184,7 +184,7 @@ namespace CHAL.Core
 
             SaveGame.Save(id, snapshot ?? new StatisticsSnapshot());
 
-            DebugManager.Log($"SaveStatistics → {id}", DebugManager.EDebugLevel.Dev, "Stats", LogType.Log);
+            DebugManager.Log($"SaveStatistics → {id}", DebugManager.EDebugLevel.Dev, "Save");
         }
 
 /// <summary>
@@ -208,7 +208,7 @@ namespace CHAL.Core
             }
 
             var snap = SaveGame.Load<StatisticsSnapshot>(id) ?? new StatisticsSnapshot();
-            DebugManager.Log($"LoadStatistics ← {id}", DebugManager.EDebugLevel.Dev, "Stats", LogType.Log);
+            DebugManager.Log($"LoadStatistics ← {id}", DebugManager.EDebugLevel.Dev, "Save");
             return snap;
         }
 

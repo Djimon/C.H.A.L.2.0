@@ -1224,11 +1224,11 @@ The difference lies in where these Skills come from (Hero archetypes, Modules, e
 The Skill System relies on a fixed set of five core stats:
 
 \begin{itemize}
-	\item \textbf{STR} -- physical power (melee damage, strength-based scaling).
-	\item \textbf{DEX} -- agility (attack speed, accuracy, evasion-style interactions).
-	\item \textbf{CON} -- resilience (life, barrier, physical toughness).
-	\item \textbf{INT} -- mental power (spell power, elemental scaling, complex skills).
-	\item \textbf{WIL} -- willpower (resistance to control, resource sustain, thematic „will“ effects).
+	\item \textbf{STR} \colorsquare{STR} -- physical power (melee damage, strength-based scaling).
+	\item \textbf{DEX} \colorsquare{DEX} -- agility (attack speed, accuracy, evasion-style interactions).
+	\item \textbf{CON} \colorsquare{CON} -- resilience (life, barrier, physical toughness).
+	\item \textbf{INT} \colorsquare{INT} -- mental power (spell power, elemental scaling, complex skills).
+	\item \textbf{WIL} \colorsquare{WIL} -- willpower (resistance to control, resource sustain, thematic „will“ effects).
 \end{itemize}
 
 All Skill and Modifier calculations ultimately work on this stat set and derived combat stats (damage, crit, armor, resistances, etc.).
@@ -1304,14 +1304,25 @@ This section focuses on how Heroes interface with the Skill System via sockets, 
 Heroes do not „learn“ traditional skill trees; instead, they use \textbf{Skill Modules} socketed into fixed positions.
 
 \begin{itemize}
-	\item Each Hero has \textbf{4--5 chakra-style sockets}, not bound to gear:
+	\item Each Hero has \textbf{5 chakra-style sockets}, not bound to gear:
 	\begin{itemize}
-		\item e.g. Torso, Left Hand, Right Hand, Head (+ optional Will/Chest).
+		\item e.g. Heart, Hands, Head, Core, Movement.
 	\end{itemize}
 	\item Sockets are \textbf{semantically distinct}, not statistically tied to gear slots:
 	\begin{itemize}
 		\item e.g. a socket may be associated with crit/burst, sustain, mobility, defence.
 	\end{itemize}
+	\item Each Scoket has a fix resonance to 2 Stats - only Skills of that stat can be inserted into the Socket\\
+	
+	\begin{tabular}{llll}
+		\textbf{Slot}  & \textbf{allowed Stats incl. Color (Hex)} & \textbf{Theme} \\
+		Mind     & \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} + \textbf{INT} \colorsquare{INT} \texttt{\#5626e3} & focus, mental power \\
+		Heart       & \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} + \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} & courage, passion, determination \\
+		Core       & \textbf{INT} \colorsquare{INT} \texttt{\#5626e3} + \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} & technique, core strength, effective power \\
+		Handling   & \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} + \textbf{DEX} \colorsquare{DEX} \texttt{\#9ce326} & Weapon handling, dexterity, precision  \\
+		Movement   & \textbf{DEX} \colorsquare{DEX} \texttt{\#9ce326} + \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} & Speed, endurance, reaction \\
+		
+	\end{tabular}
 	\item Each socket can hold \textbf{exactly one Skill Module item} from the Inventory.
 	\item Socket progression:
 	\begin{itemize}
@@ -1815,4 +1826,4 @@ Further extensions (cosmetics, advanced objective chains, seasonal structure) ca
 
 
 %----------------------------------------
-\input{systems/heroes.tex}
+\input{chapters/systems/heroes.tex}
