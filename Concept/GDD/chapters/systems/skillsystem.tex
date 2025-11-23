@@ -1,0 +1,434 @@
+\section{Skill System}
+\label{sec:skill-system}
+
+\subsection{Overview}
+
+The Skill System defines how Heroes and Monsters act in combat. 
+It is built on a unified model for Skills, Impacts, Status effects and Modifiers, shared by both sides:
+
+\begin{itemize}
+	\item \textbf{SkillData} -- base definition: cooldown, range, tags, base damage, target rules.
+	\item \textbf{Impacts} -- actions executed on cast / hit: deal damage, apply status, trigger other skills.
+	\item \textbf{Status} -- buffs, debuffs, damage-over-time and similar timed effects attached to units.
+	\item \textbf{ModifierData} -- generic numeric changes applied by gear, passives, buffs, debuffs, runes, crowns, etc.
+\end{itemize}
+
+Heroes and Monsters use the same SkillData and Status/Modifier framework. 
+The difference lies in where these Skills come from (Hero archetypes, Modules, enemy definition) and which Modifiers apply.
+
+\subsection{Shared Stat Model}
+
+The Skill System relies on a fixed set of five core stats:
+
+\begin{itemize}
+	\item \textbf{STR} \colorsquare{STR} -- physical power (melee damage, strength-based scaling).
+	\item \textbf{DEX} \colorsquare{DEX} -- agility (attack speed, accuracy, evasion-style interactions).
+	\item \textbf{CON} \colorsquare{CON} -- resilience (life, barrier, physical toughness).
+	\item \textbf{INT} \colorsquare{INT} -- mental power (spell power, elemental scaling, complex skills).
+	\item \textbf{WIL} \colorsquare{WIL} -- willpower (resistance to control, resource sustain, thematic „will“ effects).
+\end{itemize}
+
+All Skill and Modifier calculations ultimately work on this stat set and derived combat stats (damage, crit, armor, resistances, etc.).
+
+% RISK: Any later change to this stat set will ripple into all systems (Heroes, Skills, Gear, Crafting, Balance).
+
+\subsection{Skill Model (Heroes and Enemies)}
+
+\subsubsection*{SkillData}
+
+Each Skill is defined by a SkillData object, including:
+
+\begin{itemize}
+	\item base damage (physical/elemental or mixed),
+	\item cooldown and cast time,
+	\item range and target rules (single target, AoE, line, cone, self),
+	\item tags (e.g. melee, projectile, DoT, aura, summon, fire, holy, undead),
+	\item scaling hooks (which stats modify what parts of the skill).
+\end{itemize}
+
+\subsubsection*{Impacts and Status}
+
+\begin{itemize}
+	\item \textbf{Impacts} define what happens when a Skill is cast or hits:
+	\begin{itemize}
+		\item damage instances,
+		\item application of Status effects,
+		\item triggering of chained skills (e.g. nova on hit, projectiles on kill).
+	\end{itemize}
+	\item \textbf{Status} objects represent ongoing effects:
+	\begin{itemize}
+		\item buffs (e.g. increased armor, haste),
+		\item debuffs (e.g. slow, vulnerability),
+		\item DoTs (e.g. bleeding, burning),
+		\item other persistent states (e.g. taunt, mark).
+	\end{itemize}
+	\item Status effects apply \textbf{ModifierData} to stats or skills while active.
+\end{itemize}
+
+\subsubsection*{ModifierData}
+
+ModifierData is the unified language for numeric changes:
+
+\begin{itemize}
+	\item flat additions (e.g. +10 armor),
+	\item additive \% increases (e.g. +20\% damage),
+	\item multiplicative „more“ multipliers (e.g. 30\% more damage),
+	\item caps and clamps (e.g. resistances up to 75\%),
+	\item occasional replacements or transformations (e.g. convert physical to fire, replace basic attack).
+\end{itemize}
+
+All systems (Gear, Skill Orbits, Runes, Crowns, Research) ultimately output ModifierData.
+
+\subsection{Hero Skill Layers}
+
+Hero power and behaviour in combat is defined through several stacked layers:
+
+\begin{enumerate}
+	\item Hero archetype and base stats (STR, DEX, CON, INT, WIL).
+	\item Gear (from the Crafting System).
+	\item Skill Modules in Sockets.
+	\item Socket Orbits (passive progression around each socket).
+	\item Hero-wide Runes.
+	\item Endgame Crowns.
+\end{enumerate}
+
+Details about Hero archetypes, roles and progression (HeroDef, HeroInstance, AI profiles) are described in Section~\ref{sec:heroes-system}. 
+This section focuses on how Heroes interface with the Skill System via sockets, modules and orbits.
+
+
+\subsubsection{Skill Modules and Sockets}
+
+Heroes do not „learn“ traditional skill trees; instead, they use \textbf{Skill Modules} socketed into fixed positions.
+
+\begin{itemize}
+	\item Each Hero has \textbf{5 chakra-style sockets}, not bound to gear:
+	\begin{itemize}
+		\item e.g. Heart, Hands, Head, Core, Movement.
+	\end{itemize}
+	\item Sockets are \textbf{semantically distinct}, not statistically tied to gear slots:
+	\begin{itemize}
+		\item e.g. a socket may be associated with crit/burst, sustain, mobility, defence.
+	\end{itemize}
+	\item Each Scoket has a fix resonance to 2 Stats - only Skills of that stat can be inserted into the Socket\\
+	
+	\begin{tabular}{llll}
+		\textbf{Slot}  & \textbf{allowed Stats incl. Color (Hex)} & \textbf{Theme} \\
+		Mind     & \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} + \textbf{INT} \colorsquare{INT} \texttt{\#5626e3} & focus, mental power \\
+		Heart       & \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} + \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} & courage, passion, determination \\
+		Core       & \textbf{INT} \colorsquare{INT} \texttt{\#5626e3} + \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} & technique, core strength, effective power \\
+		Handling   & \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} + \textbf{DEX} \colorsquare{DEX} \texttt{\#9ce326} & Weapon handling, dexterity, precision  \\
+		Movement   & \textbf{DEX} \colorsquare{DEX} \texttt{\#9ce326} + \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} & Speed, endurance, reaction \\
+		
+	\end{tabular}
+	\item Each socket can hold \textbf{exactly one Skill Module item} from the Inventory.
+	\item Socket progression:
+	\begin{itemize}
+		\item start with 1 active socket at low level,
+		\item additional sockets unlock as the Hero levels up (e.g. at level milestones).
+	\end{itemize}
+	\item When a Module is socketed:
+	\begin{itemize}
+		\item the Hero gains a SkillData instance, based on:
+		\begin{itemize}
+			\item the abstract Module definition,
+			\item the Hero archetype (which may skin or specialise the skill),
+			\item socket-specific modifiers (see Orbits).
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Module Role}
+
+Modules represent the main active skill layer for Heroes:
+
+\begin{itemize}
+	\item they define \textbf{what} a skill does (projectile, aura, buff, summon, etc.),
+	\item archetypes define \textbf{how} it feels (e.g. same Module might be a burning nova for an Arcanist and a physical shockwave for a Vanguard) $\rightarrow$ (see Section \ref{subsec:skill-families-profiles})
+	\item Orbits, Gear and Runes further modify behaviour and scaling.
+\end{itemize}
+
+\paragraph{Module Profiles}
+Not every Archetpye has a different representation of the Skill. there are 3 main profiles: \textbf{Melee}, \textbf{Ranged}, \textbf{Caster} (and Minion/Spawn as special Role)
+
+\subparagraph*{Naming through damage type and Archetype-profile} 
+General naming rule: prefix (dmg-type) + Module-Name + Suffix (profile). \\
+
+\begin{minipage}[t]{0.48\textwidth}
+	\textbf{Element Prefixes}\\
+	
+	\begin{tabular}{r| l}
+		\textbf{DMG-Type} & \textbf{Prefix} \\
+		\hline
+		Fire      & \glqq \textit{Blazing}\grqq   \\
+		Cold      & \glqq \textit{Glacial}\grqq   \\
+		Lightning & \glqq \textit{Static}\grqq    \\
+		Poison    & \glqq \textit{Venomous}\grqq  \\
+		Demonic   & \glqq \textit{Infernal}\grqq  \\
+		Holy      & \glqq \textit{Radiant}\grqq   \\
+	\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+	\textbf{Profile Suffixes}\\
+	
+	\begin{tabular}{r| l}
+		\textbf{Profile}    & \textbf{Suffix}     \\
+		\hline
+		Melee        & \glqq\textit{of Ferocity}\grqq   \\
+		Ranged       & \glqq\textit{of Precision}\grqq  \\
+		Caster       & \glqq\textit{of Sorcery}\grqq    \\
+		Minion/Spawn & \glqq\textit{of Dominion}\grqq   \\
+	\end{tabular}
+\end{minipage}
+
+\vspace{1em}
+
+\noindent\textbf{Example Skill Module Names}
+
+\begin{itemize}
+	\item \glqq Blazing Gyro-Module of Ferocity\grqq
+	\item \glqq Static Vortex-Module of Precision\grqq
+	\item \glqq Venomous Graviton-Module of Dominion\grqq
+	\item \glqq Glacial Pulse-Module of Sorcery\grqq
+	\item \glqq Radiant Burst-Module of Precision\grqq
+\end{itemize}
+
+% RISK: If Modules are too numerous or too similar, the system loses clarity.
+% TODO: For MVP, keep Module count per archetype low and strongly themed.
+
+\subsubsection{Socket Orbits (Passive Progression)}
+
+Each socket has its own \textbf{Orbit}: a layered progression ring around the socket that works similar to electron shells in an atom model:
+
+\begin{itemize}
+	\item the \emph{socket} is the core,
+	\item each \emph{orbit tier} is an electron shell around that core,
+	\item orbit \emph{points} are the electrons on that shell.
+	\item an orbit \emph{Mod} is a "Super-electron" (not scientific related) unlocked when electron hsell full
+\end{itemize}
+
+\paragraph{Structure}
+
+\begin{itemize}
+	\item Each socket orbit contains a fixed number of points (e.g. 22 points) spread across multiple tiers (Tier~1, Tier~2, Tier~3).
+	\item Points are \textbf{small, incremental stat buffs}:
+	\begin{itemize}
+		\item e.g. +\% damage, +\% life, +crit chance, +status effect, +resource regen,
+		\item tuned per socket identity (crit/burst vs. sustain vs. utility, etc.).
+	\end{itemize}
+	\item Points are invested in free order along the orbit path for that socket.
+\end{itemize}
+
+\paragraph{Tier Gates and Orbit Mods}
+
+Orbit progression is divided into tiers, each with a gate:
+
+\begin{itemize}
+	\item After investing a required number of points on the current tier (e.g. 6--8 points on Tier~1),
+	the player unlocks a \textbf{Tier Mod Choice} for that tier.
+	\item A Tier Mod is a \textbf{behaviour/synergy modifier}, not a small stat buff. Examples:
+	\begin{itemize}
+		\item convert a single-target skill into a small AoE,
+		\item add a nova or chain effect on hit,
+		\item add a DoT component or a mark on hit,
+		\item convert damage type (e.g. phys to fire) or add penetration,
+		\item change targeting logic (e.g. prioritise bosses / clusters).
+	\end{itemize}
+	\item When a Tier Mod is chosen:
+	\begin{itemize}
+		\item its effect is applied permanently to the socketed skill,
+		\item the next outer orbit tier is unlocked and becomes available for point investment.
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Socket Identity}
+
+Each socket has its own themed orbit and Tier Mod pools:
+
+\begin{itemize}
+	\item \textbf{Example (conceptual only):}
+	\begin{itemize}
+		\item Torso socket: sustain/defence (life, barrier, mitigation, „on damage taken“ effects).
+		\item Right Hand: crit and burst (crit chance/multi, „execute“ style effects, high-risk/high-reward).
+		\item Left Hand: utility/control (crowd control, debuffs, resource manipulation).
+		\item Head: AoE/range/complex mechanics (larger areas, extra projectiles, complex triggers).
+	\end{itemize}
+	\item Tier Mods are drawn from socket-specific pools to reinforce the identity of that slot.
+\end{itemize}
+
+\paragraph{Progression Source}
+
+Orbit points are gained through levle-ups of the Heroe:
+
+\begin{itemize}
+	\item Hero level ups,
+	\item Research unlocks (Skill Tiers in the Heroes Tree),
+	\item possibly specific achievements or milestones (future).
+\end{itemize}
+
+The intended pattern is:
+
+\begin{itemize}
+	\item frequent \textbf{small numeric gains} through orbit points,
+	\item occasional \textbf{big behavioural steps} when a Tier Mod is unlocked,
+	\item each unlocked Tier Mod both upgrades the current skill and opens access to the next orbit tier.
+\end{itemize}
+
+% RISK: Too many small points per orbit can feel grindy; tier mod unlock thresholds must be tuned to feel meaningful.
+% TODO: Define exact points-per-tier and thresholds per socket in the Heroes chapter / balance sheets.
+
+\subsubsection{Crowns (Endgame)}
+
+Crowns are an \textbf{endgame progression layer}:
+
+\begin{itemize}
+	\item Crown sockets are unlocked via the Heroes Research Tree (see Research System).
+	\item Crowns apply \textbf{large, rare, endgame-level modifiers}, such as:
+	\begin{itemize}
+		\item transforming a core skill in a fundamental way,
+		\item adding strong, unique effects with clear downsides,
+		\item pushing certain stats beyond normal caps.
+	\end{itemize}
+	\item Crowns are intentionally rare and limited; they are not part of the early game.
+\end{itemize}
+
+For MVP, Crowns can be treated as \emph{future or late} content and do not need full implementation.
+
+% RISK: Too many overlapping layers (Orbits, Runes, Crowns, Gear) can overwhelm players.
+% TODO: Crowns should be reserved for clearly signposted endgame goals.
+
+\subsection{Skill Loadout and Combat Usage}
+
+\subsubsection*{Hero Loadout}
+
+A Hero's combat loadout is defined by:
+
+\begin{itemize}
+	\item the number of \textbf{active sockets} (unlocked by level),
+	\item which \textbf{Modules} are slotted into those sockets,
+	\item which \textbf{Orbit mods} have been chosen around each socket,
+	\item hero-wide \textbf{Runes} and possible \textbf{Crowns},
+	\item equipped Gear and its interactions with skill tags.
+\end{itemize}
+
+In practice:
+
+\begin{itemize}
+	\item early game: 1 active socket → 1 major skill per Hero,
+	\item mid game: 2--3 sockets → 2--3 major skills per Hero,
+	\item late game: 3--4 (5) sockets with fully developed Orbits.
+\end{itemize}
+
+\subsubsection*{AI-Driven Skill Usage}
+
+There is no direct player control over skill priority in combat:
+
+\begin{itemize}
+	\item each Hero follows an \textbf{archetype-specific AI profile}:
+	\begin{itemize}
+		\item tanks prioritise taunts/defensive skills and high-HP targets,
+		\item damage dealers prioritise high-value or low-HP targets,
+		\item support archetypes prioritise buffs and heals.
+	\end{itemize}
+	\item AI rules consider:
+	\begin{itemize}
+		\item skill tags (e.g. „heal“, „buff“, „AoE nuke“),
+		\item cooldown states,
+		\item simple conditions (e.g. ally HP, enemy clustering).
+	\end{itemize}
+\end{itemize}
+
+The player expresses build intent primarily through:
+
+\begin{itemize}
+	\item module choices (which skills exist at all),
+	\item orbit mods (how those skills behave),
+	\item gear and runes (which stats and tags are favoured).
+\end{itemize}
+
+% RISK: Lack of explicit skill priority control can frustrate highly engaged players.
+% TODO: Evaluate later whether a simple „priority list“ per Hero is needed, once AI is stable.
+
+\subsection{Interactions with Other Systems}
+
+\subsubsection*{Research System}
+
+\begin{itemize}
+	\item The \textbf{Heroes Research Tree} unlocks:
+	\begin{itemize}
+		\item new Hero archetypes (Hero packs),
+		\item deeper Skill tiers (access to higher Orbit tiers),
+		\item Crown sockets as endgame goals.
+	\end{itemize}
+	\item Research does not grant direct one-run buffs, but expands long-term build options.
+\end{itemize}
+
+\subsubsection*{Gear and Crafting}
+
+\begin{itemize}
+	\item Gear affects Skills primarily via:
+	\begin{itemize}
+		\item stats that scale skills (STR, INT, crit, penetration),
+		\item tag-based bonuses (e.g. increased projectile skill power, increased AoE, reduced cooldown).
+	\end{itemize}
+	\item The Crafting System defines how gear is created and upgraded; Skill System uses the resulting stats and tags.
+\end{itemize}
+
+\subsubsection*{Inventory and Modules}
+
+\begin{itemize}
+	\item Skill Modules and Runes are inventory items:
+	\begin{itemize}
+		\item Modules and Runes are managed in the Hideout inventory screen,
+		\item equipping is done via sockets on the Hero panel.
+	\end{itemize}
+	\item No inventory management is available during Maps; skill loadouts are fixed for the duration of a run.
+\end{itemize}
+
+\subsubsection*{Map \& Combat System}
+
+\begin{itemize}
+	\item The Map \& Combat System calls into the Skill System to:
+	\begin{itemize}
+		\item execute Skills for Heroes and Monsters,
+		\item resolve Impacts and Status effects,
+		\item track kills, damage and other metrics for Research.
+	\end{itemize}
+\end{itemize}
+
+\subsection{MVP Scope for the Skill System}
+
+For the MVP, the Skill System should deliver:
+
+\begin{itemize}
+	\item A stable \textbf{SkillData / Status / Modifier} framework used by Heroes and Monsters.
+	\item A limited set of \textbf{Hero archetypes} (e.g. 3--5) with:
+	\begin{itemize}
+		\item clear roles,
+		\item 1--3 key Skill Modules each,
+		\item basic Orbit layouts (Tier I/II, Tier III optional).
+	\end{itemize}
+	\item \textbf{Sockets and Modules}:
+	\begin{itemize}
+		\item start with 1 active socket per Hero,
+		\item unlock up to 2--3 sockets for MVP,
+		\item small, strongly themed Module pool.
+	\end{itemize}
+	\item \textbf{Orbits}:
+	\begin{itemize}
+		\item functional Tier I/II for each socket,
+		\item Tier III and complex mutations may be endgame or future additions.
+	\end{itemize}
+	\item \textbf{Runes}:
+	\begin{itemize}
+		\item optional, simple hero-wide bonuses (1 slot is sufficient for MVP),
+		\item complex interactions can be postponed.
+	\end{itemize}
+	\item \textbf{Crowns}:
+	\begin{itemize}
+		\item treated as late-game or future content,
+		\item only minimal scaffolding needed in MVP.
+	\end{itemize}
+\end{itemize}
+
+% TODO: Finalise MVP archetype list and per-archetype Module/Orbit designs in a dedicated Heroes chapter.

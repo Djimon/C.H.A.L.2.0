@@ -1,0 +1,267 @@
+\section{Map System}
+\label{sec:map-system}
+
+\subsection{Overview}
+
+The Map System provides the combat stage for all auto-battles. 
+Each Map is an arena-style combat area with a fixed Wave structure and one or more Difficulty levels. 
+The MapDevice in the Hideout acts as the entry point: the player selects a Map, a Difficulty (if unlocked) and optionally empowerment modifiers before starting a run.
+
+Maps are tightly integrated with:
+\begin{itemize}
+	\item the \textbf{Hero \& Skill System} (which team and build enters the Map),
+	\item the \textbf{Loot System} (which rewards are generated from enemies and completion),
+	\item the \textbf{Research System} (which Maps and Difficulties are available, and which enemy variants exist),
+	\item the \textbf{Inventory System} (where all drops are ultimately stored).
+\end{itemize}
+
+The Map System itself does not generate items or currencies directly; it defines when and how enemies spawn and which combat events feed into the Loot System.
+
+% RISK: High coupling between Map, Research, Loot and Hero Systems can make iterative balancing slow.
+% TODO: Keep MVP Map feature set tight to avoid overdesigning early.
+
+\subsection{Map Types and Layout}
+
+\subsubsection*{Arena Structure}
+
+\begin{itemize}
+	\item Maps are \textbf{arena-like}: one main combat area per Map.
+	\item There is no free player movement during combat; heroes and enemies move and act autonomously within the arena.
+	\item Within this arena, different \textbf{layouts and obstacles} exist per Map:
+	\begin{itemize}
+		\item terrain features,
+		\item obstacles,
+		\item lanes and choke points.
+	\end{itemize}
+	\item Layout influences:
+	\begin{itemize}
+		\item hero positioning decisions,
+		\item pathing and clustering of enemies,
+		\item effectiveness of area-based skills and auras.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Themes and Map Variety}
+
+\begin{itemize}
+	\item For MVP, the game targets \textbf{3 high-level themes} (e.g. different fantasy / dungeon styles).
+	\item Per theme, there are \textbf{3--5 Maps} with distinct terrain/obstacle layouts:
+	\begin{itemize}
+		\item visual variation (biomes, architecture),
+		\item gameplay variation (different chokepoints, open areas, spawn positions).
+	\end{itemize}
+	\item In total, MVP aims for \textbf{around 10 Maps} with varied Wave setups and enemy mixes.
+\end{itemize}
+
+% RISK: Even arena-only maps with multiple layouts require art and collision work; 10+ maps is ambitious for MVP.
+
+\subsection{Map Selection (MapDevice)}
+
+\subsubsection*{Selection Flow}
+
+From the MapDevice in the Hideout, the player selects:
+
+\begin{itemize}
+	\item \textbf{Map:} any Map that has been unlocked via Research or previous completions.
+	\item \textbf{Difficulty:} a Difficulty level for that Map (if unlocked).
+	\item \textbf{Wave Range (optional):} within a Map, specific Wave ranges or starting points may be selected if previously reached.
+\end{itemize}
+
+Maps are presented as a \textbf{fixed list of unlocked Maps}, not as a rotating offer. 
+Map and Difficulty are selected separately: a Map has a base identity (theme, layout, enemy families), while its Difficulties add scaling and modifications.
+
+% TODO: Later define exact UI structure (e.g. Map grid + Difficulty panel, or combined card layout).
+
+\subsection{Wave System}
+
+\subsubsection*{Wave Structure}
+
+\begin{itemize}
+	\item Each Map has a \textbf{fixed Wave structure}:
+	\begin{itemize}
+		\item total number of Waves,
+		\item base composition per Wave (enemy types, ranks, tags),
+		\item temporal pacing (early/mid/late Waves).
+	\end{itemize}
+	\item Wave blueprints are \textbf{finely configurable}:
+	\begin{itemize}
+		\item relative amount of basic vs. Magic vs. Elite enemies,
+		\item which Waves can spawn Bosses,
+		\item where higher-density or special packs appear.
+	\end{itemize}
+	\item Design guideline for early MVP Maps:
+	\begin{itemize}
+		\item early Waves: mostly basic enemies, low pressure,
+		\item mid Waves: increasing number of Elite enemies and more complex packs,
+		\item late Waves: Bosses and high-pressure encounters.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Bosses and Champions}
+
+\begin{itemize}
+	\item \textbf{Bosses:}
+	\begin{itemize}
+		\item are boosted versions of regular units with significantly higher stats,
+		\item have more skills and more complex behaviour,
+		\item typically appear in later Waves of a Map, but are not restricted to a single final Wave.
+	\end{itemize}
+	\item \textbf{Champions:}
+	\begin{itemize}
+		\item are \emph{legendary Bosses} with distinct move sets, potentially phase-based encounters,
+		\item are intended as \textbf{endgame gates}, not standard MVP content,
+		\item can be used to gate higher Difficulties or Tier 3 recipes and similar high-value unlocks.
+	\end{itemize}
+	\item Any Wave can, in principle, contain special enemies (Boss, Champion, Elite clusters), 
+	but MVP Maps will follow a more predictable escalation pattern to keep learning curves manageable.
+\end{itemize}
+
+% RISK: Champions with unique movesets are content-expensive; should be late in the production pipeline.
+
+\subsection{Difficulties and Empowerment}
+
+\subsubsection*{Map Difficulties}
+
+\begin{itemize}
+	\item Each Map has multiple \textbf{Difficulty levels}.
+	\item Higher Difficulties:
+	\begin{itemize}
+		\item increase enemy stats (HP, damage),
+		\item may unlock additional enemy types or tags,
+		\item increase rewards (loot quantity/quality, XP, research progress).
+	\end{itemize}
+	\item Difficulties are unlocked by:
+	\begin{itemize}
+		\item completing the previous Difficulty of the same Map,
+		\item and/or unlocking via Research (World Tree, Heroes Tree, etc.).
+	\end{itemize}
+	\item Lower Difficulties remain \textbf{relevant for farming}:
+	\begin{itemize}
+		\item each Map has partially \emph{map-specific enemy types},
+		\item Research goals may require killing specific enemy families/tags that are more common on lower tiers.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Empower Maps}
+
+\begin{itemize}
+	\item \textbf{Empower Maps} adds optional modifiers on top of base Difficulty:
+	\begin{itemize}
+		\item more monsters,
+		\item increased enemy stats,
+		\item additional modifiers expressed as tags (e.g. +Projectiles, +Speed, Leech Aura, etc.).
+	\end{itemize}
+	\item Empowerment \textbf{costs meta-materials/meta-currency} (e.g. Remains, special tokens):
+	\begin{itemize}
+		\item this ties risk/reward tuning to the economy,
+		\item prevents spamming high-reward setups without cost.
+	\end{itemize}
+	\item For MVP, Empowerment is considered an \emph{endgame feature}:
+	\begin{itemize}
+		\item can be included with lower priority,
+		\item base Difficulties should function without Empower being required.
+	\end{itemize}
+\end{itemize}
+
+% RISK: Empower + Difficulties + Map variants can explode combinatorially.
+% TODO: Limit the number of stacked modifiers for MVP to keep tuning manageable.
+
+\subsection{Live Events (Future)}
+
+Map Live-Events are concepted as a future extension, not part of the MVP baseline.
+
+Two main variants are envisioned:
+
+\begin{itemize}
+	\item \textbf{Variant A – Kill-based Quick-Time Choices (Vampire Survivors-like):}
+	\begin{itemize}
+		\item Events triggered based on kill thresholds or Wave milestones.
+		\item Present the player with quick choices (e.g. temporary buffs, extra enemies for extra loot).
+	\end{itemize}
+	\item \textbf{Variant B – POE-style Interaction Objects:}
+	\begin{itemize}
+		\item In-Map interactables such as strongboxes, rituals, abysses.
+		\item On click, additional enemy waves or mini-encounters spawn with improved loot rewards.
+	\end{itemize}
+\end{itemize}
+
+For MVP these remain out of scope or very limited prototypes; core progression and difficulty should work without Live-Events.
+
+% RISK: Live-Events add another layer of complexity on top of Waves and Empowerment.
+%       Best introduced after core Map/Wave/Difficulty loop is stable.
+
+\subsection{Rewards and Progression}
+
+\subsubsection*{Per-Wave Rewards}
+
+\begin{itemize}
+	\item Regular enemies drop:
+	\begin{itemize}
+		\item Parts,
+		\item Remains,
+		\item currencies (primarily Gold).
+	\end{itemize}
+	\item Drops are handled by the Loot System; Maps define when and where drops are triggered.
+	\item After each successful Wave:
+	\begin{itemize}
+		\item XP for surviving heroes is granted,
+		\item the player may pick up all remaining loot or exit back to the Hideout,
+		\item progress is saved up to the last successful Wave.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection*{Map Completion Rewards}
+
+\begin{itemize}
+	\item Completing all Waves of a Map:
+	\begin{itemize}
+		\item marks the Map as completed on that Difficulty,
+		\item unlocks higher Difficulties for that Map (if available),
+		\item yields an additional completion reward:
+		\begin{itemize}
+			\item meta-currency (e.g. for Research or Empowerment),
+			\item progress in Research or Battlepass-like tracks,
+			\item chance to unlock new recipes, heroes or Map variants (depending on design).
+		\end{itemize}
+	\end{itemize}
+	\item Failure on a Map (all heroes dead) forfeits loot and XP of the current Wave, 
+	but does not roll back global progression (research, unlocked Maps, etc.).
+\end{itemize}
+
+% RISK: If completion rewards are much better than per-wave rewards, players may feel forced to push beyond comfort.
+% TODO: Balance per-wave vs. completion rewards so early exits still feel respectable for low-time players.
+
+\subsection{MVP Scope for the Map System}
+
+For the initial playable version (MVP), the Map System should deliver:
+
+\begin{itemize}
+	\item \textbf{Around 10 Maps}:
+	\begin{itemize}
+		\item spread across 3 themes,
+		\item each Map with distinct layout/obstacle configuration,
+		\item with fixed but varied Wave structures and enemy mixes.
+	\end{itemize}
+	\item \textbf{Multiple Difficulties} per Map:
+	\begin{itemize}
+		\item at least 2--3 tiers of Difficulty for core Maps,
+		\item fully playable without Empowerment.
+	\end{itemize}
+	\item \textbf{Basic Boss implementation:}
+	\begin{itemize}
+		\item boosted enemies with more stats and skills.
+		\item Champions and multi-phase bosses can be postponed or introduced as late MVP/endgame pieces.
+	\end{itemize}
+	\item \textbf{Empower Maps:}
+	\begin{itemize}
+		\item optional, low-priority endgame feature for MVP,
+		\item only a small, curated set of modifiers initially.
+	\end{itemize}
+	\item \textbf{Live-Events:}
+	\begin{itemize}
+		\item considered \emph{Future}, not core MVP.
+		\item optional to prototype a single simple event type for testing.
+	\end{itemize}
+\end{itemize}
+
+% TODO: Cross-check final MVP Map count and Difficulty tiers with production capacity and balancing schedule.

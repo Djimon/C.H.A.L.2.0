@@ -5,9 +5,10 @@ namespace CHAL.Data
         Physical,
         Fire,
         Cold,
+        Lightning,
         Poison,
         Arcane,
-        Void,
+        Dark,
         Holy
         // … erweiterbar
     }
