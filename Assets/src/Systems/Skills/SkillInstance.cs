@@ -1,9 +1,10 @@
-﻿using CHAL.Core;
+using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Hero;
 using CHAL.Systems.Unit;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.UI.GridLayoutGroup;
 
@@ -48,22 +49,74 @@ namespace CHAL.Systems.Skill
             var tags = Data.Tags ?? new List<SkillTag>();
             var mods = ownedBy.ActiveModifiers;
 
-            Damage = mods.Apply(ModifierTarget.Damage, Data.BaseDamage, tags);
-            CastTime = mods.Apply(ModifierTarget.CastTime, Data.CastTime, tags);
-            Cooldown = mods.Apply(ModifierTarget.Cooldown, Data.Cooldown, tags);
-            Range = mods.Apply(ModifierTarget.Range,BalanceManager.Instance.GetRangeValue(Data.Range), tags);
-            Duration = mods.Apply(ModifierTarget.Duration, Data.Duration, tags);
-            ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, Data.ProjectileSpeed, tags);
-            ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, Data.ProjectileCount, tags);
-            AoERadius = mods.Apply(ModifierTarget.AoERadius, Data.AoERadius, tags);
+            // 1) Basis-Werte aus den Skill-Daten lesen
+            var baseDamage = Data.BaseDamage;
+
+            // 2) Stat-Scaling anhand StatAffinity + Hero-Attribute anwenden
+            var scaledBaseDamage = ApplyStatScaling(baseDamage);
+
+            // 3) Alle Modifier anwenden und finale Runtime-Werte setzen
+            ApplyFinalModifiers(mods, tags, scaledBaseDamage);
 
             DebugManager.Log($"Initialized Skill {Data.SkillId} with DMG:{Damage} CastTime:{CastTime} cd:{Cooldown} range:{Range} dur:{Duration} ", DebugManager.EDebugLevel.Debug,"Skill");
         }
 
-/// <summary>
-/// Checks if the cooldown period has ended.
-/// </summary>
-/// <returns>True if cooldownRemaining is less than or equal to zero; otherwise, false.</returns>
+
+        private float ComputeStatScalingMultiplier(float mainStat, float damageScalingFactor)
+        {
+            const float baselineStat = 20f;      // Design-Baseline, kann später aus Config kommen.
+            const float perPointFactor = 0.05f;  // 5% pro Punkt über/unter baseline bei factor = 1.0
+
+            float delta = mainStat - baselineStat;
+            float multiplier = 1.0f + (delta * perPointFactor * damageScalingFactor);
+
+            if (multiplier < 0.1f)
+                multiplier = 0.1f;
+
+            return multiplier;
+        }
+
+        private float ApplyStatScaling(float baseDamage)
+        {
+            // Wenn kein Owner vorhanden ist (sollte praktisch nicht vorkommen),
+            // fällt der Skill auf reinen BaseDamage zurück.
+            if (ownedBy == null)
+                return baseDamage;
+
+            if (ownedBy is not IAttributeHolder attributeProvider)
+                return baseDamage;
+
+            // Primärattribut aus der SkillData
+            var mainStatType = Data.AttributeAffinity;
+
+            // Aktuellen Attributwert des Helden holen
+            var mainStatValue = attributeProvider.GetAttributeValue(mainStatType);
+
+            // Wie stark reagiert der Skill auf dieses Attribut?
+            var scalingFactor = Data.damageAttributeScalingFactor;
+
+            var scaledBaseDamage = baseDamage * ComputeStatScalingMultiplier(mainStatValue,scalingFactor);
+            //var scaledBaseDamage = baseDamage * (1f + mainStatValue * scalingFactor);
+
+            return scaledBaseDamage;
+        }
+
+        private void ApplyFinalModifiers(ModifierStack mods, List<SkillTag> tags, float scaledBaseDamage)
+        {
+            Damage = mods.Apply(ModifierTarget.Damage, scaledBaseDamage, tags);
+            CastTime = mods.Apply(ModifierTarget.CastTime, Data.CastTime, tags);
+            Cooldown = mods.Apply(ModifierTarget.Cooldown, Data.Cooldown, tags);
+            Range = mods.Apply(ModifierTarget.Range, BalanceManager.Instance.GetRangeValue(Data.Range), tags);
+            Duration = mods.Apply(ModifierTarget.Duration, Data.Duration, tags);
+            ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, Data.ProjectileSpeed, tags);
+            ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, Data.ProjectileCount, tags);
+            AoERadius = mods.Apply(ModifierTarget.AoERadius, Data.AoERadius, tags);
+        }
+
+        /// <summary>
+        /// Checks if the cooldown period has ended.
+        /// </summary>
+        /// <returns>True if cooldownRemaining is less than or equal to zero; otherwise, false.</returns>
         public bool IsReady() //â†’ prÃ¼ft, ob cooldownRemaining <= 0.
         {
             if(cooldownRemaining <= 0)

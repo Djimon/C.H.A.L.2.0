@@ -1,4 +1,4 @@
-﻿using CHAL.Core;
+using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Hero;
@@ -90,16 +90,35 @@ namespace CHAL.Systems.Skill
             ExecuteSkill(inst, source, null, target, null);
         }
 
-        private static void ValidateFastReturnRules(EffectReceiver source, EffectReceiver target)
+        private static bool ValidateFastReturnRules(EffectReceiver source, EffectReceiver target)
         {
-            if (target == null) return;
-            if (ReferenceEquals(source, target)) return;
-            if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == target.Team) return;
+            if (target == null)
+            {
+                DebugManager.Log("[SkillExecutor] FastReturn: target is null", DebugManager.EDebugLevel.Test, "Combat", LogType.Warning);
+                return false;
+            }
+            // Source trifft sich selbst -> in der Regel nicht gewünscht
+            if (ReferenceEquals(source, target))
+            {
+                DebugManager.Log("[SkillExecutor] FastReturn: source == target (self-hit blocked)", DebugManager.EDebugLevel.Test, "Combat");
+                return false;
+            }
+
+            // Friendly Fire deaktiviert und gleicher Team-Tag -> blocken
+            if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == target.Team)
+            {
+                DebugManager.Log("[SkillExecutor] FastReturn: friendly fire blocked", DebugManager.EDebugLevel.Test, "Combat");
+                return false;
+            }
+
+            // Alles okay, Skill darf weiterlaufen
+            return true;
         }
 
         private static void ApplyMelee(SkillInstance inst, EffectReceiver source, EffectReceiver target)
         {
-            ValidateFastReturnRules(source, target);
+            if (!ValidateFastReturnRules(source, target))
+                return;
 
             DebugManager.Log($"[SkillExecutor] {source} hits {target} with {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
             ApplyOnHit(inst, source, target);
@@ -107,7 +126,8 @@ namespace CHAL.Systems.Skill
 
         private static void ApplySpell(SkillInstance inst, EffectReceiver source, EffectReceiver target, Transform targetTr)
         {
-            ValidateFastReturnRules(source, target);
+            if (!ValidateFastReturnRules(source, target))
+                return;
 
             DebugManager.Log($"[SkillExecutor] {source} casts spell {inst.Data.DisplayName} on {target}", DebugManager.EDebugLevel.Dev, "Skill");
             ApplyOnHit(inst, source, target);
@@ -116,7 +136,7 @@ namespace CHAL.Systems.Skill
         private static void ApplySummon(SkillInstance inst, EffectReceiver source)
         {
             DebugManager.Log($"[SkillExecutor] {source} summons unit via {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
-            // spÃ¤ter: Summon-Controller implementieren
+            //TODO:: Summon-mechanik implementieren evlt über SuumonController?
         }
 
 
@@ -166,50 +186,21 @@ namespace CHAL.Systems.Skill
         {
             if (skill == null || skill.Data == null || target == null)
             {
-                DebugManager.Log($"Skill or target is null", DebugManager.EDebugLevel.Test, "Combat", LogType.Warning);
+                DebugManager.Log($"[SkillExecutor] ApplyOnHit aborted: skill or target is null", DebugManager.EDebugLevel.Test, "Combat", LogType.Warning);
                 return;
             }
 
+            // WICHTIG:
+            // - Kein direkter Schaden mehr in ApplyOnHit.
+            // - Schaden wird ausschließlich über OnHitImpactEffects ausgeführt,
+            //   typischerweise über einen DamageImpact.
+            //
+            // Diese Methode übernimmt nur noch Routing/Triggering.
+
             DoOnHitImpactEffects(skill, source, target);
 
-            float baseDmg = Mathf.Max(0f, skill.Data.BaseDamage);
-            var DmgEntries = skill.Data.DamageTypes;
-
-            if (DmgEntries == null || DmgEntries.Count == 0)
-                FallbackDamage(skill, target, baseDmg, DmgEntries);
-            
-            ApplyCompleteDamage(skill, target, baseDmg, DmgEntries);
-
         }
 
-        private static void ApplyCompleteDamage(SkillInstance skill, EffectReceiver target, float baseDmg, System.Collections.Generic.List<DamageEntry> DmgEntries)
-        {
-            for (int i = 0; i < DmgEntries.Count; i++)
-            {
-                var e = DmgEntries[i];
-
-                // negativ = ignorieren
-                float m = Mathf.Max(0f, e.DmgMultiplier);
-                if (m <= 0f) continue;
-
-                float dmg = baseDmg * m;
-                var type = e.DmgType;
-
-                target.TakeDamage(dmg, type);
-                DebugManager.Log($"OnHit | {skill.Data.DisplayName} â†’ {target}: {dmg:F1} {type}", DebugManager.EDebugLevel.Test, "Combat");
-            }
-        }
-
-        private static void FallbackDamage(SkillInstance skill, EffectReceiver target, float baseDmg, System.Collections.Generic.List<DamageEntry> DmgEntries)
-        {
-            // Fallback: voller BaseDamage als Physical
-            target.TakeDamage(baseDmg, DamageType.Physical);
-            DebugManager.Log(
-                $"OnHit | {skill.Data.DisplayName} â†’ {target} : {baseDmg:F1} Physical",
-                DebugManager.EDebugLevel.Test, "Combat"
-            );
-            return;  
-        }
 
         private static void DoOnHitImpactEffects(SkillInstance skill, EffectReceiver source, EffectReceiver target)
         {

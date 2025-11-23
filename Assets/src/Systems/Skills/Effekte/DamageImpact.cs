@@ -22,15 +22,67 @@ namespace CHAL.Systems.Skill
 /// <param name="target">The effect receiver that receives the damage.</param>
         public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
         {
-           
-            foreach (var damage in Damages)
+
+            if (skill == null || skill.Data == null || target == null)
+                return;
+
+            // 1) Basis-Schaden: bereits berechneter SkillInstance-Damage
+            // (inkl. StatScaling + Modifiers aus SkillInstance.Recalculate()).
+            float baseDamage = skill.Damage;
+            if (baseDamage <= 0f)
+                return;
+
+            // 2) Damage-Quellen bestimmen:
+            //    - Primär: lokal konfigurierte Damages-Liste auf diesem Impact.
+            //    - Falls leer/null: fallback auf SkillData.DamageTypes.
+            List<DamageEntry> damageEntries = null;
+
+            if (Damages != null && Damages.Count > 0)
             {
-                var dmgType = damage.DmgType ;
-                var finalDamage = skill.Damage * damage.DmgMultiplier;
-                DebugManager.Log($"[Effect] {source} deals {finalDamage} {dmgType} on {target}", DebugManager.EDebugLevel.Test, "Skill");
+                damageEntries = Damages;
+            }
+            else if (skill.Data.DamageTypes != null && skill.Data.DamageTypes.Count > 0)
+            {
+                damageEntries = skill.Data.DamageTypes;
+            }
+
+            // 3) Wenn immer noch nichts da ist → Fallback: voller Damage als Physical.
+            if (damageEntries == null || damageEntries.Count == 0)
+            {
+                var fallbackType = DamageType.Physical; // TODO: ggf. Default-Typ konfigurieren
+                DebugManager.Log(
+                    $"[DamageImpact] Fallback damage: {source} deals {baseDamage:F1} {fallbackType} to {target} (no DamageEntries configured).",
+                    DebugManager.EDebugLevel.Test,
+                    "Skill");
+
+                target.TakeDamage(baseDamage, fallbackType);
+                return;
+            }
+
+            // 4) Konfigurierte DamageEntries anwenden
+            for (int i = 0; i < damageEntries.Count; i++)
+            {
+                DamageEntry entry = damageEntries[i];
+
+                var dmgType = entry.DmgType;
+
+                var multiplier = entry.DmgMultiplier;
+
+                //TODO: define negative multilpier: inverted Dmg, recoup? heal?
+                //Negative Multiplier ersmtal ignorieren
+                if (multiplier <= 0f)
+                    continue;
+
+                var finalDamage = baseDamage * multiplier;
+
+                DebugManager.Log(
+                    $"[DamageImpact] {source} deals {finalDamage:F1} {dmgType} to {target}",
+                    DebugManager.EDebugLevel.Test,
+                    "Skill");
+
                 target.TakeDamage(finalDamage, dmgType);
             }
-   
+
         }
     }
 }

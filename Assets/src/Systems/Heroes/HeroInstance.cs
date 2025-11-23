@@ -13,7 +13,7 @@ namespace CHAL.Systems.Hero
 /// <summary>
 /// Represents an instance of a hero with attributes and skills.
 /// </summary>
-    public class HeroInstance : EffectReceiver
+    public class HeroInstance : EffectReceiver, IAttributeHolder
     {
         public HeroDef heroDef;
         public ArchetypeDef Archetype => heroDef.Archetype;
@@ -172,6 +172,18 @@ namespace CHAL.Systems.Hero
                 attributes[next] += 1;
                 _accumulator[next] -= 1.0;
             }
+        }
+
+        /// <summary>
+        /// Returns the current value of the requested hero attribute
+        /// </summary>
+        /// <param name="attribute">The hero attribute to query (STR, DEX, CON, INT, WIL)</param>
+        /// <returns></returns>
+        public float GetAttributeValue(HeroAttribs attribute)
+        {
+            // Single source of truth for reading hero attributes.
+            // Do not bypass this from gameplay systems.
+            return attributes[attribute];
         }
 
         /// <summary>

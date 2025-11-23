@@ -14,6 +14,7 @@ namespace CHAL.Data
         [Header("Identity")]
         public string SkillId;
         public string DisplayName;
+        public HeroAttribs AttributeAffinity = HeroAttribs.STR;
         public float BaseDamage = 1;
         public List<DamageEntry> DamageTypes;
         [Tooltip("Time in seconds to cast this skill. 0 = instant.")]
@@ -35,6 +36,7 @@ namespace CHAL.Data
         public float ProjectileSpeed = 0f;
         public int ProjectileCount = 0;
         public float AoERadius = 0f;
+        public float damageAttributeScalingFactor = 1.0f;
 
         [Header("Hooks / Effects")]
         [Tooltip("Effects applied immediately when the skill is cast.")]

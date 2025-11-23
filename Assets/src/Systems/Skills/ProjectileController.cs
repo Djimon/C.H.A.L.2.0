@@ -64,8 +64,8 @@ namespace CHAL.Systems.Skill
 
         private void OnTriggerEnter(Collider other)
         {
-            EffectReceiver targetReceiver;
-            ValidateFastReturns(other,out targetReceiver);
+            if (!ValidateFastReturns(other, out var targetReceiver))
+                return;
 
             //TODO: nur markierte targets treffen?
             // vergleich target mit targetReceiver
@@ -76,30 +76,33 @@ namespace CHAL.Systems.Skill
             Destroy(gameObject);
         }
 
-        private void ValidateFastReturns(Collider other, out EffectReceiver targRE)
+        private bool ValidateFastReturns(Collider other, out EffectReceiver targRE)
         {
             targRE = null;
             if (!other.CompareTag("Unit"))
-                return;
+                return false;
             if (other.gameObject.layer == LayerMask.NameToLayer("Projectile"))
-                return;
+                return false;
 
             // Alle Units haben einen Controller mit EffectReceiver
             var unitCtrl = other.GetComponent<IUnitController>() ?? other.GetComponentInParent<IUnitController>();
             if (unitCtrl == null)
-                return;
+                return false;
 
-            targRE = unitCtrl.GetEffectReceiver();
+            var receiver = unitCtrl.GetEffectReceiver();
             if (targRE == null)
-                return;
+                return false;
 
             // Self-hit niemals erlaubt
             if (ReferenceEquals(source, targRE))
-                return;
+                return false;
 
             // Friendly-Fire global
             if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == targRE.Team)
-                return;
+                return false;
+
+            targRE = receiver;
+            return true;
         }
     }
 }
