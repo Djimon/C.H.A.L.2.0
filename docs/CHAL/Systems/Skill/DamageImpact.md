@@ -15,10 +15,14 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/Effekte/DamageI
       - `void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)`: Applies the skill effect to the target, dealing damage based on the skill and damage multipliers.
 
 3) Key Behavior & Side Effects
-- The `Apply` method iterates through each damage entry, calculates the final damage, logs the damage dealt, and applies the damage to the target.
+- The `Apply` method checks for null values in `skill`, `skill.Data`, and `target`, returning early if any are null.
+- If no damage entries are configured, it falls back to applying full damage as Physical damage.
+- The method logs the damage dealt to the target for each damage entry.
 
 4) Constraints & Failure Modes
-- No explicit guards or null handling noted in the provided code.
+- The method does not apply damage if `baseDamage` is less than or equal to 0.
+- If no valid damage entries are found, it defaults to Physical damage.
+- Negative multipliers are ignored, and no damage is applied in such cases.
 
 5) Example
 ```csharp
