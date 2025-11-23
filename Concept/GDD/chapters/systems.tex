@@ -6,9 +6,9 @@
 This section provides a high-level overview of all core game systems and how they connect to the core loop. 
 Each system is defined by its main responsibility, its primary inputs and outputs, and its relation to other systems.
 
-\begin{table}[h]
-	\centering
-	\begin{tabular}{p{3cm}p{4cm}p{4cm}p{4.5cm}}
+%\begin{table}[h]
+%	\centering
+	\begin{tabular}{p{1.5cm}p{4.5cm}p{4.5cm}p{5cm}}
 		\textbf{System} & \textbf{Inputs} & \textbf{Outputs} & \textbf{Core Responsibility} \\
 		\hline
 		Research System 
@@ -51,9 +51,9 @@ Each system is defined by its main responsibility, its primary inputs and output
 		& Cosmetic rewards, account-wide bonuses % ASSUMPTION (60\%): primär kosmetisch; keine P2W-Effekte
 		& Parallel long-term track that rewards regular play with cosmetics and light meta rewards. \\
 	\end{tabular}
-	\caption{Core Systems Overview}
-	\label{tab:core-systems-overview}
-\end{table}
+%	\caption{Core Systems Overview}
+%	\label{tab:core-systems-overview}
+%\end{table}
 
 % RISK: Many systems are tightly coupled (Research, Maps, Loot, Crafting, Skills, Meta-Progression),
 %       making iterative balancing and slicing for MVP more complex.
@@ -211,9 +211,9 @@ Each tree focuses on a specific axis of progression and unlocks both systems and
 The Crafting Tree defines how quickly and in which order the player gains access to more advanced item manipulation. 
 It starts with basic gear usage and gradually unlocks more powerful and more deterministic crafting tools.
 
-\begin{table}[h]
-	\centering
-	\begin{tabular}{p{3.2cm}p{6cm}p{6cm}}
+%\begin{table}[h]
+%	\centering
+	\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
 		\textbf{Node} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
 		\hline
 		Basic Gear &
@@ -252,9 +252,9 @@ It starts with basic gear usage and gradually unlocks more powerful and more det
 		Extreme, high-risk/high-reward tempering. &
 		Unlocks over-tempering mechanics that allow pushing items beyond normal limits at significant cost or risk. \\
 	\end{tabular}
-	\caption{Crafting Research Tree (MVP nodes)}
-	\label{tab:research-crafting-tree}
-\end{table}
+%	\caption{Crafting Research Tree (MVP nodes)}
+%	\label{tab:research-crafting-tree}
+%\end{table}
 
 % RISK: Very deep crafting tree makes crafting central to all progression; needs to be balanced against drops and hero power.
 % TODO: Decide later which nodes are mandatory for basic functioning vs. pure endgame luxury.
@@ -263,9 +263,9 @@ It starts with basic gear usage and gradually unlocks more powerful and more det
 
 The World Tree focuses on Maps and enemy ecosystem variants. It controls how dynamic, dangerous and diverse the world becomes.
 
-\begin{table}[h]
-	\centering
-	\begin{tabular}{p{3.2cm}p{6cm}p{6cm}}
+%\begin{table}[h]
+%	\centering
+	\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
 		\textbf{Node} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
 		\hline
 		Empower Maps &
@@ -284,9 +284,9 @@ The World Tree focuses on Maps and enemy ecosystem variants. It controls how dyn
 		Introduces holy/fanatic enemy types. &
 		Unlocks holy-themed enemies and factions with their own mechanics and counters, further diversifying encounters. \\
 	\end{tabular}
-	\caption{World Research Tree (MVP nodes)}
-	\label{tab:research-world-tree}
-\end{table}
+%	\caption{World Research Tree (MVP nodes)}
+%	\label{tab:research-world-tree}
+%\end{table}
 
 % ASSUMPTION (70\%): Undead/Holy nodes primarily add new enemy families and tags, not global stat multipliers.
 % RISK: Gating entire enemy families behind research can make early game feel monotone if progression is too slow.
@@ -296,9 +296,9 @@ The World Tree focuses on Maps and enemy ecosystem variants. It controls how dyn
 The Heroes Tree unlocks new Heroes and deepens their progression layers. 
 It is tightly coupled to the Skill System and the Crown System and must be paced carefully to avoid overwhelming players too early.
 
-\begin{table}[h]
-	\centering
-	\begin{tabular}{p{3.2cm}p{6cm}p{6cm}}
+%\begin{table}[h]
+%	\centering
+	\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
 		\textbf{Node} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
 		\hline
 		Hero Packs (Story / Theme) &
@@ -313,9 +313,9 @@ It is tightly coupled to the Skill System and the Crown System and must be paced
 		Prepares Heroes for the endgame Crown system. &
 		Unlocks Crown sockets on Heroes or their skill trees, allowing equipping powerful endgame Crown boosts once available. \\
 	\end{tabular}
-	\caption{Heroes Research Tree (MVP nodes/concepts)}
-	\label{tab:research-heroes-tree}
-\end{table}
+%	\caption{Heroes Research Tree (MVP nodes/concepts)}
+%	\label{tab:research-heroes-tree}
+%\end{table}
 
 % ASSUMPTION (60\%): Heroes Tree alternates between unlocking new hero packs and deepening existing heroes (skill tiers, crowns).
 % RISK: Too early access to deep skill tiers and crowns can overload casual players; pacing via Research is critical.
