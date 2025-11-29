@@ -1,0 +1,391 @@
+\section{Combat}
+
+\subsection{Dmg-Formular}
+\label{subsec:dmg-formula}
+
+\subsubsection{Top-Level Formula}
+
+The total damage of a single hit is defined as:
+
+\[
+\text{FinalDMG} = (\text{BaseEffektiveDMG} + \text{IncreasedDMG}) \times \text{MoreDMG}
+\]
+
+with:
+
+\begin{itemize}
+	\item \textbf{BaseEffektiveDMG} – base damage after all additive composition and global stat scaling.
+	\item \textbf{IncreasedDMG} – all applicable \emph{increased} damage modifiers (additive layer).
+	\item \textbf{MoreDMG} – all applicable \emph{more} damage modifiers (multiplicative layer).
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsubsection{Main Components}
+
+\paragraph{BaseEffektiveDMG}
+
+\[
+\text{BaseEffektiveDMG} = \text{BaseDMG} \times \text{DMGEffektModifier}
+\]
+
+\begin{itemize}
+	\item \textbf{BaseDMG} is the total raw damage of the hit after base values, added damage, conversion and gain have been resolved (per damage type, then summed).
+	\item \textbf{DMGEffektModifier} is a global stat-based multiplier derived from the attacker’s attributes.
+\end{itemize}
+
+\paragraph{IncreasedDMG}
+
+Conceptually:
+
+\[
+\text{IncreasedDMG} = \text{BaseEffektiveDMG} \times \text{dmgIncreaseBuckets}
+\]
+
+Internally, this is calculated per damage type and then aggregated:
+
+\[
+\text{IncreasedDMG} = \sum_T \left(\text{BaseEffektiveDMG}_T \times \text{incSum}_T\right)
+\]
+
+where:
+
+\begin{itemize}
+	\item $T$ iterates over all damage types.
+	\item $\text{incSum}_T$ is the sum of all applicable \emph{increased} modifiers for type $T$.
+	\item \texttt{dmgIncreaseBuckets} is the effective combined increase when viewed on aggregate level.
+\end{itemize}
+
+\paragraph{MoreDMG}
+
+\[
+\text{MoreDMG} = \prod_i \text{moreFactor}_i
+\]
+
+All \emph{more} modifiers are collected as multiplicative factors and multiplied together. Many of these are conditional (e.g. ``more damage while standing'', ``more damage vs frozen enemies'').
+
+% ---------------------------------------------------------------------------
+\subsubsection{BaseDMG Breakdown}
+
+The total base damage of a hit is defined as:
+
+\[
+\text{BaseDMG} = \text{SkillBaseDMG} + \text{AddedDMG} + \text{ConvertedDMG} + \text{GainedDMG}
+\]
+
+Internally, all damage is tracked per damage type $T$ (Physical, Fire, Cold, Lightning, Chaos, \dots). For each type:
+
+\begin{itemize}
+	\item \textbf{SkillBaseDMG} – base damage values of the skill per type.
+	\item \textbf{AddedDMG} – flat added damage per type (e.g. ``+20 Cold Damage'').
+	\item \textbf{ConvertedDMG} – damage that is moved from one type to another (no duplication).
+	\item \textbf{GainedDMG} – damage that is gained as \emph{extra} from another type (duplication, ``gain X\% of A as B'').
+\end{itemize}
+
+Aggregated:
+
+\[
+\text{BaseDMG} = \sum_T \text{BaseDMG}_T
+\]
+
+% ---------------------------------------------------------------------------
+\subsubsection{DMGEffektModifier and StatModifier}
+
+\[
+\text{DMGEffektModifier} = \text{StatModifier}
+\]
+
+\[
+\text{StatModifier} = f(\text{BaseAttribute} + \text{GearModifier} + \text{OtherModifier})
+\]
+
+\begin{itemize}
+	\item \textbf{BaseAttribute} – base attribute values from level progression.
+	\item \textbf{GearModifier} – attribute bonuses from equipment.
+	\item \textbf{OtherModifier} – other attribute sources (buffs, passives, etc.).
+	\item $f(\cdot)$ – a defined scaling function that maps the final attribute value to a global damage multiplier
+	(e.g. INT = 100 $\Rightarrow$ \texttt{StatModifier} = 2.5 = 250\%).
+\end{itemize}
+
+This modifier is \emph{global} and applies to the entire damage of the hit, independent of damage type.
+
+% ---------------------------------------------------------------------------
+\subsubsection{dmgIncreaseBuckets (Increased Layer)}
+
+\texttt{dmgIncreaseBuckets} represents the combined effect of all \emph{increased} damage modifiers. Internally, this is resolved per damage type $T$:
+
+\[
+\text{incSum}_T = \sum_j \text{increasedModifier}_{T,j}
+\]
+
+where the sum includes:
+
+\begin{itemize}
+	\item Global increased modifiers (e.g. ``increased Damage'').
+	\item Type-based modifiers (e.g. ``increased Physical Damage'', ``increased Cold Damage'', ``increased Elemental Damage'').
+	\item Tag-based modifiers (e.g. ``increased Spell Damage'', ``increased Attack Damage'',
+	``increased Projectile Damage'', ``increased AoE Damage''), if the skill has the corresponding tag.
+	\item Conditional increased modifiers (e.g. ``increased Damage while on Full Life'', ``increased Damage vs Frozen''),
+	if their condition is satisfied.
+\end{itemize}
+
+Application per type:
+
+\[
+\text{FinalIncLayer}_T = \text{BaseEffektiveDMG}_T \times (1 + \text{incSum}_T)
+\]
+
+Aggregated on hit level:
+
+\[
+\text{IncreasedDMG} = \sum_T \left(\text{BaseEffektiveDMG}_T \times \text{incSum}_T\right)
+\]
+
+and
+
+\[
+\text{preMoreTotal} = \text{BaseEffektiveDMG} + \text{IncreasedDMG}
+= \sum_T \text{FinalIncLayer}_T
+\]
+
+% ---------------------------------------------------------------------------
+\subsubsection{MoreDMG (Multiplicative Layer)}
+
+All \emph{more} modifiers form their own multiplicative layer:
+
+\[
+\text{MoreDMG} = \prod_i \text{moreFactor}_i
+\]
+
+Examples:
+
+\begin{itemize}
+	\item ``20\% more Damage while standing'' $\rightarrow$
+	factor 1.2 if the attacker is standing, otherwise 1.0.
+	\item ``50\% more Damage'' $\rightarrow$ factor 1.5.
+	\item ``X\% more Damage vs Frozen Enemies'' $\rightarrow$
+	factor applied only if the target is frozen.
+\end{itemize}
+
+The final player damage (before defenses) is:
+
+\[
+\text{FinalDMG\_beforeDef} = \text{preMoreTotal} \times \text{MoreDMG}
+\]
+
+which matches the top-level formula:
+
+\[
+\text{FinalDMG} = (\text{BaseEffektiveDMG} + \text{IncreasedDMG}) \times \text{MoreDMG}
+\]
+
+% ---------------------------------------------------------------------------
+\subsubsection{Step-by-Step Pipeline}
+
+The following describes the detailed pipeline per hit.
+
+\paragraph{Step 0: Build HitContext}
+
+Before any numerical damage computation, a \textbf{HitContext} is constructed and frozen for this hit. It contains:
+
+\begin{itemize}
+	\item The skill and its tags (e.g. \texttt{attack}, \texttt{spell}, \texttt{projectile},
+	\texttt{cold}, \texttt{elemental}, \texttt{aoe}, \dots).
+	\item Attacker attributes (STR, DEX, CON, INT, WIL).
+	\item Effects from gear, passives, buffs and debuffs.
+	\item State flags (standing / moving, on full life, target frozen, etc.).
+	\item Optionally critical hit information (depending on system design).
+\end{itemize}
+
+All conditional modifiers read \emph{only} from this HitContext, never from intermediate values of the damage calculation.
+
+% ---------------------------------------------------------------------------
+\paragraph{Step 1: Build BaseDMG per Damage Type}
+
+\begin{enumerate}
+	\item \textbf{Initialize SkillBaseDMG}
+	
+	\[
+	base_T = \text{SkillBaseDMG}_T
+	\]
+	
+	\item \textbf{Apply AddedDMG}
+	
+	\[
+	base_T \mathrel{+}= \sum \text{AddedDMG}_T
+	\]
+	
+	\item \textbf{Apply Conversions (with clamping as failsafe)}
+	
+	Design rule: normally, only a single conversion source per damage type is used in content.
+	The engine supports multiple conversions per source type $S$ and normalizes them to a maximum of 100\%.
+	
+	For each source type $S$:
+	
+	\begin{enumerate}
+		\item Store original value: \quad $\text{sourceBase} = base_S$
+		\item Collect all conversion percentages $c_i$ for $S \rightarrow T_i$
+		\item Compute
+		\[
+		\text{totalRaw} = \sum_i c_i
+		\]
+		\item If $\text{totalRaw} \leq 1.0$:
+		\[
+		\text{effConv}_i = c_i
+		\]
+		\item If $\text{totalRaw} > 1.0$ (failsafe):
+		\[
+		\text{scale} = \frac{1.0}{\text{totalRaw}}, \quad
+		\text{effConv}_i = c_i \times \text{scale}
+		\]
+		\item Apply conversion:
+		\[
+		base_S = \text{sourceBase} \times (1 - \sum_i \text{effConv}_i)
+		\]
+		\[
+		base_{T_i} \mathrel{+}= \text{sourceBase} \times \text{effConv}_i
+		\]
+	\end{enumerate}
+	
+	Converted damage is not converted again in V1 (no chaining like Physical $\rightarrow$ Cold $\rightarrow$ Lightning).
+	
+	\item \textbf{Apply GainedDMG (``Gain as Extra'')}
+	
+	After all conversions, gains are applied based on the already converted values:
+	
+	For each gain effect ``Gain $g$ of A as B'':
+	
+	\[
+	\text{extra}_B \mathrel{+}= base_A \times g
+	\]
+	
+	Then:
+	
+	\[
+	base_T \mathrel{+}= \text{extra}_T
+	\]
+	
+	Gains duplicate damage and may freely stack (no normalization).
+\end{enumerate}
+
+After Step~1:
+
+\[
+\text{BaseDMG}_T = base_T
+\quad\text{and}\quad
+\text{BaseDMG} = \sum_T \text{BaseDMG}_T
+\]
+
+% ---------------------------------------------------------------------------
+\paragraph{Step 2: Apply StatModifier (DMGEffektModifier)}
+
+Compute the global stat-based multiplier:
+
+\[
+\text{StatModifier} = f(\text{BaseAttribute} + \text{GearModifier} + \text{OtherModifier})
+\]
+
+Set:
+
+\[
+\text{DMGEffektModifier} = \text{StatModifier}
+\]
+
+Apply per type:
+
+\[
+\text{BaseEffektiveDMG}_T = \text{BaseDMG}_T \times \text{DMGEffektModifier}
+\]
+
+Aggregate:
+
+\[
+\text{BaseEffektiveDMG} = \sum_T \text{BaseEffektiveDMG}_T
+\]
+
+% ---------------------------------------------------------------------------
+\paragraph{Step 3: Compute IncreasedDMG (dmgIncreaseBuckets)}
+
+For each damage type $T$:
+
+\begin{enumerate}
+	\item Collect all applicable \emph{increased} modifiers from the HitContext
+	(global, type-based, tag-based, conditional).
+	\item Sum them:
+	\[
+	\text{incSum}_T = \sum_j \text{increasedModifier}_{T,j}
+	\]
+	\item Apply:
+	\[
+	\text{FinalIncLayer}_T = \text{BaseEffektiveDMG}_T \times (1 + \text{incSum}_T)
+	\]
+\end{enumerate}
+
+On aggregate:
+
+\[
+\text{IncreasedDMG} = \sum_T \left(\text{BaseEffektiveDMG}_T \times \text{incSum}_T\right)
+\]
+
+\[
+\text{preMoreTotal} = \text{BaseEffektiveDMG} + \text{IncreasedDMG}
+= \sum_T \text{FinalIncLayer}_T
+\]
+
+% ---------------------------------------------------------------------------
+\paragraph{Step 4: Compute MoreDMG}
+
+Initialize:
+
+\[
+\text{MoreDMG} = 1.0
+\]
+
+For each applicable \emph{more} modifier in the HitContext:
+
+\[
+\text{MoreDMG} \mathrel{*}= \text{moreFactor}_i
+\]
+
+Finally:
+
+\[
+\text{FinalDMG\_beforeDef} = \text{preMoreTotal} \times \text{MoreDMG}
+\]
+
+which matches the top-level definition:
+
+\[
+\text{FinalDMG} = (\text{BaseEffektiveDMG} + \text{IncreasedDMG}) \times \text{MoreDMG}
+\]
+
+% ---------------------------------------------------------------------------
+\paragraph{Step 5: (Optional) Enemy Defenses}
+
+Enemy defenses (armor, resistances, block, dodge, etc.) are applied after the player-side
+damage pipeline and can be specified separately. Typically:
+
+\begin{itemize}
+	\item Resistances or mitigation per damage type are applied to \texttt{FinalDMG\_beforeDef}.
+	\item Additional mechanics (block, dodge, avoidance) are resolved either in the hit resolution
+	before this pipeline or as a final reduction step.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\paragraph{Order in Code \& Role of HitContext}
+
+In code, the damage pipeline should follow the exact order below:
+
+\begin{enumerate}
+	\item Build and freeze the \textbf{HitContext} (skill, tags, attributes, buffs, states, etc.).
+	\item Resolve \textbf{BaseDMG} per damage type:
+	base values, added damage, conversions (with clamping), gains.
+	\item Apply \textbf{StatModifier} to obtain \textbf{BaseEffektiveDMG} per type.
+	\item Compute \textbf{IncreasedDMG} per type and aggregate to \texttt{preMoreTotal}.
+	\item Collect and apply all \textbf{MoreDMG} factors to obtain \texttt{FinalDMG\_beforeDef}.
+	\item Apply enemy defenses (optional).
+\end{enumerate}
+
+The HitContext is the single source of truth for all conditions. No modifier may depend
+on intermediate numerical results of this pipeline. This keeps the order of operations
+inside each layer irrelevant (additive increased, multiplicative more) and makes the
+damage calculation deterministic and debuggable.
