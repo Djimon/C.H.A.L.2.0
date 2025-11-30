@@ -1,7 +1,314 @@
 \section{Combat}
 
-\subsection{Dmg-Formular}
-\label{subsec:dmg-formula}
+The combat proceeds automatically. \\
+Both on the player side and on the enemy side, AI priorities are automatically assigned and the characters follow their strategy (attack, evade, swarm, snipe, etc.). Attacks are executed automatically depending on cooldown and other resources. There is a separate OnHit mechanic that triggers damage and other effects (debuffs, etc.).
+
+\subsection{Combat Damage Pipeline Overview}
+\label{subsec:combat-pipeline-overview}
+
+\subsubsection{High-Level Flow}
+
+The combat damage system is structured into three clearly separated phases:
+
+\begin{enumerate}
+	\item \textbf{Phase 1: Hit \& Crit Pipeline} (interaction layer) \\
+	Determines whether an attack hits a specific target and whether the hit is critical.
+	This is the only phase that simultaneously reads data from both attacker and defender.
+	\item \textbf{Phase 2: Offense Pipeline} (attacker-side damage computation) \\
+	The attacker computes a purely theoretical damage output based on its own stats,
+	the skill used and the hit/crit result. The defender's stats are not involved.
+	\item \textbf{Phase 3: Defense Pipeline} (defender-side mitigation \& HP loss) \\
+	The defender receives the theoretical damage packet and applies its own defenses
+	(armor, resistances, barrier, HP) to determine effective damage taken.
+\end{enumerate}
+
+Conceptually, a single hit follows this sequence:
+
+\[
+\text{HitResult}
+\;\xrightarrow{\text{Attacker}}\;
+\text{DamagePacket}
+\;\xrightarrow{\text{Defender}}\;
+\text{NetDamageToHP}
+\]
+
+% ---------------------------------------------------------------------------
+\subsubsection{Phase Responsibilities}
+
+Each phase has a strict ownership and responsibility boundary:
+
+\paragraph{Phase 1 -- Hit \& Crit Pipeline}
+
+\begin{itemize}
+	\item \textbf{Owner:} Neutral combat resolver (uses both entities for a brief check).
+	\item \textbf{Reads from attacker:}
+	Accuracy, base crit chance, crit chance modifiers, crit multiplier, skill metadata.
+	\item \textbf{Reads from defender:}
+	Evasion, any special rules affecting hit or crit (e.g.\ ``cannot be crit'').
+	\item \textbf{Produces:} A lightweight \texttt{HitResult}:
+	\begin{itemize}
+		\item \texttt{isHit} (true/false),
+		\item \texttt{isCrit} (true/false),
+		\item basic classification flags (melee/ranged/spell/projectile/aoe),
+		\item references: \texttt{attackerId}, \texttt{targetId}, \texttt{skillId}.
+	\end{itemize}
+	\item \textbf{If isHit = false:} The pipeline ends for this target (no damage).
+\end{itemize}
+
+\paragraph{Phase 2 -- Offense Pipeline (Attacker-Side)}
+
+\begin{itemize}
+	\item \textbf{Owner:} Attacker / skill system.
+	\item \textbf{Inputs:}
+	\begin{itemize}
+		\item \texttt{HitResult} (primarily \texttt{isHit}, \texttt{isCrit}, skill flags),
+		\item attacker attributes and offensive stats,
+		\item skill data and tags,
+		\item attacker-side buffs/debuffs and any relevant target state flags
+		(e.g.\ ``target is frozen''), but \emph{no} defender defense stats.
+	\end{itemize}
+	\item \textbf{Responsibilities:}
+	\begin{itemize}
+		\item Build base damage per type (SkillBase, Added, Conversion, Gain).
+		\item Apply global stat scaling and all increased/more damage modifiers.
+		\item Integrate critical strikes as an additional \emph{more} factor.
+	\end{itemize}
+	\item \textbf{Produces:} A \texttt{DamagePacket}:
+	\begin{itemize}
+		\item \texttt{damagePerType[T]} = \texttt{FinalDMG\_beforeDef[T]},
+		\item meta flags (attack/spell, hit-based/dot, elemental tags, etc.),
+		\item references: \texttt{attackerId}, \texttt{skillId}.
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Phase 3 -- Defense Pipeline (Defender-Side)}
+
+\begin{itemize}
+	\item \textbf{Owner:} Defender / health \& defense system.
+	\item \textbf{Inputs:}
+	\begin{itemize}
+		\item the incoming \texttt{DamagePacket} (pure offensive output),
+		\item defender-side stats: HP, Barrier, Armor, ElemResist, damage-taken modifiers,
+		defensive buffs/debuffs, etc.
+	\end{itemize}
+	\item \textbf{Responsibilities:}
+	\begin{itemize}
+		\item Apply armor to physical damage.
+		\item Apply elemental resistance to all elemental types.
+		\item Apply any global \emph{less/more damage taken} modifiers.
+		\item Aggregate mitigated damage to a single scalar value.
+		\item Deduct damage from Barrier first, then from HP.
+	\end{itemize}
+	\item \textbf{Produces:}
+	\begin{itemize}
+		\item updated Barrier and HP values,
+		\item events such as \texttt{OnDamageTaken}, \texttt{OnBarrierBroken}, \texttt{OnDeath}.
+	\end{itemize}
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsubsection{Separation of Concerns}
+
+The strict separation between phases ensures:
+
+\begin{itemize}
+	\item \textbf{Predictability}: Each phase has a well-defined, linear responsibility.
+	\item \textbf{Testability}: Phase~1, Phase~2 and Phase~3 can be unit-tested in isolation.
+	\item \textbf{Extensibility}: New offensive mechanics (e.g.\ additional damage types, 	crit scaling) affect only Phase~2; new defensive mechanics (e.g.\ separate Fire/Cold/Lightning resists) affect only Phase~3.
+	\item \textbf{Symmetry}: The same pipeline is used for heroes and enemies, with only data values
+	and content differing.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+
+\subsection{Hit \& Crit Pipeline}
+\label{subsec:hit-crit}
+
+\subsubsection{Overview}
+
+Before any damage is calculated or defenses are applied, the system resolves whether
+an attack \emph{hits} a given target and whether that hit is \emph{critical}.
+
+This phase is the only one that reads data from both attacker and defender.
+All subsequent phases are strictly separated:
+\begin{itemize}
+	\item Phase~2 (Dmg-Formular) uses only attacker-side data and produces a theoretical damage output.
+	\item Phase~3 (Defense Pipeline) uses only defender-side data and the incoming damage packet.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsubsection{Accuracy, Evasion \& Hit Chance}
+
+Each attack against a specific target first resolves a hit roll based on the
+attacker's \textbf{Accuracy} and the defender's \textbf{Evasion}. Both are
+expressed as percentages with caps.
+
+\paragraph{Inputs}
+
+\begin{itemize}
+	\item \textbf{Accuracy\%} – effective hit accuracy of the attacker against this target.
+	This value may include:
+	\begin{itemize}
+		\item class baseline (e.g. melee, caster, ranged),
+		\item flat and \% accuracy bonuses from gear, passives, buffs.
+	\end{itemize}
+	It is capped at a game-defined maximum, e.g.\ 150\,\%.
+	\item \textbf{Evasion\%} – evasion power of the defender.
+	It is capped at a game-defined maximum, e.g.\ 75\,\%.
+\end{itemize}
+
+\paragraph{Hit Chance Calculation}
+
+\[
+\text{Accuracy\%} = \operatorname{clamp}(\text{Accuracy\%}, 0\%, \text{AccCap\%})
+\]
+\[
+\text{Evasion\%}  = \operatorname{clamp}(\text{Evasion\%},  0\%, \text{EvaCap\%})
+\]
+
+The raw hit chance is defined as:
+
+\[
+\text{HitChance}_{\text{raw}} = \text{Accuracy\%} - \text{Evasion\%}
+\]
+
+This is then clamped into a valid probability range:
+
+\[
+\text{HitChance} = \operatorname{clamp}\!\left(
+\text{HitChance}_{\text{raw}},
+\text{MinHit\%},
+\text{MaxHit\%}
+\right)
+\]
+
+Typical design values:
+\begin{itemize}
+	\item $\text{AccCap\%} = 150\%$,
+	\item $\text{EvaCap\%} = 75\%$,
+	\item $\text{MinHit\%} = 5\%$ (no target is completely unhittable),
+	\item $\text{MaxHit\%} = 99\%$ (no attack is perfectly reliable).
+\end{itemize}
+
+\paragraph{Examples}
+
+\begin{itemize}
+	\item Attacker at 150\,\% Accuracy vs defender at 75\,\% Evasion:
+	\[
+	\text{HitChance}_{\text{raw}} = 150\% - 75\% = 75\% \Rightarrow \text{HitChance} = 75\%
+	\]
+	\item Attacker at 100\,\% Accuracy vs defender at 75\,\% Evasion:
+	\[
+	\text{HitChance}_{\text{raw}} = 25\% \Rightarrow \text{HitChance} = 25\%
+	\]
+\end{itemize}
+
+\paragraph{Hit Roll}
+
+For each target, the engine performs a single random roll:
+
+\[
+\text{isHit} =
+\begin{cases}
+	\text{false}, & \text{if } r > \text{HitChance} \\
+	\text{true},  & \text{if } r \le \text{HitChance}
+\end{cases}
+\quad\text{with } r \sim U(0,1)
+\]
+
+If \texttt{isHit = false}, the attack \emph{misses} this target:
+
+\begin{itemize}
+	\item no damage is dealt,
+	\item optional \emph{OnMiss}/\emph{OnDodge} triggers may fire,
+	\item subsequent phases are skipped for this target.
+\end{itemize}
+
+Only if \texttt{isHit = true} does the system proceed to critical strike resolution.
+
+% ---------------------------------------------------------------------------
+\subsubsection{Critical Strike Resolution}
+
+Critical strikes are resolved \emph{after} a successful hit and are independent
+from accuracy/evasion (unless explicitly modified by special mechanics).
+
+\paragraph{Inputs}
+
+\begin{itemize}
+	\item \textbf{BaseCritChance} – base crit chance of the skill/weapon.
+	\item \textbf{CritChanceMods} – sum of all bonuses and penalties to crit chance
+	(gear, passives, buffs, curses, etc.).
+	\item \textbf{CritCap\%} – maximum allowed critical chance (e.g.\ 75\,\%).
+	\item \textbf{CritMultiplier} – damage multiplier applied on critical hits
+	(e.g.\ 1.5 for +50\,\% damage).
+\end{itemize}
+
+\paragraph{Crit Chance Calculation}
+
+\[
+\text{CritChance} =
+\operatorname{clamp}\!\left(
+\text{BaseCritChance} + \text{CritChanceMods},
+0\%,
+\text{CritCap\%}
+\right)
+\]
+
+\paragraph{Crit Roll}
+
+\[
+\text{isCrit} =
+\begin{cases}
+	\text{false}, & \text{if } r > \text{CritChance} \\
+	\text{true},  & \text{if } r \le \text{CritChance}
+\end{cases}
+\quad\text{with } r \sim U(0,1)
+\]
+
+\paragraph{Integration into Damage Formula}
+
+Critical strikes are represented as an additional factor in the \emph{MoreDMG}
+layer of the damage formula (see Subsection~\ref{subsec:dmg-formula}):
+
+\[
+\text{CritFactor} =
+\begin{cases}
+	\text{CritMultiplier}, & \text{if isCrit = true} \\
+	1.0,                   & \text{if isCrit = false}
+\end{cases}
+\]
+
+\[
+\text{MoreDMG} = \text{MoreDMG}_{\text{other}} \times \text{CritFactor}
+\]
+
+\noindent
+where $\text{MoreDMG}_{\text{other}}$ captures all other \emph{more} modifiers.
+
+% ---------------------------------------------------------------------------
+\subsubsection{HitResult (Phase 1 Output)}
+
+The result of Phase~1 for a given attacker--target pair is a lightweight
+\emph{HitResult} object, which contains only interaction-level information:
+
+\begin{itemize}
+	\item \textbf{attackerId}, \textbf{targetId}, \textbf{skillId},
+	\item \textbf{isHit} (bool),
+	\item \textbf{isCrit} (bool),
+	\item basic attack classification flags (e.g.\ melee, ranged, spell, projectile, aoe).
+\end{itemize}
+
+This \texttt{HitResult} is then passed:
+\begin{itemize}
+	\item to Phase~2 (Dmg-Formular) on the attacker side, which uses it (together with
+	attacker stats, buffs, debuffs and status effects) to compute the theoretical
+	damage output;
+	\item to Phase~3 (Defense Pipeline) only indirectly, via the damage packet produced
+	by Phase~2.
+\end{itemize}
+
+\subsection{Offense Pipeline}
+\label{subsec:offense-pipeline}
 
 \subsubsection{Top-Level Formula}
 
@@ -358,17 +665,6 @@ which matches the top-level definition:
 \text{FinalDMG} = (\text{BaseEffektiveDMG} + \text{IncreasedDMG}) \times \text{MoreDMG}
 \]
 
-% ---------------------------------------------------------------------------
-\paragraph{Step 5: (Optional) Enemy Defenses}
-
-Enemy defenses (armor, resistances, block, dodge, etc.) are applied after the player-side
-damage pipeline and can be specified separately. Typically:
-
-\begin{itemize}
-	\item Resistances or mitigation per damage type are applied to \texttt{FinalDMG\_beforeDef}.
-	\item Additional mechanics (block, dodge, avoidance) are resolved either in the hit resolution
-	before this pipeline or as a final reduction step.
-\end{itemize}
 
 % ---------------------------------------------------------------------------
 \paragraph{Order in Code \& Role of HitContext}
@@ -382,10 +678,209 @@ In code, the damage pipeline should follow the exact order below:
 	\item Apply \textbf{StatModifier} to obtain \textbf{BaseEffektiveDMG} per type.
 	\item Compute \textbf{IncreasedDMG} per type and aggregate to \texttt{preMoreTotal}.
 	\item Collect and apply all \textbf{MoreDMG} factors to obtain \texttt{FinalDMG\_beforeDef}.
-	\item Apply enemy defenses (optional).
 \end{enumerate}
 
 The HitContext is the single source of truth for all conditions. No modifier may depend
 on intermediate numerical results of this pipeline. This keeps the order of operations
 inside each layer irrelevant (additive increased, multiplicative more) and makes the
 damage calculation deterministic and debuggable.
+
+\subsection{Defense Pipeline}
+\label{subsec:defense-pipeline}
+
+\subsubsection{Overview}
+
+The Defense Pipeline takes the theoretical damage output from the attacker
+(as produced by the Dmg-Formular in Subsection~\ref{subsec:dmg-formula}) and
+applies the defender's own defensive stats to determine the \emph{effective}
+HP loss.
+
+Conceptually:
+
+\[
+\text{NetDamageToHP} =
+\text{ApplyBarrierAndHP}\Bigl(
+\text{ApplyMitigation}(
+\text{DamagePacket},
+\text{Armor},
+\text{ElemResist},
+\text{DamageTakenMods}
+),
+\text{Barrier},
+\text{HP}
+\Bigr)
+\]
+
+The defender does \emph{not} need access to attacker stats. It only consumes:
+
+\begin{itemize}
+	\item the incoming damage packet (damage per type),
+	\item its own defensive stats and states.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsubsection{Inputs}
+
+For each hit that passed Phase~1 and Phase~2, the defender receives:
+
+\begin{itemize}
+	\item A \textbf{DamagePacket} containing:
+	\begin{itemize}
+		\item \texttt{damagePerType[T]} = \texttt{FinalDMG\_beforeDef[T]} for each damage type $T$,
+		\item meta information (e.g.\ isAttack, isSpell, isHitBased, isDot, elemental tags etc.).
+	\end{itemize}
+	\item Defender-side stats:
+	\begin{itemize}
+		\item \textbf{HP} – current health points,
+		\item \textbf{Barrier} – current barrier (overshield) value,
+		\item \textbf{Armor} – armor rating (physical mitigation),
+		\item \textbf{ElemResist\%} – elemental resistance (shared for all elemental types in V1),
+		\item optional \textbf{DamageTakenMods} – global \emph{less/more damage taken} modifiers
+		from buffs, debuffs, curses, auras, etc.
+	\end{itemize}
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsubsection{Step 1: Mitigation per Damage Type}
+
+Let the incoming damage per type be:
+
+\[
+\text{Incoming}_T = \text{FinalDMG\_beforeDef}[T]
+\]
+
+The mitigation step produces reduced values $\text{Mitigated}_T$ for each type.
+
+\paragraph{Physical Damage \& Armor}
+
+For physical damage:
+
+\[
+\text{Phys\_in} = \text{Incoming}_{\text{Physical}}
+\]
+
+Armor provides a damage reduction factor $DR_{\text{phys}} \in [0, DR_{\text{phys,max}}]$:
+
+\[
+DR_{\text{phys}} = f_{\text{armor}}(\text{Armor}, \text{Phys\_in}, \dots)
+\]
+
+The exact function $f_{\text{armor}}$ is defined separately (and may depend on
+damage magnitude, level, etc.). The mitigated physical damage is:
+
+\[
+\text{Phys\_out} = \text{Phys\_in} \times (1 - DR_{\text{phys}})
+\]
+
+\paragraph{Elemental Damage \& Elemental Resistance}
+
+Elemental resistance is a single value in V1, shared by all elemental damage types
+(e.g.\ Fire, Cold, Lightning, Poison, \dots).
+
+\[
+\text{ElemResist\%} \in [\text{MinRes\%}, \text{MaxRes\%}]
+\]
+\[
+DR_{\text{elem}} =
+\operatorname{clamp}(\text{ElemResist\%}, \text{MinRes\%}, \text{MaxRes\%})
+\]
+
+For each elemental damage type $E$:
+
+\[
+\text{Elem\_in}[E]  = \text{Incoming}_E
+\]
+\[
+\text{Elem\_out}[E] = \text{Elem\_in}[E] \times (1 - DR_{\text{elem}})
+\]
+
+\paragraph{Other Damage Types}
+
+Non-physical, non-elemental damage types (e.g.\ Chaos, TrueDamage) can either:
+
+\begin{itemize}
+	\item be left unmitigated in V1:
+	\[
+	\text{Other\_out}[T] = \text{Incoming}_T
+	\]
+	\item or use their own resist/mitigation rules, defined analogously and plugged into this step later.
+\end{itemize}
+
+\paragraph{Global ``Damage Taken'' Modifiers (optional)}
+
+If the defender has global modifiers such as:
+
+\begin{itemize}
+	\item ``X\% less Damage taken from Hits'',
+	\item ``Y\% more Elemental Damage taken'',
+\end{itemize}
+
+these can be combined into a single multiplier:
+
+\[
+\text{DamageTakenMult} = \prod_k \text{damageTakenFactor}_k
+\]
+
+Applied per type after the primary mitigation:
+
+\[
+\text{Mitigated}_T = \text{TypeOut}_T \times \text{DamageTakenMult}
+\]
+
+where $\text{TypeOut}_T$ is one of $\text{Phys\_out}$, $\text{Elem\_out}[E]$ or $\text{Other\_out}[T]$,
+depending on the type.
+
+\paragraph{Aggregation After Mitigation}
+
+Total damage after mitigation (and optional damage-taken mods) is:
+
+\[
+\text{NetDamage} = \sum_T \text{Mitigated}_T
+\]
+
+This is the amount that will be applied to barrier and health.
+
+% ---------------------------------------------------------------------------
+\subsubsection{Step 2: Barrier \& HP Application}
+
+The defender maintains two sequential pools:
+
+\begin{itemize}
+	\item \textbf{Barrier} – a temporary or additional shield pool,
+	\item \textbf{HP} – the actual health pool.
+\end{itemize}
+
+Incoming damage is first absorbed by \textbf{Barrier}, any remainder then reduces \textbf{HP}.
+
+\paragraph{Algorithm}
+
+Let \texttt{NetDamage} be the scalar damage value after mitigation:
+
+\begin{verbatim}
+	damage = NetDamage
+	
+	# 1. Barrier absorbs first
+	if Barrier > 0:
+	absorbed = min(Barrier, damage)
+	Barrier -= absorbed
+	damage  -= absorbed
+	
+	# 2. Remaining damage reduces HP
+	HP -= damage
+	if HP < 0:
+	HP = 0   # death
+\end{verbatim}
+
+\paragraph{Events \& Triggers}
+
+During or after this step, the following events may be raised:
+
+\begin{itemize}
+	\item \textbf{OnDamageTaken}(\textit{NetDamage}, DamagePacket, attackerId)
+	\item \textbf{OnBarrierBroken} (if \texttt{Barrier} transitions from $>0$ to $0$)
+	\item \textbf{OnDeath} (if \texttt{HP} transitions from $>0$ to $0$)
+\end{itemize}
+
+These events can drive secondary systems such as leech, retaliation,
+on-damage procs, death effects, etc., without altering the core pipeline.
+
