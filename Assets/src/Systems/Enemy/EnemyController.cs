@@ -242,7 +242,7 @@ namespace CHAL.Systems.Enemy
                 _castRemaining = Mathf.Max(0f, next.CastTime);
 
                 // (Phase 4: Animations-Hook als Stub)
-                DebugManager.Log($"Anim | Enemy Play {next.Data.animationType} len={next.CastTime:F2}s", DebugManager.EDebugLevel.Debug, "Anim");
+                DebugManager.Log($"Anim | Enemy Play {next.skillData.animationType} len={next.CastTime:F2}s", DebugManager.EDebugLevel.Debug, "Anim");
 
                 // Cooldown startet bei CastStart (analog Hero)
                 next.StartCooldown();
@@ -269,7 +269,7 @@ namespace CHAL.Systems.Enemy
                     float dist = Vector3.Distance(transform.position, heroCtrl.transform.position);
                     if (dist <= _currentSkill.Range)
                     {
-                        DebugManager.Log($"Execute {_currentSkill.Data.DisplayName} â†’ {heroCtrl.name} (dist={dist:F1}m)",DebugManager.EDebugLevel.Dev,"Combat");
+                        DebugManager.Log($"Execute {_currentSkill.skillData.DisplayName} â†’ {heroCtrl.name} (dist={dist:F1}m)",DebugManager.EDebugLevel.Dev,"Combat");
 
                         SkillExecutor.ExecuteSkill(
                             _currentSkill,
@@ -282,12 +282,12 @@ namespace CHAL.Systems.Enemy
                     }
                     else
                     {
-                        DebugManager.Log($"Targeting | Out of Range (Enemy): {_currentSkill.Data.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F1}m",DebugManager.EDebugLevel.Dev, "Combat");
+                        DebugManager.Log($"Targeting | Out of Range (Enemy): {_currentSkill.skillData.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F1}m",DebugManager.EDebugLevel.Dev, "Combat");
                     }
                 }
                 else
                 {
-                    DebugManager.Log($"Targeting | Enemy has no valid target for {_currentSkill.Data.DisplayName}.", DebugManager.EDebugLevel.Dev, "Combat");
+                    DebugManager.Log($"Targeting | Enemy has no valid target for {_currentSkill.skillData.DisplayName}.", DebugManager.EDebugLevel.Dev, "Combat");
                 }
 
                 _currentSkill = null; // Cast abgeschlossen

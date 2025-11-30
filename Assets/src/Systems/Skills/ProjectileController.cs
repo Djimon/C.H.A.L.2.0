@@ -35,7 +35,7 @@ namespace CHAL.Systems.Skill
             speed = projSpeed;
             lifespan = life;
 
-            DebugManager.Log($"[Projectile] Spawned {inst.Data.DisplayName} from {src} towards {tgt}", DebugManager.EDebugLevel.Test, "Projectile");
+            DebugManager.Log($"[Projectile] Spawned {inst.skillData.DisplayName} from {src} towards {tgt}", DebugManager.EDebugLevel.Test, "Projectile");
         }
 
         private void Update()
@@ -56,7 +56,7 @@ namespace CHAL.Systems.Skill
         {
             if (lifespan <= 0f)
             {
-                DebugManager.Log($"[Projectile] {skill.Data.DisplayName} expired before hitting", DebugManager.EDebugLevel.Dev, "Projectile");
+                DebugManager.Log($"[Projectile] {skill.skillData.DisplayName} expired before hitting", DebugManager.EDebugLevel.Dev, "Projectile");
                 Destroy(gameObject);
             }
         }
@@ -71,7 +71,7 @@ namespace CHAL.Systems.Skill
             // vergleich target mit targetReceiver
 
             SkillExecutor.ApplyOnHit(skill, source, targetReceiver);
-            DebugManager.Log($"[Projectile] {skill.Data.DisplayName} hit {targetReceiver}", DebugManager.EDebugLevel.Test, "Projectile");
+            DebugManager.Log($"[Projectile] {skill.skillData.DisplayName} hit {targetReceiver}", DebugManager.EDebugLevel.Test, "Projectile");
 
             Destroy(gameObject);
         }

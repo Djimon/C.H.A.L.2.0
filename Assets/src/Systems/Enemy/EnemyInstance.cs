@@ -1,4 +1,5 @@
 using CHAL.Data;
+using CHAL.Systems.Skill;
 using CHAL.Systems.Unit;
 using System;
 
@@ -25,21 +26,24 @@ namespace CHAL.Systems.Enemy
             CurrentHP = MaxHP;
         }
 
-/// <summary>
-/// Applies damage to the enemy and updates its health.
-/// </summary>
-/// <param name="amount">The amount of damage to apply.</param>
-/// <param name="type">The type of damage being inflicted.</param>
         public override void TakeDamage(float amount, DamageType type)
         {
-            // TODO: Armor/Resist später berücksichtigen
-            CurrentHP -= amount;
+            if (amount <= 0f) return;
 
-            DebugManager.Log($"Enemy {StructData.EnemyId} took {amount} {type} damage (HP={CurrentHP}/{MaxHP})",
-                DebugManager.EDebugLevel.Dev, "Combat");
+            var packet = new DamagePacket
+            {
+                IsHitBased = true,
+                IsDot = false
+            };
+            packet.AddDamage(type, amount);
 
-            if (CurrentHP <= 0)
-                OnDeath();
+            DebugManager.Log($"Enemy {StructData.EnemyId} incoming {amount} {type} damage (before defenses)",
+                DebugManager.EDebugLevel.Dev,"Combat");
+
+            TakeDamage(packet); // zentrale Defense-Pipeline
+
+            DebugManager.Log($"Enemy {StructData.EnemyId} HP after damage: {CurrentHP}/{MaxHP}",
+                DebugManager.EDebugLevel.Dev,"Combat");
         }
 
         protected override void OnDeath()

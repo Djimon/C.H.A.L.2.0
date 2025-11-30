@@ -186,26 +186,26 @@ namespace CHAL.Systems.Hero
             return attributes[attribute];
         }
 
-        /// <summary>
-        /// Applies damage to the hero and handles death if health falls below zero.
-        /// </summary>
-        /// <param name="amount">The amount of damage to apply.</param>
-        /// <param name="type">The type of damage being inflicted.</param>
         public override void TakeDamage(float amount, DamageType type)
         {
-            //ToDO: Armor Resistences, etc
             if (_isDead) return;
-            CurrentHP -= amount;
-            if (CurrentHP < 0)
+            if (amount <= 0f) return;
+
+            var packet = new DamagePacket
             {
-                OnDeath();
-            }
+                IsHitBased = true,
+                IsDot = false
+            };
+            packet.AddDamage(type, amount);
+
+            // Phase-3-Pipeline in der Basisklasse
+            TakeDamage(packet);
         }
 
-/// <summary>
-/// Calculates the effective movement speed of the hero.
-/// </summary>
-/// <returns>The effective movement speed as a float.</returns>
+        /// <summary>
+        /// Calculates the effective movement speed of the hero.
+        /// </summary>
+        /// <returns>The effective movement speed as a float.</returns>
         public float GetEffectiveMovementSpeed()
         {
             //TODO: Modfier drauf rechnen

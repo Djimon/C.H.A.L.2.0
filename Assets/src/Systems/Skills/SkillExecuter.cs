@@ -26,7 +26,7 @@ namespace CHAL.Systems.Skill
                 return;
             }
 
-            DebugManager.Log($"[SkillExecutor] {source} starts casting {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
+            DebugManager.Log($"[SkillExecutor] {source} starts casting {inst.skillData.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
 
             Do_OnCastImpactEffects(inst, source);
             Handle_CastTimeHook(inst, source);
@@ -36,7 +36,7 @@ namespace CHAL.Systems.Skill
         private static void HandleSkillByType(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
         {
             // 3. Apply main effect
-            switch (inst.Data.SkillType)
+            switch (inst.skillData.SkillType)
             {
                 case SkillType.Melee:
                     ApplyMelee(inst, source, target);
@@ -70,9 +70,9 @@ namespace CHAL.Systems.Skill
         private static void Do_OnCastImpactEffects(SkillInstance inst, EffectReceiver source)
         {
             // 1. OnCast Effects
-            if (inst.Data.OnCastImpactEffects != null)
+            if (inst.skillData.OnCastImpactEffects != null)
             {
-                foreach (var effect in inst.Data.OnCastImpactEffects)
+                foreach (var effect in inst.skillData.OnCastImpactEffects)
                 {
                     effect.Apply(inst, source, source); // self-target for buffs
                 }
@@ -120,8 +120,14 @@ namespace CHAL.Systems.Skill
             if (!ValidateFastReturnRules(source, target))
                 return;
 
-            DebugManager.Log($"[SkillExecutor] {source} hits {target} with {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
-            ApplyOnHit(inst, source, target);
+            var hit = HitResolver.Resolve(source, target, inst);
+
+            DebugManager.Log(
+                $"[SkillExecutor] {source} attempts melee hit on {target} with {inst.skillData.DisplayName} (IsHit={hit.IsHit}, IsCrit={hit.IsCrit})",
+                DebugManager.EDebugLevel.Test,
+                "Skill");
+
+            ApplyOnHit(inst, source, target, hit);
         }
 
         private static void ApplySpell(SkillInstance inst, EffectReceiver source, EffectReceiver target, Transform targetTr)
@@ -129,20 +135,26 @@ namespace CHAL.Systems.Skill
             if (!ValidateFastReturnRules(source, target))
                 return;
 
-            DebugManager.Log($"[SkillExecutor] {source} casts spell {inst.Data.DisplayName} on {target}", DebugManager.EDebugLevel.Dev, "Skill");
-            ApplyOnHit(inst, source, target);
+            var hit = HitResolver.Resolve(source, target, inst);
+
+            DebugManager.Log(
+                $"[SkillExecutor] {source} casts spell {inst.skillData.DisplayName} on {target} (IsHit={hit.IsHit}, IsCrit={hit.IsCrit})",
+                DebugManager.EDebugLevel.Dev,
+                "Skill");
+
+            ApplyOnHit(inst, source, target, hit); ;
         }
 
         private static void ApplySummon(SkillInstance inst, EffectReceiver source)
         {
-            DebugManager.Log($"[SkillExecutor] {source} summons unit via {inst.Data.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
+            DebugManager.Log($"[SkillExecutor] {source} summons unit via {inst.skillData.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
             //TODO:: Summon-mechanik implementieren evlt über SuumonController?
         }
 
 
         private static void SpawnProjectile(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
         {
-            DebugManager.Log($"[SkillExecutor] {source} launches projectile {inst.Data.DisplayName} at {target}", DebugManager.EDebugLevel.Test, "Skill");
+            DebugManager.Log($"[SkillExecutor] {source} launches projectile {inst.skillData.DisplayName} at {target}", DebugManager.EDebugLevel.Test, "Skill");
             // Saubere Fallbacks: Wenn kein Transform mitgegeben wurde, kann man spÃ¤ter Prefab-Owner o. Ã¤. nutzen
             if (sourceTr == null)
             {
@@ -170,7 +182,7 @@ namespace CHAL.Systems.Skill
             float speed = Mathf.Max(0.01f, inst.ProjectileSpeed);
             float life = Mathf.Max(0.1f, inst.Range / speed);
 
-            var go = new GameObject($"Projectile_{inst.Data.DisplayName}");
+            var go = new GameObject($"Projectile_{inst.skillData.DisplayName}");
             var col = go.AddComponent<SphereCollider>(); col.isTrigger = true; col.radius = 0.1f;
             var rb = go.AddComponent<Rigidbody>(); rb.isKinematic = true;
 
@@ -178,13 +190,13 @@ namespace CHAL.Systems.Skill
             pc.transform.position = startPos;
             pc.Init(inst, source, target, dir, speed, life);
 
-            DebugManager.Log($"[SkillExecutor] Spawned projectile {inst.Data.DisplayName} at {startPos} dir {dir} speed {speed} life {life}", DebugManager.EDebugLevel.Test, "Skill");
+            DebugManager.Log($"[SkillExecutor] Spawned projectile {inst.skillData.DisplayName} at {startPos} dir {dir} speed {speed} life {life}", DebugManager.EDebugLevel.Test, "Skill");
             // WICHTIG: KEINE OnHit-Effekte hier ausfÃ¼hren â€” das macht das Projektil bei Kollision
         }
 
         internal static void ApplyOnHit(SkillInstance skill, EffectReceiver source, EffectReceiver target)
         {
-            if (skill == null || skill.Data == null || target == null)
+            if (skill == null || skill.skillData == null || target == null)
             {
                 DebugManager.Log($"[SkillExecutor] ApplyOnHit aborted: skill or target is null", DebugManager.EDebugLevel.Test, "Combat", LogType.Warning);
                 return;
@@ -196,21 +208,56 @@ namespace CHAL.Systems.Skill
             //   typischerweise über einen DamageImpact.
             //
             // Diese Methode übernimmt nur noch Routing/Triggering.
+            var hit = HitResolver.Resolve(source, target, skill);
 
-            DoOnHitImpactEffects(skill, source, target);
+            DoOnHitImpactEffects(skill, source, target, hit);
+        }
 
+        internal static void ApplyOnHit(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
+        {
+            if (skill == null || skill.skillData == null || target == null)
+            {
+                DebugManager.Log("[SkillExecutor] ApplyOnHit aborted: skill/target null",
+                    DebugManager.EDebugLevel.Test, "Combat", LogType.Warning);
+                return;
+            }
+
+            if (!hit.IsHit)
+            {
+                DebugManager.Log(
+                    $"[SkillExecutor] Hit missed: {source} -> {target} with {skill.skillData.DisplayName}",
+                    DebugManager.EDebugLevel.Test,
+                    "Combat");
+                // TODO: OnMiss/OnDodge-Effekte hier triggern, falls gewünscht.
+                return;
+            }
+
+            // Kein direkter Schaden mehr hier – nur Routing!
+            DoOnHitImpactEffects(skill, source, target, hit);
         }
 
 
-        private static void DoOnHitImpactEffects(SkillInstance skill, EffectReceiver source, EffectReceiver target)
+        private static void DoOnHitImpactEffects(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
         {
-            // 1) OnHit-Effekte (Buff/DoT u.Ã¤.)
-            var effects = skill.Data.OnHitImpactEffects;
+            // 1) OnHit-Effekte (Buff/DoT/Damage etc.)
+            var effects = skill.skillData.OnHitImpactEffects;
             if (effects != null && effects.Count > 0)
             {
                 for (int i = 0; i < effects.Count; i++)
-                    effects[i]?.Apply(skill, source, target);
+                {
+                    var effect = effects[i];
+                    if (effect == null)
+                        continue;
+
+                    effect.Apply(skill, source, target, hit);
+                }
             }
+        }
+
+        private static void DoOnHitImpactEffects(SkillInstance skill, EffectReceiver source, EffectReceiver target)
+        {
+            var defaultHit = HitResult.CreateDefault(skill, source, target);
+            DoOnHitImpactEffects(skill, source, target, defaultHit);
         }
     }
 }

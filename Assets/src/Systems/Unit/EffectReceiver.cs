@@ -85,6 +85,106 @@ namespace CHAL.Systems.Unit
 /// <param name="type">The type of damage being inflicted.</param>
         public abstract void TakeDamage(float amount, DamageType type);
 
+        public void TakeDamage(DamagePacket packet)
+        {
+            if (packet == null ||
+                packet.DamagePerType == null ||
+                packet.DamagePerType.Count == 0)
+                return;
+
+            float netDamage = ComputeNetDamageAfterMitigation(packet);
+            ApplyNetDamageToPools(netDamage, packet);
+        }
+
+        protected virtual float ComputeNetDamageAfterMitigation(DamagePacket packet)
+        {
+            float armor = GetArmor();
+            float elemRes = GetElementalResist(); // 0..1 = 0..100% Reduktion (V1: shared ElemRes)
+            float damageTakenMult = GetDamageTakenMultiplier(packet);
+
+            float net = 0f;
+
+            foreach (var kv in packet.DamagePerType)
+            {
+                var type = kv.Key;
+                var incoming = Mathf.Max(0f, kv.Value);
+                float afterTypeMitigation = incoming;
+
+                if (incoming <= 0f)
+                    continue;
+
+                // --- Physisch ---
+                if (type == DamageType.Physical)
+                {
+                    float drPhys = ComputePhysicalDR(armor, incoming);
+                    drPhys = Mathf.Clamp01(drPhys);
+                    afterTypeMitigation = incoming * (1f - drPhys);
+                }
+                else
+                {
+                    // V1: alle Nicht-Physical laufen über ein gemeinsames ElemRes-Flag.
+                    // Da ElemRes aktuell noch nirgendwo gesetzt wird, ist der Effekt faktisch 0.
+                    float drElem = Mathf.Clamp01(elemRes);
+                    afterTypeMitigation = incoming * (1f - drElem);
+                }
+
+                afterTypeMitigation *= Mathf.Max(0f, damageTakenMult);
+                net += afterTypeMitigation;
+            }
+
+            return Mathf.Max(0f, net);
+        }
+
+        protected virtual float GetArmor() => 0f;
+
+        protected virtual float GetElementalResist() => 0f;
+
+        protected virtual float GetDamageTakenMultiplier(DamagePacket packet) => 1f;
+
+        protected virtual float ComputePhysicalDR(float armor, float incomingDamage)
+        {
+            if (armor <= 0f)
+                return 0f;
+
+            const float k = 10f; // Design-Konstante, später balancen/aus Config holen.
+            float dr = armor / (armor + k * Mathf.Max(1f, incomingDamage));
+            return Mathf.Clamp01(dr);
+        }
+
+        protected virtual void ApplyNetDamageToPools(float netDamage, DamagePacket packet)
+        {
+            if (netDamage <= 0f)
+                return;
+
+            float remaining = netDamage;
+
+            // TODO: Barrier-System einführen (Feld/Eigenschaft auf EffectReceiver oder Subclass)
+            float barrier = 0f;
+
+            if (barrier > 0f)
+            {
+                float absorbed = Mathf.Min(barrier, remaining);
+                barrier -= absorbed;
+                remaining -= absorbed;
+
+                // TODO: OnBarrierBroken-Event, falls barrier von >0 auf 0 fällt
+            }
+
+            if (remaining <= 0f)
+                return;
+
+            CurrentHP -= remaining;
+
+            // (Optional: später OnDamageTaken-Event hier platzieren)
+
+            if (CurrentHP <= 0f)
+            {
+                CurrentHP = 0f;
+                OnDeath();
+            }
+        }
+
+
         protected abstract void OnDeath();
 
 /// <summary>

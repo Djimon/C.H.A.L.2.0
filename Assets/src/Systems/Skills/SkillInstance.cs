@@ -15,7 +15,7 @@ namespace CHAL.Systems.Skill
 /// </summary>
     public class SkillInstance
     {
-        public SkillData Data { get; private set; }
+        public SkillData skillData { get; private set; }
 
         private EffectReceiver ownedBy;
 
@@ -35,30 +35,70 @@ namespace CHAL.Systems.Skill
 
         public SkillInstance(SkillData data, EffectReceiver owner)
         {
-            Data = data;
+            skillData = data;
             ownedBy = owner;
             Recalculate();
 
         }
 
-/// <summary>
-/// Recalculates the skill's attributes based on current modifiers and data.
-/// </summary>
+        /// <summary>
+        /// Recalculates the skill's attributes based on current modifiers and data.
+        /// </summary>
         public void Recalculate()
         {
-            var tags = Data.Tags ?? new List<SkillTag>();
-            var mods = ownedBy.ActiveModifiers;
+            var tags = skillData.Tags ?? new List<SkillTag>();
+            var mods = ownedBy != null ? ownedBy.ActiveModifiers : new ModifierStack();
 
-            // 1) Basis-Werte aus den Skill-Daten lesen
-            var baseDamage = Data.BaseDamage;
+            // --- Phase 2, Step 1: BaseDMG (skalar, noch ohne Typaufschlüsselung) ---
+            float baseDamage = Mathf.Max(0f, skillData.BaseDamage);
 
-            // 2) Stat-Scaling anhand StatAffinity + Hero-Attribute anwenden
-            var scaledBaseDamage = ApplyStatScaling(baseDamage);
+            // --- Step 2: StatModifier (= DMGEffektModifier) anwenden ---
+            float baseEffectiveDamage = ApplyStatScaling(baseDamage);
+            float statModifier = (baseDamage > 0f)
+                ? (baseEffectiveDamage / baseDamage)
+                : 1f;
 
-            // 3) Alle Modifier anwenden und finale Runtime-Werte setzen
-            ApplyFinalModifiers(mods, tags, scaledBaseDamage);
+            // --- Step 3/4: Increased + More Layer über ModifierStack ---
+            ApplyFinalModifiers(mods, tags, baseDamage, baseEffectiveDamage, statModifier);
 
-            DebugManager.Log($"Initialized Skill {Data.SkillId} with DMG:{Damage} CastTime:{CastTime} cd:{Cooldown} range:{Range} dur:{Duration} ", DebugManager.EDebugLevel.Debug,"Skill");
+            DebugManager.Log(
+                $"Initialized Skill {skillData.SkillId} with DMG:{Damage:F1} (Base:{baseDamage:F1}, StatMod:{statModifier:F2}) CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
+                DebugManager.EDebugLevel.Debug,
+                "Skill");
+        }
+
+        private void ApplyFinalModifiers(ModifierStack mods, List<SkillTag> tags, float baseDamage, float baseEffectiveDamage, float statModifier)
+        {
+            // --- Damage-Layering ---
+
+            // V1-Annahme: ModifierStack.Apply(Damage, ...) liefert uns bereits
+            // (BaseEffektiveDMG + IncreasedDMG) * MoreDMG.
+            // Da das System noch keinen getrennten Zugriff auf "increased" vs "more" bietet,
+            // ziehen wir vorerst alles in die Increased-Schicht und setzen MoreDMG=1.
+            float preMoreTotal = mods.Apply(ModifierTarget.Damage, baseEffectiveDamage, tags);
+
+            float increasedDamage = Mathf.Max(0f, preMoreTotal - baseEffectiveDamage);
+
+            // TODO: Sobald ModifierStack "more"-Modifier separat liefern kann,
+            //       hier MoreDMG als Produkt der Faktoren berechnen
+            //       und preMoreTotal entsprechend anpassen.
+            float moreMult = 1.0f;
+
+            // Top-Level-Formel aus dem Design-Dokument:
+            // FinalDMG = (BaseEffektiveDMG + IncreasedDMG) * MoreDMG
+            Damage = (baseEffectiveDamage + increasedDamage) * moreMult;
+
+            // --- Restliche Runtime-Werte wie bisher über ModifierStack ---
+            CastTime = mods.Apply(ModifierTarget.CastTime, skillData.CastTime, tags);
+            Cooldown = mods.Apply(ModifierTarget.Cooldown, skillData.Cooldown, tags);
+            Range = mods.Apply(ModifierTarget.Range, BalanceManager.Instance.GetRangeValue(skillData.Range), tags);
+            Duration = mods.Apply(ModifierTarget.Duration, skillData.Duration, tags);
+            ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, skillData.ProjectileSpeed, tags);
+            ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, skillData.ProjectileCount, tags);
+            AoERadius = mods.Apply(ModifierTarget.AoERadius, skillData.AoERadius, tags);
+
+            // Optional: Wenn du später Debug-Infos für die Layer loggen willst,
+            // kannst du hier BaseEffektiveDMG/Increased/More cachen.
         }
 
 
@@ -78,46 +118,31 @@ namespace CHAL.Systems.Skill
 
         private float ApplyStatScaling(float baseDamage)
         {
-            // Wenn kein Owner vorhanden ist (sollte praktisch nicht vorkommen),
-            // fällt der Skill auf reinen BaseDamage zurück.
+            float statMod = ComputeStatModifier();
+            return baseDamage * statMod;
+        }
+
+        private float ComputeStatModifier()
+        {
             if (ownedBy == null)
-                return baseDamage;
+                return 1f;
 
             if (ownedBy is not IAttributeHolder attributeProvider)
-                return baseDamage;
+                return 1f;
 
-            // Primärattribut aus der SkillData
-            var mainStatType = Data.AttributeAffinity;
-
-            // Aktuellen Attributwert des Helden holen
+            var mainStatType = skillData.AttributeAffinity;
             var mainStatValue = attributeProvider.GetAttributeValue(mainStatType);
+            var scalingFactor = skillData.damageAttributeScalingFactor;
 
-            // Wie stark reagiert der Skill auf dieses Attribut?
-            var scalingFactor = Data.damageAttributeScalingFactor;
-
-            var scaledBaseDamage = baseDamage * ComputeStatScalingMultiplier(mainStatValue,scalingFactor);
-            //var scaledBaseDamage = baseDamage * (1f + mainStatValue * scalingFactor);
-
-            return scaledBaseDamage;
+            return ComputeStatScalingMultiplier(mainStatValue, scalingFactor);
         }
 
-        private void ApplyFinalModifiers(ModifierStack mods, List<SkillTag> tags, float scaledBaseDamage)
-        {
-            Damage = mods.Apply(ModifierTarget.Damage, scaledBaseDamage, tags);
-            CastTime = mods.Apply(ModifierTarget.CastTime, Data.CastTime, tags);
-            Cooldown = mods.Apply(ModifierTarget.Cooldown, Data.Cooldown, tags);
-            Range = mods.Apply(ModifierTarget.Range, BalanceManager.Instance.GetRangeValue(Data.Range), tags);
-            Duration = mods.Apply(ModifierTarget.Duration, Data.Duration, tags);
-            ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, Data.ProjectileSpeed, tags);
-            ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, Data.ProjectileCount, tags);
-            AoERadius = mods.Apply(ModifierTarget.AoERadius, Data.AoERadius, tags);
-        }
 
         /// <summary>
         /// Checks if the cooldown period has ended.
         /// </summary>
         /// <returns>True if cooldownRemaining is less than or equal to zero; otherwise, false.</returns>
-        public bool IsReady() //â†’ prÃ¼ft, ob cooldownRemaining <= 0.
+        public bool IsReady() //prüft, ob cooldownRemaining <= 0.
         {
             if(cooldownRemaining <= 0)
             {
@@ -158,7 +183,7 @@ namespace CHAL.Systems.Skill
 /// <returns>A formatted string with the object's data.</returns>
         public override string ToString()
         {
-            return $"{Data.DisplayName}: Dmg={Damage}, CD={Cooldown}, Range={Range}, " +
+            return $"{skillData.DisplayName}: Dmg={Damage}, CD={Cooldown}, Range={Range}, " +
                    $"Dur={Duration}, ProjSpeed={ProjectileSpeed}, AoE={AoERadius}";
         }
     }

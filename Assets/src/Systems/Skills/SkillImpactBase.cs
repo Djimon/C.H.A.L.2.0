@@ -14,5 +14,10 @@ namespace CHAL.Systems.Skill
         /// Executes the effect from source to target.
         /// </summary>
         public abstract void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target);
+
+        public virtual void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
+        {
+            Apply(skill, source, target);
+        }
     }
 }
