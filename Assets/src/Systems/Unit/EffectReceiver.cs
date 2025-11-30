@@ -45,7 +45,7 @@ namespace CHAL.Systems.Unit
             // — Neuer Effekt: beim Buff direkt Modifier aktivieren —
             if (effect is BuffStatusEffect buff)
             {
-                ActiveModifiers.AddModifier(buff.Modifier);
+                ActiveModifiers.AddGenericModifier(buff.Modifier);
                 // (Kein doppeltes Add mehr bei Refresh, weil wir oben in den existing-Case gehen)
             }
 
@@ -60,7 +60,7 @@ namespace CHAL.Systems.Unit
             // — Neuer Effekt: beim Debuff direkt Modifier aktivieren —
             if (effect is DebuffStatusEffect debuff)
             {
-                ActiveModifiers.AddModifier(debuff.Modifier);
+                ActiveModifiers.AddGenericModifier(debuff.Modifier);
                 // (Kein doppeltes Add mehr bei Refresh, weil wir oben in den existing-Case gehen)
             }
 
@@ -78,12 +78,25 @@ namespace CHAL.Systems.Unit
             ActiveEffects.Remove(effect);
         }
 
-/// <summary>
-/// Applies damage to the entity based on the specified amount and type.
-/// </summary>
-/// <param name="amount">The amount of damage to apply.</param>
-/// <param name="type">The type of damage being inflicted.</param>
-        public abstract void TakeDamage(float amount, DamageType type);
+        /// <summary>
+        /// Applies damage to the entity based on the specified amount and type.
+        /// </summary>
+        /// <param name="amount">The amount of damage to apply.</param>
+        /// <param name="type">The type of damage being inflicted.</param>
+        public virtual void TakeDamage(float amount, DamageType type)
+        {
+            if (amount <= 0f)
+                return;
+
+            var packet = new DamagePacket
+            {
+                IsHitBased = true,
+                IsDot = false
+            };
+            packet.AddDamage(type, amount);
+
+            TakeDamage(packet);
+        }
 
         public void TakeDamage(DamagePacket packet)
         {
@@ -198,13 +211,24 @@ namespace CHAL.Systems.Unit
                 var effect = ActiveEffects[i];
                 effect.RemainingTime -= deltaTime;
 
+                //DoTs
                 if (effect is DoTStatusEffect dot)
                 {
                     dot.internalTickTimer -= deltaTime;
                     if (dot.internalTickTimer <= 0f)
                     {
                         float totalDamage = dot.DoTsettings.DamagePerTick * dot.CurrentStacks;
-                        TakeDamage(totalDamage, dot.DoTsettings.DamageType);
+                        if (totalDamage > 0f)
+                        {
+                            var packet = new DamagePacket
+                            {
+                                IsHitBased = false,
+                                IsDot = true
+                            };
+                            packet.AddDamage(dot.DoTsettings.DamageType, totalDamage);
+                            TakeDamage(packet);
+                        }
+
                         dot.internalTickTimer = dot.DoTsettings.TickInterval;
                     }
                 }
@@ -214,7 +238,7 @@ namespace CHAL.Systems.Unit
                 {
                     if (buff.Modifier != null && buff.modifierApplied)
                     {
-                        ActiveModifiers.RemoveModifier(buff.Modifier);
+                        ActiveModifiers.RemoveGenericModifier(buff.Modifier);
                         buff.modifierApplied = false;
                     }
                 }
@@ -224,7 +248,7 @@ namespace CHAL.Systems.Unit
                 {
                     if (debuff.Modifier != null && debuff.modifierApplied)
                     {
-                        ActiveModifiers.RemoveModifier(debuff.Modifier);
+                        ActiveModifiers.RemoveGenericModifier(debuff.Modifier);
                         debuff.modifierApplied = false;
                     }
                 }
@@ -233,7 +257,7 @@ namespace CHAL.Systems.Unit
                 {
                     if (effect is BuffStatusEffect be && be.Modifier != null)
                     {
-                        ActiveModifiers.RemoveModifier(be.Modifier);
+                        ActiveModifiers.RemoveGenericModifier(be.Modifier);
                     }
                     RemoveEffect(effect);
                 }

@@ -58,7 +58,7 @@ namespace CHAL.Systems.Hero
 
             if (Archetype.SignaturePassive != null)
             {
-                ActiveModifiers.AddModifier(Archetype.SignaturePassive.ToModifierData());
+                ActiveModifiers.AddGenericModifier(Archetype.SignaturePassive.ToModifierData());
             }
 
             _heroXPconfig = BalanceManager.Instance.HeroXPConfig;
@@ -186,21 +186,6 @@ namespace CHAL.Systems.Hero
             return attributes[attribute];
         }
 
-        public override void TakeDamage(float amount, DamageType type)
-        {
-            if (_isDead) return;
-            if (amount <= 0f) return;
-
-            var packet = new DamagePacket
-            {
-                IsHitBased = true,
-                IsDot = false
-            };
-            packet.AddDamage(type, amount);
-
-            // Phase-3-Pipeline in der Basisklasse
-            TakeDamage(packet);
-        }
 
         /// <summary>
         /// Calculates the effective movement speed of the hero.

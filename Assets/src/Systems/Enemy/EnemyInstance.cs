@@ -30,20 +30,20 @@ namespace CHAL.Systems.Enemy
         {
             if (amount <= 0f) return;
 
-            var packet = new DamagePacket
-            {
-                IsHitBased = true,
-                IsDot = false
-            };
-            packet.AddDamage(type, amount);
+            DebugManager.Log(
+                $"Enemy {StructData.EnemyId} incoming {amount} {type} damage (before defenses)",
+                DebugManager.EDebugLevel.Dev,
+                "Combat"
+            );
 
-            DebugManager.Log($"Enemy {StructData.EnemyId} incoming {amount} {type} damage (before defenses)",
-                DebugManager.EDebugLevel.Dev,"Combat");
+            // nutzt jetzt den zentralen Wrapper in EffectReceiver
+            base.TakeDamage(amount, type);
 
-            TakeDamage(packet); // zentrale Defense-Pipeline
-
-            DebugManager.Log($"Enemy {StructData.EnemyId} HP after damage: {CurrentHP}/{MaxHP}",
-                DebugManager.EDebugLevel.Dev,"Combat");
+            DebugManager.Log(
+                $"Enemy {StructData.EnemyId} HP after damage: {CurrentHP}/{MaxHP}",
+                DebugManager.EDebugLevel.Dev,
+                "Combat"
+            );
         }
 
         protected override void OnDeath()

@@ -1,12 +1,9 @@
 using CHAL.Core;
 using CHAL.Data;
-using CHAL.Systems.Hero;
 using CHAL.Systems.Unit;
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 namespace CHAL.Systems.Skill
 {
@@ -20,7 +17,7 @@ namespace CHAL.Systems.Skill
         private EffectReceiver ownedBy;
 
         // berechnete Werte
-        public float Damage { get; private set; }
+        public List<DamageEntry> Damage { get; private set; }
         public float CastTime { get; private set; }
         public float Cooldown { get; private set; }
         public float Range { get; private set; }
@@ -49,46 +46,184 @@ namespace CHAL.Systems.Skill
             var tags = skillData.Tags ?? new List<SkillTag>();
             var mods = ownedBy != null ? ownedBy.ActiveModifiers : new ModifierStack();
 
-            // --- Phase 2, Step 1: BaseDMG (skalar, noch ohne Typaufschlüsselung) ---
+            // --- Phase 2, Step 1: BaseDMG  ---
             float baseDamage = Mathf.Max(0f, skillData.BaseDamage);
 
+            // -- Step 1: Added, converted, Gain Dmg ---
+            var dmgpertype = ApplyBaseDmgModfier(mods, tags, baseDamage);
+
             // --- Step 2: StatModifier (= DMGEffektModifier) anwenden ---
-            float baseEffectiveDamage = ApplyStatScaling(baseDamage);
-            float statModifier = (baseDamage > 0f)
-                ? (baseEffectiveDamage / baseDamage)
-                : 1f;
+            ApplyStatScaling(dmgpertype);
 
             // --- Step 3/4: Increased + More Layer über ModifierStack ---
-            ApplyFinalModifiers(mods, tags, baseDamage, baseEffectiveDamage, statModifier);
+            ApplyFinalDmgModifiers(mods, tags, dmgpertype);
+
+            // --- Mods like casttime, cooldown, ragne, etc.
+            ApplyOtherModifier(mods, tags);
+
+            var dmgList = new List<DamageEntry>(dmgpertype.Count);
+            foreach (var kv in dmgpertype)
+            {
+                dmgList.Add(new DamageEntry(kv.Key, kv.Value));
+            }
+
+            Damage = dmgList;
 
             DebugManager.Log(
-                $"Initialized Skill {skillData.SkillId} with DMG:{Damage:F1} (Base:{baseDamage:F1}, StatMod:{statModifier:F2}) CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
+                $"Initialized Skill {skillData.SkillId} with DMG:{Damage:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
                 DebugManager.EDebugLevel.Debug,
                 "Skill");
         }
 
-        private void ApplyFinalModifiers(ModifierStack mods, List<SkillTag> tags, float baseDamage, float baseEffectiveDamage, float statModifier)
+        private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, List<SkillTag> tags, float baseDamage)
         {
-            // --- Damage-Layering ---
+            DamageType baseType = skillData.BaseDamageType; ;
 
-            // V1-Annahme: ModifierStack.Apply(Damage, ...) liefert uns bereits
-            // (BaseEffektiveDMG + IncreasedDMG) * MoreDMG.
-            // Da das System noch keinen getrennten Zugriff auf "increased" vs "more" bietet,
-            // ziehen wir vorerst alles in die Increased-Schicht und setzen MoreDMG=1.
-            float preMoreTotal = mods.Apply(ModifierTarget.Damage, baseEffectiveDamage, tags);
+            // BaseEffektiveDMG_T: wir starten mit genau einem Typ
+            var baseEffectivePerType = new Dictionary<DamageType, float>
+            {
+                [baseType] = Mathf.Max(0f, baseDamage)
+            };
 
-            float increasedDamage = Mathf.Max(0f, preMoreTotal - baseEffectiveDamage);
+            var damageMods = mods.DamageModifiers; // oder _damageMods, je nachdem wie du es benannt hast
 
-            // TODO: Sobald ModifierStack "more"-Modifier separat liefern kann,
-            //       hier MoreDMG als Produkt der Faktoren berechnen
-            //       und preMoreTotal entsprechend anpassen.
-            float moreMult = 1.0f;
 
-            // Top-Level-Formel aus dem Design-Dokument:
-            // FinalDMG = (BaseEffektiveDMG + IncreasedDMG) * MoreDMG
-            Damage = (baseEffectiveDamage + increasedDamage) * moreMult;
+            if (damageMods != null)
+            {
+                foreach (var dm in damageMods)
+                {
+                    if (!AppliesToTags(dm, tags))
+                        continue;
 
-            // --- Restliche Runtime-Werte wie bisher über ModifierStack ---
+                    switch (dm.Type)
+                    {
+                        case DamageModifierType.Added:
+                            {
+                                var t = dm.TargetType;
+                                if (!baseEffectivePerType.TryGetValue(t, out var current))
+                                    current = 0f;
+
+                                // Added ist flat, **nach** StatScaling in V1
+                                baseEffectivePerType[t] = current + dm.Value;
+                                break;
+                            }
+
+                        case DamageModifierType.Convert:
+                            {
+                                var s = dm.SourceType;
+                                if (!baseEffectivePerType.TryGetValue(s, out var sourceCurrent))
+                                    sourceCurrent = 0f;
+
+                                if (sourceCurrent == 0f)
+                                    continue;
+
+                                var t = dm.TargetType;
+                                if (!baseEffectivePerType.TryGetValue(t, out var targetCurrent))
+                                    targetCurrent = 0f;
+
+                                var conversion = sourceCurrent * dm.Value;
+
+                                baseEffectivePerType[s] = sourceCurrent - conversion;
+                                baseEffectivePerType[t] = targetCurrent + conversion;
+                                // -> Später: mehrere Conversions normalisieren (Summe <= 1)
+                                break;
+                            }
+
+                        case DamageModifierType.Gain:
+                            {
+                                var s = dm.SourceType;
+                                if (!baseEffectivePerType.TryGetValue(s, out var sourceCurrent))
+                                    sourceCurrent = 0f;
+
+                                if (sourceCurrent == 0f)
+                                    continue;
+
+                                var t = dm.TargetType;
+                                if (!baseEffectivePerType.TryGetValue(t, out var targetCurrent))
+                                    targetCurrent = 0f;
+
+                                var gainedDmg = sourceCurrent * dm.Value;
+
+                                baseEffectivePerType[t] = targetCurrent + gainedDmg;
+                                break;
+                            }
+                        default: continue;
+                    }
+                }
+            }
+           
+            return baseEffectivePerType;
+        }
+
+        private void ApplyFinalDmgModifiers(ModifierStack mods, List<SkillTag> tags, Dictionary<DamageType,float> dmgPerType)
+        {
+
+            // Vorbereitung für Increased / More
+            float globalMoreMult = 1f;
+
+            var damageMods = mods.DamageModifiers; // oder _damageMods, je nachdem wie du es benannt hast
+            if (damageMods == null || dmgPerType == null || dmgPerType.Count == 0)
+                return;
+
+            var incPerType = new Dictionary<DamageType, float>();
+
+            foreach (var dm in damageMods)
+            {
+                if (!AppliesToTags(dm, tags))
+                    continue;
+
+                switch (dm.Type)
+                {
+                    case DamageModifierType.Increased:
+                        {
+                            var t = dm.TargetType;
+
+                            // Nur interessant, wenn für den Typ überhaupt Damage existiert
+                            if (!dmgPerType.ContainsKey(t))
+                                continue;
+
+                            if (!incPerType.TryGetValue(t, out var current))
+                                current = 0f;
+
+                            // dm.Value = 0.2f -> +20% Increased Damage
+                            incPerType[t] = current + dm.Value;
+                            break;
+                        }
+
+                    case DamageModifierType.More:
+                        {
+                            // dm.Value = 0.2f -> 20% more = *1.2
+                            globalMoreMult *= 1f + dm.Value;
+                            break;
+                        }
+                    default: continue;
+                }
+            }
+
+            //guard
+            if (globalMoreMult < 0)
+            {
+                DebugManager.Error($"Should not happen: globalMoreMult < 0 :{globalMoreMult}");
+                globalMoreMult = 0;
+            }
+
+
+            //Apply IncreasedDmg Mods
+            var keys = new List<DamageType>(dmgPerType.Keys);
+            foreach (var t in keys)
+            {
+                var baseEff = dmgPerType[t];
+                incPerType.TryGetValue(t, out var incSum); // 0 wenn keiner
+
+                dmgPerType[t] = baseEff * (1f + incSum) * globalMoreMult;
+            }
+        }
+
+        private void ApplyOtherModifier(ModifierStack mods, List<SkillTag> tags)
+        {
+            // -----------------------
+            // Restliche Runtime-Werte unverändert über ModifierStack.Apply
+            // -----------------------
             CastTime = mods.Apply(ModifierTarget.CastTime, skillData.CastTime, tags);
             Cooldown = mods.Apply(ModifierTarget.Cooldown, skillData.Cooldown, tags);
             Range = mods.Apply(ModifierTarget.Range, BalanceManager.Instance.GetRangeValue(skillData.Range), tags);
@@ -99,6 +234,23 @@ namespace CHAL.Systems.Skill
 
             // Optional: Wenn du später Debug-Infos für die Layer loggen willst,
             // kannst du hier BaseEffektiveDMG/Increased/More cachen.
+        }
+
+        private static bool AppliesToTags(DamageModifier mod, List<SkillTag> tags)
+        {
+            if (mod.AppliesTo == null || mod.AppliesTo.Count == 0)
+                return true;
+
+            if (tags == null || tags.Count == 0)
+                return false;
+
+            for (int i = 0; i < tags.Count; i++)
+            {
+                if (mod.AppliesTo.Contains(tags[i]))
+                    return true;
+            }
+
+            return false;
         }
 
 
@@ -116,10 +268,13 @@ namespace CHAL.Systems.Skill
             return multiplier;
         }
 
-        private float ApplyStatScaling(float baseDamage)
+        private void ApplyStatScaling(Dictionary<DamageType,float> dmgpertype)
         {
             float statMod = ComputeStatModifier();
-            return baseDamage * statMod;
+            foreach (var kv in dmgpertype)
+            {
+                dmgpertype[kv.Key] = kv.Value * statMod;
+            }
         }
 
         private float ComputeStatModifier()

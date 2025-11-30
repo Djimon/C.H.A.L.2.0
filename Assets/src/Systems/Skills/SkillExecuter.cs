@@ -120,7 +120,7 @@ namespace CHAL.Systems.Skill
             if (!ValidateFastReturnRules(source, target))
                 return;
 
-            var hit = HitResolver.Resolve(source, target, inst);
+            var hit = CombatCalculator.ResolveHit(inst, source, target);
 
             DebugManager.Log(
                 $"[SkillExecutor] {source} attempts melee hit on {target} with {inst.skillData.DisplayName} (IsHit={hit.IsHit}, IsCrit={hit.IsCrit})",
@@ -135,7 +135,7 @@ namespace CHAL.Systems.Skill
             if (!ValidateFastReturnRules(source, target))
                 return;
 
-            var hit = HitResolver.Resolve(source, target, inst);
+            var hit = CombatCalculator.ResolveHit(inst, source, target);
 
             DebugManager.Log(
                 $"[SkillExecutor] {source} casts spell {inst.skillData.DisplayName} on {target} (IsHit={hit.IsHit}, IsCrit={hit.IsCrit})",
@@ -208,7 +208,7 @@ namespace CHAL.Systems.Skill
             //   typischerweise über einen DamageImpact.
             //
             // Diese Methode übernimmt nur noch Routing/Triggering.
-            var hit = HitResolver.Resolve(source, target, skill);
+            var hit = CombatCalculator.ResolveHit(skill, source, target);
 
             DoOnHitImpactEffects(skill, source, target, hit);
         }

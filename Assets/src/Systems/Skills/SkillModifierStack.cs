@@ -11,19 +11,27 @@ namespace CHAL.Systems.Skill
 /// </summary>
     public class ModifierStack
     {
-        private readonly List<ModifierData> _mods = new();
+        private readonly List<ModifierData> _genericMods = new();
 
-/// <summary>
-/// Adds a modifier to the collection.
-/// </summary>
-/// <param name="mod">The modifier to add.</param>
-        public void AddModifier(ModifierData mod) => _mods.Add(mod);
+        private readonly List<DamageModifier> _damageMods = new();
+
+        public IReadOnlyList<DamageModifier> DamageModifiers => _damageMods;
+
+        /// <summary>
+        /// Adds a modifier to the collection.
+        /// </summary>
+        /// <param name="mod">The modifier to add.</param>
+        public void AddGenericModifier(ModifierData mod) => _genericMods.Add(mod);
+
+        public void AddDmgModifier(DamageModifier mod) => _damageMods.Add(mod);
 
 /// <summary>
 /// Removes a modifier from the collection.
 /// </summary>
 /// <param name="mod">The modifier to remove.</param>
-        public void RemoveModifier(ModifierData mod) => _mods.Remove(mod);
+        public void RemoveGenericModifier(ModifierData mod) => _genericMods.Remove(mod);
+
+        public void RemoveDmgModifier(DamageModifier mod) => _damageMods.Remove(mod);
 
 /// <summary>
 /// Applies modifiers to a base value based on the target and skill tags.
@@ -38,7 +46,7 @@ namespace CHAL.Systems.Skill
             float mult = 1f;
             float replace = -1f;
 
-            foreach (var mod in _mods)
+            foreach (var mod in _genericMods)
             {
                 if (mod.Target != target) continue;
                 if (mod.AppliesTo != null && mod.AppliesTo.Count > 0 &&

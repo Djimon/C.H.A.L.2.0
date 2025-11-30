@@ -45,12 +45,12 @@ namespace CHAL.Data
     public struct DamageEntry
     {
         public DamageType DmgType;
-        public float DmgMultiplier; // z. B. 1.5f = 150 % EnemyBaseDamage
+        public float damageOutput; 
 
-        public DamageEntry(DamageType type, float multiplier)
+        public DamageEntry(DamageType type, float value)
         { 
             DmgType = type;
-            DmgMultiplier = multiplier;
+            damageOutput = value;
         }
     }
 }

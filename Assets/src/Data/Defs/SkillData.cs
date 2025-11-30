@@ -16,7 +16,11 @@ namespace CHAL.Data
         public string DisplayName;
         public HeroAttribs AttributeAffinity = HeroAttribs.STR;
         public float BaseDamage = 1;
-        public List<DamageEntry> DamageTypes;
+        public DamageType BaseDamageType = DamageType.Physical;
+
+        //TODO: Deprecated: Delete if all references are remapped
+        //public List<DamageEntry> DamageTypes;
+
         [Tooltip("Time in seconds to cast this skill. 0 = instant.")]
         public float CastTime = 0f;
         [Tooltip("Cooldown in seconds before this skill can be used again.")]

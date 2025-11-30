@@ -1,4 +1,4 @@
-﻿using CHAL.UI;
+using CHAL.UI;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -200,7 +200,7 @@ namespace CHAL.UI
             return px;
         }
 
-        public InventoryView? GetOtherInventory(InventoryView caller)
+        public InventoryView GetOtherInventory(InventoryView caller)
         {
             if (caller == null) return null;
 
