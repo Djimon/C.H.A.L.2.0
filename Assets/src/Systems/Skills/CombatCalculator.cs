@@ -18,6 +18,9 @@ namespace CHAL.Systems.Skill
             if (skill?.Damage == null || skill.Damage.Count == 0)
                 return 0f;
 
+            if (!hit.IsHit)
+                return 0f;
+
             float total = 0f;
             for (int i = 0; i < skill.Damage.Count; i++)
             {

@@ -11,10 +11,10 @@ namespace CHAL.Systems.Skill
 /// </summary>
     public class DamageImpact : SkillImpactBase
     {
-        [Tooltip("Damage entries applied by this effect (elemental/physical).")]
+
         public List<DamageEntry> Damages;
 
-        public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
+        public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
         {
             if (skill == null || skill.skillData == null || target == null)
                 return;
@@ -24,19 +24,8 @@ namespace CHAL.Systems.Skill
             if (damageEntries == null || damageEntries.Count == 0)
                 return;
 
-            var packet = new DamagePacket
-            {
-                IsHitBased = true,
-                IsDot = false
-            };
+            var packet = CombatCalculator.BuildDamagePacket(skill, source, target, hit);
 
-            foreach (var entry in damageEntries)
-            {
-                if (entry.damageOutput <= 0f)
-                    continue;
-
-                packet.AddDamage(entry.DmgType, entry.damageOutput);
-            }
 
             if (packet.DamagePerType.Count == 0)
                 return;

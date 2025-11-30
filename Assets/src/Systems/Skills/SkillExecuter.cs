@@ -254,10 +254,5 @@ namespace CHAL.Systems.Skill
             }
         }
 
-        private static void DoOnHitImpactEffects(SkillInstance skill, EffectReceiver source, EffectReceiver target)
-        {
-            var defaultHit = HitResult.CreateDefault(skill, source, target);
-            DoOnHitImpactEffects(skill, source, target, defaultHit);
-        }
     }
 }

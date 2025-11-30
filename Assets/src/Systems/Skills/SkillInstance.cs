@@ -67,10 +67,18 @@ namespace CHAL.Systems.Skill
                 dmgList.Add(new DamageEntry(kv.Key, kv.Value));
             }
 
+            //Most Important assign all the calculationa bove would be lost if this is misssing
             Damage = dmgList;
 
+            float totalDmg = 0f;
+            if (Damage != null)
+            {
+                for (int i = 0; i < Damage.Count; i++)
+                    totalDmg += Damage[i].damageOutput;
+            }
+
             DebugManager.Log(
-                $"Initialized Skill {skillData.SkillId} with DMG:{Damage:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
+                $"Initialized Skill {skillData.SkillId} with DMG:{totalDmg:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
                 DebugManager.EDebugLevel.Debug,
                 "Skill");
         }
@@ -103,7 +111,6 @@ namespace CHAL.Systems.Skill
                                 if (!baseEffectivePerType.TryGetValue(t, out var current))
                                     current = 0f;
 
-                                // Added ist flat, **nach** StatScaling in V1
                                 baseEffectivePerType[t] = current + dm.Value;
                                 break;
                             }
