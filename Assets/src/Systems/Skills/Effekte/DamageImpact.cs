@@ -44,5 +44,10 @@ namespace CHAL.Systems.Skill
             target.TakeDamage(packet);
         }
 
+        public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
+        {
+            var hit = CombatCalculator.Resolve(source, target,skill);
+            Apply(skill, source, target, hit);    
+        }
     }
 }
