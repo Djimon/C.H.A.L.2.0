@@ -23,6 +23,10 @@ namespace CHAL.Systems.Skill
         /// <param name="mod">The modifier to add.</param>
         public void AddGenericModifier(ModifierData mod) => _genericMods.Add(mod);
 
+/// <summary>
+/// Adds a damage modifier to the collection.
+/// </summary>
+/// <param name="mod">The damage modifier to add.</param>
         public void AddDmgModifier(DamageModifier mod) => _damageMods.Add(mod);
 
 /// <summary>
@@ -31,6 +35,10 @@ namespace CHAL.Systems.Skill
 /// <param name="mod">The modifier to remove.</param>
         public void RemoveGenericModifier(ModifierData mod) => _genericMods.Remove(mod);
 
+/// <summary>
+/// Removes a damage modifier from the list of active modifiers.
+/// </summary>
+/// <param name="mod">The damage modifier to remove.</param>
         public void RemoveDmgModifier(DamageModifier mod) => _damageMods.Remove(mod);
 
 /// <summary>

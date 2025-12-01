@@ -61,6 +61,13 @@ namespace CHAL.Systems.Skill
             CritMultiplier = critMultiplier;
         }
 
+/// <summary>
+/// Creates a default HitResult based on the provided skill and effect receivers.
+/// </summary>
+/// <param name="skill">The skill instance used for the hit.</param>
+/// <param name="attacker">The effect receiver acting as the attacker.</param>
+/// <param name="defender">The effect receiver acting as the defender.</param>
+/// <returns>A HitResult representing the outcome of the hit.</returns>
         public static HitResult CreateDefault(SkillInstance skill, EffectReceiver attacker, EffectReceiver defender)
         {
             var ctx = new HitContext(skill, attacker, defender);

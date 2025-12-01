@@ -94,6 +94,11 @@ namespace CHAL.Data
         };
 
 
+/// <summary>
+/// Retrieves the socket definition for a specified socket type.
+/// </summary>
+/// <param name="type">The socket type to get the definition for.</param>
+/// <returns>The corresponding socket type definition.</returns>
         public static SocketTypeDefinition GetSocketDefiniton(SocketType type)
         {
             var index = (int)type;
@@ -106,6 +111,12 @@ namespace CHAL.Data
             return Definitions[index];
         }
 
+/// <summary>
+/// Determines if a specific attribute is allowed for a given socket type.
+/// </summary>
+/// <param name="socketType">The type of the socket to check.</param>
+/// <param name="attribute">The attribute to validate.</param>
+/// <returns>True if the attribute is allowed; otherwise, false.</returns>
         public static bool AllowsAttribute(SocketType socketType, HeroAttribs attribute)
         {
             var def = GetSocketDefiniton(socketType);

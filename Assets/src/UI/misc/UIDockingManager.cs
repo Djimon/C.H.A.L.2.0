@@ -200,6 +200,11 @@ namespace CHAL.UI
             return px;
         }
 
+/// <summary>
+/// Retrieves an alternative inventory view that is visible and not read-only.
+/// </summary>
+/// <param name="caller">The current inventory view to exclude from the results.</param>
+/// <returns>The other inventory view if found; otherwise, null.</returns>
         public InventoryView GetOtherInventory(InventoryView caller)
         {
             if (caller == null) return null;

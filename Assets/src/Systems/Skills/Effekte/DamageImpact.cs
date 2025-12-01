@@ -14,6 +14,13 @@ namespace CHAL.Systems.Skill
 
         public List<DamageEntry> Damages;
 
+/// <summary>
+/// Applies the skill effect from the source to the target based on the hit result.
+/// </summary>
+/// <param name="skill">The skill instance to apply.</param>
+/// <param name="source">The effect receiver that initiates the skill.</param>
+/// <param name="target">The effect receiver that receives the skill.</param>
+/// <param name="hit">The result of the hit.</param>
         public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
         {
             if (skill == null || skill.skillData == null || target == null)

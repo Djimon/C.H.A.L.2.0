@@ -263,6 +263,11 @@ namespace CHAL.Systems.Hero
 
         #region Progression (XP / Level / Orbit)
 
+/// <summary>
+/// Adds experience points to the hero.
+/// Experience points are only added if the amount is positive and the hero has not reached the level cap.
+/// </summary>
+/// <param name="amount">The amount of experience points to add.</param>
         public void AddXP(int amount)
         {
             if (amount <= 0) return;
@@ -312,6 +317,9 @@ namespace CHAL.Systems.Hero
 
 
         [ContextMenu("Debug/LevelUP")]
+/// <summary>
+/// Forces the hero to level up immediately.
+/// </summary>
         public void Debug_ForceLevelUp()
         {
             ApplyLevelUp();
@@ -382,6 +390,10 @@ namespace CHAL.Systems.Hero
         #region Persistenz-Brücke
 
 
+/// <summary>
+/// Applies the progress data to the hero, initializing values if the data is null.
+/// </summary>
+/// <param name="progress">The hero's progress data to apply.</param>
         public void ApplyProgressData(HeroProgressData progress)
         {
             if (progress == null)
@@ -416,6 +428,10 @@ namespace CHAL.Systems.Hero
             }
         }
 
+/// <summary>
+/// Fills the progress data for the specified hero.
+/// </summary>
+/// <param name="target">The HeroProgressData object to fill.</param>
         public void FillProgressData(HeroProgressData target)
         {
             if (target == null) return;

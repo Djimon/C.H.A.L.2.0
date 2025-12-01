@@ -26,6 +26,12 @@ namespace CHAL.Systems.Enemy
             CurrentHP = MaxHP;
         }
 
+/// <summary>
+/// Applies damage to the enemy, considering the damage type.
+/// Logs the damage received and the resulting health.
+/// </summary>
+/// <param name="amount">The amount of damage to apply.</param>
+/// <param name="type">The type of damage being applied.</param>
         public override void TakeDamage(float amount, DamageType type)
         {
             if (amount <= 0f) return;

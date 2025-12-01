@@ -3,9 +3,21 @@ using CHAL.Systems.Unit;
 namespace CHAL.Systems.Skill
 {
 
+/// <summary>
+/// Provides methods for calculating combat outcomes in a game.
+/// This class includes functionality for resolving hit results between combatants.
+/// </summary>
     public static class CombatCalculator
     {
 
+/// <summary>
+/// Resolves the hit outcome between an attacker and defender using a skill.
+/// Returns the result of the hit resolution process.
+/// </summary>
+/// <param name="skill">The skill instance used for the attack.</param>
+/// <param name="attacker">The effect receiver representing the attacker.</param>
+/// <param name="defender">The effect receiver representing the defender.</param>
+/// <returns>The result of the hit resolution.</returns>
         public static HitResult ResolveHit(SkillInstance skill, EffectReceiver attacker, EffectReceiver defender)
         {
             // V1: komplett delegiert an HitResolver, der intern HitContext aufbaut.
@@ -13,6 +25,13 @@ namespace CHAL.Systems.Skill
         }
 
     
+/// <summary>
+/// Computes the final damage scalar based on the skill and hit result.
+/// Returns 0 if the skill has no damage or the hit is not successful.
+/// </summary>
+/// <param name="skill">The skill instance containing damage information.</param>
+/// <param name="hit">The hit result indicating if the attack was successful.</param>
+/// <returns>The computed final damage scalar.</returns>
         public static float ComputeFinalDamageScalar(SkillInstance skill, HitResult hit)
         {
             if (skill?.Damage == null || skill.Damage.Count == 0)
@@ -38,6 +57,14 @@ namespace CHAL.Systems.Skill
         }
 
 
+/// <summary>
+/// Builds a damage packet based on the provided skill and hit result.
+/// </summary>
+/// <param name="skill">The skill instance used to calculate damage.</param>
+/// <param name="attacker">The entity dealing the damage.</param>
+/// <param name="defender">The entity receiving the damage.</param>
+/// <param name="hit">The result of the hit attempt.</param>
+/// <returns>A DamagePacket containing the calculated damage information.</returns>
         public static DamagePacket BuildDamagePacket(SkillInstance skill, EffectReceiver attacker, EffectReceiver defender, HitResult hit)
         {
             var packet = new DamagePacket
