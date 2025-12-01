@@ -93,6 +93,13 @@ namespace CHAL.Systems.Skill
             return packet;
         }
 
+/// <summary>
+/// Resolves the outcome of an attack between an attacker and a defender using a specified skill.
+/// </summary>
+/// <param name="attacker">The entity initiating the attack.</param>
+/// <param name="defender">The entity receiving the attack.</param>
+/// <param name="skill">The skill being used in the attack.</param>
+/// <returns>The result of the hit, indicating success or failure.</returns>
         public static HitResult Resolve(EffectReceiver attacker, EffectReceiver defender, SkillInstance skill)
         {
             var ctx = new HitContext(skill, attacker, defender);

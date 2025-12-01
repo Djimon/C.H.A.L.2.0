@@ -51,6 +51,12 @@ namespace CHAL.Systems.Skill
             target.TakeDamage(packet);
         }
 
+/// <summary>
+/// Applies the skill effect from the source to the target.
+/// </summary>
+/// <param name="skill">The skill instance to apply.</param>
+/// <param name="source">The effect receiver that initiates the skill.</param>
+/// <param name="target">The effect receiver that receives the skill effect.</param>
         public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
         {
             var hit = CombatCalculator.Resolve(source, target,skill);

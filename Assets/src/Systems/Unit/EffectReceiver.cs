@@ -103,6 +103,11 @@ namespace CHAL.Systems.Unit
             TakeDamage(packet);
         }
 
+/// <summary>
+/// Applies damage to the entity based on the provided damage packet.
+/// If the packet is invalid, no damage is applied.
+/// </summary>
+/// <param name="packet">The damage packet containing damage information.</param>
         public void TakeDamage(DamagePacket packet)
         {
             if (packet == null ||
