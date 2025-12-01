@@ -6,6 +6,9 @@ namespace CHAL.Systems.Skill
 {
 
     [Serializable]
+/// <summary>
+/// Represents a packet of damage information, including damage types and totals.
+/// </summary>
     public class DamagePacket
     {
      
@@ -17,6 +20,11 @@ namespace CHAL.Systems.Skill
   
         public bool IsDot { get; set; } = false;
 
+/// <summary>
+/// Adds damage of a specified type to the total damage.
+/// </summary>
+/// <param name="type">The type of damage to add.</param>
+/// <param name="amount">The amount of damage to add.</param>
         public void AddDamage(DamageType type, float amount)
         {
             if (amount <= 0f)

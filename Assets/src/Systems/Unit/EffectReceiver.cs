@@ -83,6 +83,11 @@ namespace CHAL.Systems.Unit
         /// </summary>
         /// <param name="amount">The amount of damage to apply.</param>
         /// <param name="type">The type of damage being inflicted.</param>
+/// <summary>
+/// Applies damage to the entity based on the specified amount and damage type.
+/// </summary>
+/// <param name="amount">The amount of damage to apply.</param>
+/// <param name="type">The type of damage being inflicted.</param>
         public virtual void TakeDamage(float amount, DamageType type)
         {
             if (amount <= 0f)

@@ -3,6 +3,10 @@ using System;
 using System.Collections.Generic;
 
 [Serializable]
+/// <summary>
+/// Represents a modifier for damage calculations in the game.
+/// Contains properties to define the type and target of the damage modifier.
+/// </summary>
 public class DamageModifier
 {
     public string Id;
