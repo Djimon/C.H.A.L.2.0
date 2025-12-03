@@ -27,7 +27,7 @@ OUT_DIR: pathlib.Path | None = None
 DOC_ROOT: pathlib.Path | None = None
 
 # Konfiguration (Env oder Default)
-CHANGE_RATE_THRESHOLD = float(os.getenv("DOCGEN_CHANGE_RATE", "0.1"))  # 10% default
+CHANGE_RATE_THRESHOLD = float(os.getenv("DOCGEN_CHANGE_RATE", "0.05"))  # 10% default
 CODE_CHANGE_THRESHOLD = float(os.getenv("DOCGEN_CODE_CHANGE_RATE", "0.10"))  # 10% default
 
 INDEX_MAX_LEVELS = int(os.getenv("DOCGEN_INDEX_MAX_LEVELS", "3"))
