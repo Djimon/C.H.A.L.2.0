@@ -11,10 +11,10 @@ All documented namespaces and types.
 ### Core
 
 - [BalanceManager](CHAL/Core/BalanceManager.md) (2025-11-09)
-- [GameState](CHAL/Core/GameState.md) (2025-11-09)
+- [GameState](CHAL/Core/GameState.md) (2025-11-14)
 - [InputManager](CHAL/Core/InputManager.md) (2025-11-09)
 - [SaveGameConfig](CHAL/Core/SaveGameConfig.md) (2025-11-09)
-- [SaveSystem](CHAL/Core/SaveSystem.md) (2025-11-09)
+- [SaveSystem](CHAL/Core/SaveSystem.md) (2025-11-18)
 
 ### Data
 
@@ -32,6 +32,7 @@ All documented namespaces and types.
 - [HeroCatalog](CHAL/Data/HeroCatalog.md) (2025-11-09)
 - [HeroDef](CHAL/Data/HeroDef.md) (2025-11-09)
 - [HeroSlot](CHAL/Data/HeroSlot.md) (2025-11-09)
+- [HeroXPConfig](CHAL/Data/HeroXPConfig.md) (2025-11-18)
 - [ImplicitGearTypeConfig](CHAL/Data/ImplicitGearTypeConfig.md) (2025-11-09)
 - [ItemDef](CHAL/Data/ItemDef.md) (2025-11-09)
 - [ItemStruct](CHAL/Data/ItemStruct.md) (2025-11-09)
@@ -52,6 +53,8 @@ All documented namespaces and types.
 - [RuneForgeEntry](CHAL/Data/RuneForgeEntry.md) (2025-11-09)
 - [SkillData](CHAL/Data/SkillData.md) (2025-11-09)
 - [SkillType](CHAL/Data/SkillType.md) (2025-11-09)
+- [SocketType](CHAL/Data/SocketType.md) (2025-11-23)
+- [SocketTypedef](CHAL/Data/SocketTypedef.md) (2025-11-23)
 - [WaveComposition](CHAL/Data/WaveComposition.md) (2025-11-09)
 - [WaveDef](CHAL/Data/WaveDef.md) (2025-11-09)
 
@@ -136,7 +139,7 @@ All documented namespaces and types.
 - [ResearchMapView](CHAL/Systems/Research/ResearchMapView.md) (2025-11-09)
 - [ResearchNodeWidget](CHAL/Systems/Research/ResearchNodeWidget.md) (2025-11-09)
 - [ResearchRequirement](CHAL/Systems/Research/ResearchRequirement.md) (2025-11-09)
-- [ResearchService](CHAL/Systems/Research/ResearchService.md) (2025-11-09)
+- [ResearchService](CHAL/Systems/Research/ResearchService.md) (2025-11-14)
 - [ResearchState](CHAL/Systems/Research/ResearchState.md) (2025-11-09)
 - [ResearchTreeCompiler](CHAL/Systems/Research/ResearchTreeCompiler.md) (2025-11-09)
 - [ResearchUnlockRegistry](CHAL/Systems/Research/ResearchUnlockRegistry.md) (2025-11-09)
@@ -145,19 +148,29 @@ All documented namespaces and types.
 
 - [ActiveStatusEffect](CHAL/Systems/Skill/ActiveStatusEffect.md) (2025-11-09)
 - [BuffStatusEffect](CHAL/Systems/Skill/BuffStatusEffect.md) (2025-11-09)
-- [DamageImpact](CHAL/Systems/Skill/DamageImpact.md) (2025-11-09)
+- [CombatCalculator](CHAL/Systems/Skill/CombatCalculator.md) (2025-11-30)
+- [DamageImpact](CHAL/Systems/Skill/DamageImpact.md) (2025-11-30)
+- [DamagePacket](CHAL/Systems/Skill/DamagePacket.md) (2025-11-30)
 - [DebuffStatusEffect](CHAL/Systems/Skill/DebuffStatusEffect.md) (2025-11-09)
 - [DoTStatusEffect](CHAL/Systems/Skill/DoTStatusEffect.md) (2025-11-09)
+- [HitContext](CHAL/Systems/Skill/HitContext.md) (2025-11-30)
+- [HitResolver](CHAL/Systems/Skill/HitResolver.md) (2025-11-30)
 - [ModifierStack](CHAL/Systems/Skill/ModifierStack.md) (2025-11-09)
 - [ProjectileController](CHAL/Systems/Skill/ProjectileController.md) (2025-11-09)
 - [SkillExecuter](CHAL/Systems/Skill/SkillExecuter.md) (2025-11-09)
-- [SkillImpactBase](CHAL/Systems/Skill/SkillImpactBase.md) (2025-11-09)
+- [SkillImpactBase](CHAL/Systems/Skill/SkillImpactBase.md) (2025-11-30)
 - [SkillInstance](CHAL/Systems/Skill/SkillInstance.md) (2025-11-09)
 - [TriggerSkillImpact](CHAL/Systems/Skill/TriggerSkillImpact.md) (2025-11-09)
+
+#### Stats
+
+- [IStatisticsService](CHAL/Systems/Stats/IStatisticsService.md) (2025-11-14)
+- [StatisticService](CHAL/Systems/Stats/StatisticService.md) (2025-11-14)
 
 #### Unit
 
 - [EffectReceiver](CHAL/Systems/Unit/EffectReceiver.md) (2025-11-09)
+- [IAttributeHolder](CHAL/Systems/Unit/IAttributeHolder.md) (2025-11-23)
 - [IUnitController](CHAL/Systems/Unit/IUnitController.md) (2025-11-09)
 - [UnitLocator](CHAL/Systems/Unit/UnitLocator.md) (2025-11-09)
 - [UnitRegistry](CHAL/Systems/Unit/UnitRegistry.md) (2025-11-09)
@@ -200,10 +213,12 @@ All documented namespaces and types.
 
 ## global
 
+- [DamageModifier](global/DamageModifier.md) (2025-11-30)
 - [DebugConfig](global/DebugConfig.md) (2025-11-09)
 - [DebugCraftingRunner](global/DebugCraftingRunner.md) (2025-11-09)
 - [DebugEnemySpawner](global/DebugEnemySpawner.md) (2025-11-09)
 - [DebugResearchBootstrap](global/DebugResearchBootstrap.md) (2025-11-09)
+- [detect_encoding_issues](global/detect_encoding_issues.md) (2025-11-18)
 - [DevResearchFastForward](global/DevResearchFastForward.md) (2025-11-09)
 - [docgen](global/docgen.md) (2025-11-09)
 - [EDebugLevel](global/EDebugLevel.md) (2025-11-09)
@@ -217,6 +232,7 @@ All documented namespaces and types.
 - [IWallet](global/IWallet.md) (2025-11-09)
 - [LootRollerDebug](global/LootRollerDebug.md) (2025-11-09)
 - [LootRulesDebug](global/LootRulesDebug.md) (2025-11-09)
+- [patchCSfiles](global/patchCSfiles.md) (2025-11-18)
 - [ResearchNodeEditorWindow](global/ResearchNodeEditorWindow.md) (2025-11-09)
 - [ResearchTreeeEditor](global/ResearchTreeeEditor.md) (2025-11-09)
 - [review_agent](global/review_agent.md) (2025-11-09)
