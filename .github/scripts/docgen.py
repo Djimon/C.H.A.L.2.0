@@ -339,26 +339,26 @@ def all_repo_files():
     return paths
 
 def files_to_process(force_all: bool = False):
-     """
+    """
     Liefert die zu verarbeitenden Dateien.
-
+    
     Normal:
-      - Wenn FULL_SCAN=true -> alle Dateien
-      - Sonst: nur geänderte Dateien seit letztem Commit
-
+    - Wenn FULL_SCAN=true -> alle Dateien
+    - Sonst: nur geänderte Dateien seit letztem Commit
+    
     Bei force_all=True (Commit-Flag [docgen:force]):
-      - Immer: kompletter Scan aller relevanten Dateien (wie FULL_SCAN),
-        unabhängig vom FULL_SCAN-Env.
+    - Immer: kompletter Scan aller relevanten Dateien (wie FULL_SCAN),
+    unabhängig vom FULL_SCAN-Env.
     """
     if force_all:
         # Harte Voll-Scan-Variante für [docgen:force]
         return all_repo_files()
-
+    
     # FULL_SCAN=true (oder 'True') -> alles
     full = (os.getenv("FULL_SCAN","").lower() == "true")
     if full:
         return all_repo_files()
-
+    
     # sonst nur Änderungen seit letztem Commit
     return changed_files_since_last_commit()
 
