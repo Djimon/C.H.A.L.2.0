@@ -340,10 +340,26 @@ def all_repo_files():
     return paths
 
 def files_to_process():
+     """
+    Liefert die zu verarbeitenden Dateien.
+
+    Normal:
+      - Wenn FULL_SCAN=true -> alle Dateien
+      - Sonst: nur geänderte Dateien seit letztem Commit
+
+    Bei force_all=True (Commit-Flag [docgen:force]):
+      - Immer: kompletter Scan aller relevanten Dateien (wie FULL_SCAN),
+        unabhängig vom FULL_SCAN-Env.
+    """
+    if force_all:
+        # Harte Voll-Scan-Variante für [docgen:force]
+        return all_repo_files()
+
     # FULL_SCAN=true (oder 'True') -> alles
     full = (os.getenv("FULL_SCAN","").lower() == "true")
     if full:
         return all_repo_files()
+
     # sonst nur Änderungen seit letztem Commit
     return changed_files_since_last_commit()
 
@@ -494,7 +510,7 @@ def main():
     any_change = False
     try:
         # 2) Generierung – ALLES schreibt nur in OUT_DIR (Worktree)
-        files = files_to_process()  # dein bestehender Sammler
+        files = files_to_process(force_all=DOCGEN_FORCE_ALL)  # dein bestehender Sammler
         for f in files:
             # Pfadfilter & Namespace-Filter weiterhin hier:
             if is_excluded_path(pathlib.Path(f)):
