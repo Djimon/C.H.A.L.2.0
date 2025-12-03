@@ -8,7 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       FULL_SCAN:
-        description: 'Scan entire repo (true/false)'
+        description: '[FULL_SCAN]: Scan entire repo (true/false)'
+        required: false
+        default: 'false'
+      DOCGEN_DRY_RUN:
+        description: '[DOCGEN_DRY_RUN]: Generate docs without commit/push (true/false)'
         required: false
         default: 'false'
 
