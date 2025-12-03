@@ -311,8 +311,7 @@ def write_if_changed(path: pathlib.Path, content: str, force: bool = False) -> b
     if force:
         if old.strip() != content.strip():
             path.write_text(content, encoding="utf-8")
-            return True
-        return False
+        return True
     
     delta = change_rate(old, content)
 
@@ -339,7 +338,7 @@ def all_repo_files():
             paths.append(str(p.as_posix()))
     return paths
 
-def files_to_process():
+def files_to_process(force_all: bool = False):
      """
     Liefert die zu verarbeitenden Dateien.
 
@@ -498,6 +497,10 @@ def main():
     DOCGEN_FORCE_ALL = flags.get("force", False)
     print(f"[docgen] flags: force={DOCGEN_FORCE_ALL}")
 
+    # FULL_SCAN steuert nur, dass ALLE passenden Dateien angefasst werden
+    full_scan = os.getenv("FULL_SCAN", "").lower() == "true"
+    print(f"[docgen] FULL_SCAN={full_scan}")
+
     # 1) EIN Worktree & EIN OUT_DIR
     doc_branch = _docgen_branch_name()
     worktree_dir = create_worktree(doc_branch)
@@ -507,6 +510,8 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     DOC_ROOT = OUT_DIR
 
+   
+    
     any_change = False
     try:
         # 2) Generierung – ALLES schreibt nur in OUT_DIR (Worktree)
@@ -525,23 +530,27 @@ def main():
             out_path = p if p.is_absolute() else (OUT_DIR / p)
 
             must_generate = not out_path.exists()
-            if not must_generate and not DOCGEN_FORCE_ALL:
+            # Threshold nur benutzen, wenn:
+            # - Datei schon existiert
+            # - NICHT [docgen:force]
+            # - UND NICHT FULL_SCAN
+            if not must_generate and not DOCGEN_FORCE_ALL and not full_scan:
                 delta_code = code_change_rate(f, compare_ref=os.getenv("DOCGEN_COMPARE_REF", "HEAD~1"))
                 if delta_code < CODE_CHANGE_THRESHOLD:
                     # zu wenig Code-Änderung: LLM SKIPPEN
-                    # (Optional: Touch/Index unverändert lassen)
                     continue
 
             old_body = load_existing_doc_body(out_path)  
             md_body = llm_markdown_for(f, code, old_body)
             header = build_header_for(f)  # falls vorhanden; sonst leer
-            changed = write_if_changed(out_path, header + md_body + "\n",force=DOCGEN_FORCE_ALL)
+            changed = write_if_changed(out_path, header + md_body + "\n",force=(DOCGEN_FORCE_ALL or full_scan))
 
             any_change |= changed
 
         # 3) Index über DENSELBEN OUT_DIR
-        index_text = build_index_for_outdir(OUT_DIR, worktree_dir)  # nutze last_commit_date_str(..., cwd=worktree_dir)
-        write_if_changed(OUT_DIR / "INDEX.md", index_text)
+        index_text = build_index_for_outdir(OUT_DIR, worktree_dir)
+        write_if_changed(OUT_DIR / "INDEX.md", index_text, force=(DOCGEN_FORCE_ALL or full_scan),
+        )
 
         # 4) Dry-Run? -> NIX commit/push/PR
         if DOCGEN_DRY_RUN:
