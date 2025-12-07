@@ -19,6 +19,10 @@ public sealed class ResolvedSkill
     public float CastTime { get; }
     public float ProjectileSpeed { get; }
     public float Range { get; }
+    public float AoERadius { get; private set; }
+    public int ProjectileCount { get; private set; }
+
+    public List<DamageEntry> DamageEntries { get; private set; }
 
     // Tags – finales Set nach Family + Module + ArchetypeOverride + Core
     public TagContext tagContext { get; }
@@ -44,6 +48,9 @@ public sealed class ResolvedSkill
         float castTime,
         float projectileSpeed,
         float range,
+        float aoeRadius,
+        int projectileCount,
+        List<DamageEntry> damageEntries,
         TagContext tags)
     {
         SkillId = skillId;
@@ -59,7 +66,35 @@ public sealed class ResolvedSkill
         CastTime = castTime;
         ProjectileSpeed = projectileSpeed;
         Range = range;
+        AoERadius = aoeRadius;
+        ProjectileCount = projectileCount;
+
+        DamageEntries = damageEntries;
 
         tagContext = tags;
+        
+    }
+
+    public float TotalDamage
+    {
+        get
+        {
+            if (DamageEntries == null || DamageEntries.Count == 0)
+                return Damage;
+
+            float total = 0f;
+            for (int i = 0; i < DamageEntries.Count; i++)
+            {
+                var entry = DamageEntries[i];
+                if (entry.damageOutput > 0f)
+                    total += entry.damageOutput;
+            }
+            return total;
+        }
+    }
+
+    public void AddOrReplaceDamageEntries(List<DamageEntry> entries)
+    {
+        DamageEntries = new List<DamageEntry>(entries);
     }
 }

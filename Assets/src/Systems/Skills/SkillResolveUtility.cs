@@ -62,7 +62,12 @@ namespace CHAL.Systems.Skill
             float cooldown = module.Cooldown;
             float castTime = module.CastTime;
             float projSpd = module.ProjectileSpeed;
+            int projCount = module.ProjectileCount;
+            float aoeRad = module.AoERadius;
             float range = ResolveRangeAsFloat(module.Range);
+
+            //fill later via ResolvedSkill.AddOrReplaceDamageEntries(List<DamageEntry>)
+            List<DamageEntry> dmgEntries = new List<DamageEntry>(); 
 
             // 2) Archetype-Overrides anwenden (echte Overrides, keine Multipliers)
             if (overrideDef != null)
@@ -95,7 +100,10 @@ namespace CHAL.Systems.Skill
                 cooldown: cooldown,
                 castTime: castTime,
                 projectileSpeed: projSpd,
+                projectileCount: projCount,
                 range: range,
+                aoeRadius: aoeRad,
+                damageEntries: dmgEntries,
                 tags: tagContext
             );
         }

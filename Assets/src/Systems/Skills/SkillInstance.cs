@@ -17,7 +17,7 @@ namespace CHAL.Systems.Skill
 
         private EffectReceiver ownedBy;
 
-        public ResolvedSkill Resolved { get; private set; }
+        public ResolvedSkill finalSkillData { get; private set; }
 
         // berechnete Werte
         public List<DamageEntry> Damage { get; private set; }
@@ -55,16 +55,12 @@ namespace CHAL.Systems.Skill
             var overrideDef = GetArchetypeOverride();
             var archetypeId = ownedBy != null ? (ownedBy as HeroInstance)?.Archetype.ArchetypeId : string.Empty;
 
-            var baseResolved = SkillResolveUtility.ResolveBaseSkill(
-            skillModule,
-            overrideDef,
-            archetypeId
-        );
+            finalSkillData = SkillResolveUtility.ResolveBaseSkill(skillModule,overrideDef,archetypeId);
          
 
             var mods = ownedBy != null ? ownedBy.ActiveModifiers : new ModifierStack();
 
-            var tags = baseResolved.tagContext;
+            var tags = finalSkillData.tagContext;
             var tagsStrings = new List<string>(tags.GetModifierTags());
 
             // --- Phase 2, Step 1: BaseDMG  ---
@@ -90,6 +86,7 @@ namespace CHAL.Systems.Skill
 
             //Most Important assign all the calculationa bove would be lost if this is misssing
             Damage = dmgList;
+            finalSkillData.AddOrReplaceDamageEntries(Damage);
 
             float totalDmg = 0f;
             if (Damage != null)
