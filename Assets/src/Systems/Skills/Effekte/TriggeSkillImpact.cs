@@ -11,7 +11,7 @@ namespace CHAL.Systems.Skill
     public class TriggerSkillImpact : SkillImpactBase
     {
         [Tooltip("Skill that will be triggered on hit.")]
-        public SkillData SkillToTrigger;
+        public SkillModuleDef SkillToTrigger;
 
 /// <summary>
 /// Applies the skill from the source to the target if the skill is available.

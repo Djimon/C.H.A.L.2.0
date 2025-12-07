@@ -12,7 +12,7 @@ namespace CHAL.Systems.Skill
 /// </summary>
     public class SkillInstance
     {
-        public SkillData skillData { get; private set; }
+        public SkillModuleDef skillData { get; private set; }
 
         private EffectReceiver ownedBy;
 
@@ -30,7 +30,7 @@ namespace CHAL.Systems.Skill
         float cooldownRemaining = 0;
 
 
-        public SkillInstance(SkillData data, EffectReceiver owner)
+        public SkillInstance(SkillModuleDef data, EffectReceiver owner)
         {
             skillData = data;
             ownedBy = owner;

@@ -2,7 +2,7 @@ using CHAL.Data;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(SkillData))]
+[CustomEditor(typeof(SkillModuleDef))]
 /// <summary>
 /// Custom editor for SkillData objects in the Unity Inspector.
 /// </summary>
@@ -16,7 +16,7 @@ public class SkillDataEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        SkillData data = (SkillData)target;
+        SkillModuleDef data = (SkillModuleDef)target;
 
         // Identity
         EditorGUILayout.LabelField("Identity", EditorStyles.boldLabel);

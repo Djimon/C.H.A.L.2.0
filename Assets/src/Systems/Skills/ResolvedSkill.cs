@@ -21,7 +21,12 @@ public sealed class ResolvedSkill
     public float Range { get; }
 
     // Tags – finales Set nach Family + Module + ArchetypeOverride + Core
-    public IReadOnlyList<SkillDeliveryTag> Tags { get; }
+    public TagContext tagContext { get; }
+
+    public SkillType? SkillType => tagContext.SkillType;
+    public IReadOnlyList<SkillDeliveryTag> DeliveryTags => tagContext.DeliveryTags;
+    public IReadOnlyList<SkillMechanicTag> MechanicTags => tagContext.MechanicTags;
+    public DamageType? DamageType => tagContext.DamageType;
 
     // (Optional) weitere numerische Achsen kannst du hier später ergänzen,
     // wenn sie in deinem MD stehen.
@@ -39,7 +44,7 @@ public sealed class ResolvedSkill
         float castTime,
         float projectileSpeed,
         float range,
-        IReadOnlyList<SkillDeliveryTag> tags)
+        TagContext tags)
     {
         SkillId = skillId;
         FamilyId = familyId;
@@ -55,6 +60,6 @@ public sealed class ResolvedSkill
         ProjectileSpeed = projectileSpeed;
         Range = range;
 
-        Tags = tags;
+        tagContext = tags;
     }
 }

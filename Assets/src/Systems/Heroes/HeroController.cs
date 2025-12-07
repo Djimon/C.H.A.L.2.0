@@ -23,7 +23,7 @@ namespace CHAL.Systems.Hero
         [SerializeField] 
         private List<SkillInstance> socketedSkills = new();
 
-        public List<SkillData> debugSocketSkills = new();
+        public List<SkillModuleDef> debugSocketSkills = new();
 
 
         public Transform target; // aktuelles Target (EnemyController o.Ã¤.)
@@ -398,7 +398,7 @@ namespace CHAL.Systems.Hero
 
         private SkillInstance BuildBaseAttackMelee(HeroInstance owner)
         {
-            var sd = ScriptableObject.CreateInstance<SkillData>();
+            var sd = ScriptableObject.CreateInstance<SkillModuleDef>();
             sd.SkillId = "base_attack_melee";
             sd.DisplayName = "Base Melee";
             sd.BaseDamage = owner.GetEffectiveBaseDamage();
@@ -414,7 +414,7 @@ namespace CHAL.Systems.Hero
 
         private SkillInstance BuildBaseAttackRanged(HeroInstance owner)
         {
-            var sd = ScriptableObject.CreateInstance<SkillData>();
+            var sd = ScriptableObject.CreateInstance<SkillModuleDef>();
             sd.SkillId = "base_attack_ranged";
             sd.DisplayName = "Base Ranged";
             sd.BaseDamage = owner.GetEffectiveBaseDamage();
