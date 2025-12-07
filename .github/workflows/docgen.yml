@@ -8,7 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       FULL_SCAN:
-        description: 'Scan entire repo (true/false)'
+        description: '[FULL_SCAN]: Scan entire repo (true/false)'
+        required: false
+        default: 'false'
+      DOCGEN_DRY_RUN:
+        description: '[DOCGEN_DRY_RUN]: Generate docs without commit/push (true/false)'
         required: false
         default: 'false'
 
@@ -46,6 +50,7 @@ jobs:
           DOCGEN_ALLOWED_NS: "CHAL,global"
           DOCGEN_EXCLUDE_NS: "BayatGames,MatthewAssets"
           DOCGEN_CODE_CHANGE_RATE: 0.1
+          DOCGEN_CHANGE_RATE: 0.05
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           FULL_SCAN: ${{ github.event.inputs.FULL_SCAN }}
         run: |
