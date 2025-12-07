@@ -39,14 +39,18 @@ All Skill and Modifier calculations ultimately work on this stat set and derived
 Each Skill is defined by a SkillData object, including:
 
 \begin{itemize}
+	\item skill-family (GroundEffect, SinpleHit, Projectile, Nova, etc.)
 	\item base damage (physical/elemental or mixed),
 	\item cooldown and cast time,
 	\item range and target rules (single target, AoE, line, cone, self),
 	\item tags (e.g. melee, projectile, DoT, aura, summon, fire, holy, undead),
 	\item scaling hooks (which stats modify what parts of the skill).
+	\item effect hooks (impacts/status)
 \end{itemize}
 
-\subsubsection*{Impacts and Status}
+\subsubsection*{Impacts and Status ("Effects")}
+
+Technically devided in OnCastEffect, OnHitEffect and EndEffects.
 
 \begin{itemize}
 	\item \textbf{Impacts} define what happens when a Skill is cast or hits:
@@ -143,7 +147,7 @@ Modules represent the main active skill layer for Heroes:
 
 \begin{itemize}
 	\item they define \textbf{what} a skill does (projectile, aura, buff, summon, etc.),
-	\item archetypes define \textbf{how} it feels (e.g. same Module might be a burning nova for an Arcanist and a physical shockwave for a Vanguard) $\rightarrow$ (see Section \ref{subsec:skill-families-profiles})
+	\item archetypes define \textbf{how} it feels and can change impacts and effects (e.g. same Module might be a burning nova for an Arcanist and a physical shockwave for a Vanguard) $\rightarrow$ (see Section \ref{subsec:skill-families-profiles})
 	\item Orbits, Gear and Runes further modify behaviour and scaling.
 \end{itemize}
 
@@ -192,6 +196,8 @@ General naming rule: prefix (dmg-type) + Module-Name + Suffix (profile). \\
 	\item \glqq Glacial Pulse-Module of Sorcery\grqq
 	\item \glqq Radiant Burst-Module of Precision\grqq
 \end{itemize}
+
+\textbf{General summary}: The module defines the basis, the archetype defines certain overrides, whereby not every archetype always has its own override; some archetypes share overrides when appropriate.
 
 % RISK: If Modules are too numerous or too similar, the system loses clarity.
 % TODO: For MVP, keep Module count per archetype low and strongly themed.
