@@ -33,13 +33,13 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ResolvedSkill.c
     - Public methods:
       - ResolvedSkill(string skillId, string familyId, string moduleId, string coreId, string archetypeId, float damage, float radius, float duration, float cooldown, float castTime, float projectileSpeed, SkillRange range, float aoeRadius, int projectileCount, List<DamageEntry> damageEntries, TagContext tags): Constructor that initializes a new instance of `ResolvedSkill`.
       - void UpdateRuntimeValues(float damage, float radius, float duration, float cooldown, float castTime, float projectileSpeed, SkillRange range, float aoeRadius, int projectileCount): Updates runtime values of the skill.
-      - float TotalDamage: Calculates the total damage based on damage entries.
+      - float TotalDamage: Calculates and returns the total damage based on damage entries.
       - void AddOrReplaceDamageEntries(List<DamageEntry> entries): Replaces the current damage entries with the provided list.
 
 # Key Behavior & Side Effects
 - The constructor initializes all properties of the `ResolvedSkill` class with provided values.
-- The `UpdateRuntimeValues` method updates the runtime values of the skill.
-- The `TotalDamage` property calculates the total damage based on the `DamageEntries` list, returning the base damage if no entries are present.
+- The `UpdateRuntimeValues` method allows for updating the skill's runtime values.
+- The `TotalDamage` property calculates total damage based on the `DamageEntries`, returning the base damage if no entries are present.
 - The `AddOrReplaceDamageEntries` method replaces the existing damage entries with a new list.
 
 # Constraints & Failure Modes

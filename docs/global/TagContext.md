@@ -3,7 +3,7 @@
 _Automatically generated/updated from `Assets/src/Systems/Skills/TagContext.cs`._
 
 # Purpose
-- Defines the `TagContext` class for managing skill-related tags and types.
+- Defines the `TagContext` class, which encapsulates skill-related tags and types.
 
 # Public API
 - Namespace/module: None

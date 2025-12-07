@@ -14,7 +14,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillModuleDef.cs`._
       - `string DisplayName`: Name displayed for the skill.
       - `HeroAttribs AttributeAffinity`: Attribute affinity for the skill (default is STR).
       - `float BaseDamage`: Base damage dealt by the skill (default is 1).
-      - `DamageType BaseDamageType`: Type of damage (default is Physical).
+      - `DamageType BaseDamageType`: Type of damage dealt (default is Physical).
       - `SkillFamilyDef skillFamily`: Family definition for the skill.
       - `float CastTime`: Time in seconds to cast the skill (default is 0).
       - `float Cooldown`: Cooldown time in seconds before the skill can be reused (default is 2).
@@ -33,7 +33,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillModuleDef.cs`._
       - `List<SkillImpactBase> OnEndImpact`: Effects applied when the skill ends.
       - `List<SkillDeliveryTag> DeliveryTags`: Tags for skill delivery (e.g., Projectile, Fire).
       - `List<SkillMechanicTag> MechanicTags`: Tags for skill mechanics.
-      - `GameObject vfxPrefab`: Prefab for visual effects triggered by the skill.
+      - `GameObject vfxPrefab`: Prefab spawned for skill effects (e.g., VFX, projectile).
       - `AnimationType animationType`: Type of animation used for the skill.
 
 # Key Behavior & Side Effects
@@ -50,8 +50,7 @@ skill.SkillId = "Fireball";
 skill.DisplayName = "Fireball";
 skill.BaseDamage = 50;
 skill.CastTime = 1.5f;
-skill.Cooldown = 3f;
-skill.SkillType = SkillType.Spell;
+skill.Cooldown = 5f;
 ```
 
 # Unknowns
