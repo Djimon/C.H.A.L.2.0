@@ -20,6 +20,7 @@ namespace CHAL.Data
 
     public enum SkillTag
     {
+        //SkilLforms
         Melee,
         Projectile,
         Spell,
@@ -29,6 +30,15 @@ namespace CHAL.Data
         DoT,
         Aura,
         Summon,
+        Trap,
+        Orb,
+        Mark,
+        Movement,
+        Nuke,
+        Ground,
+        Hazard,
+
+        // Damgetypes
         Fire,
         Cold,
         Poison,
@@ -49,10 +59,11 @@ namespace CHAL.Data
         Range,
         AoERadius,
         Duration,
-        BuffDuration,
-        DebuffDuration,
+        //BuffDuration,
+        //DebuffDuration,
         DoTMaxStacks,
-        DotDuration,
+        DoTDuration,
+        TicksPerSecond,
         CastTime,
         Cooldown,
         SummonCount,
@@ -60,11 +71,10 @@ namespace CHAL.Data
         SummonDamage,
         AuraRange,
         MovementSpeed,
-        Resist,
-        Armor,
-        MaxHP,
         LeechFactor,
-
+        HealAmount,
+        StackLimit
+        
         // … beliebig erweiterbar
     }
 
@@ -81,6 +91,7 @@ namespace CHAL.Data
         OnCast,
         OnHit,
         OnCrit,
-        OnKill
+        OnKill,
+        OnEnd
     }
 }
