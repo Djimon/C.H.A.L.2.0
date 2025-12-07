@@ -50,8 +50,6 @@ namespace CHAL.Systems.Skill
 /// <returns>The modified value after applying the modifiers.</returns>
         public float Apply(ModifierTarget target, float baseValue, List<string> tags)
         { 
-            //List<SkillDeliveryTag>
-            //TODO: umbaeu in TagContext mit ctx.GetmodifierTags()
             float add = 0f;
             float mult = 1f;
             float replace = -1f;

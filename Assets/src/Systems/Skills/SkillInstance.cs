@@ -65,7 +65,7 @@ namespace CHAL.Systems.Skill
             var mods = ownedBy != null ? ownedBy.ActiveModifiers : new ModifierStack();
 
             var tags = baseResolved.tagContext;
-            var tagsStrings = tags.GetModifierTags();
+            var tagsStrings = new List<string>(tags.GetModifierTags());
 
             // --- Phase 2, Step 1: BaseDMG  ---
             float baseDamage = Mathf.Max(0f, skillModule.BaseDamage);
