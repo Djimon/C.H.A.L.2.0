@@ -15,6 +15,7 @@ _Automatically generated/updated from `Assets/src/Data/Config/GameBalanceConfig.
       - `SkillRanges skillRanges`: Configuration for skill ranges.
       - `bool AllowFriendlyFire`: Indicates if friendly fire is allowed.
       - `EconomySettings economy`: Configuration for economy parameters.
+      - `HeroXPConfig heroXP`: Configuration for hero experience and level curve.
     - Public methods:
       - `int GetMultiplier(EnemyRank rank)`: Gets the multiplier based on the specified enemy rank.
       - `RankScaling GetScaling(EnemyRank rank)`: Gets the scaling associated with the specified enemy rank.
@@ -37,4 +38,3 @@ float rangeValue = config.GetRangeValue(SkillRange.Melee);
 
 # Unknowns
 - None.
-

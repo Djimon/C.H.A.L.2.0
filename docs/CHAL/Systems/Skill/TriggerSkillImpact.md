@@ -17,6 +17,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/Effekte/TriggeS
 3) Key Behavior & Side Effects
 - If `SkillToTrigger` is null, the method returns early without executing any skill.
 - Logs the triggering of the skill using `DebugManager`.
+- Creates a new `SkillInstance` for the `SkillToTrigger` and executes it using `SkillExecutor`.
 
 4) Constraints & Failure Modes
 - Requires `SkillToTrigger` to be non-null to execute the skill.

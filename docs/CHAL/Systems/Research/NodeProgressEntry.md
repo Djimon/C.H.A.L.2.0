@@ -22,7 +22,7 @@ _Automatically generated/updated from `Assets/src/Data/DTO/ResearchSnapShot.cs`.
     - Public fields/properties:
       - `int version` (default is 1)
       - `string activeNodeId`
-      - `List<string> completedNodeIds`
+      - `List<string> completedNodeIds` (initialized to avoid null references)
       - `List<NodeProgressEntry> perNodeProgress` (key-value list for JSON compatibility)
     - Public struct:
       - `public struct NodeProgressEntry`

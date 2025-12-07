@@ -25,6 +25,7 @@ _Automatically generated/updated from `Assets/src/UI/WaveRewardUI.cs`._
 - `populateText(bool succeeded)`: Updates the details text based on the success status.
 - Auto-start countdown starts if conditions are met when the UI is shown.
 - Cancels the countdown if the toggle is turned off or the UI is closed.
+- The countdown routine prevents double starts.
 
 # Constraints & Failure Modes
 - If `_autoStartToggle` or `_autoStartCountdown` is not found, a warning is logged.
@@ -40,4 +41,3 @@ waveRewardUI.populateText(true);
 
 # Unknowns
 - The success condition for starting the next wave is not explicitly defined in the code.
-

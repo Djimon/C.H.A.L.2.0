@@ -19,6 +19,7 @@ _Automatically generated/updated from `Assets/src/Core/InputManager.cs`._
 - Calls `HandleClickableObjects()` every frame to manage user interactions.
 - On pressing the Escape key, invokes `GameManager.Instance.GoToMainMenu()` to transition to the main menu.
 - Detects mouse hover and click events on objects tagged as "clickableObject".
+- Logs hover and click events for debugging purposes.
 
 # Constraints & Failure Modes
 - Requires a camera in the scene for raycasting.

@@ -16,17 +16,18 @@ _Automatically generated/updated from `Assets/src/Systems/Enemy/EnemyInstance.cs
     - Public methods:
       - EnemyInstance(EnemyDef def, EnemyStruct data)
       - override void TakeDamage(float amount, DamageType type)
-        - Applies damage to the enemy and updates its health.
+        - Applies damage to the enemy and updates its health; logs damage taken and resulting health.
       - protected override void OnDeath()
-        - Handles enemy death and triggers the OnDied event.
+        - Handles enemy death, triggers the OnDied event, and logs the death.
 
 # Key Behavior & Side Effects
-- Takes damage and updates health; logs damage taken.
+- Takes damage and updates health; logs damage taken and resulting health.
 - Triggers OnDied event when health reaches zero.
 
 # Constraints & Failure Modes
 - No explicit guards or null handling noted.
 - Assumes valid EnemyDef and EnemyStruct are provided during instantiation.
+- Ignores damage if the amount is less than or equal to zero.
 
 # Example
 ```csharp
@@ -36,4 +37,3 @@ enemy.TakeDamage(10f, DamageType.Physical);
 
 # Unknowns
 - No information on the implementation of EffectReceiver or the structure of EnemyDef and EnemyStruct.
-

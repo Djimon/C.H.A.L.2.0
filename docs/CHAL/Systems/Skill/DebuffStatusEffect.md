@@ -29,6 +29,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/DebuffStatusEff
 # Key Behavior & Side Effects
 - The `DebuffStatusEffect` constructor initializes the debuff with settings, setting the effect ID, duration, and maximum stacks.
 - The `TryAddStack` method modifies the current stacks or refreshes the duration based on the stacking mode.
+- The `modifierApplied` field indicates if the modifier has been applied, but its usage is not explicitly defined in the provided code.
 
 # Constraints & Failure Modes
 - The `BaseDuration` and `BaseMaxStacks` are set to a minimum of 0 and 1 respectively.
@@ -52,4 +53,3 @@ debuff.TryAddStack(someEffectReceiver);
 # Unknowns
 - The behavior of `EffectReceiver` and how it interacts with `DebuffStatusEffect` is not defined in this file.
 - The implementation details of `ModifierData` and `StackingMode` are not provided.
-

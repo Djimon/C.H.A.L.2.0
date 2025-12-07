@@ -1,6 +1,6 @@
-# Assets/src/Systems/Waves/WaveManager.cs
+# Assets/src/Systems/Map/Waves/WaveManager.cs
 
-_Automatically generated/updated from `Assets/src/Systems/Waves/WaveManager.cs`._
+_Automatically generated/updated from `Assets/src/Systems/Map/Waves/WaveManager.cs`._
 
 # Purpose
 - Manages the spawning of waves of enemies in the game.
@@ -54,4 +54,3 @@ waveManager.StartWave(mapDef, 1, mapManagerRef);
 # Unknowns
 - The implementation details of `LootRulesService`, `LootRoller`, and `UnluckyProtection` are not provided in this file.
 - The behavior of `DebugManager` and its logging methods is not defined in this file.
-

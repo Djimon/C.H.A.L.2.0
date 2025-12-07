@@ -12,7 +12,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/HeroXpConfig.cs`._
     - Public fields/properties:
       - LevelCap: Maximum level a hero can achieve (default 100).
       - baseXpPerStandardWave: Base XP awarded per standard wave (default 100).
-      - wavesRequiredPerLevel: Array defining the number of waves required for each level.
+      - wavesRequiredPerLevel: Array defining the number of waves required for each level (default size 100).
     - Public methods:
       - int GetRequiredXPForLevel(int currentLevel): Returns the required XP for a given level; returns 0 if level is invalid or exceeds LevelCap.
 

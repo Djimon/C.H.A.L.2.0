@@ -13,9 +13,10 @@ _Automatically generated/updated from `Assets/src/Data/Enums/DamageType.cs`._
       - `Physical`
       - `Fire`
       - `Cold`
+      - `Lightning`
       - `Poison`
       - `Arcane`
-      - `Void`
+      - `Dark`
       - `Holy`
 
 # Key Behavior & Side Effects

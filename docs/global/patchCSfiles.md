@@ -16,6 +16,7 @@ _Automatically generated/updated from `Assets/src/patchCSfiles.py`._
 - Reads each `.cs` file as bytes and attempts to decode using CP1252.
 - If decoding fails, it prints a message and skips the file.
 - Successfully decoded files are re-saved in UTF-8 format with newline normalization.
+- Prints a confirmation message for each successfully converted file.
 
 # Constraints & Failure Modes
 - Files in "xTernal" or "ThirdParty" directories are excluded from processing.

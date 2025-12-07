@@ -12,7 +12,6 @@ _Automatically generated/updated from `Assets/src/Systems/Research/DevResearchFa
     - Public fields/properties:
       - ResearchMapView mapView: Reference to the research map view.
       - ResearchTreeDef treeDef: Definition of the research tree.
-      - ResearchEventBridge bridge: Bridge for research events.
       - bool completeAllOnPlay: If true, completes all research on play.
       - int completeUpToStage: Completes research up to a specified stage.
       - List<string> extraNodeIds: Additional node IDs to complete.
@@ -46,4 +45,3 @@ fastForward.Ctx_CompleteAll();
 
 # Unknowns
 - None.
-

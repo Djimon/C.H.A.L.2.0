@@ -10,8 +10,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/SkillInstance.c
 - Types
   - public class `SkillInstance`
     - Public fields/properties:
-      - `SkillData Data`: The skill data associated with this instance.
-      - `float Damage`: Calculated damage of the skill.
+      - `List<DamageEntry> Damage`: Calculated damage entries of the skill.
       - `float CastTime`: Time taken to cast the skill.
       - `float Cooldown`: Cooldown duration of the skill.
       - `float Range`: Range of the skill.
@@ -49,4 +48,3 @@ skillInstance.StartCooldown();
 # Unknowns
 - The implementation details of `SkillData`, `EffectReceiver`, and `ModifierTarget` are not provided in this file.
 - The behavior of `BalanceManager.Instance.GetRangeValue` is not defined in this file.
-

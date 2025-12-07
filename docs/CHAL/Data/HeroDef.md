@@ -29,7 +29,6 @@ _Automatically generated/updated from `Assets/src/Data/Defs/HeroDef.cs`._
 - None explicitly defined in the provided code.
 
 # Example
-- 
 ```csharp
 HeroDef hero = ScriptableObject.CreateInstance<HeroDef>();
 hero.HeroId = "Hero_Piercer_01";
@@ -39,4 +38,3 @@ hero.BaseHealth = 100;
 
 # Unknowns
 - None.
-

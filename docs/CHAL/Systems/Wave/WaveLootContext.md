@@ -1,6 +1,6 @@
-# Assets/src/Systems/Waves/WaveLootContext.cs
+# Assets/src/Systems/Map/Waves/WaveLootContext.cs
 
-_Automatically generated/updated from `Assets/src/Systems/Waves/WaveLootContext.cs`._
+_Automatically generated/updated from `Assets/src/Systems/Map/Waves/WaveLootContext.cs`._
 
 # Purpose
 - Defines the `WaveLootContext` class for managing wave loot, including budget and drop information.

@@ -47,11 +47,13 @@ _Automatically generated/updated from `Assets/src/Core/GameManager.cs`._
 - Game state transitions are logged and can trigger UI updates.
 - Game data is saved on quitting and when transitioning between states.
 - Inventory and research systems are initialized and managed within the game lifecycle.
+- Player inventories are built from resources and mapped to the profile.
 
 # Constraints & Failure Modes
 - If `Profile` is null, certain operations (like continuing a game) will not proceed.
 - Inventory and research systems require proper initialization to function correctly.
 - Error handling is present for missing inventory definitions and instance creation failures.
+- If `instanceId` is null or empty in `EnsureInstance`, an error is logged, and the method returns null.
 
 # Example
 ```csharp

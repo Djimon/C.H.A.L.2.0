@@ -17,10 +17,10 @@ _Automatically generated/updated from `Assets/src/UI/misc/ClickableObject.cs`._
       - `void OnClick()`: Displays the UI menu if conditions are met.
 
 # Key Behavior & Side Effects
-- `Awake()`: Initializes the renderer and material property block; checks for the `_shimmerOn` property in the material and logs a warning if absent.
+- `Awake()`: Initializes the renderer and material property block; checks for the `_shimmerOn` property in the material and logs a warning if absent. Calls `SetShimmer(false)` to initialize shimmer state.
 - `OnHoverEnter()`: Calls `SetShimmer(true)` to enable the shimmer effect.
 - `OnHoverExit()`: Calls `SetShimmer(false)` to disable the shimmer effect.
-- `OnClick()`: Checks if `menuUI` is assigned and if the required feature is unlocked before showing the UI.
+- `OnClick()`: Checks if `menuUI` is assigned and if the required feature is unlocked before showing the UI. Calls `SetShimmer(false)` after showing the UI.
 
 # Constraints & Failure Modes
 - `OnClick()`: If `menuUI` is null, no action is taken.

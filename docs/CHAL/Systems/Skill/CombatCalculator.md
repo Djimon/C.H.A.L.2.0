@@ -20,7 +20,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/CombatCalculato
 
 # Key Behavior & Side Effects
 - `ResolveHit` delegates hit resolution to the `Resolve` method.
-- `ComputeFinalDamageScalar` returns 0 if the skill's damage is null or empty.
+- `ComputeFinalDamageScalar` returns 0 if the skill's damage is null or empty or if the hit is not successful.
 - `BuildDamagePacket` creates a `DamagePacket` and adds damage entries based on the skill's damage and hit result.
 
 # Constraints & Failure Modes

@@ -19,6 +19,7 @@ _Automatically generated/updated from `Assets/src/Systems/Loot/LootRoller_old.cs
 - Rolls for normal drops for each monster instance based on defined rules and random chance.
 - Applies post-processing to ensure minimum drops and rarity guarantees.
 - Uses a smart trimming mechanism to enforce maximum drops based on configured weights.
+- Logs various events related to loot drops and processing.
 
 # Constraints & Failure Modes
 - Handles cases where `bonusTags` may be null or empty.
@@ -34,4 +35,3 @@ var lootResults = lootRoller.RollLoot(waveComposition);
 # Unknowns
 - The specific implementations of `LootRulesService`, `UnluckyProtection`, and `LootResultEntry` are not defined in this file.
 - The behavior of `DebugManager.Log` is not detailed in this file.
-

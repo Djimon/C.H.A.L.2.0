@@ -10,7 +10,7 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/InventroyRul
 - Types
   - public class InventoryRules
     - Public methods:
-      - static int GetMaxStack(string prefix) : Returns the maximum number of slots for the specified prefix.
+      - static int GetMaxStack(string prefix) : Returns the maximum stack size for the specified prefix.
       - static int GetMaxSlots(string prefix) : Returns the maximum number of slots for the specified prefix.
 
 # Key Behavior & Side Effects
@@ -27,4 +27,3 @@ int maxSlots = InventoryRules.GetMaxSlots("rune"); // Returns 20
 
 # Unknowns
 - None.
-

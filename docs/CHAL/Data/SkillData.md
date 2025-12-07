@@ -12,8 +12,9 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillData.cs`._
     - Public fields/properties:
       - `string SkillId` - Unique identifier for the skill.
       - `string DisplayName` - Name displayed for the skill.
+      - `HeroAttribs AttributeAffinity` - Attribute affinity for the skill (default is `STR`).
       - `float BaseDamage` - Base damage value of the skill (default is 1).
-      - `List<DamageEntry> DamageTypes` - Types of damage associated with the skill.
+      - `DamageType BaseDamageType` - Base type of damage for the skill (default is `Physical`).
       - `float CastTime` - Time in seconds to cast this skill (default is 0).
       - `float Cooldown` - Cooldown in seconds before the skill can be reused (default is 2).
       - `SkillType SkillType` - Main behavior of the skill (e.g., Melee, Projectile).
@@ -25,6 +26,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillData.cs`._
       - `float ProjectileSpeed` - Speed of the projectile (if applicable).
       - `int ProjectileCount` - Number of projectiles (if applicable).
       - `float AoERadius` - Radius of the area of effect (if applicable).
+      - `float damageAttributeScalingFactor` - Scaling factor for damage based on attributes (default is 1.0).
       - `List<SkillImpactBase> OnCastImpactEffects` - Effects applied immediately when the skill is cast.
       - `List<SkillImpactBase> OnHitImpactEffects` - Effects applied when the skill successfully hits a target.
       - `List<SkillTag> Tags` - Tags associated with the skill (e.g., Projectile, Fire).

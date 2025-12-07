@@ -20,6 +20,7 @@ _Automatically generated/updated from `Assets/src/Systems/Research/UI/ResearchMa
       - `ResearchHUD hud`: HUD for displaying additional information.
       - `int nodeSpacingX`: Horizontal spacing between nodes.
       - `int lanePaddingX`: Padding between lanes.
+      - `ResearchNodeWidget nodePrefab`: Prefab for research nodes.
     - Public methods:
       - `void initHUD()`: Initializes the HUD if the service is available.
       - `void BuildMap()`: Builds the research map based on the tree definition.
@@ -48,4 +49,3 @@ researchMapView.BuildMap();
 # Unknowns
 - The behavior of `ResearchService` and how it interacts with the `ResearchMapView` is not detailed in this file.
 - The implementation details of `ResearchNodeWidget` and `ResearchEdgeGraphic` are not provided.
-

@@ -11,12 +11,12 @@ _Automatically generated/updated from `Assets/src/UI/CharacterCreationUI.cs`._
 - Types
   - `public class CharacterCreationUI : MonoBehaviour`
     - **Public fields/properties**
-      - None
+      - `_startSceneName`: Name of the scene to start.
     - **Public methods**
       - None
 
 # Key Behavior & Side Effects
-- On `Awake`: Initializes the root visual element and sets a color.
+- On `Awake`: Initializes the root visual element and sets a default color.
 - On `OnEnable`: Binds button click events for starting a new game and going back.
 - `OnNewGameBtnClicked`: Creates a new `PlayerProfile`, initializes it with the input name and color, and starts a new game via `GameManager`.
 - `OnBackBtnClicked`: Deactivates the current game object.

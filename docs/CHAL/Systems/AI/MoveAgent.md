@@ -33,6 +33,7 @@ _Automatically generated/updated from `Assets/src/Systems/Unit/MoveAgent.cs`._
 - The agent requires a `NavMeshAgent` component, enforced by the `[RequireComponent(typeof(NavMeshAgent))]` attribute.
 - Methods return early if the `_agent` is null, preventing null reference exceptions.
 - The `StoppingDistance` property ensures non-negative values are set for the agent's stopping distance.
+- The `SetDestination` method uses a configurable epsilon value (`_destinationEpsilon`) to determine significant changes in destination.
 
 # Example
 ```csharp
@@ -43,4 +44,3 @@ moveAgent.SetDestination(new Vector3(10, 0, 10));
 
 # Unknowns
 - None.
-

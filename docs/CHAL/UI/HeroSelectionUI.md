@@ -23,6 +23,7 @@ _Automatically generated/updated from `Assets/src/UI/HeroSelectionUI.cs`._
 - Updates the selected heroes and available heroes when a hero is chosen.
 - Displays hero details when a hero is selected from the available list.
 - Starts a wave with the selected heroes when the corresponding button is clicked.
+- Highlights the selected slot and shows the hero selection UI when a slot is clicked.
 
 # Constraints & Failure Modes
 - Ensures that the current slot is valid and that a hero is pending before selection.
@@ -38,4 +39,3 @@ heroSelectionUI.Init(mapManagerInstance);
 # Unknowns
 - The exact implementation details of the `IngameUI` class and `MapManager` class.
 - The behavior of the `GameManager.Instance.Profile.GetUnlockedHeroes()` method.
-

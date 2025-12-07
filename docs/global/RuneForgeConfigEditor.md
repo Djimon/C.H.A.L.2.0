@@ -18,10 +18,10 @@ _Automatically generated/updated from `Assets/src/Editor/RunForgeConfigEditor.cs
 - Displays warnings if no "remains" or "runes" are found in the ItemRegistry.
 - Allows adding/removing `RuneChance` entries and modifying their properties.
 - Marks the `RuneForgeConfig` as dirty if any changes are made.
+- Ensures `runeFoldouts` list is synchronized with the number of `runes`.
 
 # Constraints & Failure Modes
 - Handles null entries for `config.entries` and `entry.runes`.
-- Ensures `runeFoldouts` list is synchronized with the number of `runes`.
 - Uses `EditorGUILayout.Popup` for dropdowns, which may lead to index out-of-bounds if not properly managed.
 
 # Example
@@ -32,4 +32,3 @@ _Automatically generated/updated from `Assets/src/Editor/RunForgeConfigEditor.cs
 
 # Unknowns
 - None.
-

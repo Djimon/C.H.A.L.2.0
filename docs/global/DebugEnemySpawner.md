@@ -18,7 +18,11 @@ _Automatically generated/updated from `Assets/src/Systems/_test/DebugEnemySpawne
 
 # Key Behavior & Side Effects
 - On Start, retrieves enemy definition by ID; logs an error if not found.
-- Instantiates an enemy prefab at the specified spawn point and initializes it with a debug enemy struct.
+- Instantiates an enemy prefab at the specified spawn point and initializes it with a debug enemy struct containing:
+  - EnemyId
+  - Count (set to 10)
+  - bonusTags (set to a list containing "swarm")
+  - Rank (set to EnemyRank.Normal)
 
 # Constraints & Failure Modes
 - Requires a valid enemy prefab and spawn point to function correctly.
