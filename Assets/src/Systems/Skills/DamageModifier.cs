@@ -29,7 +29,7 @@ public class DamageModifier
     public float Value;
 
     // Für Tag-Filter wie bisher
-    public List<SkillDeliveryTag> AppliesTo;
+    public List<string> AppliesToTags;
 
     // Hook behalten wir, damit z.B. "OnHit more Damage" geht
     public ModifierHook Hook = ModifierHook.None;

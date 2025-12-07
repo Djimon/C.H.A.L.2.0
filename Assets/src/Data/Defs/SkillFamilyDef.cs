@@ -1,11 +1,13 @@
 using CHAL.Data;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SkillFamilyDef", menuName = "Skills/SkillFamily")]
 public class SkillFamilyDef : ScriptableObject
 {
-    [Header("IDs")]
+    [Header("Identity")]
     [SerializeField] private string familyId;
+    public SkillType SkillType;
 
     [Header("Base Values (optional)")]
     // Hier kommt später dein "Base-Block" aus dem MD rein:
@@ -18,10 +20,12 @@ public class SkillFamilyDef : ScriptableObject
     [Header("Scaling & Tags")]
     [SerializeField] private AnimationCurve mainStatScaling;   // optional, kann auch anders aussehen
     [SerializeField] private string[] defaultScaleAxes;        // z.B. "Damage", "Radius"
-    [SerializeField] private SkillDeliveryTag[] tags;                  // Baseline Tags für die Familie
+    [SerializeField] private List<SkillDeliveryTag> deliveryTags;                  // Baseline Tags für die Familie
+    [SerializeField] private List<SkillMechanicTag> mechanicTags;
 
     public string FamilyId => familyId;
-    public SkillDeliveryTag[] Tags => tags;
+    public List<SkillDeliveryTag> DeliveryTags => deliveryTags;
+    public List<SkillMechanicTag> MechanicTags => mechanicTags;
 
     // Getter für Base-Werte – aktuell noch nicht verwendet,
     // später vom Resolver herangezogen.

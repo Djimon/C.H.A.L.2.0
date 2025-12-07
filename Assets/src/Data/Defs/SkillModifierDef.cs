@@ -17,7 +17,7 @@ namespace CHAL.Data
         public ModifierTarget Target;
         public ModifierOperation Operation;
         public float Value = 1; //muss bein anwenden der Midifier imemr gesetzt werden
-        public List<SkillDeliveryTag> AppliesTo;   // leer = global, sonst tag-Filter
+        public List<string> AppliesToTags;   // leer = global, sonst tag-Filter
         public ModifierHook Hook = ModifierHook.None;
 
 /// <summary>
@@ -32,7 +32,7 @@ namespace CHAL.Data
                 Target = this.Target,
                 Operation = this.Operation,
                 Value = this.Value,
-                AppliesTo = new List<SkillDeliveryTag>(this.AppliesTo),
+                AppliesToTags = new List<string>(this.AppliesToTags),
                 Hook = this.Hook
             };
         }
@@ -46,7 +46,7 @@ namespace CHAL.Data
         public ModifierTarget Target;
         public ModifierOperation Operation;
         public float Value;
-        public List<SkillDeliveryTag> AppliesTo;
+        public List<string> AppliesToTags;
         public ModifierHook Hook = ModifierHook.None;
     }
 }

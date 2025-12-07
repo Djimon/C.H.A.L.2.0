@@ -11,8 +11,8 @@ public sealed class TagContext
     public DamageType? DamageType { get; }
 
     // Zentral generierte flache Sicht:
-    private IReadOnlyCollection<string> _modifierTags;
-    private IReadOnlyCollection<string> _uiTags;
+    public IReadOnlyCollection<string> _modifierTags;
+    public IReadOnlyCollection<string> _uiTags;
 
     public TagContext(
         SkillType? skillType,
@@ -27,10 +27,10 @@ public sealed class TagContext
     }
 
     public IReadOnlyCollection<string> GetModifierTags()
-        => _modifierTags ??= BuildModifierTags();
+        => _modifierTags = BuildModifierTags();
 
     public IReadOnlyCollection<string> GetUiTags()
-        => _uiTags ??= BuildUiTags();
+        => _uiTags = BuildUiTags();
 
     private IReadOnlyCollection<string> BuildModifierTags()
     {
