@@ -404,7 +404,7 @@ namespace CHAL.Systems.Hero
             sd.BaseDamage = owner.GetEffectiveBaseDamage();
             sd.CastTime = 0.30f;
             sd.Cooldown = 1.20f;
-            sd.Range = SkillRange.Melee;
+            sd.Range = SkillRange.MeleeRange;
             sd.animationType = AnimationType.MeleeSwing;   // deinen Enum verwenden
 
             sd.BaseDamageType = DamageType.Physical;

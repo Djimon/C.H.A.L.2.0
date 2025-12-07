@@ -207,7 +207,7 @@ namespace CHAL.Data
             return range switch
             {
                 SkillRange.Self => skillRanges.selfRange,
-                SkillRange.Melee => skillRanges.meleeRange,
+                SkillRange.MeleeRange => skillRanges.meleeRange,
                 SkillRange.Reach => skillRanges.reachRange,
                 SkillRange.MidDistance => skillRanges.midDistanceRange,
                 SkillRange.FarDistance => skillRanges.farDistanceRange,

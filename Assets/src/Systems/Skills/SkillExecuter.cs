@@ -42,7 +42,7 @@ namespace CHAL.Systems.Skill
                     ApplyMelee(inst, source, target);
                     break;
 
-                case SkillType.Projectile:
+                case SkillType.Ranged:
                     SpawnProjectile(inst, source, sourceTr, target, targetTr);
                     break;
 

@@ -7,7 +7,6 @@ namespace CHAL.Data
         Cold,
         Lightning,
         Poison,
-        Arcane,
         Dark,
         Holy
         // … erweiterbar

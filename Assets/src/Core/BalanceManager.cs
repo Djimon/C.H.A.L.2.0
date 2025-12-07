@@ -111,7 +111,7 @@ namespace CHAL.Core
             return range switch
             {
                 SkillRange.Self => skillRangeCOnfig.selfRange,
-                SkillRange.Melee => skillRangeCOnfig.meleeRange,
+                SkillRange.MeleeRange => skillRangeCOnfig.meleeRange,
                 SkillRange.Reach => skillRangeCOnfig.reachRange,
                 SkillRange.MidDistance => skillRangeCOnfig.midDistanceRange,
                 SkillRange.FarDistance => skillRangeCOnfig.farDistanceRange,

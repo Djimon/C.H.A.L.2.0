@@ -48,8 +48,9 @@ namespace CHAL.Systems.Skill
 /// <param name="baseValue">The initial value to modify.</param>
 /// <param name="tags">A list of skill tags that may affect the modifiers.</param>
 /// <returns>The modified value after applying the modifiers.</returns>
-        public float Apply(ModifierTarget target, float baseValue, List<SkillTag> tags)
+        public float Apply(ModifierTarget target, float baseValue, List<SkillDeliveryTag> tags)
         {
+            //TODO: umbaeu in TagContext mit ctx.GetmodifierTags()
             float add = 0f;
             float mult = 1f;
             float replace = -1f;

@@ -47,7 +47,7 @@ public class SkillDataEditor : Editor
 
         // Composition (fields depend on SkillType)
         EditorGUILayout.LabelField("Composition", EditorStyles.boldLabel);
-        bool wantsProjectile = (data.SkillType == SkillType.Projectile) || data.isProjectile;
+        bool wantsProjectile = (data.SkillType == SkillType.Ranged) || data.isProjectile;
         bool wantsAoE = (data.SkillType == SkillType.Spell) || data.isAoE;
         bool wantsDuration = (data.SkillType == SkillType.Spell || data.SkillType == SkillType.Summon) || data.hasDuration;
 
@@ -89,7 +89,7 @@ public class SkillDataEditor : Editor
                         AnimationType.MeleeSwing, AnimationType.MeleeThrust, AnimationType.Defend));
                 break;
 
-            case SkillType.Projectile:
+            case SkillType.Ranged:
                 chosen = (AnimationType)EditorGUILayout.EnumPopup("Animation Type",
                     FilterAnimationType(data.animationType,
                         AnimationType.Shoot, AnimationType.Throw));

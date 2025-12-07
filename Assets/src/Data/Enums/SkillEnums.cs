@@ -1,9 +1,11 @@
+using System.Collections.Generic;
+
 namespace CHAL.Data
 {
     public enum SkillType
     {
-        Melee,      //
-        Projectile, //fernkampf mit Porjektil speed, count, range
+        Melee,      //Nahkmampf
+        Ranged,     //fernkampf mit Porjektil speed, count, range
         Spell,      //casts mit effekete, AoE, Buff/Debuff, Aura
         Summon
 
@@ -12,44 +14,52 @@ namespace CHAL.Data
     public enum SkillRange
     {
         Self = 0,
-        Melee,        // direkt angrenzend
+        MeleeRange,        // direkt angrenzend
         Reach,        // verlängerte Nahkampfreichweite (Speer, Hellebarde)
         MidDistance,  // mittlere Reichweite (typ. 5–10m)
         FarDistance   // Fernkampf / Magie (Bogen, Feuerball)
     }
 
-    public enum SkillTag
+    public enum SkillDeliveryTag
     {
-        //SkilLforms
-        Melee,
+        //Melee, //-> already SkillType
         Projectile,
-        Spell,
-        AoE,
+        AoE,  //->Area = dmg + Auras 
+        Orb,
+        Beam,
+        Nova,
+        Ground, //= Area on Ground  != AoE (Area on Target)    
+        Spin,
+        Chain,
+        Cone,
+
+        //Nur hier damit alter code nicht kaputt geht
+        //TODO: DoTStatusEffect ändern und dann hier rauslöschen
+        DoT, //verschoben in SkillMechanicTag
+
+    }
+
+    public enum SkillMechanicTag
+    {
+        //Mechanik/Rolle
         Buff,
         Debuff,
         DoT,
-        Aura,
-        Summon,
-        Trap,
-        Orb,
+        Curse, //=debuff?
         Mark,
+        Summon, // -> SkillType
+        Knockback,
+        Aura,
         Movement,
-        Nuke,
-        Ground,
         Hazard,
+        Trigger
 
-        // Damgetypes
-        Fire,
-        Cold,
-        Poison,
-        Arcane,
-        Holy,
-        Physical
+        // Damgetypes - use normal DamageType enum
     }
 
     public enum ModifierTarget
     {
-        Damage,
+        SkillDamage,
         CritChance,
         CritMultiplier,
         AttackSpeed,
@@ -63,6 +73,7 @@ namespace CHAL.Data
         //DebuffDuration,
         DoTMaxStacks,
         DoTDuration,
+        DotDamage,
         TicksPerSecond,
         CastTime,
         Cooldown,
@@ -94,4 +105,6 @@ namespace CHAL.Data
         OnKill,
         OnEnd
     }
+
+
 }

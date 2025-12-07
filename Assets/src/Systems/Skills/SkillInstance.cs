@@ -43,7 +43,11 @@ namespace CHAL.Systems.Skill
         /// </summary>
         public void Recalculate()
         {
-            var tags = skillData.Tags ?? new List<SkillTag>();
+            var tags = skillData.Tags ?? new List<SkillDeliveryTag>();
+            //TODO: ocmplete wrapper of skill (SkillData->skillfamily->Archetype)
+            //TODO: Umbauen auf TagOcntext mit -> ctx.GetModifierTags()
+            
+
             var mods = ownedBy != null ? ownedBy.ActiveModifiers : new ModifierStack();
 
             // --- Phase 2, Step 1: BaseDMG  ---
@@ -83,7 +87,7 @@ namespace CHAL.Systems.Skill
                 "Skill");
         }
 
-        private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, List<SkillTag> tags, float baseDamage)
+        private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, List<SkillDeliveryTag> tags, float baseDamage)
         {
             DamageType baseType = skillData.BaseDamageType; ;
 
@@ -162,7 +166,7 @@ namespace CHAL.Systems.Skill
             return baseEffectivePerType;
         }
 
-        private void ApplyFinalDmgModifiers(ModifierStack mods, List<SkillTag> tags, Dictionary<DamageType,float> dmgPerType)
+        private void ApplyFinalDmgModifiers(ModifierStack mods, List<SkillDeliveryTag> tags, Dictionary<DamageType,float> dmgPerType)
         {
 
             // Vorbereitung für Increased / More
@@ -226,8 +230,10 @@ namespace CHAL.Systems.Skill
             }
         }
 
-        private void ApplyOtherModifier(ModifierStack mods, List<SkillTag> tags)
+        private void ApplyOtherModifier(ModifierStack mods, List<SkillDeliveryTag> tags)
         {
+            //TODO: use Tag-Context ctx -> ctx.GetModifierTags()
+
             // -----------------------
             // Restliche Runtime-Werte unverändert über ModifierStack.Apply
             // -----------------------
@@ -243,7 +249,7 @@ namespace CHAL.Systems.Skill
             // kannst du hier BaseEffektiveDMG/Increased/More cachen.
         }
 
-        private static bool AppliesToTags(DamageModifier mod, List<SkillTag> tags)
+        private static bool AppliesToTags(DamageModifier mod, List<SkillDeliveryTag> tags)
         {
             if (mod.AppliesTo == null || mod.AppliesTo.Count == 0)
                 return true;

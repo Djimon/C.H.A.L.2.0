@@ -34,7 +34,7 @@ namespace CHAL.Data
         public bool hasDuration = false;
 
         [Header("Composition")]
-        public SkillRange Range = SkillRange.Melee;
+        public SkillRange Range = SkillRange.MeleeRange;
         [Tooltip("Duration in seconds for effects like buffs, debuffs, or DoTs.")]
         public float Duration = 0f;
         public float ProjectileSpeed = 0f;
@@ -49,7 +49,7 @@ namespace CHAL.Data
         public List<SkillImpactBase> OnHitImpactEffects;
 
         [Header("Meta")]
-        public List<SkillTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
+        public List<SkillDeliveryTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
 
         [Header("Presentation")]
         [Tooltip("Prefab spawned when the skill effect is triggered (VFX, projectile, etc.).")]

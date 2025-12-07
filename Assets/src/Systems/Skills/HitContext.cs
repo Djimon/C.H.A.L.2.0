@@ -11,7 +11,7 @@ namespace CHAL.Systems.Skill
         public readonly SkillInstance Skill;
         public readonly EffectReceiver Attacker;
         public readonly EffectReceiver Defender;
-        public readonly IReadOnlyList<SkillTag> Tags;
+        public readonly IReadOnlyList<SkillDeliveryTag> Tags;
 
         public readonly bool IsAttack;
         public readonly bool IsSpell;
@@ -26,12 +26,12 @@ namespace CHAL.Systems.Skill
 
             Tags = skill.skillData.Tags;
             if (Tags == null)
-                Tags = Array.Empty<SkillTag>();
+                Tags = Array.Empty<SkillDeliveryTag>();
 
             var type = skill?.skillData?.SkillType ?? SkillType.Melee;
-            IsAttack = (type == SkillType.Melee || type == SkillType.Projectile);
+            IsAttack = (type == SkillType.Melee || type == SkillType.Ranged);
             IsSpell = (type == SkillType.Spell);
-            IsProjectile = (type == SkillType.Projectile);
+            IsProjectile = (type == SkillType.Ranged);
             IsAoE = skill?.skillData?.isAoE ?? false;
         }
     }
