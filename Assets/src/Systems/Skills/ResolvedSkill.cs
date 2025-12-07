@@ -12,15 +12,17 @@ public sealed class ResolvedSkill
     public string ArchetypeId { get; }
 
     // Runtime-Werte (bereits mit Stats/Modifiers verrechnet)
-    public float Damage { get; }
-    public float Radius { get; }
-    public float Duration { get; }
-    public float Cooldown { get; }
-    public float CastTime { get; }
-    public float ProjectileSpeed { get; }
-    public float Range { get; }
-    public float AoERadius { get; private set; }
+    public float Damage { get; private set; }
+    public float Radius { get; private set; }
+    public float Duration { get; private set; }
+    public float Cooldown { get; private set; }
+    public float CastTime { get; private set; }
+    public float ProjectileSpeed { get; private set; }
     public int ProjectileCount { get; private set; }
+    public float _Range { get; private set; }
+    public SkillRange Range = SkillRange.MeleeRange;
+    public float AoERadius { get; private set; }
+    
 
     public List<DamageEntry> DamageEntries { get; private set; }
 
@@ -47,7 +49,7 @@ public sealed class ResolvedSkill
         float cooldown,
         float castTime,
         float projectileSpeed,
-        float range,
+        SkillRange range,
         float aoeRadius,
         int projectileCount,
         List<DamageEntry> damageEntries,
@@ -73,6 +75,28 @@ public sealed class ResolvedSkill
 
         tagContext = tags;
         
+    }
+
+    public void UpdateRuntimeValues(
+        float damage,
+        float radius,
+        float duration,
+        float cooldown,
+        float castTime,
+        float projectileSpeed,
+        SkillRange range,
+        float aoeRadius,
+        int projectileCount)
+    {
+        Damage = damage;
+        Radius = radius;
+        Duration = duration;
+        Cooldown = cooldown;
+        CastTime = castTime;
+        ProjectileSpeed = projectileSpeed;
+        Range = range;
+        AoERadius = aoeRadius;
+        ProjectileCount = projectileCount;
     }
 
     public float TotalDamage

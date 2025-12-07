@@ -23,7 +23,7 @@ namespace CHAL.Systems.Skill
         public List<DamageEntry> Damage { get; private set; }
         public float CastTime { get; private set; }
         public float Cooldown { get; private set; }
-        public float Range { get; private set; }
+        public SkillRange Range { get; private set; }
         public float Duration { get; private set; }
         public float ProjectileSpeed { get; private set; }
         public int ProjectileCount { get; private set; }
@@ -94,6 +94,17 @@ namespace CHAL.Systems.Skill
                 for (int i = 0; i < Damage.Count; i++)
                     totalDmg += Damage[i].damageOutput;
             }
+
+            finalSkillData.UpdateRuntimeValues(
+                totalDmg,
+                AoERadius,          // oder AoERadius/Radius je nach Semantik
+                Duration,
+                Cooldown,
+                CastTime,
+                ProjectileSpeed,
+                Range,
+                AoERadius,
+                ProjectileCount);
 
             DebugManager.Log(
                 $"Initialized Skill {skillModule.SkillId} with DMG:{totalDmg:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
@@ -242,22 +253,41 @@ namespace CHAL.Systems.Skill
 
                 dmgPerType[t] = baseEff * (1f + incSum) * globalMoreMult;
             }
+
+            //Crit is handled by the CombatCalculator
         }
 
         private void ApplyOtherModifier(ModifierStack mods, List<string> tags)
         {
-            //TODO: use Tag-Context ctx -> ctx.GetModifierTags()
-
             // -----------------------
             // Restliche Runtime-Werte unverändert über ModifierStack.Apply
             // -----------------------
-            CastTime = mods.Apply(ModifierTarget.CastTime, skillModule.CastTime, tags);
-            Cooldown = mods.Apply(ModifierTarget.Cooldown, skillModule.Cooldown, tags);
-            Range = mods.Apply(ModifierTarget.Range, BalanceManager.Instance.GetRangeValue(skillModule.Range), tags);
-            Duration = mods.Apply(ModifierTarget.Duration, skillModule.Duration, tags);
-            ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, skillModule.ProjectileSpeed, tags);
-            ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, skillModule.ProjectileCount, tags);
-            AoERadius = mods.Apply(ModifierTarget.AoERadius, skillModule.AoERadius, tags);
+            CastTime = mods.Apply(ModifierTarget.CastTime, finalSkillData.CastTime, tags);
+            Cooldown = mods.Apply(ModifierTarget.Cooldown, finalSkillData.Cooldown, tags);
+            //TODO: ocncept hoe to convert from float to next higher Range
+            //Range = mods.Apply(ModifierTarget.Range, BalanceManager.Instance.GetRangeValue(finalSkillData.Range), tags);
+            Duration = mods.Apply(ModifierTarget.Duration, finalSkillData.Duration, tags);
+            ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, finalSkillData.ProjectileSpeed, tags);
+            ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, finalSkillData.ProjectileCount, tags);
+            AoERadius = mods.Apply(ModifierTarget.AoERadius, finalSkillData.AoERadius, tags);
+            //TODO weitere properties anpassen
+            //CastTime
+            /*
+                AttackSpeed,
+                PierceChance,
+                DoTMaxStacks,
+                DoTDuration,
+                DotDamage,
+                TicksPerSecond,
+                SummonCount,
+                SummonHP,
+                SummonDamage,
+                AuraRange,
+                MovementSpeed,
+                HealAmount,
+                StackLimit
+             */
+
 
             // Optional: Wenn du später Debug-Infos für die Layer loggen willst,
             // kannst du hier BaseEffektiveDMG/Increased/More cachen.

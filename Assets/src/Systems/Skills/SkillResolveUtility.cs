@@ -64,7 +64,7 @@ namespace CHAL.Systems.Skill
             float projSpd = module.ProjectileSpeed;
             int projCount = module.ProjectileCount;
             float aoeRad = module.AoERadius;
-            float range = ResolveRangeAsFloat(module.Range);
+            SkillRange range = module.Range;
 
             //fill later via ResolvedSkill.AddOrReplaceDamageEntries(List<DamageEntry>)
             List<DamageEntry> dmgEntries = new List<DamageEntry>(); 
@@ -108,7 +108,7 @@ namespace CHAL.Systems.Skill
             );
         }
 
-        private static float ResolveRangeAsFloat(SkillRange range)
+        public static float ResolveRangeAsFloat(SkillRange range)
         {
 
             switch (range)

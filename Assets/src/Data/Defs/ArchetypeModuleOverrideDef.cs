@@ -24,7 +24,6 @@ public class ArchetypeModuleOverrideDef : ScriptableObject
 
     [Header("Tags")]
     [SerializeField] private List<SkillDeliveryTag> deliveryTagsAdd;
-    [SerializeField] private List<SkillMechanicTag> mechanicTags;
 
     [Header("Effects Add/Remove (IDs)")]
     [SerializeField] private string[] effectsAdd;
@@ -44,7 +43,6 @@ public class ArchetypeModuleOverrideDef : ScriptableObject
     public float DurationOverride => durationOverride;
 
     public List<SkillDeliveryTag> DeliveryTagsAdd => deliveryTagsAdd;
-    public List<SkillMechanicTag> MechanicTags => mechanicTags;
     public string[] EffectsAdd => effectsAdd;
     public string[] EffectsRemove => effectsRemove;
 }
