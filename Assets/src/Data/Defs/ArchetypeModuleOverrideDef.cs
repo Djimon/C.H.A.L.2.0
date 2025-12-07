@@ -2,6 +2,10 @@ using CHAL.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Represents an archetype module override definition for skill customization.
+/// This class holds data for overriding specific module values.
+/// </summary>
 [CreateAssetMenu(fileName = "ArchetypeModuleOverrideDef", menuName = "Skills/ArchetypeModuleOverride")]
 public class ArchetypeModuleOverrideDef : ScriptableObject
 {

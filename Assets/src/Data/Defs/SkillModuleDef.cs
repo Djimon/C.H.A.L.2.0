@@ -2,6 +2,9 @@ using CHAL.Systems.Skill;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Represents data for a skill, including its identity, damage, and casting properties.
+/// </summary>
 namespace CHAL.Data
 {
 

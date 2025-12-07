@@ -7,6 +7,13 @@ namespace CHAL.Systems.Skill
 {
     public static class SkillResolveUtility
     {
+/// <summary>
+/// Builds a TagContext based on the provided module, family, and override definitions.
+/// </summary>
+/// <param name="module">The skill module definition to base the context on.</param>
+/// <param name="family">An optional skill family definition for additional tags.</param>
+/// <param name="overrideDef">An optional override definition for the archetype module.</param>
+/// <returns>The constructed TagContext.</returns>
         public static TagContext BuildTagContext(
             SkillModuleDef module,
             SkillFamilyDef family = null,
@@ -44,6 +51,13 @@ namespace CHAL.Systems.Skill
             );
         }
 
+/// <summary>
+/// Resolves the base skill from the given module and overrides.
+/// </summary>
+/// <param name="module">The skill module definition.</param>
+/// <param name="overrideDef">The archetype module override definition.</param>
+/// <param name="archetypeId">The ID of the archetype.</param>
+/// <returns>The resolved skill.</returns>
         public static ResolvedSkill ResolveBaseSkill(
             SkillModuleDef module,
             ArchetypeModuleOverrideDef overrideDef,
@@ -108,6 +122,11 @@ namespace CHAL.Systems.Skill
             );
         }
 
+/// <summary>
+/// Resolves a SkillRange to its corresponding float value.
+/// </summary>
+/// <param name="range">The SkillRange to resolve.</param>
+/// <returns>The float value representing the range.</returns>
         public static float ResolveRangeAsFloat(SkillRange range)
         {
 

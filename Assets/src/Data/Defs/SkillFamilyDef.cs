@@ -2,6 +2,10 @@ using CHAL.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Represents a skill family definition used in the game.
+/// Contains base values and identity for skills.
+/// </summary>
 [CreateAssetMenu(fileName = "SkillFamilyDef", menuName = "Skills/SkillFamily")]
 public class SkillFamilyDef : ScriptableObject
 {

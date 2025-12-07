@@ -77,6 +77,18 @@ public sealed class ResolvedSkill
         
     }
 
+/// <summary>
+/// Updates the runtime values for the skill parameters.
+/// </summary>
+/// <param name="damage">The damage dealt by the skill.</param>
+/// <param name="radius">The radius of the skill's effect.</param>
+/// <param name="duration">The duration of the skill's effect.</param>
+/// <param name="cooldown">The cooldown time before the skill can be used again.</param>
+/// <param name="castTime">The time taken to cast the skill.</param>
+/// <param name="projectileSpeed">The speed of the projectile.</param>
+/// <param name="range">The range of the skill.</param>
+/// <param name="aoeRadius">The area of effect radius.</param>
+/// <param name="projectileCount">The number of projectiles to be fired.</param>
     public void UpdateRuntimeValues(
         float damage,
         float radius,
@@ -117,6 +129,10 @@ public sealed class ResolvedSkill
         }
     }
 
+/// <summary>
+/// Adds or replaces the damage entries with the provided list.
+/// </summary>
+/// <param name="entries">The list of damage entries to add or replace.</param>
     public void AddOrReplaceDamageEntries(List<DamageEntry> entries)
     {
         DamageEntries = new List<DamageEntry>(entries);
