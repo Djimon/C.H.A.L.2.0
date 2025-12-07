@@ -37,7 +37,7 @@ namespace CHAL.Systems.Skill
             int bonusStacks = (int)source.ActiveModifiers.Apply(
                 ModifierTarget.DoTMaxStacks,
                 0,
-                new List<SkillDeliveryTag> { SkillDeliveryTag.DoT} //TODO: zukünftig SkillMechanicTag (bzw 
+                new List<string> { SkillMechanicTag.DoT.ToString()}
             );
 
             CurrentMaxStacks = DoTsettings.BaseMaxStacks + bonusStacks;
