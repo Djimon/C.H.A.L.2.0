@@ -22,6 +22,7 @@ _Automatically generated/updated from `Assets/src/Core/PlayerProfile.cs`._
       - `int missingXP`
       - `float levelProgress`
       - `List<string> UnlockedHeroes`
+      - `List<HeroProgressData> HeroesData`
       - `Dictionary<string, int> Currencies`
       - `Dictionary<int, int> MapProgress`
       - `List<Inventory> Inventories`
@@ -48,6 +49,8 @@ _Automatically generated/updated from `Assets/src/Core/PlayerProfile.cs`._
       - `void RestoreInventoriesFromSnapshot()`
       - `ResearchSnapshot BuildResearchSnapshotFrom(ResearchState state)`
       - `void RestoreResearchInto(ResearchState state, ResearchSnapshot snap)`
+      - `HeroProgressData GetOrCreateHeroProgress(string heroId)`
+      - `void UpdateHeroProgressFromInstance(HeroInstance inst)`
 
 # Key Behavior & Side Effects
 - Initializes player data and inventories upon calling `InitializePlayer`.
@@ -55,12 +58,15 @@ _Automatically generated/updated from `Assets/src/Core/PlayerProfile.cs`._
 - Manages currency through methods like `AddCurrency`, `SpendCurrency`, and `Refund`.
 - Unlocks and locks heroes with `UnlockHero` and `LockHero`.
 - Prepares and restores inventory snapshots with `PrepareInventorySnapshot` and `RestoreInventoriesFromSnapshot`.
+- Creates or retrieves hero progress data with `GetOrCreateHeroProgress`.
+- Updates hero progress from an instance with `UpdateHeroProgressFromInstance`.
 
 # Constraints & Failure Modes
 - Methods like `AddCurrency`, `SpendCurrency`, and `Refund` ignore non-positive amounts.
 - `GetCurrency` returns 0 if the currency ID is not found.
 - `EnsureStarterHeroUnlocked` initializes `UnlockedHeroes` if null.
 - `RestoreInventoriesFromSnapshot` ensures live inventories exist before restoring.
+- `GetOrCreateHeroProgress` and `UpdateHeroProgressFromInstance` handle null checks for hero IDs and instances.
 
 # Example
 ```csharp
@@ -72,5 +78,4 @@ int currentXP = playerProfile.GetXP();
 
 # Unknowns
 - The implementation details of `GameManager`, `BalanceManager`, and `DebugManager` are not provided.
-- The structure and behavior of `ResearchState` and `Inventory` are not defined in this file.
-
+- The structure and behavior of `ResearchState`, `Inventory`, and `HeroInstance` are not defined in this file.

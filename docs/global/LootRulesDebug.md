@@ -31,6 +31,7 @@ _Automatically generated/updated from `Assets/src/Systems/_test/dbg_LootRules.cs
 - Calculates loot budget based on enemy composition and logs the budget.
 - Manages and logs the effects of unlucky protection on loot chances.
 - Applies a soft cap modifier based on budget usage and item value.
+- Logs secret drops found based on specific tags.
 
 # Constraints & Failure Modes
 - Assumes that the ItemRegistry is properly initialized before calling Reload.
@@ -47,4 +48,3 @@ void Start()
 
 # Unknowns
 - None.
-

@@ -17,7 +17,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ResearchNodeDef.cs`.
       - `ResearchRequirement requirements`: Requirements needed to unlock this research node.
       - `string desc`: Internal description of the research node.
     - Public methods:
-      - `void OnValidate()`: Ensures the title is set to the name if it is empty or whitespace.
+      - `void OnValidate()`: Ensures the title is set to the object's name if it is empty or whitespace.
 
   - **[Serializable] public struct** `ResearchUnlock`
     - Public fields/properties:

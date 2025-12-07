@@ -51,7 +51,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeDef.cs`._
       - `Ranged`
 
 # Key Behavior & Side Effects
-- The `OnValidate` method checks if the `GrowthPattern` has exactly 5 entries and logs an error if not.
+- The `OnValidate` method checks if the `GrowthPattern` is null or if it does not contain exactly 5 entries, logging an error if either condition is met.
 
 # Constraints & Failure Modes
 - The `OnValidate` method ensures that `GrowthPattern.growthPriority` is not null and contains exactly 5 entries.
@@ -68,4 +68,3 @@ myArchetype.primAttackType = PrimaryAttackArchetype.Melee;
 
 # Unknowns
 - None.
-

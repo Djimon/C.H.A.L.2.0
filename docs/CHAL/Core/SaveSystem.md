@@ -17,15 +17,15 @@ _Automatically generated/updated from `Assets/src/Core/SaveSystem.cs`._
       - `bool DeleteProfileData(string profileId)`
         - Deletes the specified profile's data; returns true if successful.
       - `void SaveResearch(string profileId, ResearchSnapshot snap)`
-        - Saves a research snapshot associated with the specified profile ID.
+        - Saves a research snapshot associated with the specified profile ID. If the profile ID is empty, the current profile ID is used.
       - `ResearchSnapshot LoadResearch(string profileId)`
-        - Loads a research snapshot based on the provided profile ID.
+        - Loads a research snapshot based on the provided profile ID. If the profile ID is empty, the current profile ID is used.
       - `bool DeleteResearch(string profileId)`
         - Deletes the research data associated with the specified profile ID; returns true if successful.
       - `void SaveStatistics(string profileId, StatisticsSnapshot snapshot)`
-        - Saves a statistics snapshot associated with the specified profile ID.
+        - Saves a statistics snapshot associated with the specified profile ID. If the snapshot is null, a new empty snapshot is saved.
       - `StatisticsSnapshot LoadStatistics(string profileId)`
-        - Loads a statistics snapshot based on the provided profile ID.
+        - Loads a statistics snapshot based on the provided profile ID. Returns an empty snapshot if no statistics file exists.
       - `string CurrentProfileId()`
         - Retrieves the current profile ID from a file path, returning "main" if no valid ID is found.
 

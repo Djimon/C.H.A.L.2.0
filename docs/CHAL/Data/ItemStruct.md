@@ -14,6 +14,7 @@ _Automatically generated/updated from `Assets/src/Data/Structs/ItemStruct.cs`._
       - `public readonly string Category`: The category of the item.
       - `public readonly string Id`: The unique identifier of the item.
     - Public methods:
+      - `public ItemKey(string category, string id)`: Constructor to initialize an `ItemKey` with a category and ID.
       - `public static bool TryParse(string s, out ItemKey key)`: Attempts to parse a string into an `ItemKey`. Returns true if successful.
       - `public override string ToString()`: Returns a string representation of the `ItemKey` in the format "Category:Id".
 

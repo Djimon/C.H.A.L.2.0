@@ -12,13 +12,14 @@ _Automatically generated/updated from `Assets/src/UI/misc/GhostOverlay.cs`._
     - Public fields/properties:
       - `int ghostSize`: Size of the ghost overlay.
       - `float opacity`: Opacity of the ghost overlay.
+      - `Vector2 _offset`: Offset position of the ghost overlay.
     - Public methods:
-      - `void OnEnable()`: Initializes the ghost overlay and subscribes to events.
+      - `void OnEnable()`: Initializes the ghost overlay, subscribes to events, and sets up document management.
       - `void OnDisable()`: Unsubscribes from events.
-      - `void Update()`: Updates the position of the ghost overlay based on mouse position.
+      - `void Update()`: Updates the position of the ghost overlay based on mouse position and manages document changes.
 
 # Key Behavior & Side Effects
-- On enabling, creates the ghost overlay and subscribes to drag events.
+- On enabling, creates the ghost overlay, subscribes to drag events, and manages document addition/removal.
 - On disabling, unsubscribes from drag events.
 - Handles the beginning and end of drag operations, showing or hiding the ghost overlay accordingly.
 - Updates the ghost overlay's position based on the mouse's current location and the active UI document.
@@ -47,4 +48,3 @@ public class ExampleUsage : MonoBehaviour
 # Unknowns
 - The behavior of `InvDnDProvider` and `DragDropService` is not defined within this file.
 - The structure and contents of `ItemStack` and `ItemRegistry` are not detailed in this file.
-

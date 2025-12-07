@@ -20,6 +20,7 @@ _Automatically generated/updated from `Assets/src/Editor/ImplicitGearConfigEdito
 - Allows copying templates to the clipboard and applying pasted grid data.
 - Uses Unity's Undo system to record changes when applying weights.
 - Updates the asset and marks it dirty when changes are made.
+- Handles copying blank templates and templates from the asset to the clipboard.
 
 # Constraints & Failure Modes
 - Handles empty or null inputs gracefully.
@@ -38,4 +39,3 @@ public class ExampleEditor : ImplicitGearTypeConfigEditor
 
 # Unknowns
 - None.
-

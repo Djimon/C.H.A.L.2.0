@@ -15,7 +15,7 @@ _Automatically generated/updated from `Assets/src/Systems/Items/ItemType.cs`._
 
 # Key Behavior & Side Effects
 - Returns `ItemType.Unknown` for null or empty item IDs.
-- Parses the item ID to determine the prefix and returns the corresponding `ItemType`.
+- Parses the item ID to determine the prefix and returns the corresponding `ItemType` based on predefined cases.
 
 # Constraints & Failure Modes
 - Handles null and empty strings by returning `ItemType.Unknown`.

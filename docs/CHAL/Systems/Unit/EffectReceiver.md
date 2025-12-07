@@ -20,17 +20,20 @@ _Automatically generated/updated from `Assets/src/Systems/Unit/EffectReceiver.cs
       - `virtual void RemoveEffect(ActiveStatusEffect effect)`: Removes a specified active status effect.
       - `abstract void TakeDamage(float amount, DamageType type)`: Applies damage to the entity based on the specified amount and type.
       - `void UpdateEffects(float deltaTime)`: Updates active effects based on elapsed time.
+      - `void TakeDamage(DamagePacket packet)`: Applies damage based on the provided damage packet.
 
 # Key Behavior & Side Effects
 - `ApplyStatusEffect` method handles the application of new effects and updates existing effects, including stacking and duration management.
 - `RemoveEffect` method removes an effect from the active effects list.
-- `TakeDamage` is an abstract method that must be implemented to define how damage is applied.
+- `TakeDamage(float amount, DamageType type)` applies damage based on the specified amount and type, and calls `TakeDamage(DamagePacket packet)`.
+- `TakeDamage(DamagePacket packet)` applies damage based on the provided damage packet and checks for validity.
 - `UpdateEffects` method processes the remaining time of active effects and applies damage for damage-over-time effects, removing effects that have expired.
 
 # Constraints & Failure Modes
 - `ApplyStatusEffect` will not apply a null effect.
 - Effects are managed in a way that prevents double application of modifiers when refreshing existing effects.
 - The `UpdateEffects` method iterates backward through the effects list to safely remove expired effects.
+- `TakeDamage(DamagePacket packet)` will not apply damage if the packet is invalid or empty.
 
 # Example
 ```csharp
@@ -43,4 +46,3 @@ receiver.UpdateEffects(Time.deltaTime); // Update effects in the game loop
 # Unknowns
 - The specific implementations of `TakeDamage` and `OnDeath` are not defined in this abstract class.
 - The structure and behavior of `ActiveStatusEffect`, `DoTStatusEffect`, `BuffStatusEffect`, `DebuffStatusEffect`, and `ModifierStack` are not detailed in this file.
-

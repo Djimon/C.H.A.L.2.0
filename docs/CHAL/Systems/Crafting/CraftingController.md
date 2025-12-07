@@ -18,6 +18,9 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingContr
       - `RecipeDetailPanel detailPanel`: UI component for displaying details of a selected recipe.
     - Public methods:
       - `void OnEnable()`: Initializes UI wiring.
+      - `void Awake()`: Initializes relevant inventory IDs.
+      - `void Start()`: Starts the initialization coroutine.
+      - `IEnumerator InitAfterOneFrame()`: Initializes wallet, inventory, and rebuilds the recipe list after one frame.
       - `void OnDisable()`: Cleans up UI wiring.
       - `void HandleSelectRecipe(RecipeDef recipe)`: Selects a recipe and refreshes the detail panel.
       - `void HandleCraftClicked()`: Attempts to craft the selected recipe and updates the UI.
@@ -28,6 +31,7 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingContr
 - On disabling, the UI wiring is cleaned up.
 - Recipes are rebuilt and displayed based on the current inventory and unlocks.
 - Crafting attempts are logged, and UI feedback is provided based on success or failure.
+- The wallet is resolved from the `GameManager` and warnings are logged if it or the inventory is null.
 
 # Constraints & Failure Modes
 - If the inventory or wallet is null, the crafting UI will not initialize.
@@ -43,4 +47,3 @@ craftingController.OnEnable(); // Initializes the crafting UI
 # Unknowns
 - The behavior of `GameManager.Instance` and its properties cannot be determined from this file.
 - The structure and contents of `RecipeDef`, `CraftingCatalog`, `InventoryDomain`, and other referenced types are not defined in this file.
-

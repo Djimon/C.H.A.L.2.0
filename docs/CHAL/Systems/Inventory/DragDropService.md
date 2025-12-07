@@ -18,6 +18,9 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/DragDro
       - `void BeginDrag(ItemMoveObject from, bool splitHalf)` - Initiates the drag operation for an item.
       - `void Cancel()` - Cancels the current drag operation.
       - `void TryDropOn(ItemMoveObject to)` - Attempts to drop an item onto the specified target object.
+    - Public events:
+      - `event Action<ItemStack, bool> OnBeginDrag` - Triggered when a drag operation begins.
+      - `event Action OnEndDrag` - Triggered when a drag operation ends.
 
 # Key Behavior & Side Effects
 - `BeginDrag` sets the source item and whether it should be split, and triggers `OnBeginDrag` if the item stack is valid.
@@ -38,4 +41,3 @@ dragDropService.TryDropOn(targetItemMoveObject);
 
 # Unknowns
 - The implementation details of `IInventoryDomain` and `MoveRequest` are not provided in this file.
-

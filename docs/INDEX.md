@@ -226,6 +226,7 @@ All documented namespaces and types.
 - [fix_debug_language_agent](global/fix_debug_language_agent.md) (2025-11-09)
 - [fix_debug_manager_agent](global/fix_debug_manager_agent.md) (2025-11-09)
 - [fix_summary_agent](global/fix_summary_agent.md) (2025-11-09)
+- [HeroProgressData](global/HeroProgressData.md) (2025-12-03)
 - [ImplicitGearTypeConfigEditor](global/ImplicitGearTypeConfigEditor.md) (2025-11-09)
 - [InventoryDemoBootstrap](global/InventoryDemoBootstrap.md) (2025-11-09)
 - [ItemDefEditor](global/ItemDefEditor.md) (2025-11-09)

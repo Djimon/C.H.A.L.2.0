@@ -21,6 +21,8 @@ _Automatically generated/updated from `Assets/src/UI/MapRewardUI.cs`._
 # Key Behavior & Side Effects
 - `Awake()`: Initializes buttons and assigns click event handlers. Finds the `MapManager` instance.
 - `populateText(bool succeded)`: Changes the text and color of `detailsText` based on the success status.
+- `OnHideoutBtnClicked()`: Calls `GameManager.Instance.ExitToHideout()` to exit to the hideout.
+- `OnRetryBtnClicked()`: Calls `mapManager.ResetWave()` to reset the current wave.
 
 # Constraints & Failure Modes
 - Assumes that the UI elements with specified names exist in the UI hierarchy.

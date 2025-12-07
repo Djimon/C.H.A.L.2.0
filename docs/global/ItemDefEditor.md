@@ -17,6 +17,7 @@ _Automatically generated/updated from `Assets/src/Editor/ItemDefEdtitor.cs`._
 - Displays fields for `itemId`, `icon`, `rarity`, and `lootValue`.
 - Conditionally displays additional fields based on the prefix of `itemId` (e.g., "remains:", "rune:", "part:", "module:", "gear:").
 - Calls `EditorUtility.SetDirty(target)` if any GUI changes are made, marking the target as dirty to ensure changes are saved.
+- Displays a help box for unknown item prefixes.
 
 # Constraints & Failure Modes
 - Uses `Ensure<T>(ref T field)` to initialize data fields if they are null.
@@ -30,4 +31,3 @@ _Automatically generated/updated from `Assets/src/Editor/ItemDefEdtitor.cs`._
 
 # Unknowns
 - None.
-

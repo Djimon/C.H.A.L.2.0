@@ -29,6 +29,7 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/Invento
 # Key Behavior & Side Effects
 - The `Create` method initializes a new `InventoryInstance` with a specified ID, definition, and optional owner ID.
 - It populates the `slots` array based on the `cols` and `rows` properties of the `InventoryDef`.
+- Each slot is initialized with a new `Slot` instance, using the `defaultMaxStackPerSlot` and an optional filter.
 
 # Constraints & Failure Modes
 - The `slots` array is initialized based on the `cols` and `rows` of the `InventoryDef`, which must be valid.

@@ -30,6 +30,7 @@ _Automatically generated/updated from `Assets/src/Systems/Inventory/core/Invento
 - `OnSlotChanged` event is invoked whenever a slot's item stack changes.
 - Methods handle null checks and ensure valid indices for inventory operations.
 - `TryAdd` and `TryMove` methods include filtering logic to determine if items can be added or moved based on slot filters.
+- `TryRemove` method updates the slot and invokes `OnSlotChanged` when an item is removed.
 
 # Constraints & Failure Modes
 - Methods return false and set a reason in `TransactionResult` for various failure conditions, such as:
@@ -53,4 +54,3 @@ bool exists = inventoryDomain.HasInstance("exampleID");
 # Unknowns
 - The implementation details of `InventoryInstance`, `ItemStack`, `TransactionResult`, and `MoveRequest` are not provided in this file.
 - The behavior of `ItemTypeUtils.FromId` and `slot.Filter.Allows` is not defined in this file.
-

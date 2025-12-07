@@ -10,8 +10,10 @@ _Automatically generated/updated from `Assets/src/Data/Enums/HeroEnums.cs`._
 - Types
   - `public enum HeroSlot`
     - Represents different equipment slots for a hero.
+    - Values: `Head`, `Charm`, `Torso`, `RightHand`, `LeftHand`
   - `public enum HeroAttribs`
     - Represents various hero attributes.
+    - Values: `STR`, `DEX`, `CON`, `INT`, `WIL`
 
 # Key Behavior & Side Effects
 - No explicit behavior or side effects defined; purely enumerative.

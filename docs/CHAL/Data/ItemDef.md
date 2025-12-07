@@ -44,7 +44,6 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
       - `GearType slotType`: Type of gear slot (e.g., Head, Chest).
       - `string[] tags`: Tags associated with the gear.
       - `RuneColorType runeSocketType`: Type of rune socket.
-
   - public static class `RuneColors`
     - Public methods:
       - `static Color Get(RuneColorType type)`: Gets the color associated with the specified rune color type.
@@ -72,4 +71,3 @@ item.lootValue = 30;
 
 # Unknowns
 - None.
-

@@ -17,6 +17,7 @@ _Automatically generated/updated from `Assets/src/Core/StatisticService.cs`._
       - `IReadOnlyDictionary<string, long> Counters`: Exposes the current counters.
     - Public methods:
       - `StatisticsSnapshot CreateSnapshot()`: Creates a snapshot of current statistics.
+      - `void RestoreFromSnapshot(StatisticsSnapshot snapshot)`: Restores statistics from a snapshot.
       - `void OnEnemyKilled(string enemyId, EnemyRank rank, List<string> basetags, List<string> bonustags)`: Records an enemy kill.
       - `void OnWaveCompleted(int mapId, int waveIndex, MapDifficulty difficulty)`: Records completion of a wave.
       - `void OnMapCompleted(int mapId, MapDifficulty difficultyId)`: Records completion of a map.
@@ -37,12 +38,14 @@ _Automatically generated/updated from `Assets/src/Core/StatisticService.cs`._
 # Constraints & Failure Modes
 - Counters are stored in a dictionary; if a key does not exist, it initializes to zero before incrementing.
 - No explicit error handling is present for invalid inputs or states.
+- The `RestoreFromSnapshot` method does not restore if the snapshot or its counters are null.
 
 # Example
 ```csharp
 var statsService = new StatisticsService();
 statsService.OnEnemyKilled("enemy_1", EnemyRank.Normal, new List<string> { "tag1" }, new List<string> { "bonus1" });
 var snapshot = statsService.CreateSnapshot();
+statsService.RestoreFromSnapshot(snapshot);
 ```
 
 # Unknowns

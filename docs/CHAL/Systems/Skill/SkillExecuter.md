@@ -16,6 +16,8 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/SkillExecuter.c
         - Executes a skill without transforms, using default values.
       - `internal static void ApplyOnHit(SkillInstance skill, EffectReceiver source, EffectReceiver target)`
         - Applies damage and effects when a skill hits a target.
+      - `internal static void ApplyOnHit(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)`
+        - Applies damage and effects when a skill hits a target, considering the hit result.
 
 # Key Behavior & Side Effects
 - Validates skill and source before execution; logs errors if invalid.
@@ -35,4 +37,3 @@ SkillExecutor.ExecuteSkill(skillInstance, sourceReceiver, targetReceiver);
 
 # Unknowns
 - None.
-

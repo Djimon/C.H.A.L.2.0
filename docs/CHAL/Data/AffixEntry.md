@@ -33,6 +33,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/AffixFamilyDef.cs`._
 - Handles null/empty lists for `Entries` and `TagLimits`.
 - Ensures that `Weight` in `AffixEntry` is not negative.
 - Normalizes `Tag` in `TagLimitEntry` to lowercase and trims whitespace.
+- Limits in `TagLimitEntry` are constrained to be -1 (no limit) or greater than or equal to 0.
 
 # Example
 ```csharp
@@ -44,4 +45,3 @@ affixFamily.TagLimits.Add(new TagLimitEntry { Tag = "example_tag", Limit = 5 });
 
 # Unknowns
 - None.
-

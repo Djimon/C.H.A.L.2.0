@@ -50,6 +50,7 @@ _Automatically generated/updated from `Assets/src/Systems/Crafting/CraftingServi
 - `GetPreview` checks if the output inventory can accept the crafted item, verifies if the player has enough materials and currency, and returns a `RecipePreview` object.
 - `CanCraft` uses `GetPreview` to determine if crafting is possible.
 - `TryCraftToInventory` attempts to craft an item, consuming materials and currency, and handles failures by rolling back changes if necessary.
+- `DebugOutputReject` logs detailed information when crafting fails due to inventory constraints.
 
 # Constraints & Failure Modes
 - `GetPreview` and `TryCraftToInventory` require valid `RecipeDef`, `InventoryDomain`, and `IWallet` instances.
@@ -75,4 +76,3 @@ var success = CraftingService.TryCraftToInventory(recipe, inventoryDomain, walle
 # Unknowns
 - The structure and properties of `RecipeDef`, `InventoryDomain`, and `IWallet` are not defined in this file.
 - The behavior of `DebugManager.Log` and its impact on performance is not specified.
-

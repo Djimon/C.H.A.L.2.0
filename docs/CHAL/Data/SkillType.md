@@ -13,13 +13,13 @@ _Automatically generated/updated from `Assets/src/Data/Enums/SkillEnums.cs`._
   - `public enum SkillRange`
     - Values: `Self`, `Melee`, `Reach`, `MidDistance`, `FarDistance`
   - `public enum SkillTag`
-    - Values: `Melee`, `Projectile`, `Spell`, `AoE`, `Buff`, `Debuff`, `DoT`, `Aura`, `Summon`, `Fire`, `Cold`, `Poison`, `Arcane`, `Holy`, `Physical`
+    - Values: `Melee`, `Projectile`, `Spell`, `AoE`, `Buff`, `Debuff`, `DoT`, `Aura`, `Summon`, `Trap`, `Orb`, `Mark`, `Movement`, `Nuke`, `Ground`, `Hazard`, `Fire`, `Cold`, `Poison`, `Arcane`, `Holy`, `Physical`
   - `public enum ModifierTarget`
-    - Values: `Damage`, `CritChance`, `CritMultiplier`, `AttackSpeed`, `ProjectileCount`, `ProjectileSpeed`, `PierceChance`, `Range`, `AoERadius`, `Duration`, `BuffDuration`, `DebuffDuration`, `DoTMaxStacks`, `DotDuration`, `CastTime`, `Cooldown`, `SummonCount`, `SummonHP`, `SummonDamage`, `AuraRange`, `MovementSpeed`, `Resist`, `Armor`, `MaxHP`, `LeechFactor`
+    - Values: `Damage`, `CritChance`, `CritMultiplier`, `AttackSpeed`, `ProjectileCount`, `ProjectileSpeed`, `PierceChance`, `Range`, `AoERadius`, `Duration`, `DoTMaxStacks`, `DoTDuration`, `TicksPerSecond`, `CastTime`, `Cooldown`, `SummonCount`, `SummonHP`, `SummonDamage`, `AuraRange`, `MovementSpeed`, `LeechFactor`, `HealAmount`, `StackLimit`
   - `public enum ModifierOperation`
     - Values: `Add`, `Mult`, `Replace`
   - `public enum ModifierHook`
-    - Values: `None`, `OnCast`, `OnHit`, `OnCrit`, `OnKill`
+    - Values: `None`, `OnCast`, `OnHit`, `OnCrit`, `OnKill`, `OnEnd`
 
 # Key Behavior & Side Effects
 - No explicit behavior or side effects defined; purely enumerative.
@@ -32,4 +32,3 @@ _Automatically generated/updated from `Assets/src/Data/Enums/SkillEnums.cs`._
 
 # Unknowns
 - No unknowns can be determined from this file.
-

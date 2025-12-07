@@ -23,7 +23,7 @@ _Automatically generated/updated from `Assets/src/Data/Structs/WaveComposition.c
       - `WaveComposition Clone()`: Creates a copy of the current `WaveComposition` instance.
 
 # Key Behavior & Side Effects
-- The `Clone` method creates a deep copy of the `WaveComposition`, including a new list of `EnemyStruct` instances.
+- The `Clone` method creates a deep copy of the `WaveComposition`, including a new list of `EnemyStruct` instances, with each `EnemyStruct`'s `bonusTags` being a new list.
 
 # Constraints & Failure Modes
 - The `Monsters` list can be null, and the properties that aggregate counts handle this with null-coalescing operators.

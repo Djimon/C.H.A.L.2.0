@@ -21,6 +21,7 @@ _Automatically generated/updated from `Assets/src/Editor/ResearchNodeEditorWindo
   - Displays a message if no research node is selected.
   - Allows pinging and selecting the research node.
   - Renders the default inspector or a minimal fallback if the cached inspector is not available.
+  - Marks the `ResearchNodeDef` as dirty if changes are made in the inspector.
 
 # Constraints & Failure Modes
 - If the provided `ResearchNodeDef` is null, the editor window will not open.
@@ -34,4 +35,3 @@ ResearchNodeEditorWindow.ShowFor(myNode);
 
 # Unknowns
 - None.
-

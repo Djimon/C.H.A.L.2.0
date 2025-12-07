@@ -35,6 +35,7 @@ _Automatically generated/updated from `Assets/src/UI/InventoryView.cs`._
       - void OnDisable()
       - void OnDestroy()
       - void Update()
+      - IEnumerator BindFromTemplate()
 
 # Key Behavior & Side Effects
 - OnEnable: Registers the view with UIDockingManager and starts binding from the template.
@@ -42,6 +43,7 @@ _Automatically generated/updated from `Assets/src/UI/InventoryView.cs`._
 - OnDestroy: Unsubscribes from domain events.
 - Bind: Initializes the inventory view, binds to the domain, and sets up the UI elements.
 - WireSlotInteractions: Sets up interaction callbacks for inventory slots.
+- BindFromTemplate: Waits for GameManager and domain readiness, then binds the inventory view.
 
 # Constraints & Failure Modes
 - Requires a valid UIDocument; logs an error if missing.
@@ -56,4 +58,3 @@ inventoryView.Bind(inventoryDomain, "player_inventory", 4, 3);
 
 # Unknowns
 - None.
-

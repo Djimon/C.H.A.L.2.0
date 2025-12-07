@@ -17,6 +17,7 @@ _Automatically generated/updated from `Assets/src/UI/RecipeDetailPanelView.cs`._
       - `void ShowRecipeDetails(RecipeDef r, CraftingService.RecipePreview preview, int needGold, int haveGold, Dictionary<string, int> haveByItemId)`: Displays the details of a recipe.
       - `void ShowFail(string message)`: Displays a failure message to the user.
       - `void ShowSuccess()`: Displays a success message to the user.
+      - `private void ToggleTooltip()`: Toggles the visibility of the tooltip and populates it with placeholder data if empty.
 
 # Key Behavior & Side Effects
 - `Awake()`: Initializes UI elements and sets up event listeners for button clicks and slider value changes.
@@ -24,7 +25,6 @@ _Automatically generated/updated from `Assets/src/UI/RecipeDetailPanelView.cs`._
 - `ShowRecipeDetails(...)`: Updates the UI with recipe details, checks crafting conditions, and enables/disables the craft button based on available ingredients and gold.
 - `ShowFail(...)`: Updates the failure label with a provided message.
 - `ShowSuccess()`: Clears the failure label for a success indication.
-- `ToggleTooltip()`: Toggles the visibility of the tooltip and populates it with placeholder data if empty.
 
 # Constraints & Failure Modes
 - `doc` must be assigned either in the inspector or via `GetComponent<UIDocument>()` in `Awake()`.
@@ -40,4 +40,3 @@ recipePanel.ShowRecipeDetails(recipeDef, recipePreview, requiredGold, availableG
 # Unknowns
 - The implementation details of `RecipeDef` and `CraftingService.RecipePreview` are not provided in this file.
 - The exact behavior of the crafting process and how it interacts with the UI is not defined here.
-

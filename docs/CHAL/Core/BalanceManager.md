@@ -12,7 +12,9 @@ _Automatically generated/updated from `Assets/src/Core/BalanceManager.cs`._
     - Public fields/properties
       - static BalanceManager Instance { get; private set; }
       - GameBalanceConfig Config: Accesses the game balance configuration, loading it if not set.
+      - HeroXPConfig HeroXPConfig: Accesses the HeroXP configuration from the game balance configuration.
     - Public methods
+      - static HeroXPConfig GetHeroXP(): Returns the HeroXP configuration if the instance is available.
       - static int GetXpForLevel(int level): Returns the experience points needed to reach the specified level.
       - void DebugXpProgression(): Calculates and displays total experience points up to specified checkpoint levels.
       - float GetRangeValue(SkillRange range): Returns the corresponding range value based on the specified skill range.
@@ -32,8 +34,8 @@ _Automatically generated/updated from `Assets/src/Core/BalanceManager.cs`._
 // Example usage of BalanceManager
 int xpForLevel5 = BalanceManager.GetXpForLevel(5);
 BalanceManager.Instance.DebugXpProgression();
+HeroXPConfig heroXPConfig = BalanceManager.GetHeroXP();
 ```
 
 # Unknowns
 - None.
-

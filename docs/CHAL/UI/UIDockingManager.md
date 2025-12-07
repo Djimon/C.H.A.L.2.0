@@ -21,7 +21,7 @@ _Automatically generated/updated from `Assets/src/UI/misc/UIDockingManager.cs`._
       - `public void NotifyViewChanged(IDockableView view)` - Notifies that a view's properties or visibility have changed.
       - `public void QueueRelayout()` - Marks the layout for relayout.
       - `public IReadOnlyList<IDockableView> GetActiveInventories()` - Retrieves active, interactive inventories.
-      - `public InventoryView? GetOtherInventory(InventoryView caller)` - Gets another inventory view, if available.
+      - `public InventoryView GetOtherInventory(InventoryView caller)` - Gets another inventory view, if available.
 
 # Key Behavior & Side Effects
 - Ensures only one instance of `UIDockingManager` exists; disables itself if another instance is found.
@@ -41,4 +41,3 @@ dockingManager.Register(myDockableView);
 
 # Unknowns
 - None.
-
