@@ -1,5 +1,6 @@
 using CHAL.Core;
 using CHAL.Data;
+using CHAL.Systems.Hero;
 using CHAL.Systems.Unit;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,11 @@ namespace CHAL.Systems.Skill
 /// </summary>
     public class SkillInstance
     {
-        public SkillModuleDef skillData { get; private set; }
+        public SkillModuleDef skillModule { get; private set; }
 
         private EffectReceiver ownedBy;
+
+        public ResolvedSkill Resolved { get; private set; }
 
         // berechnete Werte
         public List<DamageEntry> Damage { get; private set; }
@@ -32,10 +35,16 @@ namespace CHAL.Systems.Skill
 
         public SkillInstance(SkillModuleDef data, EffectReceiver owner)
         {
-            skillData = data;
+            skillModule = data;
             ownedBy = owner;
             Recalculate();
 
+        }
+
+        private ArchetypeModuleOverrideDef GetArchetypeOverride()
+        {
+            // TODO: Lookup nach module.Id + ownedBy.ArchetypeId in deinem Registry/Service
+            return null;
         }
 
         /// <summary>
@@ -43,15 +52,22 @@ namespace CHAL.Systems.Skill
         /// </summary>
         public void Recalculate()
         {
-            var tags = skillData.Tags ?? new List<SkillDeliveryTag>();
-            //TODO: ocmplete wrapper of skill (SkillData->skillfamily->Archetype)
-            //TODO: Umbauen auf TagOcntext mit -> ctx.GetModifierTags()
-            
+            var overrideDef = GetArchetypeOverride();
+            var archetypeId = ownedBy != null ? (ownedBy as HeroInstance)?.Archetype.ArchetypeId : string.Empty;
+
+            var baseResolved = SkillResolveUtility.ResolveBaseSkill(
+            skillModule,
+            overrideDef,
+            archetypeId
+        );
+         
 
             var mods = ownedBy != null ? ownedBy.ActiveModifiers : new ModifierStack();
 
+            var tags = baseResolved.tagContext;
+
             // --- Phase 2, Step 1: BaseDMG  ---
-            float baseDamage = Mathf.Max(0f, skillData.BaseDamage);
+            float baseDamage = Mathf.Max(0f, skillModule.BaseDamage);
 
             // -- Step 1: Added, converted, Gain Dmg ---
             var dmgpertype = ApplyBaseDmgModfier(mods, tags, baseDamage);
@@ -82,14 +98,14 @@ namespace CHAL.Systems.Skill
             }
 
             DebugManager.Log(
-                $"Initialized Skill {skillData.SkillId} with DMG:{totalDmg:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
+                $"Initialized Skill {skillModule.SkillId} with DMG:{totalDmg:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
                 DebugManager.EDebugLevel.Debug,
                 "Skill");
         }
 
-        private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, List<SkillDeliveryTag> tags, float baseDamage)
+        private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, TagContext tags, float baseDamage)
         {
-            DamageType baseType = skillData.BaseDamageType; ;
+            DamageType baseType = skillModule.BaseDamageType; ;
 
             // BaseEffektiveDMG_T: wir starten mit genau einem Typ
             var baseEffectivePerType = new Dictionary<DamageType, float>
@@ -166,7 +182,7 @@ namespace CHAL.Systems.Skill
             return baseEffectivePerType;
         }
 
-        private void ApplyFinalDmgModifiers(ModifierStack mods, List<SkillDeliveryTag> tags, Dictionary<DamageType,float> dmgPerType)
+        private void ApplyFinalDmgModifiers(ModifierStack mods, TagContext tags, Dictionary<DamageType,float> dmgPerType)
         {
 
             // Vorbereitung für Increased / More
@@ -230,36 +246,38 @@ namespace CHAL.Systems.Skill
             }
         }
 
-        private void ApplyOtherModifier(ModifierStack mods, List<SkillDeliveryTag> tags)
+        private void ApplyOtherModifier(ModifierStack mods, TagContext tags)
         {
             //TODO: use Tag-Context ctx -> ctx.GetModifierTags()
 
             // -----------------------
             // Restliche Runtime-Werte unverändert über ModifierStack.Apply
             // -----------------------
-            CastTime = mods.Apply(ModifierTarget.CastTime, skillData.CastTime, tags);
-            Cooldown = mods.Apply(ModifierTarget.Cooldown, skillData.Cooldown, tags);
-            Range = mods.Apply(ModifierTarget.Range, BalanceManager.Instance.GetRangeValue(skillData.Range), tags);
-            Duration = mods.Apply(ModifierTarget.Duration, skillData.Duration, tags);
-            ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, skillData.ProjectileSpeed, tags);
-            ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, skillData.ProjectileCount, tags);
-            AoERadius = mods.Apply(ModifierTarget.AoERadius, skillData.AoERadius, tags);
+            CastTime = mods.Apply(ModifierTarget.CastTime, skillModule.CastTime, tags);
+            Cooldown = mods.Apply(ModifierTarget.Cooldown, skillModule.Cooldown, tags);
+            Range = mods.Apply(ModifierTarget.Range, BalanceManager.Instance.GetRangeValue(skillModule.Range), tags);
+            Duration = mods.Apply(ModifierTarget.Duration, skillModule.Duration, tags);
+            ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, skillModule.ProjectileSpeed, tags);
+            ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, skillModule.ProjectileCount, tags);
+            AoERadius = mods.Apply(ModifierTarget.AoERadius, skillModule.AoERadius, tags);
 
             // Optional: Wenn du später Debug-Infos für die Layer loggen willst,
             // kannst du hier BaseEffektiveDMG/Increased/More cachen.
         }
 
-        private static bool AppliesToTags(DamageModifier mod, List<SkillDeliveryTag> tags)
+        private static bool AppliesToTags(DamageModifier mod, TagContext tagctx)
         {
-            if (mod.AppliesTo == null || mod.AppliesTo.Count == 0)
+            if (mod.AppliesToTags == null || mod.AppliesToTags.Count == 0)
                 return true;
+
+            var tags = tagctx.GetModifierTags();
 
             if (tags == null || tags.Count == 0)
                 return false;
 
-            for (int i = 0; i < tags.Count; i++)
+            foreach (var tag in tags)
             {
-                if (mod.AppliesTo.Contains(tags[i]))
+                if (mod.AppliesToTags.Contains(tag))
                     return true;
             }
 
@@ -298,9 +316,9 @@ namespace CHAL.Systems.Skill
             if (ownedBy is not IAttributeHolder attributeProvider)
                 return 1f;
 
-            var mainStatType = skillData.AttributeAffinity;
+            var mainStatType = skillModule.AttributeAffinity;
             var mainStatValue = attributeProvider.GetAttributeValue(mainStatType);
-            var scalingFactor = skillData.damageAttributeScalingFactor;
+            var scalingFactor = skillModule.damageAttributeScalingFactor;
 
             return ComputeStatScalingMultiplier(mainStatValue, scalingFactor);
         }
@@ -351,7 +369,7 @@ namespace CHAL.Systems.Skill
 /// <returns>A formatted string with the object's data.</returns>
         public override string ToString()
         {
-            return $"{skillData.DisplayName}: Dmg={Damage}, CD={Cooldown}, Range={Range}, " +
+            return $"{skillModule.DisplayName}: Dmg={Damage}, CD={Cooldown}, Range={Range}, " +
                    $"Dur={Duration}, ProjSpeed={ProjectileSpeed}, AoE={AoERadius}";
         }
     }

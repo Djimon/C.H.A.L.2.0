@@ -24,15 +24,15 @@ namespace CHAL.Systems.Skill
             Attacker = attacker;
             Defender = defender;
 
-            Tags = skill.skillData.Tags;
+            Tags = skill.skillModule.DeliveryTags;
             if (Tags == null)
                 Tags = Array.Empty<SkillDeliveryTag>();
 
-            var type = skill?.skillData?.SkillType ?? SkillType.Melee;
+            var type = skill?.skillModule?.SkillType ?? SkillType.Melee;
             IsAttack = (type == SkillType.Melee || type == SkillType.Ranged);
             IsSpell = (type == SkillType.Spell);
             IsProjectile = (type == SkillType.Ranged);
-            IsAoE = skill?.skillData?.isAoE ?? false;
+            IsAoE = skill?.skillModule?.isAoE ?? false;
         }
     }
 

@@ -90,7 +90,7 @@ namespace CHAL.Systems.Hero
                         socketedSkills.Add(new SkillInstance(sd, heroInstance)); // :contentReference[oaicite:3]{index=3}
             }
 
-            DebugManager.Log($"Hero | Built skills: Rotation={socketedSkills.Count}, AutoAttack={(autoAttack != null ? autoAttack.skillData.DisplayName : "none")}", DebugManager.EDebugLevel.Debug,"Hero");
+            DebugManager.Log($"Hero | Built skills: Rotation={socketedSkills.Count}, AutoAttack={(autoAttack != null ? autoAttack.skillModule.DisplayName : "none")}", DebugManager.EDebugLevel.Debug,"Hero");
         }
 
         // Initialisierung
@@ -273,7 +273,7 @@ namespace CHAL.Systems.Hero
                 if (dist <= currentSkill.Range)
                 {
                     DebugManager.Log(
-                        $"Combat/Hero | Execute {currentSkill.skillData.DisplayName} â†’ {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
+                        $"Combat/Hero | Execute {currentSkill.skillModule.DisplayName} â†’ {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
                         DebugManager.EDebugLevel.Debug, "Combat"
                     );
 
@@ -305,7 +305,7 @@ namespace CHAL.Systems.Hero
             castRemaining = Mathf.Max(0f, next.CastTime);
 
             DebugManager.Log(
-                $"Anim | Play {next.skillData.animationType} len={next.CastTime:F2}s",
+                $"Anim | Play {next.skillModule.animationType} len={next.CastTime:F2}s",
                 DebugManager.EDebugLevel.Debug, "Anim"
             );
 

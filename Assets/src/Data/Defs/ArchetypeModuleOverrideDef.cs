@@ -1,4 +1,5 @@
 using CHAL.Data;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ArchetypeModuleOverrideDef", menuName = "Skills/ArchetypeModuleOverride")]
@@ -8,13 +9,22 @@ public class ArchetypeModuleOverrideDef : ScriptableObject
     [SerializeField] private string moduleId;
     [SerializeField] private string archetypeId; // oder CombatProfile-ID
 
-    [Header("Multipliers")]
-    [SerializeField] private float damageMultiplier = 1f;
-    [SerializeField] private float radiusMultiplier = 1f;
-    [SerializeField] private float durationMultiplier = 1f;
+    [Header("Overrides")]
+    [Tooltip("Wenn true, wird DamageOverride statt des Modul-Basiswerts für Damage verwendet.")]
+    [SerializeField] private bool overrideDamage;
+    [SerializeField] private float damageOverride;
+
+    [Tooltip("Wenn true, wird RadiusOverride statt des Modul-Basiswerts für Radius (AoERadius) verwendet.")]
+    [SerializeField] private bool overrideRadius;
+    [SerializeField] private float radiusOverride;
+
+    [Tooltip("Wenn true, wird DurationOverride statt des Modul-Basiswerts für Duration verwendet.")]
+    [SerializeField] private bool overrideDuration;
+    [SerializeField] private float durationOverride;
 
     [Header("Tags")]
-    [SerializeField] private SkillDeliveryTag[] tagsAdd;
+    [SerializeField] private List<SkillDeliveryTag> deliveryTagsAdd;
+    [SerializeField] private List<SkillMechanicTag> mechanicTags;
 
     [Header("Effects Add/Remove (IDs)")]
     [SerializeField] private string[] effectsAdd;
@@ -23,11 +33,18 @@ public class ArchetypeModuleOverrideDef : ScriptableObject
     public string ModuleId => moduleId;
     public string ArchetypeId => archetypeId;
 
-    public float DamageMultiplier => damageMultiplier;
-    public float RadiusMultiplier => radiusMultiplier;
-    public float DurationMultiplier => durationMultiplier;
+    // Echte Overrides: Flags + Werte
+    public bool OverrideDamage => overrideDamage;
+    public float DamageOverride => damageOverride;
 
-    public SkillDeliveryTag[] TagsAdd => tagsAdd;
+    public bool OverrideRadius => overrideRadius;
+    public float RadiusOverride => radiusOverride;
+
+    public bool OverrideDuration => overrideDuration;
+    public float DurationOverride => durationOverride;
+
+    public List<SkillDeliveryTag> DeliveryTagsAdd => deliveryTagsAdd;
+    public List<SkillMechanicTag> MechanicTags => mechanicTags;
     public string[] EffectsAdd => effectsAdd;
     public string[] EffectsRemove => effectsRemove;
 }

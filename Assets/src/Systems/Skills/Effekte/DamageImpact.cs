@@ -23,7 +23,7 @@ namespace CHAL.Systems.Skill
 /// <param name="hit">The result of the hit.</param>
         public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
         {
-            if (skill == null || skill.skillData == null || target == null)
+            if (skill == null || skill.skillModule == null || target == null)
                 return;
 
             // SkillInstance.Damage enthält bereits FinalDMG_beforeDef pro DamageType.

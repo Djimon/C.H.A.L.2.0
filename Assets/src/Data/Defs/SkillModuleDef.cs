@@ -18,6 +18,8 @@ namespace CHAL.Data
         public float BaseDamage = 1;
         public DamageType BaseDamageType = DamageType.Physical;
 
+        public SkillFamilyDef skillFamily;
+
         //TODO: Deprecated: Delete if all references are remapped
         //public List<DamageEntry> DamageTypes;
 
@@ -28,7 +30,7 @@ namespace CHAL.Data
 
         [Header("SkillType")]
         [Tooltip("Determines the main behavior of the skill: Melee, Projectile, Spell, or Summon.")]
-        public SkillType SkillType;
+        public SkillType SkillType = SkillType.Melee;   // should default to skillFamily.SkillType;
         public bool isProjectile = false;
         public bool isAoE = false;
         public bool hasDuration = false;
@@ -44,12 +46,14 @@ namespace CHAL.Data
 
         [Header("Hooks / Effects")]
         [Tooltip("Effects applied immediately when the skill is cast.")]
-        public List<SkillImpactBase> OnCastImpactEffects;
+        public List<SkillImpactBase> OnCastImpact;
         [Tooltip("Effects applied when this skill successfully hits a target.")]
-        public List<SkillImpactBase> OnHitImpactEffects;
+        public List<SkillImpactBase> OnHitImpact;
+        public List<SkillImpactBase> OnEndImpact;
 
         [Header("Meta")]
-        public List<SkillDeliveryTag> Tags;    // Projectile, Fire, DoT, Buff, etc.
+        public List<SkillDeliveryTag> DeliveryTags;    // Projectile, Fire, DoT, Buff, etc.
+        public List<SkillMechanicTag> MechanicTags;
 
         [Header("Presentation")]
         [Tooltip("Prefab spawned when the skill effect is triggered (VFX, projectile, etc.).")]
