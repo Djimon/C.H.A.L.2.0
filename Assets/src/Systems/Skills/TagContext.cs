@@ -11,8 +11,8 @@ public sealed class TagContext
     public DamageType? DamageType { get; }
 
     // Zentral generierte flache Sicht:
-    private IReadOnlyCollection<string> _modifierTags;
-    private IReadOnlyCollection<string> _uiTags;
+    private List<string> _modifierTags;
+    private List<string> _uiTags;
 
     public TagContext(
         SkillType? skillType,
@@ -26,15 +26,15 @@ public sealed class TagContext
         DamageType = damageType;
     }
 
-    public IReadOnlyCollection<string> GetModifierTags()
-        => _modifierTags ??= BuildModifierTags();
+    public List<string> GetModifierTags()
+        => _modifierTags = BuildModifierTags();
 
-    public IReadOnlyCollection<string> GetUiTags()
-        => _uiTags ??= BuildUiTags();
+    public List<string> GetUiTags()
+        => _uiTags = BuildUiTags();
 
-    private IReadOnlyCollection<string> BuildModifierTags()
+    private List<string> BuildModifierTags()
     {
-        var set = new HashSet<string>();
+        var set = new List<string>();
 
         if (SkillType.HasValue)
             set.Add($"type:{SkillType.Value}");
@@ -51,9 +51,9 @@ public sealed class TagContext
         return set;
     }
 
-    private IReadOnlyCollection<string> BuildUiTags()
+    private List<string> BuildUiTags()
     {
-        var set = new HashSet<string>();
+        var set = new List<string>();
 
         if (SkillType.HasValue)
             set.Add(SkillType.Value.ToString());

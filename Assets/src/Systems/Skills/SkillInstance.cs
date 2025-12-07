@@ -65,21 +65,22 @@ namespace CHAL.Systems.Skill
             var mods = ownedBy != null ? ownedBy.ActiveModifiers : new ModifierStack();
 
             var tags = baseResolved.tagContext;
+            var tagsStrings = tags.GetModifierTags();
 
             // --- Phase 2, Step 1: BaseDMG  ---
             float baseDamage = Mathf.Max(0f, skillModule.BaseDamage);
 
             // -- Step 1: Added, converted, Gain Dmg ---
-            var dmgpertype = ApplyBaseDmgModfier(mods, tags, baseDamage);
+            var dmgpertype = ApplyBaseDmgModfier(mods, tagsStrings, baseDamage);
 
             // --- Step 2: StatModifier (= DMGEffektModifier) anwenden ---
             ApplyStatScaling(dmgpertype);
 
             // --- Step 3/4: Increased + More Layer über ModifierStack ---
-            ApplyFinalDmgModifiers(mods, tags, dmgpertype);
+            ApplyFinalDmgModifiers(mods, tagsStrings, dmgpertype);
 
             // --- Mods like casttime, cooldown, ragne, etc.
-            ApplyOtherModifier(mods, tags);
+            ApplyOtherModifier(mods, tagsStrings);
 
             var dmgList = new List<DamageEntry>(dmgpertype.Count);
             foreach (var kv in dmgpertype)
@@ -103,7 +104,7 @@ namespace CHAL.Systems.Skill
                 "Skill");
         }
 
-        private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, TagContext tags, float baseDamage)
+        private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, List<string> tags, float baseDamage)
         {
             DamageType baseType = skillModule.BaseDamageType; ;
 
@@ -182,7 +183,7 @@ namespace CHAL.Systems.Skill
             return baseEffectivePerType;
         }
 
-        private void ApplyFinalDmgModifiers(ModifierStack mods, TagContext tags, Dictionary<DamageType,float> dmgPerType)
+        private void ApplyFinalDmgModifiers(ModifierStack mods, List<string> tags, Dictionary<DamageType,float> dmgPerType)
         {
 
             // Vorbereitung für Increased / More
@@ -246,7 +247,7 @@ namespace CHAL.Systems.Skill
             }
         }
 
-        private void ApplyOtherModifier(ModifierStack mods, TagContext tags)
+        private void ApplyOtherModifier(ModifierStack mods, List<string> tags)
         {
             //TODO: use Tag-Context ctx -> ctx.GetModifierTags()
 
@@ -265,12 +266,11 @@ namespace CHAL.Systems.Skill
             // kannst du hier BaseEffektiveDMG/Increased/More cachen.
         }
 
-        private static bool AppliesToTags(DamageModifier mod, TagContext tagctx)
+        private static bool AppliesToTags(DamageModifier mod, List<string> tags)
         {
             if (mod.AppliesToTags == null || mod.AppliesToTags.Count == 0)
                 return true;
 
-            var tags = tagctx.GetModifierTags();
 
             if (tags == null || tags.Count == 0)
                 return false;
