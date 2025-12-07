@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CHAL.Data
 {
 
-    [CreateAssetMenu(fileName = "SkilData", menuName = "Data/SkillData")]
+    [CreateAssetMenu(fileName = "SkilData", menuName = "Skills/SkillData")]
 /// <summary>
 /// Represents data for a skill, including its identity, damage, and casting properties.
 /// </summary>
