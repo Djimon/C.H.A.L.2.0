@@ -25,6 +25,12 @@ namespace CHAL.Systems.Skill
         }
 
 
+/// <summary>
+/// Computes the final damage scalar based on the skill and hit result.
+/// </summary>
+/// <param name="skill">The skill instance containing damage information.</param>
+/// <param name="hit">The hit result indicating if the attack was successful.</param>
+/// <returns>The final damage scalar as a float.</returns>
         public static float ComputeFinalDamageScalar(SkillInstance skill, HitResult hit)
         {
             if (skill == null)
@@ -80,6 +86,14 @@ namespace CHAL.Systems.Skill
         }
 
 
+/// <summary>
+/// Builds a damage packet using the final skill data and hit result.
+/// </summary>
+/// <param name="skill">The skill instance used to calculate damage.</param>
+/// <param name="attacker">The entity dealing the damage.</param>
+/// <param name="defender">The entity receiving the damage.</param>
+/// <param name="hit">The result of the hit attempt.</param>
+/// <returns>A DamagePacket containing the calculated damage information.</returns>
         public static DamagePacket BuildDamagePacket(SkillInstance skill, EffectReceiver attacker, EffectReceiver defender, HitResult hit)
         {
             return BuildDamagePacket(skill?.finalSkillData, attacker, defender, hit);

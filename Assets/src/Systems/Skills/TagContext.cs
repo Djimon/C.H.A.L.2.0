@@ -26,9 +26,17 @@ public sealed class TagContext
         DamageType = damageType;
     }
 
+/// <summary>
+/// Retrieves a collection of modifier tags as read-only strings.
+/// </summary>
+/// <returns>A read-only collection of modifier tags.</returns>
     public IReadOnlyCollection<string> GetModifierTags()
         => _modifierTags = BuildModifierTags();
 
+/// <summary>
+/// Retrieves a collection of UI tags as read-only strings.
+/// </summary>
+/// <returns>A read-only collection of UI tags.</returns>
     public IReadOnlyCollection<string> GetUiTags()
         => _uiTags = BuildUiTags();
 
@@ -71,6 +79,14 @@ public sealed class TagContext
     }
 
     // optional Convenience-Factory für Skills:
+/// <summary>
+/// Creates a new instance of TagContext from the specified parameters.
+/// </summary>
+/// <param name="type">The type of skill.</param>
+/// <param name="delivery">A collection of skill delivery tags.</param>
+/// <param name="mechanics">A collection of skill mechanic tags.</param>
+/// <param name="damageType">The type of damage, if applicable.</param>
+/// <returns>A new TagContext instance.</returns>
     public static TagContext From(
         SkillType? type,
         IEnumerable<SkillDeliveryTag> delivery,
