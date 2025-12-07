@@ -12,10 +12,13 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ArchetypeModuleOverr
     - Public fields/properties:
       - ModuleId: string - Gets the module ID.
       - ArchetypeId: string - Gets the archetype ID.
-      - DamageMultiplier: float - Gets the damage multiplier.
-      - RadiusMultiplier: float - Gets the radius multiplier.
-      - DurationMultiplier: float - Gets the duration multiplier.
-      - TagsAdd: SkillDeliveryTag[] - Gets the tags to add.
+      - OverrideDamage: bool - Indicates if damage override is used.
+      - DamageOverride: float - Gets the damage override value.
+      - OverrideRadius: bool - Indicates if radius override is used.
+      - RadiusOverride: float - Gets the radius override value.
+      - OverrideDuration: bool - Indicates if duration override is used.
+      - DurationOverride: float - Gets the duration override value.
+      - DeliveryTagsAdd: List<SkillDeliveryTag> - Gets the tags to add.
       - EffectsAdd: string[] - Gets the effects to add.
       - EffectsRemove: string[] - Gets the effects to remove.
 
