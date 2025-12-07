@@ -22,13 +22,13 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ResolvedSkill.c
       - float Cooldown: Cooldown time before the skill can be used again.
       - float CastTime: Time taken to cast the skill.
       - float ProjectileSpeed: Speed of the skill's projectile.
-      - SkillRange Range: Type of range for the skill (e.g., MeleeRange).
-      - float AoERadius: Radius for area of effect.
+      - SkillRange Range: Type of range for the skill.
+      - float AoERadius: Area of effect radius of the skill.
       - int ProjectileCount: Number of projectiles fired by the skill.
       - IReadOnlyList<SkillDeliveryTag> DeliveryTags: Final set of delivery tags associated with the skill.
       - IReadOnlyList<SkillMechanicTag> MechanicTags: Final set of mechanic tags associated with the skill.
-      - DamageType? DamageType: Type of damage associated with the skill.
-      - TagContext tagContext: Context containing tags related to the skill.
+      - DamageType? DamageType: Type of damage dealt by the skill.
+      - SkillType? SkillType: Type of skill.
 
     - Public methods:
       - ResolvedSkill(string skillId, string familyId, string moduleId, string coreId, string archetypeId, float damage, float radius, float duration, float cooldown, float castTime, float projectileSpeed, SkillRange range, float aoeRadius, int projectileCount, List<DamageEntry> damageEntries, TagContext tags): Constructor that initializes a new instance of `ResolvedSkill`.
@@ -45,7 +45,7 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/ResolvedSkill.c
 # Constraints & Failure Modes
 - No explicit guards or error handling are present in the constructor.
 - Assumes valid input for all parameters; no null checks are implemented.
-- The `TotalDamage` property handles null or empty `DamageEntries` by returning the base `Damage`.
+- The `TotalDamage` property handles null or empty `DamageEntries` gracefully by returning the base damage.
 
 # Example
 ```csharp
@@ -70,4 +70,4 @@ var skill = new ResolvedSkill(
 ```
 
 # Unknowns
-- The definition and purpose of `SkillDeliveryTag`, `SkillMechanicTag`, `DamageEntry`, `DamageType`, and `TagContext` are not provided in this file.
+- The definitions and purposes of `SkillDeliveryTag`, `SkillMechanicTag`, `DamageType`, `SkillType`, `DamageEntry`, and `TagContext` are not provided in this file.

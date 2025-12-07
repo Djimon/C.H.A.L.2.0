@@ -40,7 +40,8 @@ _Automatically generated/updated from `Assets/src/Data/Defs/SkillModuleDef.cs`._
 - Represents various properties and effects associated with a skill, including casting time, cooldown, and impact effects.
 
 # Constraints & Failure Modes
-- None explicitly stated in the code.
+- No explicit guards or null handling noted.
+- Assumes valid references for lists and GameObject fields.
 
 # Example
 ```csharp
