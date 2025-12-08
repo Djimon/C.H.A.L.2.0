@@ -7,6 +7,10 @@ using UnityEngine;
 /// This class holds data for overriding specific module values.
 /// </summary>
 [CreateAssetMenu(fileName = "ArchetypeModuleOverrideDef", menuName = "Skills/ArchetypeModuleOverride")]
+/// <summary>
+/// Represents a module override definition for archetypes in the game.
+/// This class holds configuration for damage and radius overrides.
+/// </summary>
 public class ArchetypeModuleOverrideDef : ScriptableObject
 {
     [Header("IDs")]

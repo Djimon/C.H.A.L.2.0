@@ -445,6 +445,10 @@ namespace CHAL.Systems.Hero
             target.UnlockedSockets = UnlockedSockets;
         }
 
+/// <summary>
+/// Gets the base damage value for the hero.
+/// </summary>
+/// <returns>The base damage as a float.</returns>
         public override float GetBaseDamage()
         {
             return heroDef.BaseDamage;

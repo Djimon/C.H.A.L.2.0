@@ -17,6 +17,10 @@ namespace CHAL.Systems.Unit
 
         public UnitTeam Team;
 
+/// <summary>
+/// Gets the base damage value for the entity.
+/// </summary>
+/// <returns>The base damage as a float.</returns>
         public abstract float GetBaseDamage();
 
         /// <summary>
