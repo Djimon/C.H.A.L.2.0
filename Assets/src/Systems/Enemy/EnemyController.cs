@@ -242,7 +242,7 @@ namespace CHAL.Systems.Enemy
                 _castRemaining = Mathf.Max(0f, next.CastTime);
 
                 // (Phase 4: Animations-Hook als Stub)
-                DebugManager.Log($"Anim | Enemy Play {next.skillModule.animationType} len={next.CastTime:F2}s", DebugManager.EDebugLevel.Debug, "Anim");
+                DebugManager.Log($"Enemy {next.skillModule.SkillId} len={next.CastTime:F2}s", DebugManager.EDebugLevel.Debug, "Skill");
 
                 // Cooldown startet bei CastStart (analog Hero)
                 next.StartCooldown();
@@ -267,7 +267,7 @@ namespace CHAL.Systems.Enemy
                 if (heroCtrl != null && heroCtrl.IsAlive)
                 {
                     float dist = Vector3.Distance(transform.position, heroCtrl.transform.position);
-                    if (dist <= _currentSkill.Range)
+                    if (dist <= (GameManager.Instance.Config.GetRangeValue(_currentSkill.Range)))
                     {
                         DebugManager.Log($"Execute {_currentSkill.skillModule.DisplayName} â†’ {heroCtrl.name} (dist={dist:F1}m)",DebugManager.EDebugLevel.Dev,"Combat");
 
@@ -282,7 +282,7 @@ namespace CHAL.Systems.Enemy
                     }
                     else
                     {
-                        DebugManager.Log($"Targeting | Out of Range (Enemy): {_currentSkill.skillModule.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F1}m",DebugManager.EDebugLevel.Dev, "Combat");
+                        DebugManager.Log($"Enemy Targeting | Out of Range: {_currentSkill.skillModule.DisplayName} dist={dist:F1}m > {_currentSkill.Range:F}m",DebugManager.EDebugLevel.Dev, "Combat");
                     }
                 }
                 else

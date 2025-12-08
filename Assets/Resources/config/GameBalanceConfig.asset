@@ -83,9 +83,9 @@ MonoBehaviour:
     - caster
     minEliteTags: 0
   skillRanges:
-    selfRange: 0
-    meleeRange: 1.5
-    reachRange: 3
+    selfRange: 1
+    meleeRange: 3
+    reachRange: 5
     midDistanceRange: 10
     farDistanceRange: 20
   AllowFriendlyFire: 0

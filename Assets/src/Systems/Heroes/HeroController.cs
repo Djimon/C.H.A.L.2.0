@@ -1,3 +1,4 @@
+using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.AI;
 using CHAL.Systems.Enemy;
@@ -24,9 +25,6 @@ namespace CHAL.Systems.Hero
         private List<SkillInstance> socketedSkills = new();
 
         public List<SkillModuleDef> debugSocketSkills = new();
-
-
-        public Transform target; // aktuelles Target (EnemyController o.Ã¤.)
 
         private HeroInstance heroInstance;
         public HeroInstance RuntimeHeroInstance => heroInstance;
@@ -158,7 +156,7 @@ namespace CHAL.Systems.Hero
         {
             if (!IsAlive)
             {
-                target = _currentTarget = null;
+                _currentTarget = null;
                 return;
             }
 
@@ -190,21 +188,20 @@ namespace CHAL.Systems.Hero
                 if (t != null)
                 {
                     _currentTarget = t;
+                    DebugManager.DebugLog($"[Hero]{gameObject.name}: has new Target: {_currentTarget.name}", "Combat");
                 }
                 else
                 {
                     _currentTarget = null;
                 }
             }
-
-            target = _currentTarget;
         }
 
         private void DoMovement()
         {
             EnsureMoveAgentInitialized();
 
-            if (_currentTarget == null || target==null || _move == null)
+            if (_currentTarget == null || _move == null)
             {
                 // Kein Target: optional zum Spawn/Home laufen v0: stehen.
                 _move.ClearPathHard();
@@ -262,7 +259,7 @@ namespace CHAL.Systems.Hero
             if (castRemaining > 0f) return;
 
             // --- Execute ---
-            var enemyCtrl = target ? target.GetComponent<EnemyController>() : null;
+            var enemyCtrl = _currentTarget ? _currentTarget.GetComponent<EnemyController>() : null;
 
             //TODO: Target in Sight? return 
             //TODO: Target in range? return
@@ -270,7 +267,7 @@ namespace CHAL.Systems.Hero
             if (enemyCtrl != null && enemyCtrl.EnemyInstance != null)
             {
                 float dist = Vector3.Distance(transform.position, enemyCtrl.transform.position);
-                if (dist <= currentSkill.Range)
+                if (dist <= GameManager.Instance.Config.GetRangeValue(currentSkill.Range))
                 {
                     DebugManager.Log(
                         $"Combat/Hero | Execute {currentSkill.skillModule.DisplayName} â†’ {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
@@ -285,11 +282,19 @@ namespace CHAL.Systems.Hero
                         enemyCtrl.transform
                     );
                 }
-                // sonst: Out-of-Range 
+                else
+                {
+                    DebugManager.DebugLog($"[HERO] Enemy {_currentTarget.name}: out of Range!", "Combat");
+                }
             }
-            // sonst: kein gültiges Ziel 
+            else
+            {
+                DebugManager.DebugLog($"[HERO] No valid target", "Combat");
+                _currentTarget = null;
+            }
+                // sonst: kein gültiges Ziel 
 
-            currentSkill = null; // Cast abgeschlossen
+                currentSkill = null; // Cast abgeschlossen
         }
 
         private void Try_StartNextSkillByRotation()
@@ -298,15 +303,14 @@ namespace CHAL.Systems.Hero
             if (next == null && autoAttack != null && autoAttack.IsReady())
                 next = autoAttack;
 
-            if (next == null || target == null) return;
+            if (next == null || _currentTarget == null) return;
 
             // --- CastStart ---
             currentSkill = next;
             castRemaining = Mathf.Max(0f, next.CastTime);
 
             DebugManager.Log(
-                $"Anim | Play {next.skillModule.animationType} len={next.CastTime:F2}s",
-                DebugManager.EDebugLevel.Debug, "Anim"
+                $"Hero {next.skillModule.SkillId} len={next.CastTime:F2}s", DebugManager.EDebugLevel.Debug, "Skill"
             );
 
             // Cooldown beim CastStart (wie bisher)
@@ -403,8 +407,8 @@ namespace CHAL.Systems.Hero
             sd.DisplayName = "Base Melee";
             sd.BaseDamage = owner.GetEffectiveBaseDamage();
             sd.CastTime = 0.30f;
-            sd.Cooldown = 1.20f;
-            sd.Range = SkillRange.MeleeRange;
+            sd.Cooldown = 0.50f;
+            sd.Range = SkillRange.Reach;
             sd.animationType = AnimationType.MeleeSwing;   // deinen Enum verwenden
 
             sd.BaseDamageType = DamageType.Physical;

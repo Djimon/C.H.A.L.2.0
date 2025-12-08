@@ -14,23 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillId: base_attack
   DisplayName: Base Attack
+  AttributeAffinity: 0
   BaseDamage: 5
-  DamageTypes:
-  - DmgType: 0
-    DmgMultiplier: 1
+  BaseDamageType: 0
+  skillFamily: {fileID: 0}
   CastTime: 0
   Cooldown: 1
   SkillType: 0
   isProjectile: 0
   isAoE: 0
   hasDuration: 0
-  Range: 5
+  Range: 1
   Duration: 0
   ProjectileSpeed: 0
   ProjectileCount: 0
   AoERadius: 0
-  OnCastEffects: []
-  OnHitEffects: []
-  Tags: 000000000d000000
+  damageAttributeScalingFactor: 1
+  OnCastImpact: []
+  OnHitImpact:
+  - {fileID: 11400000, guid: 828692c726907cd4c94cc69e95417372, type: 2}
+  OnEndImpact: []
+  DeliveryTags: 08000000
+  MechanicTags: 
   vfxPrefab: {fileID: 0}
   animationType: 1

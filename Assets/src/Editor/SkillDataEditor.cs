@@ -24,7 +24,8 @@ public class SkillDataEditor : Editor
         data.DisplayName = EditorGUILayout.TextField("Display Name", data.DisplayName);
 
         // Core
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("DamageTypes"), true);
+        EditorGUILayout.LabelField("Core", EditorStyles.boldLabel);
+        data.BaseDamageType = (DamageType)EditorGUILayout.EnumPopup("Base Damage Type", data.BaseDamageType);
         data.BaseDamage = EditorGUILayout.FloatField("Base Damage", data.BaseDamage);
         data.Cooldown = EditorGUILayout.FloatField("Cooldown", data.Cooldown);
         data.CastTime = EditorGUILayout.FloatField("Cast Time", data.CastTime);
@@ -71,8 +72,16 @@ public class SkillDataEditor : Editor
         EditorGUILayout.Space();
 
         // Hooks / Impacts (wieder sichtbar)
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCastImpactEffects"), true);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnHitImpactEffects"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCastImpact"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnHitImpact"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnEndImpact"), true);
+
+        EditorGUILayout.Space();
+
+        // Meta-Tags (optional, aber sinnvoll)
+        EditorGUILayout.LabelField("Meta / Tags", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("DeliveryTags"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("MechanicTags"), true);
 
         EditorGUILayout.Space();
 

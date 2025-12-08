@@ -39,7 +39,7 @@ namespace CHAL.Data
         public bool hasDuration = false;
 
         [Header("Composition")]
-        public SkillRange Range = SkillRange.MeleeRange;
+        public SkillRange Range = SkillRange.Reach;
         [Tooltip("Duration in seconds for effects like buffs, debuffs, or DoTs.")]
         public float Duration = 0f;
         public float ProjectileSpeed = 0f;

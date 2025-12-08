@@ -107,7 +107,7 @@ namespace CHAL.Systems.Skill
                 ProjectileCount);
 
             DebugManager.Log(
-                $"Initialized Skill {skillModule.SkillId} with DMG:{totalDmg:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F1} dur:{Duration:F2}",
+                $"Initialized Skill {skillModule.SkillId} with DMG:{totalDmg:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F} dur:{Duration:F2}",
                 DebugManager.EDebugLevel.Debug,
                 "Skill");
         }
@@ -329,9 +329,13 @@ namespace CHAL.Systems.Skill
         private void ApplyStatScaling(Dictionary<DamageType,float> dmgpertype)
         {
             float statMod = ComputeStatModifier();
-            foreach (var kv in dmgpertype)
+
+            var keys = new List<DamageType>(dmgpertype.Keys);
+
+            foreach (var t in keys)
             {
-                dmgpertype[kv.Key] = kv.Value * statMod;
+                var baseVal = dmgpertype[t];
+                dmgpertype[t] = baseVal * statMod;
             }
         }
 
