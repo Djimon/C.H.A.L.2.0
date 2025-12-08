@@ -71,6 +71,8 @@ namespace CHAL.Systems.Skill
         public static HitResult CreateDefault(SkillInstance skill, EffectReceiver attacker, EffectReceiver defender)
         {
             var ctx = new HitContext(skill, attacker, defender);
+            DebugManager.DebugLog($"Always Hit:{attacker.Team} -> {defender.Team}","Combat");
+            //TODO: calculate via HitChance on attacker vs. Dodge-chacne of defender
             return new HitResult(ctx, true, false, 1f, 0f, 1f);
         }
     }

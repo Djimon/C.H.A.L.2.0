@@ -445,6 +445,11 @@ namespace CHAL.Systems.Hero
             target.UnlockedSockets = UnlockedSockets;
         }
 
+        public override float GetBaseDamage()
+        {
+            return heroDef.BaseDamage;
+        }
+
         #endregion
 
     }

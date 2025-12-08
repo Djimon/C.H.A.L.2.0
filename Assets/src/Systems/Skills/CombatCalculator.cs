@@ -96,6 +96,7 @@ namespace CHAL.Systems.Skill
 /// <returns>A DamagePacket containing the calculated damage information.</returns>
         public static DamagePacket BuildDamagePacket(SkillInstance skill, EffectReceiver attacker, EffectReceiver defender, HitResult hit)
         {
+
             return BuildDamagePacket(skill?.finalSkillData, attacker, defender, hit);
         }
 
@@ -110,6 +111,7 @@ namespace CHAL.Systems.Skill
         /// <returns>A DamagePacket containing the calculated damage information.</returns>
         public static DamagePacket BuildDamagePacket(ResolvedSkill skill, EffectReceiver attacker, EffectReceiver defender, HitResult hit)
         {
+            DebugManager.DebugLog($"Build Dmg-Packet for {skill.SkillId} from {attacker.Team} to {defender.Team}","Skill");
             var packet = new DamagePacket
             {
                 IsHitBased = true,

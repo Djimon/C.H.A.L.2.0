@@ -28,13 +28,16 @@ namespace CHAL.Systems.Skill
 
             DebugManager.Log($"[SkillExecutor] {source} starts casting {inst.skillModule.DisplayName}", DebugManager.EDebugLevel.Test, "Skill");
 
-            Do_OnCastImpactEffects(inst, source);
+            var hit = CombatCalculator.ResolveHit(inst, source, target);
+
+            Do_OnCastImpactEffects(inst, source, hit);
             Handle_CastTimeHook(inst, source);
             HandleSkillByType(inst, source, sourceTr, target, targetTr);
         }
 
         private static void HandleSkillByType(SkillInstance inst, EffectReceiver source, Transform sourceTr, EffectReceiver target, Transform targetTr)
         {
+            DebugManager.DebugLog("Try Handle Skill","Skill");
             // 3. Apply main effect
             switch (inst.skillModule.SkillType)
             {
@@ -67,14 +70,14 @@ namespace CHAL.Systems.Skill
             }
         }
 
-        private static void Do_OnCastImpactEffects(SkillInstance inst, EffectReceiver source)
+        private static void Do_OnCastImpactEffects(SkillInstance inst, EffectReceiver source, HitResult hit)
         {
             // 1. OnCast Effects
             if (inst.skillModule.OnCastImpact != null)
             {
                 foreach (var effect in inst.skillModule.OnCastImpact)
                 {
-                    effect.Apply(inst, source, source); // self-target for buffs
+                    effect.Apply(inst, source, source, hit); // self-target for buffs
                 }
             }
         }
@@ -239,6 +242,7 @@ namespace CHAL.Systems.Skill
 
         private static void DoOnHitImpactEffects(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
         {
+            DebugManager.DebugLog($"HIT effects: {skill.skillModule.OnHitImpact.Count} ","Skill");
             // 1) OnHit-Effekte (Buff/DoT/Damage etc.)
             var effects = skill.skillModule.OnHitImpact;
             if (effects != null && effects.Count > 0)

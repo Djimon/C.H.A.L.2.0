@@ -13,13 +13,13 @@ namespace CHAL.Systems.Skill
         [Tooltip("Skill that will be triggered on hit.")]
         public SkillModuleDef SkillToTrigger;
 
-/// <summary>
-/// Applies the skill from the source to the target if the skill is available.
-/// </summary>
-/// <param name="skill">The skill instance to apply.</param>
-/// <param name="source">The effect receiver that triggers the skill.</param>
-/// <param name="target">The effect receiver that receives the skill.</param>
-        public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
+        /// <summary>
+        /// Applies the skill from the source to the target if the skill is available.
+        /// </summary>
+        /// <param name="skill">The skill instance to apply.</param>
+        /// <param name="source">The effect receiver that triggers the skill.</param>
+        /// <param name="target">The effect receiver that receives the skill.</param>
+        public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
         {
             if (SkillToTrigger == null) return;
 

@@ -17,10 +17,12 @@ namespace CHAL.Systems.Unit
 
         public UnitTeam Team;
 
-/// <summary>
-/// Applies a status effect to the entity, updating existing effects if necessary.
-/// </summary>
-/// <param name="effect">The active status effect to apply.</param>
+        public abstract float GetBaseDamage();
+
+        /// <summary>
+        /// Applies a status effect to the entity, updating existing effects if necessary.
+        /// </summary>
+        /// <param name="effect">The active status effect to apply.</param>
         public virtual void ApplyStatusEffect(ActiveStatusEffect effect)
         {
             if (effect == null) return;
@@ -176,6 +178,8 @@ namespace CHAL.Systems.Unit
 
         protected virtual void ApplyNetDamageToPools(float netDamage, DamagePacket packet)
         {
+            DebugManager.DevLog($"{this.Team} takes {netDamage} dmg.","Combat");
+
             if (netDamage <= 0f)
                 return;
 

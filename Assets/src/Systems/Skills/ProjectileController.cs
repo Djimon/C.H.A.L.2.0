@@ -68,7 +68,7 @@ namespace CHAL.Systems.Skill
                 return;
 
             //TODO: nur markierte targets treffen?
-            // vergleich target mit targetReceiver
+            // vergleich markiertes target mit targetReceiver
 
             SkillExecutor.ApplyOnHit(skill, source, targetReceiver);
             DebugManager.Log($"[Projectile] {skill.skillModule.DisplayName} hit {targetReceiver}", DebugManager.EDebugLevel.Test, "Projectile");
@@ -90,15 +90,15 @@ namespace CHAL.Systems.Skill
                 return false;
 
             var receiver = unitCtrl.GetEffectReceiver();
-            if (targRE == null)
+            if (receiver == null)
                 return false;
 
             // Self-hit niemals erlaubt
-            if (ReferenceEquals(source, targRE))
+            if (ReferenceEquals(source, receiver))
                 return false;
 
             // Friendly-Fire global
-            if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == targRE.Team)
+            if (!BalanceManager.Instance.Config.AllowFriendlyFire && source.Team == receiver.Team)
                 return false;
 
             targRE = receiver;

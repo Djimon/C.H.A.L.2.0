@@ -23,19 +23,35 @@ namespace CHAL.Systems.Skill
 /// <param name="hit">The result of the hit.</param>
         public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target, HitResult hit)
         {
-            if (skill == null || skill.skillModule == null || target == null)
-                return;
+            DebugManager.DebugLog("DamgeImpact Start","Skill");
 
-            // SkillInstance.Damage enthält bereits FinalDMG_beforeDef pro DamageType.
-            var damageEntries = skill.Damage;
-            if (damageEntries == null || damageEntries.Count == 0)
+            if (skill == null || skill.finalSkillData == null)
+            {
+                DebugManager.Error("skill is null (should not happen)", "Skill");
                 return;
+            }
+
+            if (target == null)
+            {
+                DebugManager.Error("target is null (should not happen)", "Skill");
+                return;
+            }      
+                
+            // SkillInstance.Damage enthält bereits FinalDMG_beforeDef pro DamageType.
+            var damageEntries = skill.finalSkillData.DamageEntries;
+            if (damageEntries == null || damageEntries.Count == 0)
+            {
+                DebugManager.Warning("finalSkillData.DamageEntries is empty or null (should not happen)", "Skill");
+                return;
+            }            
 
             var packet = CombatCalculator.BuildDamagePacket(skill, source, target, hit);
 
-
             if (packet.DamagePerType.Count == 0)
+            {
+                DebugManager.Warning("Damage-packet is empty (should not happen)","Skill");
                 return;
+            }              
 
             // Debug-Ausgabe konsolidiert
             foreach (var kv in packet.DamagePerType)
@@ -57,10 +73,10 @@ namespace CHAL.Systems.Skill
 /// <param name="skill">The skill instance to apply.</param>
 /// <param name="source">The effect receiver that initiates the skill.</param>
 /// <param name="target">The effect receiver that receives the skill effect.</param>
-        public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
-        {
-            var hit = CombatCalculator.Resolve(source, target,skill);
-            Apply(skill, source, target, hit);    
-        }
+        //public override void Apply(SkillInstance skill, EffectReceiver source, EffectReceiver target)
+        //{
+        //    var hit = CombatCalculator.Resolve(source, target,skill);
+        //    Apply(skill, source, target, hit);    
+        //}
     }
 }

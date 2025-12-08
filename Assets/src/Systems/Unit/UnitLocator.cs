@@ -104,10 +104,19 @@ namespace CHAL.Systems.Unit
                 CleanupDead(_enemies);
                 foreach (var e in _enemies)
                 {
-                    if (!IsValid(e)) continue;
+                    if (!IsValid(e)) 
+                        continue;
+
                     float d = (e.transform.position - origin).sqrMagnitude;
-                    if (d > sightRange * sightRange) continue;
-                    if (d < best) { best = d; bestTr = e.transform; }
+
+                    if (d > sightRange * sightRange) 
+                        continue;
+
+                    if (d < best)
+                    { 
+                        best = d; 
+                        bestTr = e.transform; 
+                    }
                 }
             }
             else // AI sucht Helden

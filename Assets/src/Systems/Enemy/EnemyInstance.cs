@@ -58,5 +58,10 @@ namespace CHAL.Systems.Enemy
             OnDied?.Invoke(this);
             // Loot/XP Events feuern etc.
         }
+
+        public override float GetBaseDamage()
+        {
+            return Definition.baseDamage;
+        }
     }
 }

@@ -55,16 +55,19 @@ namespace CHAL.Systems.Skill
             var overrideDef = GetArchetypeOverride();
             var archetypeId = ownedBy != null ? (ownedBy as HeroInstance)?.Archetype.ArchetypeId : string.Empty;
 
-            finalSkillData = SkillResolveUtility.ResolveBaseSkill(skillModule,overrideDef,archetypeId);
-         
+            finalSkillData = SkillResolveUtility.ResolveBaseSkill(skillModule, overrideDef, archetypeId);
+
+            DebugManager.DebugLog($"range? Module: {skillModule.Range} <-> finalSKill: {finalSkillData.Range}");
+
+            UpdateInstance();
 
             var mods = ownedBy != null ? ownedBy.ActiveModifiers : new ModifierStack();
 
             var tags = finalSkillData.tagContext;
             var tagsStrings = new List<string>(tags.GetModifierTags());
 
-            // --- Phase 2, Step 1: BaseDMG  ---
-            float baseDamage = Mathf.Max(0f, skillModule.BaseDamage);
+            // --- Phase 2, Step 1: BaseDMG  --
+            float baseDamage = Mathf.Max(0f, finalSkillData.Damage) * ownedBy.GetBaseDamage(); ;
 
             // -- Step 1: Added, converted, Gain Dmg ---
             var dmgpertype = ApplyBaseDmgModfier(mods, tagsStrings, baseDamage);
@@ -107,9 +110,20 @@ namespace CHAL.Systems.Skill
                 ProjectileCount);
 
             DebugManager.Log(
-                $"Initialized Skill {skillModule.SkillId} with DMG:{totalDmg:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F} dur:{Duration:F2}",
+                $"Initialized Skill {finalSkillData.SkillId} with DMG:{totalDmg:F1} (Base:{baseDamage:F1}, CastTime:{CastTime:F2} cd:{Cooldown:F2} range:{Range:F} dur:{Duration:F2}",
                 DebugManager.EDebugLevel.Debug,
                 "Skill");
+        }
+
+        private void UpdateInstance()
+        {
+            AoERadius = finalSkillData.AoERadius;          // oder AoERadius/Radius je nach Semantik
+            Duration = finalSkillData.Duration;
+            Cooldown = finalSkillData.Cooldown;
+            CastTime = finalSkillData.CastTime;
+            ProjectileSpeed = finalSkillData.ProjectileSpeed;
+            ProjectileCount = finalSkillData.ProjectileCount;
+            Range = finalSkillData.Range;
         }
 
         private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, List<string> tags, float baseDamage)

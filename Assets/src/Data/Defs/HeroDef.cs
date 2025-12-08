@@ -27,7 +27,7 @@ namespace CHAL.Data
         public GameObject Prefab;            // 3D- oder 2D-Model für Ingame
         public AudioClip VoiceSample;        // optional
 
-
+        public SkillModuleDef fallBackAttack;
 
     }
 }

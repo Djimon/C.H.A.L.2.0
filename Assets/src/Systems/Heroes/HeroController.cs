@@ -19,7 +19,7 @@ namespace CHAL.Systems.Hero
         [SerializeField]
         public HeroDef HeroDef; //{ get; private set; }
         
-        private SkillInstance autoAttack;
+        //private SkillInstance autoAttack;
 
         [SerializeField] 
         private List<SkillInstance> socketedSkills = new();
@@ -66,30 +66,32 @@ namespace CHAL.Systems.Hero
 
             if (socketedSkills == null) socketedSkills = new List<SkillInstance>();
 
-            BuildSkillInstances();
+            //fallback AutoAttack
+            socketedSkills.Add(new SkillInstance(HeroDef.fallBackAttack, heroInstance));
+            //BuildSkillInstances(); //eher im init(HeroDef)
 
-            if (autoAttack == null)
-                DebugManager.Log("[HeroController] Warning: AutoAttack SkillInstance is not set.", DebugManager.EDebugLevel.Dev, "Hero", LogType.Warning);
+            //if (autoAttack == null)
+            //    DebugManager.Log("[HeroController] Warning: AutoAttack SkillInstance is not set.", DebugManager.EDebugLevel.Dev, "Hero", LogType.Warning);
 
         }
 
-        private void BuildSkillInstances()
-        {
-            socketedSkills.Clear();
+        //private void BuildSkillInstances()
+        //{
+        //    //socketedSkills.Clear();
 
-            autoAttack = (HeroDef?.Archetype?.primAttackType == PrimaryAttackArchetype.Ranged)
-                ? BuildBaseAttackRanged(heroInstance)
-                : BuildBaseAttackMelee(heroInstance);
+        //    autoAttack = (HeroDef?.Archetype?.primAttackType == PrimaryAttackArchetype.Ranged)
+        //        ? BuildBaseAttackRanged(heroInstance)
+        //        : BuildBaseAttackMelee(heroInstance);
 
-            if (debugSocketSkills != null)
-            {
-                foreach (var sd in debugSocketSkills)
-                    if (sd != null)
-                        socketedSkills.Add(new SkillInstance(sd, heroInstance)); // :contentReference[oaicite:3]{index=3}
-            }
+        //    if (debugSocketSkills != null)
+        //    {
+        //        foreach (var sd in debugSocketSkills)
+        //            if (sd != null)
+        //                socketedSkills.Add(new SkillInstance(sd, heroInstance)); // :contentReference[oaicite:3]{index=3}
+        //    }
 
-            DebugManager.Log($"Hero | Built skills: Rotation={socketedSkills.Count}, AutoAttack={(autoAttack != null ? autoAttack.skillModule.DisplayName : "none")}", DebugManager.EDebugLevel.Debug,"Hero");
-        }
+        //    DebugManager.Log($"Hero | Built skills: Rotation={socketedSkills.Count}, AutoAttack={(autoAttack != null ? autoAttack.skillModule.DisplayName : "none")}", DebugManager.EDebugLevel.Debug,"Hero");
+        //}
 
         // Initialisierung
         /// <summary>
@@ -105,6 +107,8 @@ namespace CHAL.Systems.Hero
             }
 
             HeroDef = def;
+
+            //TODO: build SkillInstances based on SocketedModules + def.Archetype
             heroInstance = new HeroInstance(def, progressData);
             heroInstance.Team = UnitTeam.Player;
 
@@ -242,7 +246,6 @@ namespace CHAL.Systems.Hero
             //Cooldowns aller Skill ticken lassen
             foreach (var s in socketedSkills)
                 s?.TickCooldown(dt);
-            autoAttack?.TickCooldown(dt);
         }
 
 
@@ -256,7 +259,11 @@ namespace CHAL.Systems.Hero
             // vormals Inline im Update
             castRemaining -= dt;
 
+            DebugManager.DebugLog($"Advance casttime {castRemaining} for '{currentSkill}' on {_currentTarget.name} ", "Skill");
+
             if (castRemaining > 0f) return;
+
+            DebugManager.DebugLog($"execute Start {castRemaining} for '{currentSkill}' on {_currentTarget.name} ", "Skill");
 
             // --- Execute ---
             var enemyCtrl = _currentTarget ? _currentTarget.GetComponent<EnemyController>() : null;
@@ -267,10 +274,13 @@ namespace CHAL.Systems.Hero
             if (enemyCtrl != null && enemyCtrl.EnemyInstance != null)
             {
                 float dist = Vector3.Distance(transform.position, enemyCtrl.transform.position);
-                if (dist <= GameManager.Instance.Config.GetRangeValue(currentSkill.Range))
+                float range = GameManager.Instance.Config.GetRangeValue(currentSkill.Range);
+                DebugManager.DebugLog($"Range:{currentSkill.Range.ToString()} = {range}");
+
+                if (dist <= range)
                 {
                     DebugManager.Log(
-                        $"Combat/Hero | Execute {currentSkill.skillModule.DisplayName} â†’ {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
+                        $"Combat/Hero | Execute {currentSkill.skillModule.DisplayName} on {enemyCtrl.EnemyData.EnemyId} (dist={dist:F1}m)",
                         DebugManager.EDebugLevel.Debug, "Combat"
                     );
 
@@ -284,7 +294,7 @@ namespace CHAL.Systems.Hero
                 }
                 else
                 {
-                    DebugManager.DebugLog($"[HERO] Enemy {_currentTarget.name}: out of Range!", "Combat");
+                    DebugManager.DebugLog($"[HERO] Enemy {_currentTarget.name}: out of Range ({dist}>{range})!", "Combat");
                 }
             }
             else
@@ -294,14 +304,14 @@ namespace CHAL.Systems.Hero
             }
                 // sonst: kein gültiges Ziel 
 
-                currentSkill = null; // Cast abgeschlossen
+            currentSkill = null; // Cast abgeschlossen
         }
 
         private void Try_StartNextSkillByRotation()
         {
             var next = SelectNextReadySkill();
-            if (next == null && autoAttack != null && autoAttack.IsReady())
-                next = autoAttack;
+            ////if (next == null && autoAttack != null && autoAttack.IsReady())
+            ////    next = autoAttack;
 
             if (next == null || _currentTarget == null) return;
 
@@ -314,7 +324,7 @@ namespace CHAL.Systems.Hero
             );
 
             // Cooldown beim CastStart (wie bisher)
-            next.StartCooldown();
+            currentSkill.StartCooldown();
         }
 
         private void Handle_DebugShortcuts()
