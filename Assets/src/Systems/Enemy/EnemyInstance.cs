@@ -59,6 +59,10 @@ namespace CHAL.Systems.Enemy
             // Loot/XP Events feuern etc.
         }
 
+/// <summary>
+/// Calculates the base damage for the current instance.
+/// </summary>
+/// <returns>The base damage as a float.</returns>
         public override float GetBaseDamage()
         {
             return Definition.baseDamage;

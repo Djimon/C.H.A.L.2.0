@@ -7,6 +7,10 @@ using UnityEngine;
 /// Contains base values and identity for skills.
 /// </summary>
 [CreateAssetMenu(fileName = "SkillFamilyDef", menuName = "Skills/SkillFamily")]
+/// <summary>
+/// Represents a skill family definition used in the game.
+/// Contains properties for identity, base values, and scaling.
+/// </summary>
 public class SkillFamilyDef : ScriptableObject
 {
     [Header("Identity")]
