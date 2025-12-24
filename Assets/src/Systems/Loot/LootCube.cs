@@ -1,4 +1,4 @@
-﻿using CHAL.Data;
+using CHAL.Data;
 using CHAL.Systems.Items;
 using UnityEngine;
 
@@ -9,9 +9,8 @@ namespace CHAL.Systems.Loot
 /// </summary>
     public class LootCube : MonoBehaviour
     {
-        [SerializeField]
         public string _itemId { get; private set; }
-        [SerializeField]
+
         public int _quantity { get; private set; } = 1;
 
 /// <summary>

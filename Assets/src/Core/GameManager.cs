@@ -35,8 +35,8 @@ namespace CHAL.Core
         [SerializeField]
         private InputManager inputManager;
 
-        [SerializeField]
         public HeroDef starterHero { get; private set; }
+
         [SerializeField]
         private HeroCatalog heroCatalog;
         public HeroCatalog HeroCatalogue => heroCatalog;
