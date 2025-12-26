@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillId: spell_fireball
   DisplayName: Fireball
+  AttributeAffinity: 0
   BaseDamage: 10
-  DamageTypes:
-  - DmgType: 1
-    DmgMultiplier: 1
+  BaseDamageType: 0
+  skillFamily: {fileID: 0}
   CastTime: 1
   Cooldown: 7
   SkillType: 2
@@ -29,8 +29,12 @@ MonoBehaviour:
   ProjectileSpeed: 0
   ProjectileCount: 0
   AoERadius: 5
-  OnCastImpactEffects: []
-  OnHitImpactEffects: []
-  Tags: 
+  damageAttributeScalingFactor: 1
+  OnCastImpact: []
+  OnHitImpact:
+  - {fileID: 11400000, guid: 828692c726907cd4c94cc69e95417372, type: 2}
+  OnEndImpact: []
+  DeliveryTags: 
+  MechanicTags: 
   vfxPrefab: {fileID: 0}
   animationType: 4

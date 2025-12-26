@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillId: lightning_bolt
   DisplayName: Lightning Bolt
+  AttributeAffinity: 0
   BaseDamage: 5
-  DamageTypes:
-  - DmgType: 4
-    DmgMultiplier: 1
+  BaseDamageType: 0
+  skillFamily: {fileID: 0}
   CastTime: 0
   Cooldown: 1.5
   SkillType: 1
@@ -29,8 +29,12 @@ MonoBehaviour:
   ProjectileSpeed: 10
   ProjectileCount: 1
   AoERadius: 0
-  OnCastEffects: []
-  OnHitEffects: []
-  Tags: 
+  damageAttributeScalingFactor: 1
+  OnCastImpact: []
+  OnHitImpact:
+  - {fileID: 11400000, guid: 828692c726907cd4c94cc69e95417372, type: 2}
+  OnEndImpact: []
+  DeliveryTags: 
+  MechanicTags: 
   vfxPrefab: {fileID: 0}
   animationType: 5

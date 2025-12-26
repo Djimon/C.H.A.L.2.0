@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillId: bladestorm
   DisplayName: Bladestorm
+  AttributeAffinity: 0
   BaseDamage: 3
-  DamageTypes:
-  - DmgType: 0
-    DmgMultiplier: 1
+  BaseDamageType: 0
+  skillFamily: {fileID: 0}
   CastTime: 0.5
   Cooldown: 2
   SkillType: 0
@@ -29,8 +29,12 @@ MonoBehaviour:
   ProjectileSpeed: 0
   ProjectileCount: 0
   AoERadius: 3
-  OnCastEffects: []
-  OnHitEffects: []
-  Tags: 
+  damageAttributeScalingFactor: 1
+  OnCastImpact: []
+  OnHitImpact:
+  - {fileID: 11400000, guid: 828692c726907cd4c94cc69e95417372, type: 2}
+  OnEndImpact: []
+  DeliveryTags: 
+  MechanicTags: 
   vfxPrefab: {fileID: 0}
   animationType: 1
