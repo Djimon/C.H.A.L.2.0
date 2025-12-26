@@ -69,7 +69,7 @@ public class SkillDataEditor : Editor
 
         if (wantsAoE)
         {
-            data.AoERadius = EditorGUILayout.FloatField("AoE Radius", data.AoERadius);
+            data.Radius = EditorGUILayout.FloatField("AoE Radius", data.Radius);
         }
 
         if (wantsDuration)

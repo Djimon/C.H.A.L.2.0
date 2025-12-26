@@ -73,7 +73,7 @@ namespace CHAL.Data
         ProjectileSpeed,
         PierceChance,
         Range,
-        AoERadius,
+        Radius,
         Duration,
         //BuffDuration,
         //DebuffDuration,

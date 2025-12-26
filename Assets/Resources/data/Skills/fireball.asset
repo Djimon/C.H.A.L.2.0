@@ -16,8 +16,10 @@ MonoBehaviour:
   DisplayName: Fireball
   AttributeAffinity: 0
   BaseDamage: 10
-  BaseDamageType: 0
-  skillFamily: {fileID: 0}
+  minRequiredTier: 1
+  BaseDamageType: 1
+  defualtCore: 1
+  changeCoreTypesAllowed: 
   CastTime: 1
   Cooldown: 7
   SkillType: 2
@@ -28,7 +30,7 @@ MonoBehaviour:
   Duration: 0
   ProjectileSpeed: 0
   ProjectileCount: 0
-  AoERadius: 5
+  Radius: 0
   damageAttributeScalingFactor: 1
   OnCastImpact: []
   OnHitImpact:

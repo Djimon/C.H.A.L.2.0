@@ -87,4 +87,7 @@ MonoBehaviour:
   - name: Stats
     active: 1
     color: {r: 1, g: 1, b: 1, a: 1}
+  - name: Item
+    active: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
   _seeded: 1

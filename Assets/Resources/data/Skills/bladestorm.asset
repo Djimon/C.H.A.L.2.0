@@ -16,10 +16,10 @@ MonoBehaviour:
   DisplayName: Bladestorm
   AttributeAffinity: 0
   BaseDamage: 3
-  BaseDamageType: 0
   minRequiredTier: 1
+  BaseDamageType: 0
   defualtCore: 0
-  allowedCores: 
+  changeCoreTypesAllowed: 
   CastTime: 0.5
   Cooldown: 2
   SkillType: 0
@@ -30,7 +30,7 @@ MonoBehaviour:
   Duration: 0
   ProjectileSpeed: 0
   ProjectileCount: 0
-  AoERadius: 3
+  Radius: 0
   damageAttributeScalingFactor: 1
   OnCastImpact: []
   OnHitImpact:

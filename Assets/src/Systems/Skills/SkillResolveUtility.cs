@@ -16,10 +16,16 @@ namespace CHAL.Systems.Skill
 /// <returns>The constructed TagContext.</returns>
         public static TagContext BuildTagContext(SkillModuleDef module, CoreType core)
         {
+            if (module == null)
+            {
+                DebugManager.Error("[SkillResolveUtility] BuildTagContext: module is null.");
+                return TagContext.From(null, new List<SkillDeliveryTag>(), new List<SkillMechanicTag>(), null);
+            }
+
             // 1) Basis: SkillType & DamageType immer aus dem Modul
             var skillType = (SkillType?)module.SkillType;
             //TODO: Change to Core-Damagetype translation
-            var damageType = (DamageType?)module.BaseDamageType;
+            var damageType = (DamageType?)TranslateDamageType(module, core);
 
             // 2) Delivery-Tags aufsammeln: Module + Family + Override
             var delivery = new List<SkillDeliveryTag>();
@@ -34,12 +40,7 @@ namespace CHAL.Systems.Skill
             if (module.MechanicTags != null)
                 mechanics.AddRange(module.MechanicTags);
 
-            return TagContext.From(
-                skillType,
-                delivery,
-                mechanics,
-                damageType
-            );
+            return TagContext.From(skillType, delivery, mechanics, damageType);
         }
 
 /// <summary>
@@ -51,19 +52,28 @@ namespace CHAL.Systems.Skill
 /// <returns>The resolved skill.</returns>
         public static ResolvedSkill ResolveBaseSkill(SkillModuleDef module, int skilltier, CoreType core)
         {
+            if (module == null)
+            {
+                DebugManager.Error("[SkillResolveUtility] ResolveBaseSkill: module is null.");
+                return null;
+            }
+
+            if (skilltier < module.minRequiredTier)
+                DebugManager.Warning($"Inconsistant minRequiredTier {module.minRequiredTier} with skillTier {skilltier}","Skill");
+                
             // TagContext aus Modul/Family/Override
             var tagContext = BuildTagContext(module, core);
 
             // 1) Basiswerte aus dem Modul
             // Namen ggf. an deine echten Felder anpassen.
             float damage = module.BaseDamage;
-            float radius = module.AoERadius;
+            float radius = module.Radius;
             float duration = module.Duration;
             float cooldown = module.Cooldown;
             float castTime = module.CastTime;
             float projSpd = module.ProjectileSpeed;
             int projCount = module.ProjectileCount;
-            SkillRange range = module.Range;
+            SkillRange skillrange = module.Range;
 
             //fill later via ResolvedSkill.AddOrReplaceDamageEntries(List<DamageEntry>)
             List<DamageEntry> dmgEntries = new List<DamageEntry>(); 
@@ -72,12 +82,11 @@ namespace CHAL.Systems.Skill
             // 3) IDs bestimmen
             var skillId = module.SkillId; // oder SkillId, falls du es so benannt hast
             var moduleId = module.SkillId; // Module = Skill-Def, daher gleiche ID erst mal okay
-            var coreType = module.defualtCore; // Core kommt später
 
             return new ResolvedSkill(
                 skillId: skillId,
                 moduleId: moduleId,
-                coretype: coreType,
+                coretype: core,
                 damage: damage,
                 radius: radius,
                 duration: duration,
@@ -85,17 +94,47 @@ namespace CHAL.Systems.Skill
                 castTime: castTime,
                 projectileSpeed: projSpd,
                 projectileCount: projCount,
-                range: range,
+                range: skillrange,
                 damageEntries: dmgEntries,
                 tags: tagContext
             );
         }
 
-/// <summary>
-/// Resolves a SkillRange to its corresponding float value.
-/// </summary>
-/// <param name="range">The SkillRange to resolve.</param>
-/// <returns>The float value representing the range.</returns>
+        private static DamageType TranslateDamageType(SkillModuleDef module, CoreType core)
+        {
+            if (module == null)
+                return DamageType.Physical;
+
+            // Wenn Basic oder unbekannt: nimm das, was im SkillDef steht
+            // (das passt zu deinem aktuellen Stand: SkillDef hat BaseDamageType)
+            switch (core)
+            {
+ 
+                case CoreType.Basic:
+                    return DamageType.Physical;
+                case CoreType.Blazing:
+                    return DamageType.Fire;
+                case CoreType.Glacial:
+                    return DamageType.Cold;
+                case CoreType.Static:
+                    return DamageType.Lightning;
+                case CoreType.Venomous:
+                    return DamageType.Poison;
+                case CoreType.Infernal:
+                    return DamageType.Dark;
+                case CoreType.Radiant:
+                    return DamageType.Holy;
+
+                default:
+                    return module.BaseDamageType;
+            }
+        }
+
+        /// <summary>
+        /// Resolves a SkillRange to its corresponding float value.
+        /// </summary>
+        /// <param name="range">The SkillRange to resolve.</param>
+        /// <returns>The float value representing the range.</returns>
         public static float ResolveRangeAsFloat(SkillRange range)
         {
 

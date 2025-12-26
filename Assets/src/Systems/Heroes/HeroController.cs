@@ -24,7 +24,7 @@ namespace CHAL.Systems.Hero
         [SerializeField] 
         private List<SkillInstance> socketedSkills = new();
 
-        public List<SkillModuleDef> debugSocketSkills = new();
+        public List<ItemDef> debugSocketSkills = new(); //ensure ItemType.Module
 
         private HeroInstance heroInstance;
         public HeroInstance RuntimeHeroInstance => heroInstance;
@@ -40,6 +40,9 @@ namespace CHAL.Systems.Hero
 
         // Events
         public event Action<HeroController> OnHeroDied;
+
+        private static readonly Dictionary<string, SkillModuleDef> _skillDefCache = new();
+
 
         private void OnEnable()
         {
@@ -64,36 +67,81 @@ namespace CHAL.Systems.Hero
             if (HeroDef != null && heroInstance == null)
                 Init(HeroDef);
 
-            if (socketedSkills == null) socketedSkills = new List<SkillInstance>();
+            if (socketedSkills == null) 
+                socketedSkills = new List<SkillInstance>();
 
-            //fallback AutoAttack
-            socketedSkills.Add(new SkillInstance(HeroDef.fallBackAttack, heroInstance));
-            //BuildSkillInstances(); //eher im init(HeroDef)
 
-            //if (autoAttack == null)
-            //    DebugManager.Log("[HeroController] Warning: AutoAttack SkillInstance is not set.", DebugManager.EDebugLevel.Dev, "Hero", LogType.Warning);
+            RebuildSocketedSkills();
 
         }
 
-        //private void BuildSkillInstances()
-        //{
-        //    //socketedSkills.Clear();
+        private void RebuildSocketedSkills()
+        {
+            socketedSkills.Clear();
 
-        //    autoAttack = (HeroDef?.Archetype?.primAttackType == PrimaryAttackArchetype.Ranged)
-        //        ? BuildBaseAttackRanged(heroInstance)
-        //        : BuildBaseAttackMelee(heroInstance);
+            //fallback AutoAttack
+            if (HeroDef != null && HeroDef.fallBackAttack != null && heroInstance != null)
+                socketedSkills.Add(new SkillInstance(HeroDef.fallBackAttack, heroInstance));
 
-        //    if (debugSocketSkills != null)
-        //    {
-        //        foreach (var sd in debugSocketSkills)
-        //            if (sd != null)
-        //                socketedSkills.Add(new SkillInstance(sd, heroInstance)); // :contentReference[oaicite:3]{index=3}
-        //    }
+            if (debugSocketSkills == null || debugSocketSkills.Count == 0 || heroInstance == null)
+                return;
 
-        //    DebugManager.Log($"Hero | Built skills: Rotation={socketedSkills.Count}, AutoAttack={(autoAttack != null ? autoAttack.skillModule.DisplayName : "none")}", DebugManager.EDebugLevel.Debug,"Hero");
-        //}
 
-        // Initialisierung
+            for (int i = 0; i < debugSocketSkills.Count; i++)
+            {
+                var moduleItem = debugSocketSkills[i];
+                if (moduleItem == null)
+                    continue;
+
+                if (moduleItem.itemType != ItemType.Module)
+                {
+                    DebugManager.Warning($"[HeroController] debugSocketSkills contains non-module item '{moduleItem.itemId}'. Skipping.", "Hero");
+                    continue;
+                }
+
+                if (moduleItem.moduleData == null || string.IsNullOrEmpty(moduleItem.moduleData.skillId))
+                {
+                    DebugManager.Warning($"[HeroController] Module item '{moduleItem.itemId}' missing moduleData/skillId. Skipping.", "Hero");
+                    continue;
+                }
+
+                var skillDef = TryFindSkillDefById(moduleItem.moduleData.skillId);
+                if (skillDef == null)
+                {
+                    DebugManager.Warning($"[HeroController] No SkillModuleDef found for skillId '{moduleItem.moduleData.skillId}'. Skipping.", "Hero");
+                    continue;
+                }
+
+                socketedSkills.Add(new SkillInstance(skillDef, moduleItem, heroInstance));
+            }
+
+            DebugManager.DebugLog($"[HeroController] Built skills: Rotation={socketedSkills.Count}","Hero");
+
+        }
+
+        private static SkillModuleDef TryFindSkillDefById(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId))
+                return null;
+
+            if (_skillDefCache.TryGetValue(skillId, out var cached) && cached != null)
+                return cached;
+
+            // Minimal debug lookup: works in Editor reliably. In build it requires the SkillModuleDefs to be loaded.
+            var all = Resources.FindObjectsOfTypeAll<SkillModuleDef>();
+            for (int i = 0; i < all.Length; i++)
+            {
+                var d = all[i];
+                if (d != null && d.SkillId == skillId)
+                {
+                    _skillDefCache[skillId] = d;
+                    return d;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Initializes the hero with the specified definition.
         /// </summary>
@@ -111,6 +159,8 @@ namespace CHAL.Systems.Hero
             //TODO: build SkillInstances based on SocketedModules + def.Archetype
             heroInstance = new HeroInstance(def, progressData);
             heroInstance.Team = UnitTeam.Player;
+
+            RebuildSocketedSkills();
 
             heroInstance.Died += OnHeroInstanceDied;
 
@@ -275,7 +325,7 @@ namespace CHAL.Systems.Hero
             {
                 float dist = Vector3.Distance(transform.position, enemyCtrl.transform.position);
                 float range = GameManager.Instance.Config.GetRangeValue(currentSkill.Range);
-                DebugManager.DebugLog($"Range:{currentSkill.Range.ToString()} = {range}");
+                DebugManager.DebugLog($"Range:{currentSkill.Range.ToString()} = {range}","Combat");
 
                 if (dist <= range)
                 {

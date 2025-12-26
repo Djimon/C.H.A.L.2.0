@@ -16,8 +16,10 @@ MonoBehaviour:
   DisplayName: Ice Bomb
   AttributeAffinity: 0
   BaseDamage: 5
-  BaseDamageType: 0
-  skillFamily: {fileID: 0}
+  minRequiredTier: 1
+  BaseDamageType: 2
+  defualtCore: 2
+  changeCoreTypesAllowed: 
   CastTime: 1.5
   Cooldown: 5
   SkillType: 2
@@ -28,7 +30,7 @@ MonoBehaviour:
   Duration: 5
   ProjectileSpeed: 0
   ProjectileCount: 0
-  AoERadius: 10
+  Radius: 0
   damageAttributeScalingFactor: 1
   OnCastImpact: []
   OnHitImpact:

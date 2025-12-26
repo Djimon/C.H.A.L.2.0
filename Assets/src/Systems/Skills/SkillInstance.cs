@@ -34,13 +34,29 @@ namespace CHAL.Systems.Skill
         //Runtime Felder
         float cooldownRemaining = 0;
 
-
+        /// <summary>
+        /// Def-only skill (fallback attack, enemy skills etc.). No module item.
+        /// </summary>
         public SkillInstance(SkillModuleDef data, EffectReceiver owner)
         {
             skillModule = data;
             ownedBy = owner;
-            Recalculate();
+            modulItem = null;
 
+            Recalculate();
+        }
+
+        /// <summary>
+        /// Skill driven by a crafted "module" item: tier + dmgType come from ModuleItem.moduleData.
+        /// (CoreType will be added later; for now dmgType is stored directly on ModuleData.)
+        /// </summary>
+        public SkillInstance(SkillModuleDef data, ItemDef moduleItem, EffectReceiver owner)
+        {
+            skillModule = data;
+            modulItem = moduleItem;
+            ownedBy = owner;
+
+            Recalculate();
         }
 
 
@@ -51,15 +67,22 @@ namespace CHAL.Systems.Skill
         {
             var archetypeId = ownedBy != null ? (ownedBy as HeroInstance)?.Archetype.ArchetypeId : string.Empty;
 
+            var skilltier = 1;
+            var coreTpye = CoreType.Basic;
+
             if (modulItem == null || modulItem.moduleData == null)
             {
-                DebugManager.Warning($"Skill for {modulItem.name} cannot be calculated","Item");
-                return;
+                DebugManager.Info($"Skill cannot be calculated (missing Module or ModulData)", "Item");            
+            }
+            else
+            {
+                skilltier = modulItem.moduleData.frameTier;
+                coreTpye = modulItem.moduleData.coreType;
             }
 
-            finalSkillData = SkillResolveUtility.ResolveBaseSkill(skillModule,modulItem.moduleData.frameTier,modulItem.moduleData.coreType);
+            finalSkillData = SkillResolveUtility.ResolveBaseSkill(skillModule, skilltier, coreTpye);
 
-            DebugManager.DebugLog($"range? Module: {skillModule.Range} <-> finalSKill: {finalSkillData.Range}");
+            DebugManager.DebugLog($"range? Module: {skillModule.Range} <-> finalSKill: {finalSkillData.Range}","Skill");
 
             UpdateInstance();
 
@@ -69,7 +92,8 @@ namespace CHAL.Systems.Skill
             var tagsStrings = new List<string>(tags.GetModifierTags());
 
             // --- Phase 2, Step 1: BaseDMG  --
-            float baseDamage = Mathf.Max(0f, finalSkillData.Damage) * ownedBy.GetBaseDamage(); ;
+            float ownerBaseDmg = ownedBy != null ? ownedBy.GetBaseDamage() : 1f;
+            float baseDamage = Mathf.Max(0f, finalSkillData.Damage) * ownerBaseDmg;
 
             // -- Step 1: Added, converted, Gain Dmg ---
             var dmgpertype = ApplyBaseDmgModfier(mods, tagsStrings, baseDamage);
@@ -129,7 +153,7 @@ namespace CHAL.Systems.Skill
 
         private Dictionary<DamageType, float> ApplyBaseDmgModfier(ModifierStack mods, List<string> tags, float baseDamage)
         {
-            DamageType baseType = skillModule.BaseDamageType; ;
+            DamageType baseType = finalSkillData.DamageType ?? skillModule.BaseDamageType;
 
             // BaseEffektiveDMG_T: wir starten mit genau einem Typ
             var baseEffectivePerType = new Dictionary<DamageType, float>
@@ -254,7 +278,7 @@ namespace CHAL.Systems.Skill
             //guard
             if (globalMoreMult < 0)
             {
-                DebugManager.Error($"Should not happen: globalMoreMult < 0 :{globalMoreMult}");
+                DebugManager.Warning($"Should not happen: globalMoreMult < 0 :{globalMoreMult}");
                 globalMoreMult = 0;
             }
 
@@ -284,7 +308,7 @@ namespace CHAL.Systems.Skill
             Duration = mods.Apply(ModifierTarget.Duration, finalSkillData.Duration, tags);
             ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, finalSkillData.ProjectileSpeed, tags);
             ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, finalSkillData.ProjectileCount, tags);
-            Radius = mods.Apply(ModifierTarget.AoERadius, finalSkillData.Radius, tags);
+            Radius = mods.Apply(ModifierTarget.Radius, finalSkillData.Radius, tags);
             //TODO weitere properties anpassen
             //CastTime
             /*
@@ -367,6 +391,15 @@ namespace CHAL.Systems.Skill
             var scalingFactor = skillModule.damageAttributeScalingFactor;
 
             return ComputeStatScalingMultiplier(mainStatValue, scalingFactor);
+        }
+
+        /// <summary>
+        /// Optional helper to attach/replace the module item post-creation.
+        /// </summary>
+        public void SetModuleItem(ItemDef moduleItem)
+        {
+            modulItem = moduleItem;
+            Recalculate();
         }
 
 

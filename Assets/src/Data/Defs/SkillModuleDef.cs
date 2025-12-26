@@ -47,7 +47,7 @@ namespace CHAL.Data
         public float Duration = 0f;
         public float ProjectileSpeed = 0f;
         public int ProjectileCount = 0;
-        public float AoERadius = 0f;
+        public float Radius = 0f;
         public float damageAttributeScalingFactor = 1.0f;
 
         [Header("Hooks / Effects")]

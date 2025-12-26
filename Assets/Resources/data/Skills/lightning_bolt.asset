@@ -16,8 +16,10 @@ MonoBehaviour:
   DisplayName: Lightning Bolt
   AttributeAffinity: 0
   BaseDamage: 5
-  BaseDamageType: 0
-  skillFamily: {fileID: 0}
+  minRequiredTier: 1
+  BaseDamageType: 3
+  defualtCore: 3
+  changeCoreTypesAllowed: 
   CastTime: 0
   Cooldown: 1.5
   SkillType: 1
@@ -28,7 +30,7 @@ MonoBehaviour:
   Duration: 0
   ProjectileSpeed: 10
   ProjectileCount: 1
-  AoERadius: 0
+  Radius: 0
   damageAttributeScalingFactor: 1
   OnCastImpact: []
   OnHitImpact:
