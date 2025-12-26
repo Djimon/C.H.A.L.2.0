@@ -1,4 +1,6 @@
 
+using System;
+
 namespace CHAL.Data
 {
     public enum HeroSlot
@@ -10,6 +12,7 @@ namespace CHAL.Data
         LeftHand
     }
 
+    [Serializable]
     public enum HeroAttribs
     {
         STR,

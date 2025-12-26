@@ -14,31 +14,22 @@ namespace CHAL.Systems.Skill
 /// <param name="family">An optional skill family definition for additional tags.</param>
 /// <param name="overrideDef">An optional override definition for the archetype module.</param>
 /// <returns>The constructed TagContext.</returns>
-        public static TagContext BuildTagContext(
-            SkillModuleDef module,
-            SkillFamilyDef family = null,
-            ArchetypeModuleOverrideDef overrideDef = null)
+        public static TagContext BuildTagContext(SkillModuleDef module, CoreType core)
         {
             // 1) Basis: SkillType & DamageType immer aus dem Modul
             var skillType = (SkillType?)module.SkillType;
+            //TODO: Change to Core-Damagetype translation
             var damageType = (DamageType?)module.BaseDamageType;
 
             // 2) Delivery-Tags aufsammeln: Module + Family + Override
             var delivery = new List<SkillDeliveryTag>();
-            if (family != null && family.DeliveryTags != null)
-                delivery.AddRange(family.DeliveryTags);
 
             if (module.DeliveryTags != null)
                 delivery.AddRange(module.DeliveryTags);
 
-            if (overrideDef != null && overrideDef.DeliveryTagsAdd != null)
-                delivery.AddRange(overrideDef.DeliveryTagsAdd);
-
 
             // 3) Mechanic-Tags aktuell nur im Modul
             var mechanics = new List<SkillMechanicTag>();
-            if (family != null && family.MechanicTags != null)
-                mechanics.AddRange(family.MechanicTags);
 
             if (module.MechanicTags != null)
                 mechanics.AddRange(module.MechanicTags);
@@ -58,15 +49,10 @@ namespace CHAL.Systems.Skill
 /// <param name="overrideDef">The archetype module override definition.</param>
 /// <param name="archetypeId">The ID of the archetype.</param>
 /// <returns>The resolved skill.</returns>
-        public static ResolvedSkill ResolveBaseSkill(
-            SkillModuleDef module,
-            ArchetypeModuleOverrideDef overrideDef,
-            string archetypeId)
+        public static ResolvedSkill ResolveBaseSkill(SkillModuleDef module, int skilltier, CoreType core)
         {
-            var family = module.skillFamily; // oder module.family, je nach deiner Property
-
             // TagContext aus Modul/Family/Override
-            var tagContext = BuildTagContext(module, family, overrideDef);
+            var tagContext = BuildTagContext(module, core);
 
             // 1) Basiswerte aus dem Modul
             // Namen ggf. an deine echten Felder anpassen.
@@ -77,37 +63,21 @@ namespace CHAL.Systems.Skill
             float castTime = module.CastTime;
             float projSpd = module.ProjectileSpeed;
             int projCount = module.ProjectileCount;
-            float aoeRad = module.AoERadius;
             SkillRange range = module.Range;
 
             //fill later via ResolvedSkill.AddOrReplaceDamageEntries(List<DamageEntry>)
             List<DamageEntry> dmgEntries = new List<DamageEntry>(); 
 
-            // 2) Archetype-Overrides anwenden (echte Overrides, keine Multipliers)
-            if (overrideDef != null)
-            {
-                if (overrideDef.OverrideDamage)
-                    damage = overrideDef.DamageOverride;
-
-                if (overrideDef.OverrideRadius)
-                    radius = overrideDef.RadiusOverride;
-
-                if (overrideDef.OverrideDuration)
-                    duration = overrideDef.DurationOverride;
-            }
-
+          
             // 3) IDs bestimmen
             var skillId = module.SkillId; // oder SkillId, falls du es so benannt hast
-            var familyId = family != null ? family.FamilyId : string.Empty;
             var moduleId = module.SkillId; // Module = Skill-Def, daher gleiche ID erst mal okay
-            var coreId = string.Empty; // Core kommt später
+            var coreType = module.defualtCore; // Core kommt später
 
             return new ResolvedSkill(
                 skillId: skillId,
-                familyId: familyId,
                 moduleId: moduleId,
-                coreId: coreId,
-                archetypeId: archetypeId,
+                coretype: coreType,
                 damage: damage,
                 radius: radius,
                 duration: duration,
@@ -116,7 +86,6 @@ namespace CHAL.Systems.Skill
                 projectileSpeed: projSpd,
                 projectileCount: projCount,
                 range: range,
-                aoeRadius: aoeRad,
                 damageEntries: dmgEntries,
                 tags: tagContext
             );

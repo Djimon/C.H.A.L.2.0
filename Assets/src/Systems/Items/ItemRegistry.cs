@@ -1,4 +1,4 @@
-﻿using CHAL.Data;
+using CHAL.Data;
 using CHAL.Systems.Crafting;
 using CHAL.Systems.Loot.Models;
 using System.Collections.Generic;
@@ -280,7 +280,7 @@ namespace CHAL.Systems.Items
 
             var def = ScriptableObject.CreateInstance<ItemDef>();
             def.itemId = itemId;
-            def.description = "Placeholder Item â€“ auto-generated.";
+            def.description = "Placeholder Item: auto-generated.";
             def.rarity = Rarity.Common;
             def.lootValue = 0;
 

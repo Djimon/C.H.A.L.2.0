@@ -34,6 +34,7 @@ namespace CHAL.Data
         public PartData partData;
         public ModuleData moduleData;
         public GearData gearData;
+        public CoreData coreData;
 
         void OnValidate()
         {
@@ -59,6 +60,7 @@ namespace CHAL.Data
             if (keep != ItemType.Part) partData = null;
             if (keep != ItemType.Module) moduleData = null;
             if (keep != ItemType.Gear) gearData = null;
+            if (keep != ItemType.Core) coreData = null;
         }
     }
 
@@ -112,8 +114,16 @@ namespace CHAL.Data
     [System.Serializable]
     public class ModuleData
     {
-        public string effect;
-        public float modulePower;
+        public string skillId;
+        public int frameTier = 1;
+        public CoreType coreType;
+    }
+
+    [System.Serializable]
+    public class CoreData
+    {
+        public CoreType coreType;
+        public DamageType defualtDmgType;
     }
 
     [System.Serializable]

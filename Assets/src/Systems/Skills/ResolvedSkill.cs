@@ -6,10 +6,8 @@ public sealed class ResolvedSkill
 {
     // IDs / Metadaten
     public string SkillId { get; }
-    public string FamilyId { get; }
     public string ModuleId { get; }
-    public string CoreId { get; }
-    public string ArchetypeId { get; }
+    public CoreType CoreType { get; }
 
     // Runtime-Werte (bereits mit Stats/Modifiers verrechnet)
     public float Damage { get; private set; }
@@ -19,14 +17,13 @@ public sealed class ResolvedSkill
     public float CastTime { get; private set; }
     public float ProjectileSpeed { get; private set; }
     public int ProjectileCount { get; private set; }
-    public float _Range { get; private set; }
+
     public SkillRange Range = SkillRange.MeleeRange;
-    public float AoERadius { get; private set; }
     
 
     public List<DamageEntry> DamageEntries { get; private set; }
 
-    // Tags – finales Set nach Family + Module + ArchetypeOverride + Core
+    // Tags
     public TagContext tagContext { get; }
 
     public SkillType? SkillType => tagContext.SkillType;
@@ -39,10 +36,8 @@ public sealed class ResolvedSkill
 
     public ResolvedSkill(
         string skillId,
-        string familyId,
         string moduleId,
-        string coreId,
-        string archetypeId,
+        CoreType coretype,
         float damage,
         float radius,
         float duration,
@@ -50,16 +45,13 @@ public sealed class ResolvedSkill
         float castTime,
         float projectileSpeed,
         SkillRange range,
-        float aoeRadius,
         int projectileCount,
         List<DamageEntry> damageEntries,
         TagContext tags)
     {
         SkillId = skillId;
-        FamilyId = familyId;
         ModuleId = moduleId;
-        CoreId = coreId;
-        ArchetypeId = archetypeId;
+        CoreType = coretype;
 
         Damage = damage;
         Radius = radius;
@@ -68,7 +60,7 @@ public sealed class ResolvedSkill
         CastTime = castTime;
         ProjectileSpeed = projectileSpeed;
         Range = range;
-        AoERadius = aoeRadius;
+
         ProjectileCount = projectileCount;
 
         DamageEntries = damageEntries;
@@ -97,7 +89,6 @@ public sealed class ResolvedSkill
         float castTime,
         float projectileSpeed,
         SkillRange range,
-        float aoeRadius,
         int projectileCount)
     {
         Damage = damage;
@@ -107,7 +98,6 @@ public sealed class ResolvedSkill
         CastTime = castTime;
         ProjectileSpeed = projectileSpeed;
         Range = range;
-        AoERadius = aoeRadius;
         ProjectileCount = projectileCount;
     }
 

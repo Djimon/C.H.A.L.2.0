@@ -15,6 +15,8 @@ namespace CHAL.Systems.Skill
     {
         public SkillModuleDef skillModule { get; private set; }
 
+        public ItemDef modulItem; //or ItemInstacne?
+
         private EffectReceiver ownedBy;
 
         public ResolvedSkill finalSkillData { get; private set; }
@@ -27,7 +29,7 @@ namespace CHAL.Systems.Skill
         public float Duration { get; private set; }
         public float ProjectileSpeed { get; private set; }
         public int ProjectileCount { get; private set; }
-        public float AoERadius { get; private set; }
+        public float Radius { get; private set; }
 
         //Runtime Felder
         float cooldownRemaining = 0;
@@ -41,21 +43,21 @@ namespace CHAL.Systems.Skill
 
         }
 
-        private ArchetypeModuleOverrideDef GetArchetypeOverride()
-        {
-            // TODO: Lookup nach module.Id + ownedBy.ArchetypeId in deinem Registry/Service
-            return null;
-        }
 
         /// <summary>
         /// Recalculates the skill's attributes based on current modifiers and data.
         /// </summary>
         public void Recalculate()
         {
-            var overrideDef = GetArchetypeOverride();
             var archetypeId = ownedBy != null ? (ownedBy as HeroInstance)?.Archetype.ArchetypeId : string.Empty;
 
-            finalSkillData = SkillResolveUtility.ResolveBaseSkill(skillModule, overrideDef, archetypeId);
+            if (modulItem == null || modulItem.moduleData == null)
+            {
+                DebugManager.Warning($"Skill for {modulItem.name} cannot be calculated","Item");
+                return;
+            }
+
+            finalSkillData = SkillResolveUtility.ResolveBaseSkill(skillModule,modulItem.moduleData.frameTier,modulItem.moduleData.coreType);
 
             DebugManager.DebugLog($"range? Module: {skillModule.Range} <-> finalSKill: {finalSkillData.Range}");
 
@@ -100,13 +102,12 @@ namespace CHAL.Systems.Skill
 
             finalSkillData.UpdateRuntimeValues(
                 totalDmg,
-                AoERadius,          // oder AoERadius/Radius je nach Semantik
+                Radius,          // oder AoERadius/Radius je nach Semantik
                 Duration,
                 Cooldown,
                 CastTime,
                 ProjectileSpeed,
                 Range,
-                AoERadius,
                 ProjectileCount);
 
             DebugManager.Log(
@@ -117,7 +118,7 @@ namespace CHAL.Systems.Skill
 
         private void UpdateInstance()
         {
-            AoERadius = finalSkillData.AoERadius;          // oder AoERadius/Radius je nach Semantik
+            Radius = finalSkillData.Radius;          // oder AoERadius/Radius je nach Semantik
             Duration = finalSkillData.Duration;
             Cooldown = finalSkillData.Cooldown;
             CastTime = finalSkillData.CastTime;
@@ -283,7 +284,7 @@ namespace CHAL.Systems.Skill
             Duration = mods.Apply(ModifierTarget.Duration, finalSkillData.Duration, tags);
             ProjectileSpeed = mods.Apply(ModifierTarget.ProjectileSpeed, finalSkillData.ProjectileSpeed, tags);
             ProjectileCount = (int)mods.Apply(ModifierTarget.ProjectileCount, finalSkillData.ProjectileCount, tags);
-            AoERadius = mods.Apply(ModifierTarget.AoERadius, finalSkillData.AoERadius, tags);
+            Radius = mods.Apply(ModifierTarget.AoERadius, finalSkillData.Radius, tags);
             //TODO weitere properties anpassen
             //CastTime
             /*
@@ -415,7 +416,7 @@ namespace CHAL.Systems.Skill
         public override string ToString()
         {
             return $"{skillModule.DisplayName}: Dmg={Damage}, CD={Cooldown}, Range={Range}, " +
-                   $"Dur={Duration}, ProjSpeed={ProjectileSpeed}, AoE={AoERadius}";
+                   $"Dur={Duration}, ProjSpeed={ProjectileSpeed}, AoE={Radius}";
         }
     }
 }

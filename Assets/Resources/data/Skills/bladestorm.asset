@@ -17,7 +17,9 @@ MonoBehaviour:
   AttributeAffinity: 0
   BaseDamage: 3
   BaseDamageType: 0
-  skillFamily: {fileID: 0}
+  minRequiredTier: 1
+  defualtCore: 0
+  allowedCores: 
   CastTime: 0.5
   Cooldown: 2
   SkillType: 0

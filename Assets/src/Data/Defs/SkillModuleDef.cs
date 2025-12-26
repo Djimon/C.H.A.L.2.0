@@ -19,9 +19,12 @@ namespace CHAL.Data
         public string DisplayName;
         public HeroAttribs AttributeAffinity = HeroAttribs.STR;
         public float BaseDamage = 1;
+        public int minRequiredTier = 1;
         public DamageType BaseDamageType = DamageType.Physical;
 
-        public SkillFamilyDef skillFamily;
+        [Header("ModuleCore Ingredients")]
+        public CoreType defualtCore;
+        public List<CoreType> changeCoreTypesAllowed;
 
         //TODO: Deprecated: Delete if all references are remapped
         //public List<DamageEntry> DamageTypes;

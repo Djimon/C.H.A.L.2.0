@@ -22,13 +22,21 @@ public class SkillDataEditor : Editor
         EditorGUILayout.LabelField("Identity", EditorStyles.boldLabel);
         data.SkillId = EditorGUILayout.TextField("Skill ID", data.SkillId);
         data.DisplayName = EditorGUILayout.TextField("Display Name", data.DisplayName);
+        data.AttributeAffinity = (HeroAttribs)EditorGUILayout.EnumPopup("MainScalingAttribute", data.AttributeAffinity);
 
         // Core
         EditorGUILayout.LabelField("Core", EditorStyles.boldLabel);
-        data.BaseDamageType = (DamageType)EditorGUILayout.EnumPopup("Base Damage Type", data.BaseDamageType);
         data.BaseDamage = EditorGUILayout.FloatField("Base Damage", data.BaseDamage);
         data.Cooldown = EditorGUILayout.FloatField("Cooldown", data.Cooldown);
         data.CastTime = EditorGUILayout.FloatField("Cast Time", data.CastTime);
+        data.damageAttributeScalingFactor = EditorGUILayout.FloatField("AttributeScalingFactor", data.damageAttributeScalingFactor);
+        data.minRequiredTier = EditorGUILayout.IntField("minSkillFrameTier", data.minRequiredTier);
+
+        //core ingredients
+        EditorGUILayout.LabelField("ModuleCore", EditorStyles.boldLabel);
+        data.BaseDamageType = (DamageType)EditorGUILayout.EnumPopup("Base Damage Type", data.BaseDamageType);
+        data.defualtCore = (CoreType)EditorGUILayout.EnumPopup("defaultCoreType", data.defualtCore);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(SkillModuleDef.changeCoreTypesAllowed)), true); //"changeCoreTypesAllowed"
 
         EditorGUILayout.Space();
 
@@ -72,16 +80,16 @@ public class SkillDataEditor : Editor
         EditorGUILayout.Space();
 
         // Hooks / Impacts (wieder sichtbar)
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCastImpact"), true);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnHitImpact"), true);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("OnEndImpact"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(SkillModuleDef.OnCastImpact)), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(SkillModuleDef.OnHitImpact)), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(SkillModuleDef.OnEndImpact)), true);
 
         EditorGUILayout.Space();
 
         // Meta-Tags (optional, aber sinnvoll)
         EditorGUILayout.LabelField("Meta / Tags", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("DeliveryTags"), true);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("MechanicTags"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(SkillModuleDef.DeliveryTags)), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(SkillModuleDef.MechanicTags)), true);
 
         EditorGUILayout.Space();
 

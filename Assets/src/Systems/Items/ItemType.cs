@@ -23,6 +23,7 @@ namespace CHAL.Systems.Items
                 case "rune": return ItemType.Rune;
                 case "part": return ItemType.Part;
                 case "module": return ItemType.Module;
+                case "core": return ItemType.Core;
                 case "gear": return ItemType.Gear;
                 default: return ItemType.Unknown;
             }

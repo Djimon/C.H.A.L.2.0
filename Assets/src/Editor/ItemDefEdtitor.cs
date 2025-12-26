@@ -50,8 +50,10 @@ using UnityEngine;
             else if (item.itemId.StartsWith("module:"))
             {
                 Ensure(ref item.moduleData);
-                item.moduleData.modulePower = EditorGUILayout.FloatField("Base Power", item.moduleData.modulePower);
-                item.moduleData.effect = EditorGUILayout.TextField("Effect", item.moduleData.effect);
+                item.moduleData.skillId = EditorGUILayout.TextField("referenced SkillID", item.moduleData.skillId);
+                item.moduleData.coreType = (CoreType)EditorGUILayout.EnumPopup("Damage Type", item.moduleData.coreType);
+                item.moduleData.frameTier = EditorGUILayout.IntField("FrameTier", item.moduleData.frameTier);
+                
             }
             else if (item.itemId.StartsWith("gear:"))
             {
@@ -59,6 +61,12 @@ using UnityEngine;
                 item.gearData.slotType = (GearType)EditorGUILayout.EnumPopup("Slot Type", item.gearData.slotType);
                 DrawStringArray(ref item.gearData.tags, "Tag");
                 item.gearData.runeSocketType = (RuneColorType)EditorGUILayout.EnumPopup("Rune Socket", item.gearData.runeSocketType);
+            }
+            else if (item.itemId.StartsWith("core:"))
+            {
+                Ensure(ref item.coreData);
+                item.coreData.defualtDmgType = (DamageType)EditorGUILayout.EnumPopup("Damage Type", item.coreData.defualtDmgType);
+                item.coreData.coreType = (CoreType) EditorGUILayout.EnumPopup("FrameTier", item.coreData.coreType);
             }
             else
             {

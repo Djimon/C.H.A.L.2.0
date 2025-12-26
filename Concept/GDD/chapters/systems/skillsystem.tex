@@ -90,7 +90,7 @@ Hero power and behaviour in combat is defined through several stacked layers:
 \begin{enumerate}
 	\item Hero archetype and base stats (STR, DEX, CON, INT, WIL).
 	\item Gear (from the Crafting System).
-	\item Skill Modules in Sockets.
+	\item \textbf{Crafted Skills (Skill Modules) in Sockets.}
 	\item Socket Orbits (passive progression around each socket).
 	\item Hero-wide Runes.
 	\item Endgame Crowns.
@@ -130,32 +130,33 @@ Heroes do not „learn“ traditional skill trees; instead, they use \textbf{Ski
 		\item start with 1 active socket at low level,
 		\item additional sockets unlock as the Hero levels up (e.g. at level milestones).
 	\end{itemize}
-	\item When a Module is socketed:
+	\item When a Skill Module is socketed:
 	\begin{itemize}
-		\item the Hero gains a SkillData instance, based on:
+		\item the Hero gains a SkillData instance that is \textbf{fully defined by the module itself}:
 		\begin{itemize}
-			\item the abstract Module definition,
-			\item the Hero archetype (which may skin or specialise the skill),
-			\item socket-specific modifiers (see Orbits).
+			\item \textbf{Skill identity:} reference to a concrete Skill (SkillData / SkillDef),
+			\item \textbf{Skill Tier/Level:} controls base numbers / scaling budget,
+			\item \textbf{optional DamageType conversion:} applied as a defined modifier (e.g. phys $\rightarrow$ fire).
 		\end{itemize}
+		\item The Hero archetype does \textbf{not} transform the skill into a different one.
+		Instead, archetypes influence performance through passives, tags, stats, AI behaviour and global modifiers.
 	\end{itemize}
 \end{itemize}
 
+\noindent
+\textbf{Note:} How Skill Modules are crafted (selecting Skill + Tier/Level + DamageType conversion) is defined in the Crafting chapter.
+This section treats Skill Modules as existing inventory items.
+
 \paragraph{Module Role}
 
-Modules represent the main active skill layer for Heroes:
+Skill Modules represent the main active skill layer for Heroes:
 
 \begin{itemize}
-	\item they define \textbf{what} a skill does (projectile, aura, buff, summon, etc.),
-	\item archetypes define \textbf{how} it feels and can change impacts and effects (e.g. same Module might be a burning nova for an Arcanist and a physical shockwave for a Vanguard) $\rightarrow$ (see Section \ref{subsec:skill-families-profiles})
-	\item Orbits, Gear and Runes further modify behaviour and scaling.
+	\item they define \textbf{what} the skill does (projectile, aura, buff, summon, etc.) by referencing a concrete SkillData,
+	\item they define \textbf{how strong} the base skill is via Tier/Level,
+	\item they optionally define a \textbf{DamageType conversion} (if present),
+	\item Orbits, Gear, Runes and Crowns further modify behaviour and scaling via tags and ModifierData.
 \end{itemize}
-
-\paragraph{Module Profiles}
-Not every Archetpye has a different representation of the Skill. there are 3 main profiles: \textbf{Melee}, \textbf{Ranged}, \textbf{Caster} (and Minion/Spawn as special Role)
-
-\subparagraph*{Naming through damage type and Archetype-profile} 
-General naming rule: prefix (dmg-type) + Module-Name + Suffix (profile). \\
 
 \begin{minipage}[t]{0.48\textwidth}
 	\textbf{Element Prefixes}\\
@@ -172,32 +173,9 @@ General naming rule: prefix (dmg-type) + Module-Name + Suffix (profile). \\
 	\end{tabular}
 \end{minipage}
 \hfill
-\begin{minipage}[t]{0.48\textwidth}
-	\textbf{Profile Suffixes}\\
-	
-	\begin{tabular}{r| l}
-		\textbf{Profile}    & \textbf{Suffix}     \\
-		\hline
-		Melee        & \glqq\textit{of Ferocity}\grqq   \\
-		Ranged       & \glqq\textit{of Precision}\grqq  \\
-		Caster       & \glqq\textit{of Sorcery}\grqq    \\
-		Minion/Spawn & \glqq\textit{of Dominion}\grqq   \\
-	\end{tabular}
-\end{minipage}
 
 \vspace{1em}
 
-\noindent\textbf{Example Skill Module Names}
-
-\begin{itemize}
-	\item \glqq Blazing Gyro-Module of Ferocity\grqq
-	\item \glqq Static Vortex-Module of Precision\grqq
-	\item \glqq Venomous Graviton-Module of Dominion\grqq
-	\item \glqq Glacial Pulse-Module of Sorcery\grqq
-	\item \glqq Radiant Burst-Module of Precision\grqq
-\end{itemize}
-
-\textbf{General summary}: The module defines the basis, the archetype defines certain overrides, whereby not every archetype always has its own override; some archetypes share overrides when appropriate.
 
 % RISK: If Modules are too numerous or too similar, the system loses clarity.
 % TODO: For MVP, keep Module count per archetype low and strongly themed.
@@ -347,9 +325,10 @@ There is no direct player control over skill priority in combat:
 The player expresses build intent primarily through:
 
 \begin{itemize}
-	\item module choices (which skills exist at all),
+	\item \textbf{skill choices} (which concrete skills are socketed),
 	\item orbit mods (how those skills behave),
-	\item gear and runes (which stats and tags are favoured).
+	\item gear and runes (which stats and tags are favoured),
+	\item optional damage type conversion on the skill module.
 \end{itemize}
 
 % RISK: Lack of explicit skill priority control can frustrate highly engaged players.
@@ -410,15 +389,15 @@ For the MVP, the Skill System should deliver:
 	\item A stable \textbf{SkillData / Status / Modifier} framework used by Heroes and Monsters.
 	\item A limited set of \textbf{Hero archetypes} (e.g. 3--5) with:
 	\begin{itemize}
-		\item clear roles,
-		\item 1--3 key Skill Modules each,
+		\item clear tag-based identities (what tags they amplify),
+		\item a small starter pool of \textbf{crafted skills} that fit their theme,
 		\item basic Orbit layouts (Tier I/II, Tier III optional).
 	\end{itemize}
 	\item \textbf{Sockets and Modules}:
 	\begin{itemize}
 		\item start with 1 active socket per Hero,
 		\item unlock up to 2--3 sockets for MVP,
-		\item small, strongly themed Module pool.
+		\item small, strongly themed \textbf{skill pool} (skills are concrete SkillData items).
 	\end{itemize}
 	\item \textbf{Orbits}:
 	\begin{itemize}

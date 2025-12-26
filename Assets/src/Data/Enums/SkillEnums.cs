@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace CHAL.Data
 {
+    [Serializable]
     public enum SkillType
     {
         Melee,      //Nahkmampf
@@ -11,6 +13,7 @@ namespace CHAL.Data
 
     }
 
+    [Serializable]
     public enum SkillRange
     {
         Self = 0,
@@ -20,6 +23,7 @@ namespace CHAL.Data
         FarDistance   // Fernkampf / Magie (Bogen, Feuerball)
     }
 
+    [Serializable]
     public enum SkillDeliveryTag
     {
         //Melee, //-> already SkillType
@@ -39,6 +43,7 @@ namespace CHAL.Data
 
     }
 
+    [Serializable]
     public enum SkillMechanicTag
     {
         //Mechanik/Rolle
@@ -57,6 +62,7 @@ namespace CHAL.Data
         // Damgetypes - use normal DamageType enum
     }
 
+    [Serializable]
     public enum ModifierTarget
     {
         SkillDamage,
@@ -89,6 +95,7 @@ namespace CHAL.Data
         // … beliebig erweiterbar
     }
 
+    [Serializable]
     public enum ModifierOperation
     {
         Add,        // +10
@@ -96,6 +103,7 @@ namespace CHAL.Data
         Replace     // fester Wert
     }
 
+    [Serializable]
     public enum ModifierHook
     {
         None,

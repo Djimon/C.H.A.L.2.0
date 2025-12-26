@@ -499,14 +499,105 @@ see Cost Multiplicator in Hardening Tiers
 \end{itemize}
 
 
-\subsection{Module Crafting}
+% =============================================================
+\subsection{Skill Module Crafting}
 
-%TODO: complete. here are just some general ideas
-\textit{- Idea: not crafting but Exchange (cores and remains and other currency) - researchable }\\
-- Modules are crafted from Parts or remains and a special boss mob drops (cores?)\\
-- cores come in different eleemtns\\
-- the used "core" defines the damage type of the module:\\
+\paragraph{Overview}
+Skill Module Crafting is a \textbf{deterministic} system that creates socketable Skill Modules.
+A Skill Module always represents a \textbf{concrete skill} plus a chosen \textbf{SkillTier} and an optional \textbf{DamageType core}.
+How the player unlocks skills and FrameTiers is handled by the Research system; this section assumes all unlocked recipes are visible in the Crafting UI.
 
+\paragraph{Definitions}
+\begin{itemize}
+	\item \textbf{Skill Module (Output):} \texttt{SkillId + SkillTier + CoreType} (as an inventory item).
+	\item \textbf{FrameTier:} unlocked via Research (permission gate). The player selects the desired tier via a simple tier slider.
+	\item \textbf{CoreType:} defines the damage type conversion and adds the corresponding damage tag automatically.
+\end{itemize}
+
+\paragraph{Unlocking}
+\begin{itemize}
+	\item \textbf{FrameTiers:} unlocked via Research (slider max is capped by the highest unlocked FrameTier).
+	\item \textbf{Skill recipes:} unlocked together with the coresponding \textbf{FrameTier}-Research
+	\item \textbf{Element Cores:} typically dropped from elites / map rewards (used to enable element conversion and as a ``hint'' for progression).
+\end{itemize}
+
+\paragraph{Sequence (UI Flow)}
+\begin{enumerate}
+	\item Select Skill Recipe (only unlocked skills are craftable).
+	\item Select SkillTier via slider (1..max unlocked FrameTier).
+	\item Select Core:
+	\begin{itemize}
+		\item default: BasicCore (Tier1) is used
+		\item optional: \textit{Change Core} to an Element Core (if allowed by the selected skill)
+	\end{itemize}
+	\item UI shows required materials and missing items (craft button becomes green if all requirements are met).
+	\item Consume Materials + Currency (atomic transaction) and output the Skill Module.
+\end{enumerate}
+
+\subparagraph{Skill Metadata (for UI)}
+Each SkillDef defines:
+\begin{itemize}
+	\item \textbf{PrimaryStat:} the main scaling stat (STR / DEX / CON / INT / WIL).
+	\item \textbf{Tags:} one or more tags that describe behaviour and interactions.
+\end{itemize}
+
+\subparagraph{Skill List UI (V1)}
+The crafting menu shows all unlocked skills as a list/grid. For readability:
+\begin{itemize}
+	\item The skill icon uses the \textbf{PrimaryStat color} as background or frame.
+	\item The skill details view shows \textbf{PrimaryStat} and the full \textbf{tag list}.
+\end{itemize}
+
+\subparagraph{Filtering (V1)}
+At minimum, the Skill Crafting menu supports:
+\begin{itemize}
+	\item \textbf{PrimaryStat filter} (multi-select STR/DEX/CON/INT/WIL).
+	\item \textbf{Core/DamageType filter} (multi-select, based on CoreTypes; includes Kinetic/Physical).
+\end{itemize}
+
+\noindent
+\textbf{Bonus (V1+):} multi-select \textbf{Tag filter} (AND/OR mode TBD).
+
+\paragraph{Core Rules (BasicCore vs Element Core)}
+To preserve the story fantasy that every Skill Module consists of \textbf{Core + Frame}, a default core is always present:
+\begin{itemize}
+	\item \textbf{Ingredient 1: BasicCore (Tier1)} costs \textbf{250 Gold}.  
+	The BasicCore is listed as an ingredient but is converted directly into Gold cost (no inventory item needed).
+	\item If the player selects an \textbf{Element Core} via \textit{Change Core}, the \textbf{250 Gold BasicCore cost is removed}.
+	Only the base crafting costs (Parts/Remains/Gold) remain.
+\end{itemize}
+
+\paragraph{Allowed Cores and Default Core (per Skill)}
+Not every skill can be converted into every element.
+\begin{itemize}
+	\item Each skill defines \texttt{allowedCores} (whitelist).
+	\item Each skill defines a \texttt{defaultCore}.
+	\item Some skills can be \textbf{element-exclusive} (e.g. Fire-only): \texttt{allowedCores=\{Blazing\}} and no Kinetic/BasicCore option.
+\end{itemize}
+
+\paragraph{Tier and Cost Scaling}
+Higher SkillTiers represent higher quality Frames and therefore require higher deterministic costs.
+\begin{itemize}
+	\item Some skills have a minimum tier requirement: \texttt{minRequiredTier}.
+	\item Costs scale by tier using Parts/Remains/Gold.
+\end{itemize}
+
+\subparagraph{Cost Scaling}
+\textbf{TODO:} Define deterministic cost curves per SkillTier (Parts/Remains/Gold) and minimum Remains quality requirements.
+
+\paragraph{Materials and Determinism}
+\begin{itemize}
+	\item \textbf{Parts:} main deterministic crafting cost (scales with tier).
+	\item \textbf{Remains:} deterministic quality requirement for higher tiers (no RNG bonus like in Gear crafting).
+	Low-tier remains are not valid for high-tier recipes.
+	\item \textbf{Gold:} base currency cost plus BasicCore (250 Gold) if no Element Core is selected.
+\end{itemize}
+
+\paragraph{DamageType Conversion and Tags}
+Selecting a CoreType changes the skill's damage type conversion accordingly and automatically adds the corresponding damage tag.
+VFX are assumed to react to damage type (color/intensity/particles) via a modular VFX setup (details out of scope here).
+
+\paragraph{Core Types}
 \begin{tabular}{l l}
 	\textbf{Core Type} & \textbf{Damage Type} \\
 	\hline
@@ -520,6 +611,16 @@ see Cost Multiplicator in Hardening Tiers
 	Radiant  & Holy          \\
 	\hline
 \end{tabular}
+
+\paragraph{Minimal Data Model}
+\begin{itemize}
+	\item \textbf{ElementCoreDef:} \texttt{coreType}, \texttt{damageType}, \texttt{addedTag}
+	\item \textbf{CraftedSkillModule:} \texttt{skillId}, \texttt{skillTier}, \texttt{coreType}
+	\item \textbf{SkillDef:} \texttt{skillId}, \texttt{primaryStat}, \texttt{tags}, \texttt{minRequiredTier}, \texttt{allowedCores}, \texttt{defaultCore}
+\end{itemize}
+
+\vspace{1em}
+% =============================================================
 
 
 \subsection{Rune Crafting}
