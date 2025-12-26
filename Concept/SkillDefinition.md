@@ -15,6 +15,10 @@ Annahme:
 ## F1 – Spinning Assault
 Namensideen: *Maelstrom-, Cyclone-, Gyro-, Vortex-Modul*
 
+Namen Melee: Whirlwind, Cyclone
+Namen Ranged: Vortex, Helix Zone
+Namen Cast: Maelstrom
+
 ### Konfigurationsachsen (Daten)
 
 - `base_radius` – Grundradius um den Caster.
@@ -44,6 +48,10 @@ Namensideen: *Maelstrom-, Cyclone-, Gyro-, Vortex-Modul*
 
 ## F2 – Impact Slam
 Namensideen: *Seismic-, Graviton-, Rupture-, Impact-Module*
+
+Namen Melee: Rupture Strike, Slam, Breaker
+Namen Ranged: Crater Shot, Impact Bolt
+Namen Cast: Seismic Sigil
 
 ### Konfigurationsachsen
 
@@ -75,6 +83,10 @@ Namensideen: *Seismic-, Graviton-, Rupture-, Impact-Module*
 ## F3 – Dash Strike
 Namensideen: *Blink-, Phase-, Vector-Module*
 
+Namen Melee: Vanguard Rush, Execution Step, Dash Stap
+Namen Ranged: Skirmisher Leap, Snap Retreat
+Namen Cast: Blink, Phase Step
+
 ### Konfigurationsachsen
 
 - `dash_range` – Distanz der Bewegung.
@@ -103,6 +115,10 @@ Namensideen: *Blink-, Phase-, Vector-Module*
 ## F4 – Nova Burst
 Namensidee: *Pulse-, Wave-, Radiant-, Bloom-, Nova-Module*
 
+Namen Melee: Shockwave
+Namen Ranged: Explosive Arrow
+Namen Cast: Nova
+
 ### Konfigurationsachsen
 
 - `nova_radius` – Ausdehnung der Explosion.
@@ -130,6 +146,10 @@ Namensidee: *Pulse-, Wave-, Radiant-, Bloom-, Nova-Module*
 
 ## F5 – Projectile Barrage
 Namensideen: *Shard-, Lance-, Rail-Module*
+
+Namen Melee: Razor fan
+Namen Ranged: Barrage, Volley
+Namen Cast: Arcane Lances/ Bolts
 
 ### Konfigurationsachsen
 
@@ -162,6 +182,10 @@ Namensideen: *Shard-, Lance-, Rail-Module*
 ## F6 – Heavy Nuke
 Namensidee: *Meteor-, Detoantion-, Warhead-, Burst-Module*
 
+Namen Melee: Executioner, OVerdrive Strike
+Namen Ranged: Payload, Annihilation
+Namen Cast: Obliteration, Explosion, Meteor
+
 ### Konfigurationsachsen
 
 - `targeting_mode` – Self-Buff, Projectile, Ground-Target, Corpse-Target.
@@ -190,6 +214,10 @@ Namensidee: *Meteor-, Detoantion-, Warhead-, Burst-Module*
 
 ## F7 – Ground Hazard / DoT-Zone
 Namensideen: *Contagion-, Zone-, Corrosion-, Hazard-, Grid-Module*
+
+Namen Melee: Pressure Zone, Kill Field
+Namen Ranged: Hazard Mark, Control Field
+Namen Cast: Rune Field, Ritual, 
 
 ### Konfigurationsachsen
 
@@ -221,6 +249,10 @@ Namensideen: *Contagion-, Zone-, Corrosion-, Hazard-, Grid-Module*
 ## F8 – Trap / Remote Trigger
 Namensideen: *Mesh-, Ambush-, Trap, Trigger-, Snare-Module*
 
+Namen Melee: Hookline
+Namen Ranged: Snare, Mine, Shrapnel
+Namen Cast: unstable Array
+
 ### Konfigurationsachsen
 
 - `trap_count` – Anzahl gleichzeitig aktiver Fallen.
@@ -249,6 +281,10 @@ Namensideen: *Mesh-, Ambush-, Trap, Trigger-, Snare-Module*
 ## F9 – Orbits & Orbs
 Namensideen: *Orb-, Cluster-, Swarm-, Satellite-Module*
 
+Namen Melee: Guardians, Pals, Swarm, 
+Namen Ranged: Ring, Cluster, 
+Namen Cast: Orbit, Satelite
+
 ### Konfigurationsachsen
 
 - `orb_count` – Anzahl aktiver Orbs.
@@ -276,6 +312,10 @@ Namensideen: *Orb-, Cluster-, Swarm-, Satellite-Module*
 ## F10 – Minions & Swarms
 Namensideen: *Spawn-, Seed-, Hive-, Puppet-, Swarm-Module*
 
+Namen Melee: Warden, Familiar
+Namen Ranged: Companion, Pet, Turret
+Namen Cast: Swarm, Minion, Elemental
+
 ### Konfigurationsachsen
 
 - `minion_count` – Anzahl gleichzeitig beschworener Diener.
@@ -302,6 +342,10 @@ Namensideen: *Spawn-, Seed-, Hive-, Puppet-, Swarm-Module*
 ## F11 – Auren & Shouts
 Namensideen: *Echo-, Emitter-, Induciton-, Aura-Module*
 
+Namen Melee: Warcry, Roar
+Namen Ranged: Command Banner, Makrsman's Call
+Namen Cast: Aura, Ward, Invocation
+
 ### Konfigurationsachsen
 
 - `aura_radius` – Reichweite.
@@ -327,8 +371,12 @@ Namensideen: *Echo-, Emitter-, Induciton-, Aura-Module*
 
 ---
 
-## F12 – Curses & Detonations
+## F12 – Curses & DoTs
 Namensideen: *Injection-, Curse-, Hex-, Omen-Module*
+
+Namen Melee: Branding, Favored Enemy 
+Namen Ranged: Omen, Mark
+Namen Cast: Hex, Curse
 
 ### Konfigurationsachsen
 
@@ -355,6 +403,10 @@ Namensideen: *Injection-, Curse-, Hex-, Omen-Module*
 
 ## F13 – Target Marks & Focus Locks  
 Namensideen: *Mark-, Focus-, Lock-Module*
+
+Namen Melee: Focus, Lock
+Namen Ranged: Mark, Target
+Namen Cast: Seal, Bind
 
 ### Konfigurationsachsen
 

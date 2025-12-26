@@ -1,0 +1,82 @@
+SkillName,SkillFamilies,PrimaryMechanic,MechanicTags,DamageType,ArchetypeVariant,RowOrigin,AlternativeNames,Notes
+Iron Cleaver,[F2],"Breiter Nahkampf-Schwung (Cone), skaliert primär mit Hit-Damage und kleinem AoE-Winkel.",[M01_DirectHit],Physical,Melee,CSV,,
+Sanctified Soil,"[F7,F11]","Heilige Zone: Allies bekommen LifeRegen+ und DoT-Resist; skaliert über Regeneration, Resist-Boost und Radius.","[M08_GroundHazard,M06_Sustain,M04_DefenseLayer]",Holy,Caster,CSV,,
+Toxic Funnel,"[F7,F2]","Kegel-förmige Gift-Hazard vor dem Caster; skaliert über Kegelweite, Reichweite und DoT-DPS.",[M08_GroundHazard],Poison,Caster,CSV,,
+Bone Vanguard,[F10],"Tankiger Nahkampf-Skelett-Minon; skaliert über Minion-Life, Armor und Basis-DPS.","[M09_Summon,M04_DefenseLayer]",Physical,Caster,CSV,Swarm; Minion; Elemental,
+Flame Idol,[F10],"Stationäres Feuer-Totem, das Firebolts schießt; skaliert über Minion-Damage, AttackSpeed und Projektil-Reichweite.","[M09_Summon,M01_DirectHit]",Fire,Caster,CSV,,
+Wraith Pack,[F10],"Mehrere fragile Geister mit hohem Schaden, kurzer Dauer; skaliert über Minion-Damage und Lifetime.","[M09_Summon,M01_DirectHit]",Dark,Caster,CSV,,
+Swarm Nest,"[F10,F7]","Stationäres Nest, das periodisch Gift-Insekten spawnt; skaliert über Spawn-Rate und Insekten-DoT.","[M09_Summon,M08_GroundHazard]",Poison,Ranged,CSV,,
+Arc Beacon,[F10],"Turret-Minon, der Kettenblitze verschießt; skaliert über Minion-Damage, Chain-Count und Range.","[M09_Summon,M01_DirectHit]",Lightning,Caster,CSV,,
+Solar Guardian,"[F10,F11]",Heiliger Schutzgeist mit Barrier-Aura und gelegentlichen Holy-Novas; skaliert über Aura-Stärke und Nova-Damage.,"[M09_Summon,M10_AuraShout,M04_DefenseLayer,M06_Sustain]",Holy,Caster,CSV,,
+Crystal Shambler,"[F10,F6]","Langsamer Golem mit Hard-Slam und Frost-Explosion beim Tod; skaliert über Minion-Life, Slam-Damage und Nova-Radius.","[M09_Summon,M01_DirectHit,M12_SpinNova]",Physical+Cold,Melee,CSV,Executioner; OVerdrive Strike; Warden; Familiar,
+Ward of Glass,[F11],Defensive Aura: +BarrierRegen und +Resists; skaliert über Regenerations-Wert und Resist-Bonus.,"[M10_AuraShout,M04_DefenseLayer,M06_Sustain]",Buff,Caster,CSV,Aura; Ward; Invocation,
+Slipstream Chant,[F11],Speed-Aura: +MoveSpeed und +Dodge; skaliert über Buff-Stärke und Radius.,"[M10_AuraShout,M05_Dodge]",Buff,Caster,CSV,,
+Iron Vow,[F11],Aura: %DamageTakenRecoupedAsLife; skaliert über Recoup-Prozent und Radius.,"[M10_AuraShout,M06_Sustain]",Buff,Melee,CSV,,
+Hexed Ground,"[F7,F11]",Fluch-Hazard: Gegner darin nehmen mehr Schaden und machen weniger Schaden; skaliert über Debuff-Werte und Flächengröße.,"[M08_GroundHazard,M11_DebuffCurse]",Dark,Caster,CSV,,
+Rallying Roar,[F11],Shout mit kurzem Burst von +Damage und +Armor; skaliert über Buff-Werte und Dauer.,"[M10_AuraShout,M01_DirectHit,M04_DefenseLayer]",Buff,Caster,CSV,,
+Mark of Ruin,[F13],Einzelziel-Marke: Ziel nimmt more Damage von allen Quellen; skaliert über DamageTaken+ und Mark-Dauer.,[M11_DebuffCurse],Dark,Ranged,CSV,Seal; Bind,
+Shivering Brand,"[F12,F7]",Flächen-Fluch mit MoveSpeed- und AttackSpeed-; skaliert über Debuff-Stärken und Flächenradius.,[M11_DebuffCurse],Cold,Caster,CSV,,
+Ashen Chains,[F12],"Feuer-Fluch: Gegner machen weniger Schaden, Brenn-Effekte dauern länger; skaliert über DamageDealt- und DoT-Duration.",[M11_DebuffCurse],Fire,Caster,CSV,Hex; Curse,
+Conductive Seal,[F12],Lightning-Fluch: reduziert Lightning-Resists und erhöht LightningDamageTaken; skaliert über Resist-Reduktion und DamageTaken+.,[M11_DebuffCurse],Lightning,Caster,CSV,,
+Withering Verdict,[F12],DoT-Fluch: kleiner Dark/Poison-DoT + mehr Schaden von DoTs; skaliert über DoT-DPS und DamageTakenFromDoTs+.,[M11_DebuffCurse],Dark+Poison,Caster,CSV,,
+Gravity Well,"[F4,F12]","AoE, die Gegner leicht zur Mitte zieht und DamageTaken+ verpasst; skaliert über Pull-Stärke, Radius und Debuff-Wert.","[M11_DebuffCurse,M12_SpinNova]",Arcane,Caster,CSV,,
+Exposed Wounds,[F12],Phys-Fluch: reduziert Armor und erhöht Bleed-DamageTaken; skaliert über Armor-Reduktion und BleedTaken+.,[M11_DebuffCurse],Physical,Ranged,CSV,,
+Razor Maelstrom,[F1],Dauer-Spin mit konstantem Nahkreis-Schaden; skaliert über Tick-DPS und Spin-Radius.,"[M12_SpinNova,M01_DirectHit]",Physical,Melee,CSV,,
+Tempest Halo,[F1],Elektrischer Spin mit vielen kleinen Hits; skaliert über Hit-Frequenz und Lightning-Damage.,"[M12_SpinNova,M01_DirectHit]",Lightning,Caster,CSV,,
+Blood Bloom,"[F4,F7]","Phys-/Bleed-Nova, die eine ringförmige Bleed-Hazard hinterlässt; skaliert über Nova-Damage, Ringbreite und DoT-DPS.","[M12_SpinNova,M08_GroundHazard,M11_DebuffCurse]",Physical+Bleed,Melee,CSV,,
+Solar Bloom,[F4],Feuer-Nova mit hohem Schaden im Zentrum und Falloff zum Rand; skaliert über Basis-Damage und Radius/Falloff.,"[M12_SpinNova,M01_DirectHit]",Fire,Caster,CSV,,
+Sanctuary Pulse,"[F4,F11]","Holy-Nova, die Gegner schädigt und Allies Barrier+LifeRegen gibt; skaliert über Damage, Heal/Barrier-Werte und Radius.","[M12_SpinNova,M10_AuraShout,M06_Sustain]",Holy,Caster,CSV,,
+Hexguard Chorus,"[F11,F12]","Aura, die EnemyDamageDealt- im Radius reduziert; skaliert über Debuff-Wert und Radius.","[M10_AuraShout,M11_DebuffCurse]",Dark,Caster,CSV,,
+Static Lattice,[F7],"Raster aus kleinen Elektro-Patches, die asynchron zappen; skaliert über Patch-Anzahl, Radius und Tick-Damage.",[M08_GroundHazard],Lightning,Caster,CSV,,
+Battle Anthem,[F11],Offensive Aura: +Damage und +AttackSpeed für Allies; skaliert über Buff-Werte und Radius.,"[M10_AuraShout,M01_DirectHit]",Buff,Melee,CSV,,
+Ember Scar,[F7],"Rechteckiger Fire-Riss am Boden; skaliert über Länge, Breite und DoT-DPS.",[M08_GroundHazard],Fire,Caster,CSV,,
+Thunder Knuckle,"[F1,F2]","Starker Nahkampf-Hit mit kleinem radialen Splash, skaliert über Hit-Damage und Splash-Radius.",[M01_DirectHit],Lightning,Melee,CSV,Whirlwind; Cycline,
+Starbreaker Lance,[F6],"Geradliniger Speer-Hit, der bis zu 2 Ziele durchbohrt; skaliert über Basis-Schaden und Projektil-Geschwindigkeit.",[M01_DirectHit],Fire,Ranged,CSV,Payload; Annihilation,
+Chill Bloom,"[F7,F4]","Kälte-Hazard mit Slow, die am Ende in einer Nova explodiert; skaliert über Slow-Stärke, Hazard-Dauer und Nova-Damage.","[M08_GroundHazard,M12_SpinNova,M11_DebuffCurse]",Cold,Caster,CSV,Nova,
+Bone Shear,"[F1,F2]",Nahkampf-Hit mit zusätzlichem Bleed-DoT; skaliert über Hit-Damage und Bleed-Duration.,"[M01_DirectHit,M11_DebuffCurse]",Physical+Bleed,Melee,CSV,Maelstrom; Seismic Sigil,
+Spellburst Bolt,[F5],Schnelles Projektil mit kleiner Explosion beim ersten Treffer; skaliert über Projektil-Schaden und Splash-Radius.,[M01_DirectHit],Arcane,Ranged,CSV,Barrage; Volley,
+Ruin Knell,[F6],Instant-Single-Hit auf ein Ziel ohne Projektil; skaliert über Basis-Damage und Cast-Zeit.,[M01_DirectHit],Dark,Caster,CSV,,
+Hammerfall Hook,[F2],Kleiner radialer Pull gefolgt von einem kräftigen Hit; skaliert über Hit-Damage und Pull-Radius.,[M01_DirectHit],Physical,Melee,CSV,,
+Razor Edge,[F2],Single-Hit mit stark erhöhter Base-Crit-Chance; skaliert über CritChance/CritMulti und Basis-Damage.,"[M01_DirectHit,M02_Crit]",Physical,Melee,CSV,,
+Heartsear Shot,[F5],Einzelprojektil mit hoher CritChance/Multi; skaliert über Crit-Werte und Projektil-Schaden.,"[M01_DirectHit,M02_Crit]",Physical,Ranged,CSV,,
+Storm Precision,[F5],Kleines Blitzprojektil mit extrem hoher CritChance; skaliert über Crit und Lightning-Damage.,"[M01_DirectHit,M02_Crit]",Lightning,Ranged,CSV,,
+Frostbite Fang,"[F1,F5]","Melee-Hit plus kleiner Eissplitter; skaliert über Hit-Damage, Crit und Projektil-Reichweite.","[M01_DirectHit,M02_Crit]",Cold,Ranged,CSV,Vortex; Helix Zone,
+Stonewall Guard,[F4],Kurzzeit-Buff mit +Armor und kleinem Knockback; skaliert über Armor-Wert und Buff-Dauer.,[M04_DefenseLayer],Physical,Melee,CSV,,
+Prism Shell,[F4],"Nova, die Barrier in fester Höhe erzeugt; skaliert über Barrier-Menge und Nova-Radius.",[M04_DefenseLayer],Arcane,Ranged,CSV,,
+Rift Chop,[F2],Line-Slam vor dem Hero mit schmaler Rechteck-Hitbox; skaliert über Hit-Damage und Line-Length.,[M01_DirectHit],Physical,Melee,CSV,Rupture Strike; Slam; Breaker,
+Ember Fortify,"[F11,F4]","Self-Buff: +Armor, +LifeRegen, dafür mehr FireDamageTaken; skaliert über Buff-Werte und Dauer.","[M04_DefenseLayer,M06_Sustain]",Fire,All,CSV,,
+Glacial Bulwark,"[F7,F4]",Halbkreis-Hazard mit Cold-DoT und Slow; skaliert über Hazard-Dauer und Flächenlänge.,"[M04_DefenseLayer,M08_GroundHazard,M11_DebuffCurse]",Cold,Caster,CSV,,
+Caustic Field,[F7],"Kreisförmiger Gift-DoT-Bereich; skaliert über DoT-DPS, Radius und Dauer.","[M08_GroundHazard,M11_DebuffCurse]",Poison,Caster,CSV,Rune Field; Ritual,
+Ember Trail,"[F3,F7]","Dash nach vorne, hinterlässt schmale Feuer-Spur; skaliert über Dash-Länge und DoT-DPS.","[M07_Movement,M08_GroundHazard]",Fire,Caster,CSV,,
+Blink Surge,[F3],Kurz-Teleport mit Mini-Nova am Ziel; skaliert über Teleport-Reichweite und Nova-Damage.,"[M07_Movement,M12_SpinNova]",Arcane,Caster,CSV,,
+Soul Draft,[F4],Kleine Dark-Nova mit LifeOnHit pro getroffenen Gegner; skaliert über Nova-Radius und Heal-per-Hit.,"[M06_Sustain,M12_SpinNova]",Dark,Caster,CSV,,
+Vile Transfusion,[F7],"Gift-Hazard, die Schaden verursacht und Recoup auf den Caster gibt; skaliert über DoT-DPS und Recoup-Prozent.","[M06_Sustain,M08_GroundHazard]",Dark+Poison,Ranged,CSV,,
+Gale Stride,[F3],"Dash ohne Schaden, reduziert Cooldowns anderer Movement-Skills; skaliert über Dash-Range und CDR-Wert.",[M07_Movement],Movement,Ranged,CSV,,
+Blood Circuit,"[F1,F9]","Orbitierende Blutsphären mit Hit+Leech; skaliert über Tick-Damage, Orb-Anzahl und Leech-Wert.","[M06_Sustain,M12_SpinNova]",Physical,Melee,CSV,,
+Phase Mirage,[F9],"Orbitierende Illusionen, die einen Teil eingehender Hits umlenken; skaliert über Redirect-Prozent und Dauer.",[M05_Dodge],Utility,Ranged,CSV,Orbit; Satelite,
+Moon Dancer,[F3],Seitlicher Micro-Dash mit anschließendem Dodge/MoveSpeed-Buff; skaliert über Dash-Range und Buff-Werte.,"[M05_Dodge,M07_Movement]",Movement,Melee,CSV,,
+Ghoststep Veil,[F11],Kurzzeit-Buff mit massiv erhöhtem Dodge; skaliert über Dodge% und Buff-Dauer.,[M05_Dodge],Buff,Ranged,CSV,,
+Amber Pulse,[F11],Aura mit kleinem Life- und BarrierRegen; skaliert über Regenerationswerte und Aura-Radius.,"[M06_Sustain,M10_AuraShout]",Holy/Neutral,Caster,CSV,,
+Omen,[F12],"Omen/Mark: markiert Ziel, triggert Bonus bei Treffer/Detonation.",[],Neutral,Ranged,NEW,Mark,Added to cover missing Family+Variant slot (conceptual merge).
+Snare,[F8],"Trap/Mine/Snare: platzierbarer Trigger, löst bei Kontakt/Remote aus.",[],Neutral,Ranged,NEW,Mine; Shrapnel,Added to cover missing Family+Variant slot (conceptual merge).
+Branding,[F12],Branding/Favored Enemy: Ziel wird gebrandet/markiert für Follow-ups.,[],Neutral,Melee,NEW,Favored Enemy,Added to cover missing Family+Variant slot (conceptual merge).
+Command Banner,[F11],"Command Banner/Marksman's Call: Support-Utility, stärkt Fernkampf.",[],Neutral,Ranged,NEW,Makrsman's Call,Added to cover missing Family+Variant slot (conceptual merge).
+Warcry,[F11],Warcry/Roar: kurzer Call mit Buff/Utility in Aura-Reichweite.,[],Neutral,Melee,NEW,Roar,Added to cover missing Family+Variant slot (conceptual merge).
+Companion,[F10],Companion/Pet/Turret: autonome Fernangriffe oder stationäre Sentry.,[],Neutral,Ranged,NEW,Pet; Turret,Added to cover missing Family+Variant slot (conceptual merge).
+Ring,[F9],"Ring/Cluster: orbitierende Projektil-/Drone-Cluster, die Ziele suchen.",[],Neutral,Ranged,NEW,Cluster,Added to cover missing Family+Variant slot (conceptual merge).
+Guardians,[F9],Orbitierende Guardians/Pals; kreisen um Nutzer und treffen periodisch.,[],Neutral,Melee,NEW,Pals; Swarm,Added to cover missing Family+Variant slot (conceptual merge).
+unstable Array,[F8],"Unstable Array: platzierbares Sigil-Array, das bei Trigger detoniert/chain-react.",[],Neutral,Caster,NEW,,Added to cover missing Family+Variant slot (conceptual merge).
+Hookline,[F8],Hookline: kurzer Zug/Hook oder Gapclose-Tool mit Treffer.,[],Neutral,Melee,NEW,,Added to cover missing Family+Variant slot (conceptual merge).
+Shockwave,[F4],Stoßwellen-Burst um den Nutzer; kurzer radialer AoE-Impuls.,[],Neutral,Melee,NEW,,Added to cover missing Family+Variant slot (conceptual merge).
+Pressure Zone,[F7],Persistente Nahkampf-Zone (Pressure/Kill Field) um Nutzer oder am Boden.,[],Neutral,Melee,NEW,Kill Field,Added to cover missing Family+Variant slot (conceptual merge).
+Obliteration,[F6],Großer Nuke (Obliteration/Meteor): stark verzögert oder klar telegraphed.,[],Neutral,Caster,NEW,Explosion; Meteor,Added to cover missing Family+Variant slot (conceptual merge).
+Arcane Lances,[F5],Mehrere magische Geschosse/Lanzen; kontrollierte Salve.,[],Neutral,Caster,NEW,Bolts,Added to cover missing Family+Variant slot (conceptual merge).
+Razor fan,[F5],Kurzer Fächer-/Kegel-Schnitt (Razor Fan); mehrere schnelle Hits.,[],Neutral,Melee,NEW,,Added to cover missing Family+Variant slot (conceptual merge).
+Explosive Arrow,[F4],"Projektil, das beim Treffer/Ende in einem Burst detoniert.",[],Neutral,Ranged,NEW,,Added to cover missing Family+Variant slot (conceptual merge).
+Blink,[F3],Blink/Phase-Step; kurze Teleportation mit kleinem Hit- oder Utility-Impuls.,[],Neutral,Caster,NEW,Phase Step,Added to cover missing Family+Variant slot (conceptual merge).
+Skirmisher Leap,[F3],Sprung/Slide zur Reposition; optionaler Schuss/Trigger beim Absetzen.,[],Neutral,Ranged,NEW,Snap Retreat,Added to cover missing Family+Variant slot (conceptual merge).
+Vanguard Rush,[F3],Dash/Rush mit Nahkampf-Treffer; repositioniert den Nutzer aggressiv.,[],Neutral,Melee,NEW,Execution Step; Dash Stap,Added to cover missing Family+Variant slot (conceptual merge).
+Crater Shot,[F2],Schweres Projektil mit Impact-Splash; starkes Hit-Feeling.,[],Neutral,Ranged,NEW,Impact Bolt,Added to cover missing Family+Variant slot (conceptual merge).
+Focus,[F13],Focus/Lock: priorisiert ein Ziel; verstärkt Folgeaktionen.,[],Neutral,Melee,NEW,Lock,Added to cover missing Family+Variant slot (conceptual merge).
+Hazard Mark,[F7],Markiert Bodenfläche als Hazard/Control Field; Denial/Control.,[],Neutral,Ranged,NEW,Control Field,Added to cover missing Family+Variant slot (conceptual merge).
+Mark,[F13],Mark/Target: Zielmarkierung mit Tracking/Bonus gegen das Ziel.,[],Neutral,Ranged,NEW,Target,Added to cover missing Family+Variant slot (conceptual merge).

@@ -28,7 +28,7 @@ Currencies are account-wide resources (e.g. Gold, Crystals) and are not stored i
 \subsubsection{Mechanic I – Basic Crafting (Gear Recipes)}
 
 \paragraph{Purpose}
-Convert raw materials (and optional boosters) into finished base gear items.
+Convert raw materials (and optional outcome modifiers) into finished base gear items.
 
 \paragraph{Sequence}
 
@@ -40,8 +40,8 @@ Convert raw materials (and optional boosters) into finished base gear items.
 			\node[draw,rounded corners,fill=gray!15,minimum width=3.5cm] (select) {Select Recipe};
 			\node[draw,rounded corners,fill=gray!15,below of=select] (check) {Check Resources};
 			\node[draw,rounded corners,fill=gray!15,below of=check] (consume) {Consume Items + Currency};
-			\node[draw,rounded corners,fill=gray!15,below of=consume] (generate) {Generate Gear + 	Implicits};
-			\node[draw,rounded corners,fill=gray!15,below of=generate] (output) {Place Output in 	Inventory};
+			\node[draw,rounded corners,fill=gray!15,below of=consume] (generate) {Generate Gear + Implicits};
+			\node[draw,rounded corners,fill=gray!15,below of=generate] (output) {Place Output in Inventory};
 			
 			\path[->] (select) edge (check)
 			(check) edge (consume)
@@ -57,88 +57,205 @@ Convert raw materials (and optional boosters) into finished base gear items.
 		\hline
 		\textbf{Element} & \textbf{Description / Constraints} \\ \hline
 		Ingredients & Up to 4 \textbf{Materials} (Parts / Remains, each with quantity). \\
-		Booster    & Max 1 optional \textbf{Booster Material} (typically high-tier Remains). \\
+		Outcome Modifier & Max 1 optional \textbf{Modifier Material} (typically high-tier Remains / Catalysts). \\
 		Currency   & Any number of \textbf{Currencies} (Gold, Crystals or similar). \\
 		Output     & 1 Gear \textbf{item}. \\
+		\hline
 	\end{tabular}
 \end{center}
 
 \paragraph{Cost Structure}
-
 \begin{itemize}
 	\item Base cost determined by item rarity and recipe complexity.
-	\item Optional booster adds both cost and potential reward.
+	\item Optional outcome modifier adds both cost and potential reward/control.
 	\item Currency cost acts as sink to regulate player economy.
 \end{itemize}
 
 \subparagraph{Cost Scaling}
-...
+tbd
 
-\paragraph{Booster Effect}
-based on Rarity/Qualtiy and Quantity of the used Booster-Material the output is modified.
+\paragraph{Outcome Modifier Effects}
+Depending on rarity/quality and quantity of the used modifier material, the output can be influenced.
+This mechanic is intentionally designed as a ``controlled randomness'' lever (not a hard guarantee).
+
 \begin{center}
 	\begin{tabular}{|l|l|l|}
 		\hline
 		\textbf{Parameter} & \textbf{Symbol / Range} & \textbf{Description} \\ \hline
 		Tier Boost per Unit & $f_1(q)$ & Adds virtual tier levels to implicits. \\
-		Roll Bias per Unit & $f_2(q)$ & Shifts random roll toward max value. \\
-		Caps & $\text{cap}_T, \text{cap}_B$ & Hard caps for both effects. \\
+		Roll Bias per Unit & $f_2(q)$ & Shifts roll toward max value. \\
+		Signature Role Shift & $f_3(q)$ & Shifts Signature implicit towards \texttt{Defense/Offense/Utility} (caps apply). \\
+		Caps & $\text{cap}_T, \text{cap}_B, \text{cap}_R$ & Hard caps for tier, bias, and role-shift intensity. \\
 		Diminishing Curve & $D(q)$ & Function for diminishing returns. \\ \hline
 	\end{tabular}
 \end{center}
 
-\paragraph{Implicits}
+\paragraph{Implicit Pools and Roles}
+Implicits are rolled automatically when a base item is created. To preserve archetype identity while still allowing ``weird builds'',
+each implicit belongs to:
+\begin{itemize}
+	\item an \textbf{ImplicitPool} (playstyle): \texttt{Melee} / \texttt{Ranged} / \texttt{Caster} / \texttt{Neutral}
+	\item an \textbf{ImplicitRole} (balance tag): \texttt{Defense} / \texttt{Offense} / \texttt{Utility}
+\end{itemize}
+
+\noindent
+\textbf{Neutral Pool:} generic stats that should be available for all (e.g. Life, Element Resists, Movement Speed, Rarity).
+Neutral implicits do \textbf{not} roll on the Signature slot by default.
+
+\paragraph{Signature Implicit (Slot 1)}
+The first implicit slot is a \textbf{Signature Implicit} which defines the armor identity.
+\begin{itemize}
+	\item Signature always rolls from the \textbf{MainPool} of the armor class (no Neutral).
+	\item Signature is biased towards \textbf{Defense} by default.
+	\item Signature can be influenced via \textbf{Signature Role Shift} (Outcome Modifier), but is always capped.
+\end{itemize}
+
+\paragraph{Implicit Count by Base Tier}
+\begin{itemize}
+	\item \textbf{T1 base:} 1 implicit (Signature only)
+	\item \textbf{T2 base:} 2 implicits (Signature + Mixed Slot)
+	\item \textbf{T3 base:} 3 implicits (Signature + 2 Mixed Slots)
+\end{itemize}
+
+\paragraph{MainPool Mapping (by Armor Class)}
+\begin{center}
+	\begin{tabular}{|l|l|}
+		\hline
+		\textbf{Armor Class} & \textbf{MainPool} \\
+		\hline
+		Heavy & Melee \\
+		Medium & Ranged \\
+		Light & Caster \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\paragraph{Mixed Slot Pool Weights (default)}
+Mixed slots can roll from Main/Secondary/Third pools plus a small Neutral add-on (slot- and GearType-dependent).
+\begin{center}
+	\begin{tabular}{|l|r|r|r|r|}
+		\hline
+		\textbf{Slot} & \textbf{MainPool} & \textbf{Neutral} & \textbf{Pool2} & \textbf{Pool3} \\
+		\hline
+		Slot 2 & 70\% & 10\% & 10\% & 10\% \\
+		Slot 3 & 60\% & 10\% & 15\% & 15\% \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\paragraph{Roll Flow (per implicit slot)}
+\begin{itemize}
+	\item \textbf{Slot 1 (Signature):}
+	\begin{enumerate}
+		\item Pool = MainPool(ArmorClass) (fixed, no Neutral)
+		\item Role = weighted by \texttt{roleWeightsSignature(GearType)} (default Defense-heavy, can be shifted by modifier)
+		\item Pick an implicit from the candidate set filtered by \texttt{GearType+Pool+Role}(equal-weighted by default; optional global \texttt{weight} per ImplicitDef).
+	\end{enumerate}
+	
+	\item \textbf{Slot 2 / Slot 3 (Mixed):}
+	\begin{enumerate}
+		\item Pool = weighted choice from \{Main, Secondary, Third, Neutral\} (slot-dependent weights)
+		\item Role = weighted by \texttt{roleWeightsNormal(GearType)}
+		\item Pick an implicit from the candidate set filtered by \texttt{GearType+Pool+Role} (equal-weighted by default; optional global \texttt{weight} per ImplicitDef).
+	\end{enumerate}
+\end{itemize}
+
+\paragraph{Implicit List and Rolls (example set)}
+
+Implicit Effect Reference \\
+\begin{tabular}{|l|l|}
+	\hline
+	\textbf{Kurzname} & \textbf{Effect} \\
+	\hline
+	DMG\%       & increased damage \\
+	Thorns      & to thorns \\
+	Phys+       & to phys damage \\
+	Elem+       & to elemental damage \\
+	Armor\%     & increased armor \\
+	Res\%       & increased elemental resistance \\
+	Dodge\%     & increased dodge chance \\
+	Barrier     & increased barrier \\
+	Armor+      & to armor \\
+	MaxBarrier+ & to max barrier \\
+	Life\%      & increased life \\
+	MaxLife+    & to max life \\
+	Rarity\%    & increased item rarity \\
+	Speed\%     & increased movement speed \\
+	\hline
+\end{tabular}
+\\
 
 Implicits and base rolls per Tier \\
 \begin{tabular}{|l|l|l|l|c|c|c|}
 	\hline
-	\textbf{Kurzname} & \textbf{Implicit Effekt} & \textbf{Type} & \textbf{Tag} & \textbf{T1 roll} & \textbf{T2 roll} & \textbf{T3 roll} \\
+	\textbf{Kurzname} & \textbf{Type} & \textbf{Pool} & \textbf{Role} & \textbf{T1 roll} & \textbf{T2 roll} & \textbf{T3 roll} \\
 	\hline
-	DMG\%            & increased damage                & \%    & damage  & 5--10   & 10--15  & 15--25 \\
-	Thorns           & to thorns                       & flat  & damage  & 1--5    & 5--7    & 7--12  \\
-	Phys+            & to phys damage                  & flat  & damage  & 1--5    & 5--7    & 7--12  \\
-	Elem+            & to elemental damage             & flat  & damage  & 1--5    & 5--7    & 7--12  \\
+	DMG\%       & \%    & Melee/Ranged/Caster & Offense & 5--10   & 10--15  & 15--25 \\
+	Thorns      & flat  & Melee               & Offense & 1--5    & 5--7    & 7--12  \\
+	Phys+       & flat  & Melee/Ranged        & Offense & 1--5    & 5--7    & 7--12  \\
+	Elem+       & flat  & Caster/Ranged       & Offense & 1--5    & 5--7    & 7--12  \\
 	\hline
-	Armor\%          & increased armor                 & \%    & defence & 5--10   & 10--15  & 15--25 \\
-	Res\%            & increased elemental resistance  & \%    & defence & 5--10   & 10--15  & 15--25 \\
-	Dodge\%          & increased dodge chance          & \%    & defence & 5--10   & 10--15  & 15--25 \\
-	Barrier         & increased barrier                & \%  & defence & 5--10   & 10--15  & 15--25 \\
-	Armor+           & to armor                        & flat  & defence & 30--60  & 60--100 & 100--150 \\
-	MaxBarrier+      & to max barrier                  & flat  & defence & 30--60  & 60--100 & 100--150 \\
+	Armor\%     & \%    & Melee               & Defense & 5--10   & 10--15  & 15--25 \\
+	Res\%       & \%    & Neutral             & Defense & 5--10   & 10--15  & 15--25 \\
+	Dodge\%     & \%    & Ranged              & Defense & 5--10   & 10--15  & 15--25 \\
+	Barrier     & \%    & Caster              & Defense & 5--10   & 10--15  & 15--25 \\
+	Armor+      & flat  & Melee               & Defense & 30--60  & 60--100 & 100--150 \\
+	MaxBarrier+ & flat  & Caster              & Defense & 30--60  & 60--100 & 100--150 \\
 	\hline
-	Life\%           & increased life                  & \%    & life    & 5--10   & 10--15  & 15--25 \\
-	MaxLife+         & to max Life                     & flat  & life    & 20--40  & 40--75  & 75--120 \\
+	Life\%      & \%    & Neutral             & Defense & 5--10   & 10--15  & 15--25 \\
+	MaxLife+    & flat  & Neutral             & Defense & 20--40  & 40--75  & 75--120 \\
 	\hline
-	Rarity\%         & increased item rarity           & \%    &  & 5--7    & 7--10   & 10--15 \\
-	Speed\%           & increased movement speed        & \%    & speed   & 10--15  & 15--25  & 25--40 \\
-	\hline
-\end{tabular}
-
-\par
-weight rolls of implicit for each geartype\\
-
-\begin{tabular}{|l|r r r r r r|}
-	\hline
-	\textbf{Stat} & \textbf{Head} & \textbf{Chest} & \textbf{Gloves} & \textbf{Legs} & \textbf{Boots} & \textbf{Amulet} \\
-	\hline
-	DMG\%        & 100 &  50 & 300 & 100 &  50 & 500 \\
-	Thorns       &   0 & 100 &  50 & 100 & 300 &   0 \\
-	Phys+        & 100 &  50 & 300 & 100 &  50 & 300 \\
-	Elem+        & 300 &  50 & 100 & 100 &  50 & 300 \\
-	Armor\%      & 100 & 500 &  50 & 300 & 100 & 100 \\
-	Res\%        & 300 & 500 &   0 & 300 &  50 & 100 \\
-	Dodge\%      & 300 & 100 &  50 & 500 & 200 &  50 \\
-	Barrier\%    & 300 & 300 & 100 & 100 &  50 & 200 \\
-	Armor+       & 100 & 500 &  50 & 100 & 100 &  50 \\
-	MaxBarrier+  & 100 & 300 & 100 & 100 & 100 &  50 \\
-	Life\%       & 100 & 500 &  50 & 100 &  50 & 200 \\
-	MaxLife+     & 100 & 500 &  50 & 100 & 100 &  50 \\
-	Rarity\%     &  50 &  25 &  50 &  50 & 100 & 100 \\
-	Speed\%      &   0 &   0 &   0 &   0 & 750 &   0 \\
-	\hline
-	\textbf{sum} & 1950& 3475& 1250& 2050& 2050& 2000 \\
+	Rarity\%    & \%    & Neutral             & Utility & 5--7    & 7--10   & 10--15 \\
+	Speed\%     & \%    & Neutral             & Utility & 10--15  & 15--25  & 25--40 \\
 	\hline
 \end{tabular}
+\\
+
+\textbf{GearType roll preferences (instead of per-stat weights)}\\
+To keep the system maintainable and intuitive, GearTypes define \textbf{Role} and \textbf{Neutral} biases.
+Within a candidate set (after Pool+Role filtering and GearType allow-lists), all implicits are \textbf{equal-weighted} by default.
+
+\paragraph{Role Weights by GearType}
+\noindent
+Two weight sets are used:
+\begin{itemize}
+	\item \texttt{roleWeightsSignature(GearType)} for Slot 1 (Signature)
+	\item \texttt{roleWeightsNormal(GearType)} for Slot 2/3 (Mixed)
+\end{itemize}
+
+\begin{center}
+	\begin{tabular}{|l|r r r|r r r|}
+		\hline
+		\multirow{2}{*}{\textbf{GearType}} &
+		\multicolumn{3}{c|}{\textbf{Signature} Role Weights} &
+		\multicolumn{3}{c|}{\textbf{Normal} Role Weights} \\
+		\cline{2-7}
+		& \textbf{Def} & \textbf{Off} & \textbf{Util} & \textbf{Def} & \textbf{Off} & \textbf{Util} \\
+		\hline
+		Head   & 35 & 45 & 20 & 30 & 50 & 20 \\
+		Chest  & 80 & 10 & 10 & 70 & 15 & 15 \\
+		Gloves & 25 & 55 & 20 & 20 & 60 & 20 \\
+		Legs   & 60 & 20 & 20 & 55 & 25 & 20 \\
+		Boots  & 30 & 20 & 50 & 25 & 20 & 55 \\
+		Amulet & 30 & 55 & 15 & 25 & 60 & 15 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+
+\paragraph{Candidate selection}
+\noindent
+After choosing Pool and Role, an implicit is selected from the candidate list filtered by:
+\texttt{pool}, \texttt{role}, and \texttt{allowedGearTypes}.
+All candidates are equal-weighted by default (optional global \texttt{weight} per ImplicitDef).
+
+\paragraph{Minimal Data Model (Implicits)}
+\begin{itemize}
+	\item \textbf{ImplicitDef:} \texttt{id}, \texttt{pool}, \texttt{role}, \texttt{allowedGearTypes} (optional: global \texttt{weight})
+	\item \textbf{ArmorClassConfig:} \texttt{mainPool}, \texttt{slot2PoolWeights}, \texttt{slot3PoolWeights}
+	\item \textbf{GearTypeConfig:} \texttt{roleWeightsSignature}, \texttt{roleWeightsNormal}, \texttt{neutralWeight(Slot2/Slot3)}
+	\item \textbf{OutcomeModifierDef:} \texttt{tierBoost}, \texttt{rollBias}, \texttt{signatureRoleShift} (each with caps + diminishing)
+\end{itemize}
 
 
 \vspace{1em}

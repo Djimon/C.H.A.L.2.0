@@ -11,7 +11,7 @@ namespace CHAL.Data
 /// Represents a modifier definition used in gameplay mechanics.
 /// Contains properties that define how the modifier behaves.
 /// </summary>
-    public class ModifierDef : ScriptableObject
+    public class SkillModifierDef : ScriptableObject
     {
         public string modId;
         public ModifierTarget Target;

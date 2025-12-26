@@ -32,7 +32,7 @@ namespace CHAL.Data
         public ArchetypeGrowthConfig GrowthConfig;
 
         [Header("Signature Passive")]
-        public ModifierDef SignaturePassive;   // ScriptableObject mit ModifierData
+        public SkillModifierDef SignaturePassive;   // ScriptableObject mit ModifierData
 
         private void OnValidate()
         {
