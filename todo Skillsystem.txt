@@ -1,0 +1,35 @@
+ToDO:
+
+0. Testen von echten Skills nach neuem System
+- item:Modul erstellen und dem heroController mitgeben
+
+1. ModifierStack
+- SkillTag-Enum mit deinen neuen Tags (AoE, Projectile, Minion, Curse, Movement, Buff, DoT, …) abgleichen.
+- Tag-Werte und ModifierTarget-Enum müssen zu den neuen Achsen passen (z.B. DamagePerTick, Radius, BuffMaxStacks, DoTMaxStacks, …)
+
+2. SkillImpactBase
+- Subklassen für ApplyBuff, AddDot, SpawnHazard, SpawnProjectile, Nova, Teleport, DashMove etc.
+
+3. DamageImpact
+- sicherstellen, dass skill.Damage aus ResolvedSkill kommt.
+
+4. TriggerSkillImpact
+- SkillToTrigger sollte ggf. ein ModuleDef (oder Wrapper um Module+Core) werden, nicht direkt die rohe SkillData.
+
+5. ActiveStatusEffect + BuffStatusEffect + DoTStatusEffect
+- “konsequent an Effekte binden” (Buff/DoT-Effektdef (SkillImpactBase-Subklassen oder separate Datenstrukturen) erzeugen diese StatusInstanzen.)
+- SkillTag.DoT etc. so umbauen, dass sie zu deinem neuen Tag-Set passen.
+
+6. CombatCalculator
+- skill.Damage muss aus ResolvedSkill kommen (nicht direkt SkillData).
+- HitContext evtl. erweitern (MechanicTags, SkillTags) falls später wichtig.
+- Accuracy/Evasion/Crit-Formeln gemäß Combat-Dokument einbauen.
+
+7. SkillExecutor
+- mittelfristig SkillType nicht mehr auf SkillData speichern, sondern aus Family/Module ableiten (F1 → MeleeSpin, F5 → Projectile, F7 → Hazard etc.).
+- OnEnd-Effekte (z.B. Orbit_Hazard_ExplosiveEnd) in passenden Controllern (HazardController, ProjectileController, MinionController) ausführen, nicht im Executor selbst.
+
+8. DamagePacket
+- evtl. später nur zusätzliche Felder: SourceId, SkillId etc. falls Logging wichtig
+
+

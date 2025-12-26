@@ -105,7 +105,7 @@ namespace CHAL.Systems.Hero
                     continue;
                 }
 
-                var skillDef = TryFindSkillDefById(moduleItem.moduleData.skillId);
+                var skillDef = SkillRegistry.Instance.GetById(moduleItem.moduleData.skillId);
                 if (skillDef == null)
                 {
                     DebugManager.Warning($"[HeroController] No SkillModuleDef found for skillId '{moduleItem.moduleData.skillId}'. Skipping.", "Hero");
@@ -117,29 +117,6 @@ namespace CHAL.Systems.Hero
 
             DebugManager.DebugLog($"[HeroController] Built skills: Rotation={socketedSkills.Count}","Hero");
 
-        }
-
-        private static SkillModuleDef TryFindSkillDefById(string skillId)
-        {
-            if (string.IsNullOrEmpty(skillId))
-                return null;
-
-            if (_skillDefCache.TryGetValue(skillId, out var cached) && cached != null)
-                return cached;
-
-            // Minimal debug lookup: works in Editor reliably. In build it requires the SkillModuleDefs to be loaded.
-            var all = Resources.FindObjectsOfTypeAll<SkillModuleDef>();
-            for (int i = 0; i < all.Length; i++)
-            {
-                var d = all[i];
-                if (d != null && d.SkillId == skillId)
-                {
-                    _skillDefCache[skillId] = d;
-                    return d;
-                }
-            }
-
-            return null;
         }
 
         /// <summary>

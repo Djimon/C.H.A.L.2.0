@@ -136,6 +136,8 @@ namespace CHAL.Core
         {
             //Preload all registries
             ItemRegistry.Instance.TriggerInstance();
+
+            //TODO Skill-registry
         }
 
         private void WiringServices()

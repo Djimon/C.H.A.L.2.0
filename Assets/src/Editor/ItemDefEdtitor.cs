@@ -51,7 +51,7 @@ using UnityEngine;
             {
                 Ensure(ref item.moduleData);
                 item.moduleData.skillId = EditorGUILayout.TextField("referenced SkillID", item.moduleData.skillId);
-                item.moduleData.coreType = (CoreType)EditorGUILayout.EnumPopup("Damage Type", item.moduleData.coreType);
+                item.moduleData.coreType = (CoreType)EditorGUILayout.EnumPopup("Core Type", item.moduleData.coreType);
                 item.moduleData.frameTier = EditorGUILayout.IntField("FrameTier", item.moduleData.frameTier);
                 
             }
