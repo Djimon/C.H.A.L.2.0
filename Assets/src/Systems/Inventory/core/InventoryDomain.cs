@@ -139,13 +139,26 @@ namespace CHAL.Systems.Inventory
             return true;
         }
 
+        public bool TrySetSlot(string instanceId, int slotIndex, ItemStackRef? stack)
+        {
+            if (!_instances.TryGetValue(instanceId, out var inv) || inv?.slots == null)
+                return false;
 
-/// <summary>
-/// Determines if the specified item stack can be accepted for the given instance.
-/// </summary>
-/// <param name="instanceId">The ID of the instance to check.</param>
-/// <param name="stack">The item stack to evaluate.</param>
-/// <returns>True if the item stack can be accepted; otherwise, false.</returns>
+            if (slotIndex < 0 || slotIndex >= inv.slots.Length)
+                return false;
+
+            inv.slots[slotIndex].stack = stack;
+            OnSlotChanged?.Invoke(instanceId, slotIndex, stack);
+            return true;
+        }
+
+
+        /// <summary>
+        /// Determines if the specified item stack can be accepted for the given instance.
+        /// </summary>
+        /// <param name="instanceId">The ID of the instance to check.</param>
+        /// <param name="stack">The item stack to evaluate.</param>
+        /// <returns>True if the item stack can be accepted; otherwise, false.</returns>
         public bool CanAccept(string instanceId, in ItemStackRef stack)
         {
             if (!HasInstance(instanceId) || stack.count <= 0) return false;

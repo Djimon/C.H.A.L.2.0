@@ -408,6 +408,9 @@ namespace CHAL.Core
         {
             if (Inventory == null || Profile == null) return;
 
+            Profile.InventorySave ??= new List<InventorySnapshot>();
+            Profile.InventorySave.Clear();
+
             int applied = 0;
             var invs = Profile.Inventories;
             for (int i = 0; i < invs.Count; i++)
@@ -416,8 +419,27 @@ namespace CHAL.Core
                 if (inv == null || string.IsNullOrEmpty(inv.invID)) continue;
 
                 string instanceId = "player_" + inv.invID.ToLowerInvariant();
-                var dict = ReadDomainAsDict(instanceId);
+
+                // 1) Slots (positionsgenau + instanceId)
+                var slotSnaps = ReadDomainAsSlotSnapshots(instanceId);
+
+                // 2) Legacy dict (für Counts/UI)
+                var dict = BuildFlatDict(slotSnaps);
+
+                // 3) GearInstance payloads (nur wenn instanceId gesetzt)
+                var gearPayloads = CollectGearPayloads(slotSnaps);
+
+                // optional: alte "Inventory" weiterhin füllen (Legacy UI/Logik)
                 inv.FromDictionary(dict);
+
+                Profile.InventorySave.Add(new InventorySnapshot
+                {
+                    id = inv.invID,
+                    items = dict,
+                    slots = slotSnaps,
+                    gearInstances = gearPayloads
+                });
+
                 applied++;
             }
 
@@ -431,24 +453,97 @@ namespace CHAL.Core
 /// </summary>
         public void MapProfileToDomain()
         {
-            if (Inventory == null || Profile == null) return;
+            if (Inventory == null || Profile == null) 
+                return;
+
+            // 1) Restore instance payloads first (so systems can query them immediately)
+            _gearInstances ??= new Dictionary<string, GearInstance>();
+            _gearInstances.Clear();
+
+            if (Profile.InventorySave != null)
+            {
+                foreach (var snap in Profile.InventorySave)
+                {
+                    if (snap.gearInstances == null) continue;
+                    foreach (var g in snap.gearInstances)
+                    {
+                        if (g == null || string.IsNullOrWhiteSpace(g.instanceId)) continue;
+                        _gearInstances[g.instanceId] = g;
+                    }
+                }
+            }
 
             int applied = 0;
-            var invs = Profile.Inventories;
-            for (int i = 0; i < invs.Count; i++)
-            {
-                var inv = invs[i];
-                if (inv == null || string.IsNullOrEmpty(inv.invID)) continue;
 
-                string instanceId = "player_" + inv.invID.ToLowerInvariant();
-                var dict = inv.ToDictionary();
-                TryFillDomainFrom(dict, instanceId);
-                applied++;
+
+            // 2) Prefer InventorySave (domain-accurate). Fallback to old Profile.Inventories if needed.
+            if (Profile.InventorySave != null && Profile.InventorySave.Count > 0)
+            {
+                foreach (var snap in Profile.InventorySave)
+                {
+                    if (string.IsNullOrEmpty(snap.id)) continue;
+
+                    string instanceId = "player_" + snap.id.ToLowerInvariant();
+
+                    // Ensure instance exists (TryFillDomainFrom already does this, but we need it for slots too)
+                    EnsureInstanceByInstanceId(instanceId);
+
+                    // Clear first
+                    Inventory.ClearAllSlots(instanceId);
+
+                    // Slots path (preferred)
+                    if (snap.slots != null && snap.slots.Count > 0)
+                    {
+                        TryFillDomainFromSlots(snap.slots, instanceId);
+                    }
+                    else
+                    {
+                        // Fallback: items dict
+                        TryFillDomainFrom(snap.items ?? new Dictionary<string, int>(), instanceId);
+                    }
+
+                    // Optional: keep legacy Inventory objects in sync (if still used somewhere)
+                    var legacyInv = Profile.Inventories?.FirstOrDefault(x => x != null && x.invID == snap.id);
+                    if (legacyInv != null)
+                        legacyInv.FromDictionary(snap.items ?? new Dictionary<string, int>());
+
+                    applied++;
+                }
+            }
+            else
+            {
+                // Legacy fallback
+                var invs = Profile.Inventories;
+                for (int i = 0; i < invs.Count; i++)
+                {
+                    var inv = invs[i];
+                    if (inv == null || string.IsNullOrEmpty(inv.invID)) continue;
+
+                    string instanceId = "player_" + inv.invID.ToLowerInvariant();
+                    var dict = inv.ToDictionary();
+                    TryFillDomainFrom(dict, instanceId);
+                    applied++;
+                }
             }
 
             DebugManager.Log(
                 $"MapProfileToDomain: applied {applied} inventories",
                 DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
+        }
+
+        private void EnsureInstanceByInstanceId(string instanceId)
+        {
+            if (Inventory == null || string.IsNullOrEmpty(instanceId)) return;
+
+            if (Inventory.HasInstance(instanceId))
+                return;
+
+            // same logic as TryFillDomainFrom: parse suffix to PlayerInventoryType and EnsureInstance(...)
+            var suffix = instanceId.StartsWith("player_") ? instanceId.Substring("player_".Length) : instanceId;
+            if (Enum.TryParse<PlayerInventoryType>(suffix, true, out var type))
+            {
+                EnsureInstance(instanceId, type);
+            }
         }
 
         private Dictionary<string, int> ReadDomainAsDict(string instanceId)
@@ -677,6 +772,94 @@ namespace CHAL.Core
                     return false;
 
             return _gearInstances.Remove(instanceId);
+        }
+
+        private List<InventorySlotSnapshot> ReadDomainAsSlotSnapshots(string instanceId)
+        {
+            var slotsOut = new List<InventorySlotSnapshot>();
+            int slots = Inventory.SlotCount(instanceId);
+
+            for (int i = 0; i < slots; i++)
+            {
+                var st = Inventory.Peek(instanceId, i);
+                if (!st.HasValue || st.Value.count <= 0) continue;
+
+                slotsOut.Add(new InventorySlotSnapshot
+                {
+                    slot = i,
+                    itemId = st.Value.itemID,
+                    count = st.Value.count,
+                    instanceId = st.Value.instanceId
+                });
+            }
+
+            return slotsOut;
+        }
+
+        private Dictionary<string, int> BuildFlatDict(List<InventorySlotSnapshot> slots)
+        {
+            var dict = new Dictionary<string, int>();
+            if (slots == null) return dict;
+
+            for (int i = 0; i < slots.Count; i++)
+            {
+                var s = slots[i];
+                if (string.IsNullOrEmpty(s.itemId) || s.count <= 0) continue;
+
+                dict[s.itemId] = (dict.TryGetValue(s.itemId, out var c) ? c : 0) + s.count;
+            }
+
+            return dict;
+        }
+
+        private List<GearInstance> CollectGearPayloads(List<InventorySlotSnapshot> slots)
+        {
+            if (slots == null) return null;
+
+            List<GearInstance> result = null;
+
+            for (int i = 0; i < slots.Count; i++)
+            {
+                var s = slots[i];
+                if (string.IsNullOrWhiteSpace(s.instanceId)) continue;
+
+                if (_gearInstances != null && _gearInstances.TryGetValue(s.instanceId, out var gear) && gear != null)
+                {
+                    result ??= new List<GearInstance>();
+                    result.Add(gear);
+                }
+                else
+                {
+                    DebugManager.Log(
+                        $"CollectGearPayloads: instanceId '{s.instanceId}' referenced in inventory but not found in _gearInstances.",
+                        DebugManager.EDebugLevel.Dev, "Save", LogType.Warning);
+                }
+            }
+
+            return result;
+        }
+
+        private void TryFillDomainFromSlots(List<InventorySlotSnapshot> slots, string instanceId)
+        {
+            if (Inventory == null || string.IsNullOrEmpty(instanceId)) return;
+            if (slots == null) return;
+
+            // assumes instance exists
+            for (int i = 0; i < slots.Count; i++)
+            {
+                var s = slots[i];
+                if (s.count <= 0 || string.IsNullOrEmpty(s.itemId)) continue;
+
+                var stack = new ItemStackRef(s.itemId, s.count, s.instanceId);
+
+                // Use domain API to preserve slot AND trigger events
+                if (!Inventory.TrySetSlot(instanceId, s.slot, stack))
+                {
+                    DebugManager.Log(
+                        $"TryFillDomainFromSlots: failed to set slot {instanceId}:{s.slot} ({stack})",
+                        DebugManager.EDebugLevel.Dev, "Inventory", LogType.Warning);
+                }
+            }
         }
 
     }

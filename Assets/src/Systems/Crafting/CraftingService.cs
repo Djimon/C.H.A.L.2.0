@@ -395,7 +395,7 @@ namespace CHAL.Systems.Crafting
             return InferArmorClassFromGearId(gearItemId);
         }
 
-private static ArmorClass InferArmorClassFromGearId(string gearItemId)
+        private static ArmorClass InferArmorClassFromGearId(string gearItemId)
         {
             if (string.IsNullOrEmpty(gearItemId))
                 return ArmorClass.Medium;

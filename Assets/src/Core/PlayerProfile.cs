@@ -465,9 +465,27 @@ namespace CHAL.Data
     }
 
     [Serializable]
+    public struct InventorySlotSnapshot
+    {
+        public int slot;              // SlotIndex im InventoryInstance
+        public string itemId;         // ItemDef id
+        public int count;             // StackCount (instanced => 1)
+        public string instanceId;     // null/empty => nicht-instanced
+    }
+
+    [Serializable]
     public struct InventorySnapshot
     {
         public string id;                                 // z.B. "remains", "part", "rune", "module", "gear"
+
+        // Legacy/Convenience (z.B. für UI/Counts):
         public Dictionary<string, int> items;             // flache Map (itemId -> count)
+
+        // Neu: Slot-genau (wichtig für instanced Items, Positionen, instanceId):
+        public List<InventorySlotSnapshot> slots;         // nur belegte Slots (empfohlen)
+
+        // Neu: Instance-Payloads (V1: GearInstance)
+        // Future-proof: später kannst du hier weitere Instanztypen ergänzen.
+        public List<GearInstance> gearInstances;          // alle GearInstances die in 'slots' referenziert werden
     }
 }

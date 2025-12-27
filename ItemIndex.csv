@@ -1,6 +1,15 @@
 ﻿itemType,itemId,rarity
-Gear,gear:basic_helmet,Common
+Core,core:base,Common
+Core,core:aetheric,Rare
+Core,core:blazing,Rare
+Core,core:glacial,Rare
+Core,core:infernal,Rare
+Core,core:radiant,Rare
+Core,core:seismic,Rare
+Core,core:static,Rare
+Core,core:venomous,Rare
 Gear,gear:chitin_chest,Common
+Gear,gear:medium_helmet,Common
 Module,module:barrier_crystal,Common
 Module,module:piercing_fang,Common
 Part,part:antenna,Common
