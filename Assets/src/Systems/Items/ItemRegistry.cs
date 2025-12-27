@@ -1,9 +1,11 @@
 using CHAL.Data;
 using CHAL.Systems.Crafting;
 using CHAL.Systems.Loot.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -52,12 +54,15 @@ namespace CHAL.Systems.Items
             }
             DebugManager.Log($"[ItemRegistry] Loaded: {_byId.Count} items",DebugManager.EDebugLevel.Production,"System");
 
+            ExportItemIndexCsv("../ItemIndex.csv");
 
             var mod_part_map = LoadModulePartMap();
             ValidateModulePartMap(mod_part_map);
 
             var reportPath = Path.Combine(Application.dataPath, "../ModulePartValidation.csv"); // gleiche CSV, wir appenden
             ValidateGearAndRecipes(reportPath);
+
+            //TODO: export all items from _byID with Name and rarity as json: grouped by ItemType 
 
         }
 
@@ -224,13 +229,76 @@ namespace CHAL.Systems.Items
             }
         }
 
+        public void ExportItemIndexCsv(string outputPath)
+        {
+            if (string.IsNullOrWhiteSpace(outputPath))
+            {
+                DebugManager.Warning("[ItemRegistry] ExportItemIndexCsv: outputPath is null/empty.");
+                return;
+            }
 
-/// <summary>
-/// Tries to retrieve an item definition based on its identifier.
-/// </summary>
-/// <param name="itemId">The identifier of the item to retrieve.</param>
-/// <param name="def">The item definition if found; otherwise, null.</param>
-/// <returns>True if the item was found; otherwise, false.</returns>
+            try
+            {
+                // If relative path: interpret relative to project folder (next to Assets)
+                var finalPath = Path.IsPathRooted(outputPath)
+                    ? outputPath
+                    : Path.GetFullPath(Path.Combine(Application.dataPath, outputPath));
+
+                var sb = new StringBuilder(64 * 1024);
+                sb.AppendLine("itemType,itemId,rarity");
+
+                static string Csv(string s)
+                {
+                    if (string.IsNullOrEmpty(s)) return "";
+                    // Quote only when needed
+                    var needsQuote = s.Contains(',') || s.Contains('"') || s.Contains('\n') || s.Contains('\r');
+                    if (!needsQuote) return s;
+                    return "\"" + s.Replace("\"", "\"\"") + "\"";
+                }
+
+                // Note: adjust these member names if your ItemDef uses different ones.
+                // If you want: I can make it reflection-based again, but you asked for simple.
+                var rows = _byId
+                    .Where(kv => kv.Value != null)
+                    .Select(kv =>
+                    {
+                        var def = kv.Value;
+                        var itemType = def.itemType.ToString();  // if itemType is enum; if string: just def.itemType
+                        var rarity = def.rarity.ToString();      // if rarity is enum; if string: just def.rarity
+                        var itemId = kv.Key;
+                        return new { itemType, rarity, itemId };
+                    })
+                    .OrderBy(r => r.itemType, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(r => r.rarity, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(r => r.itemId, StringComparer.OrdinalIgnoreCase);
+
+                foreach (var r in rows)
+                {
+                    sb.Append(Csv(r.itemType)).Append(',')
+                      .Append(Csv(r.itemId)).Append(',')
+                      .Append(Csv(r.rarity)).AppendLine();
+                }
+
+                var dir = Path.GetDirectoryName(finalPath);
+                if (!string.IsNullOrWhiteSpace(dir))
+                    Directory.CreateDirectory(dir);
+
+                File.WriteAllText(finalPath, sb.ToString(), Encoding.UTF8);
+                DebugManager.Log($"[ItemRegistry] Exported item index CSV: {finalPath}", DebugManager.EDebugLevel.Production, "System");
+            }
+            catch (Exception ex)
+            {
+                DebugManager.Warning($"[ItemRegistry] ExportItemIndexCsv failed: {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+
+        /// <summary>
+        /// Tries to retrieve an item definition based on its identifier.
+        /// </summary>
+        /// <param name="itemId">The identifier of the item to retrieve.</param>
+        /// <param name="def">The item definition if found; otherwise, null.</param>
+        /// <returns>True if the item was found; otherwise, false.</returns>
         public bool TryGet(string itemId, out ItemDef def) => _byId.TryGetValue(itemId, out def);
 /// <summary>
 /// Retrieves the rarity of an item based on its identifier.
@@ -284,11 +352,13 @@ namespace CHAL.Systems.Items
             def.rarity = Rarity.Common;
             def.lootValue = 0;
 
+            DebugManager.DevLog($"[ItemRegistry] Created placeholder for '{itemId}' at {assetPath}", "Validation");
+
             AssetDatabase.CreateAsset(def, assetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            DebugManager.Log($"[ItemRegistry] Created placeholder for '{itemId}' at {assetPath}");
+            
         }
 
 /// <summary>

@@ -10,18 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
-  m_Name: wing
+  m_Name: part_cursed_essence
   m_EditorClassIdentifier: 
-  itemId: part:wing
-  displayName: Wing
-  description: 'Type: Parts'
+  itemId: part:cursed_essence
+  itemType: 2
+  description: "Placeholder Item \u2013 auto-generated."
   icon: {fileID: 0}
-  rarity: 1
-  lootValue: 20
-  dnaData:
-    dnaType: 
+  rarity: 3
+  lootValue: 250
+  remainData:
+    remainType: 
   runeData:
     effectType: 
-    power: 0
+    runeColortType: 0
   partData:
-    slotType: 
+    dnaType: 
+    moduleFuel: []
+  moduleData:
+    skillId: 
+    frameTier: 1
+    coreType: 0
+  gearData:
+    slotType: 0
+    tags: []
+    runeSocketType: 0
+  coreData:
+    coreType: 0
+    defualtDmgType: 0

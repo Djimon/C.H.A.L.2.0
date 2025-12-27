@@ -1,6 +1,9 @@
 using CHAL.Data;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace CHAL.Systems.Skill
@@ -49,6 +52,8 @@ namespace CHAL.Systems.Skill
                 _byId.Add(def.SkillId, def);
             }
 
+            ExportItemIndexCsv("../SkillIndex.csv");
+
             //TODO: Do some validations?
 
             DebugManager.Log($"[SkillRegistry] Loaded: {_byId.Count} skills from Resources/{ResourcesPath}",
@@ -75,8 +80,77 @@ namespace CHAL.Systems.Skill
 
         internal void TriggertInstanc()
         {
-            DebugManager.Log("trigger Instance form Itemregistry");
+            DebugManager.Log("trigger Instance form Skillregistry");
         }
 #endif
+
+        public void ExportItemIndexCsv(string outputPath)
+        {
+            if (string.IsNullOrWhiteSpace(outputPath))
+            {
+                DebugManager.Warning("[SkillRegistry] ExportSkillIndexCsv: outputPath is null/empty.");
+                return;
+            }
+
+            try
+            {
+                // If relative path: interpret relative to project folder (next to Assets)
+                var finalPath = Path.IsPathRooted(outputPath)
+                    ? outputPath
+                    : Path.GetFullPath(Path.Combine(Application.dataPath, outputPath));
+
+                var sb = new StringBuilder(64 * 1024);
+                sb.AppendLine("Attribute,Tier,SkillId,Type,Core");
+
+                static string Csv(string s)
+                {
+                    if (string.IsNullOrEmpty(s)) return "";
+                    // Quote only when needed
+                    var needsQuote = s.Contains(',') || s.Contains('"') || s.Contains('\n') || s.Contains('\r');
+                    if (!needsQuote) return s;
+                    return "\"" + s.Replace("\"", "\"\"") + "\"";
+                }
+
+                // Note: adjust these member names if your ItemDef uses different ones.
+                // If you want: I can make it reflection-based again, but you asked for simple.
+                var rows = _byId
+                    .Where(kv => kv.Value != null)
+                    .Select(kv =>
+                    {
+                        var def = kv.Value;
+                        var attribute = def.AttributeAffinity.ToString();  // if itemType is enum; if string: just def.itemType
+                        var skilltype = def.SkillType.ToString();      // if rarity is enum; if string: just def.rarity
+                        var skillId = kv.Key;
+                        var tier = def.minRequiredTier;
+                        var core = def.defualtCore;
+                        return new { attribute, skillId, skilltype, tier, core };
+                    })
+                    .OrderBy(r => r.attribute, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(r => r.tier.ToString(), StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(r => r.skillId, StringComparer.OrdinalIgnoreCase);
+
+                foreach (var r in rows)
+                {
+                    sb.Append(Csv(r.attribute)).Append(',')
+                      .Append(Csv(r.tier.ToString())).Append(',')
+                      .Append(Csv(r.skillId)).Append(',')
+                      .Append(Csv(r.skilltype)).Append(',')                      
+                      .Append(Csv(r.core.ToString())).Append(',')
+                      .AppendLine();
+                }
+
+                var dir = Path.GetDirectoryName(finalPath);
+                if (!string.IsNullOrWhiteSpace(dir))
+                    Directory.CreateDirectory(dir);
+
+                File.WriteAllText(finalPath, sb.ToString(), Encoding.UTF8);
+                DebugManager.Log($"[SkillRegistry] Exported skill index CSV: {finalPath}", DebugManager.EDebugLevel.Production, "System");
+            }
+            catch (Exception ex)
+            {
+                DebugManager.Warning($"[SkillRegistry] ExportSkillIndexCsv failed: {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
     }
 }

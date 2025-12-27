@@ -4,6 +4,7 @@ using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Map;
 using CHAL.Systems.Research;
+using CHAL.Systems.Skill;
 using CHAL.Systems.Stats;
 using System;
 using System.Collections.Generic;
@@ -136,7 +137,7 @@ namespace CHAL.Core
         {
             //Preload all registries
             ItemRegistry.Instance.TriggerInstance();
-
+            SkillRegistry.Instance.TriggertInstanc();
             //TODO Skill-registry
         }
 

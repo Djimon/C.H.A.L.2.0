@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c06b79f4eaee1146b4f43377a9c442c, type: 3}
   m_Name: DebugConfig
   m_EditorClassIdentifier: 
-  level: 4
+  level: 3
   productiveMode: 0
   autoAddUnknownTagsToAsset: 1
   includeGameTimestamps: 0
@@ -22,7 +22,7 @@ MonoBehaviour:
     active: 1
     color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   - name: Info
-    active: 1
+    active: 0
     color: {r: 0.7311321, g: 0.8089208, b: 1, a: 1}
   - name: Debug
     active: 1
@@ -37,31 +37,31 @@ MonoBehaviour:
     active: 1
     color: {r: 0.7294118, g: 0.80784315, b: 1, a: 1}
   - name: Loot
-    active: 1
+    active: 0
     color: {r: 0.1745283, g: 0.6981132, b: 0.26369032, a: 1}
   - name: Wave
-    active: 1
+    active: 0
     color: {r: 0.52997464, g: 0.19517621, b: 0.8113208, a: 1}
   - name: Map
-    active: 1
+    active: 0
     color: {r: 0.53333336, g: 0.19607843, b: 0.8117647, a: 1}
   - name: UI
-    active: 1
+    active: 0
     color: {r: 0.7935584, g: 1, b: 0.25, a: 1}
   - name: Input
-    active: 1
+    active: 0
     color: {r: 0.79607844, g: 1, b: 0.2509804, a: 1}
   - name: Player
     active: 0
     color: {r: 0.9716981, g: 0.8619886, b: 0.09625311, a: 1}
   - name: Hero
-    active: 1
+    active: 0
     color: {r: 0.972549, g: 0.8627451, b: 0.09803922, a: 1}
   - name: Enemy
-    active: 1
+    active: 0
     color: {r: 0.5377358, g: 0, b: 0, a: 1}
   - name: Skill
-    active: 1
+    active: 0
     color: {r: 0, g: 0.58997744, b: 0.8018868, a: 1}
   - name: Projectile
     active: 0
@@ -70,24 +70,24 @@ MonoBehaviour:
     active: 0
     color: {r: 0.3950941, g: 0.22241013, b: 0.9622642, a: 1}
   - name: Inventory
-    active: 1
+    active: 0
     color: {r: 0.1745283, g: 1, b: 0.67878586, a: 1}
   - name: Research
-    active: 1
+    active: 0
     color: {r: 1, g: 0.3726415, b: 0.92376876, a: 1}
   - name: Save
     active: 1
     color: {r: 1, g: 0.8876218, b: 0.1462264, a: 1}
   - name: Combat
-    active: 1
+    active: 0
     color: {r: 0.8962264, g: 0.3430213, b: 0.18178178, a: 1}
   - name: Crafting
-    active: 1
+    active: 0
     color: {r: 0.1745283, g: 1, b: 0.35171455, a: 1}
   - name: Stats
     active: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    color: {r: 1, g: 0.8832253, b: 0, a: 1}
   - name: Item
     active: 1
-    color: {r: 1, g: 1, b: 1, a: 1}
+    color: {r: 0.3915094, g: 1, b: 0.6107486, a: 1}
   _seeded: 1
