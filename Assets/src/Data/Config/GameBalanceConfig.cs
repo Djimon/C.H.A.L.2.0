@@ -180,6 +180,92 @@ namespace CHAL.Data
         [Header("Enemy Settings")]
         public EnemySettings enemies;
 
+
+        // ==========================
+        // GEAR
+        // ==========================
+        [System.Serializable]
+        public struct GearTierSlotCaps
+        {
+            [Min(0)] public int maxImplicits;
+            [Min(0)] public int maxAffixes;
+        }
+
+        [System.Serializable]
+        public struct GearSlotCapsByTier
+        {
+            public GearTierSlotCaps tier1;
+            public GearTierSlotCaps tier2;
+            public GearTierSlotCaps tier3;
+
+            public GearTierSlotCaps GetCaps(GearBaseTier tier)
+            {
+                return tier switch
+                {
+                    GearBaseTier.T1 => tier1,
+                    GearBaseTier.T2 => tier2,
+                    GearBaseTier.T3 => tier3,
+                    _ => tier1
+                };
+            }
+
+            public int GetMaxImplicits(GearBaseTier tier) => GetCaps(tier).maxImplicits;
+            public int GetMaxAffixes(GearBaseTier tier) => GetCaps(tier).maxAffixes;
+        }
+
+        [System.Serializable]
+        public struct GearRoleWeights
+        {
+            public int defense;
+            public int offense;
+            public int utility;
+        }
+
+        [System.Serializable]
+        public struct GearTypeRoleWeights
+        {
+            public GearType gearType;
+            public GearRoleWeights signature; // Slot1
+            public GearRoleWeights normal;    // Slot2/3
+        }
+
+        [System.Serializable]
+        public struct SlotPoolWeights
+        {
+            [Range(0f, 1f)] public float main;
+            [Range(0f, 1f)] public float neutral;
+            [Range(0f, 1f)] public float pool2;
+            [Range(0f, 1f)] public float pool3;
+
+            public void Normalize()
+            {
+                var sum = main + neutral + pool2 + pool3;
+                if (sum <= 0.0001f) { main = 1f; neutral = pool2 = pool3 = 0f; return; }
+                main /= sum; neutral /= sum; pool2 /= sum; pool3 /= sum;
+            }
+        }
+
+        [System.Serializable]
+        public struct GearSettings
+        {
+            [Header("Slot Caps per Base Tier")]
+            public GearSlotCapsByTier slotCapsByTier;
+
+
+            [Header("Implicit Roll Settings")]
+            public SlotPoolWeights slot1PoolWeights;
+            public SlotPoolWeights slot2PoolWeights;
+            public SlotPoolWeights slot3PoolWeights;
+
+            public List<GearTypeRoleWeights> roleWeightsByGearType;
+        }
+
+        [Header("Gear Settings")]
+        public GearSettings gear;
+
+
+
+
         // ==========================
         // SKILLS
         // ==========================

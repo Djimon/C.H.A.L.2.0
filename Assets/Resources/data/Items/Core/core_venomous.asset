@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
   m_Name: core_venomous
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ItemDef
-  itemId: core:blazing
+  itemId: core:venomous
   itemType: 3
   description: 
   icon: {fileID: 0}
@@ -35,5 +35,5 @@ MonoBehaviour:
     tags: []
     runeSocketType: 0
   coreData:
-    coreType: 4
-    defualtDmgType: 4
+    coreType: 5
+    defualtDmgType: 5

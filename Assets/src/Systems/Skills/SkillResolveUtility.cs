@@ -150,11 +150,11 @@ namespace CHAL.Systems.Skill
 
             switch (range)
             {
-                case SkillRange.Self: return GameManager.Instance.Config.skillRanges.selfRange;
-                case SkillRange.MeleeRange: return GameManager.Instance.Config.skillRanges.meleeRange;
-                case SkillRange.Reach: return GameManager.Instance.Config.skillRanges.reachRange;
-                case SkillRange.MidDistance: return GameManager.Instance.Config.skillRanges.midDistanceRange;
-                case SkillRange.FarDistance: return GameManager.Instance.Config.skillRanges.farDistanceRange;
+                case SkillRange.Self: return GameManager.Instance.BalanceConfig.skillRanges.selfRange;
+                case SkillRange.MeleeRange: return GameManager.Instance.BalanceConfig.skillRanges.meleeRange;
+                case SkillRange.Reach: return GameManager.Instance.BalanceConfig.skillRanges.reachRange;
+                case SkillRange.MidDistance: return GameManager.Instance.BalanceConfig.skillRanges.midDistanceRange;
+                case SkillRange.FarDistance: return GameManager.Instance.BalanceConfig.skillRanges.farDistanceRange;
                 default: return 0f;
             }
         }

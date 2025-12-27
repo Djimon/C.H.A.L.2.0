@@ -16,6 +16,7 @@ namespace CHAL.Data
 
         [Header("Gameplay")]
         public ArchetypeDef Archetype;       // Verweis auf ArchetypeDef
+        public ArmorClass Armorclass;        //TODO: use when handling gear-slots/inventory
         public int BaseHealth = 100;
         public float BaseDamage = 10f;
         public float BaseMovementSpeed = 2f;

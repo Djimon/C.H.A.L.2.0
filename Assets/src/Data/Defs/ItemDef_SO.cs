@@ -130,10 +130,10 @@ namespace CHAL.Data
     public class GearData
     {
         public GearType slotType;         // Head/Chest/Gloves/Legs/Boots/Amulet …
-        public string[] tags;             // z.B. "gear","leather","light"
+        public ArmorClass armorClass;
 
-        // optional/future: Sockeltyp (jetzt auf None lassen, Enum kannst du später ausbauen)
-        public RuneColorType runeSocketType;
+        public string[] tags;
+
     }
 
 

@@ -60,7 +60,7 @@ using UnityEngine;
                 Ensure(ref item.gearData);
                 item.gearData.slotType = (GearType)EditorGUILayout.EnumPopup("Slot Type", item.gearData.slotType);
                 DrawStringArray(ref item.gearData.tags, "Tag");
-                item.gearData.runeSocketType = (RuneColorType)EditorGUILayout.EnumPopup("Rune Socket", item.gearData.runeSocketType);
+                item.gearData.armorClass = (ArmorClass)EditorGUILayout.EnumPopup("Armor Class", item.gearData.armorClass);
             }
             else if (item.itemId.StartsWith("core:"))
             {

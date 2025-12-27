@@ -35,5 +35,5 @@ MonoBehaviour:
     tags: []
     runeSocketType: 0
   coreData:
-    coreType: 7
-    defualtDmgType: 6
+    coreType: 8
+    defualtDmgType: 8

@@ -267,7 +267,7 @@ namespace CHAL.Systems.Enemy
                 if (heroCtrl != null && heroCtrl.IsAlive)
                 {
                     float dist = Vector3.Distance(transform.position, heroCtrl.transform.position);
-                    if (dist <= (GameManager.Instance.Config.GetRangeValue(_currentSkill.Range)))
+                    if (dist <= (GameManager.Instance.BalanceConfig.GetRangeValue(_currentSkill.Range)))
                     {
                         DebugManager.Log($"Execute {_currentSkill.skillModule.DisplayName} on {heroCtrl.name} (dist={dist:F1}m)",DebugManager.EDebugLevel.Dev,"Combat");
 

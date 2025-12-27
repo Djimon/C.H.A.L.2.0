@@ -15,6 +15,7 @@ MonoBehaviour:
   ArchetypeId: base
   DisplayName: Debug Type
   RoleDescription: some text..
+  primAttackType: 0
   PreferredSlots: 0200000000000000
   DefaultAIPrio: 03000000
   Core: 0

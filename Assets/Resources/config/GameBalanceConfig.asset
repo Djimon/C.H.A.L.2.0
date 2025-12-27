@@ -82,6 +82,87 @@ MonoBehaviour:
     - elemental
     - caster
     minEliteTags: 0
+  gear:
+    slotCapsByTier:
+      tier1:
+        maxImplicits: 1
+        maxAffixes: 1
+      tier2:
+        maxImplicits: 2
+        maxAffixes: 2
+      tier3:
+        maxImplicits: 3
+        maxAffixes: 4
+    slot1PoolWeights:
+      main: 1
+      neutral: 0
+      pool2: 0
+      pool3: 0
+    slot2PoolWeights:
+      main: 0.6
+      neutral: 0.1
+      pool2: 0.15
+      pool3: 0.15
+    slot3PoolWeights:
+      main: 0.4
+      neutral: 0.2
+      pool2: 0.2
+      pool3: 0.2
+    roleWeightsByGearType:
+    - gearType: 0
+      signature:
+        defense: 35
+        offense: 45
+        utility: 20
+      normal:
+        defense: 30
+        offense: 50
+        utility: 20
+    - gearType: 1
+      signature:
+        defense: 80
+        offense: 10
+        utility: 10
+      normal:
+        defense: 70
+        offense: 15
+        utility: 15
+    - gearType: 2
+      signature:
+        defense: 25
+        offense: 55
+        utility: 20
+      normal:
+        defense: 20
+        offense: 60
+        utility: 20
+    - gearType: 3
+      signature:
+        defense: 60
+        offense: 20
+        utility: 20
+      normal:
+        defense: 55
+        offense: 25
+        utility: 20
+    - gearType: 4
+      signature:
+        defense: 30
+        offense: 20
+        utility: 50
+      normal:
+        defense: 25
+        offense: 15
+        utility: 60
+    - gearType: 5
+      signature:
+        defense: 30
+        offense: 55
+        utility: 15
+      normal:
+        defense: 25
+        offense: 60
+        utility: 15
   skillRanges:
     selfRange: 1
     meleeRange: 3

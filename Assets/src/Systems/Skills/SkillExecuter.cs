@@ -183,7 +183,7 @@ namespace CHAL.Systems.Skill
         private static void CreateProjectile(SkillInstance inst, EffectReceiver source, EffectReceiver target, Vector3 startPos, Vector3 dir)
         {
             float speed = Mathf.Max(0.01f, inst.ProjectileSpeed);
-            float life = Mathf.Max(0.1f, GameManager.Instance.Config.GetRangeValue(inst.Range) / speed);
+            float life = Mathf.Max(0.1f, GameManager.Instance.BalanceConfig.GetRangeValue(inst.Range) / speed);
 
             var go = new GameObject($"Projectile_{inst.skillModule.DisplayName}");
             var col = go.AddComponent<SphereCollider>(); col.isTrigger = true; col.radius = 0.1f;

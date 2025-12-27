@@ -73,7 +73,14 @@ namespace CHAL.Core
         public ResearchService researchService { get; private set; }
         public ResearchUnlockRegistry ResearchUnlocks { get; private set; }
 
-        public GameBalanceConfig Config
+
+        // Gearing
+        public ImplicitRegistryDef implicitRegistrySO;
+        public ImplicitRegistry ImplicitRegistry { get; private set; }
+        public GearRoller gearRoller { get; private set; }
+
+
+        public GameBalanceConfig BalanceConfig
         {
             get
             {
@@ -108,7 +115,7 @@ namespace CHAL.Core
             }
   
 
-            var xpplvl = Config.economy.xp.xpPerLevel;
+            var xpplvl = BalanceConfig.economy.xp.xpPerLevel;
             DebugManager.Log($"Xp per level: {xpplvl}");
 
             inputManager = FindFirstObjectByType<InputManager>();
@@ -122,8 +129,9 @@ namespace CHAL.Core
             }
 
             Unlucky ??= new UnluckyProtection();
-
             Stats = new StatisticsService();
+            ImplicitRegistry = new ImplicitRegistry(implicitRegistrySO);
+            gearRoller = new GearRoller(BalanceConfig, ImplicitRegistry);
 
             if (Profile != null)
             {
