@@ -17,16 +17,19 @@ _Automatically generated/updated from `Assets/src/Systems/Skills/SkillRegistry.c
       - `public bool TryGet(string skillId, out SkillModuleDef def)`: Attempts to get a skill definition by ID; returns success status.
       - `public IEnumerable<string> GetAllSkillIds()`: Returns all skill IDs.
       - `public IEnumerable<SkillModuleDef> GetAllSkills()`: Returns all skill definitions.
+      - `public void ExportItemIndexCsv(string outputPath)`: Exports skill index to a CSV file.
 
 # Key Behavior & Side Effects
 - `Reload()` clears existing skills and loads new definitions from the specified resources path.
 - Logs warnings for invalid or duplicate skill IDs during the reload process.
 - Logs the number of skills loaded after reloading.
+- `ExportItemIndexCsv(string outputPath)` creates a CSV file of skill definitions and logs the export status.
 
 # Constraints & Failure Modes
 - Handles null or whitespace skill IDs by skipping those definitions.
 - Skips duplicate skill IDs and logs a warning.
 - The `EditorAutoReload` method automatically reloads skills when the editor is not in play mode.
+- `ExportItemIndexCsv` warns if the output path is null or empty and handles exceptions during file writing.
 
 # Example
 ```csharp
@@ -40,4 +43,3 @@ if (skill != null)
 # Unknowns
 - The structure and properties of `SkillModuleDef` are not defined in this file.
 - The exact behavior of `DebugManager` is not detailed in this file.
-
