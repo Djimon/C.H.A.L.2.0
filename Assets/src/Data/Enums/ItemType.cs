@@ -23,9 +23,13 @@ namespace CHAL.Data
         Blazing,
         Glacial,
         Static,
+        Seismic,
         Venomous,
-        Aetheric,
-        Infernal,
-        Radiant
+        Aetheric, //magic, Arcane
+        Infernal, //daemonic/dark
+        Radiant,
+        Nullified, // void
+        Cthonic, //abyssal
+        Cerebral //psychich
     }
 }

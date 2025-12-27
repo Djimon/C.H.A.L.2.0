@@ -66,7 +66,7 @@ using UnityEngine;
             {
                 Ensure(ref item.coreData);
                 item.coreData.defualtDmgType = (DamageType)EditorGUILayout.EnumPopup("Damage Type", item.coreData.defualtDmgType);
-                item.coreData.coreType = (CoreType) EditorGUILayout.EnumPopup("FrameTier", item.coreData.coreType);
+                item.coreData.coreType = (CoreType) EditorGUILayout.EnumPopup("coreType", item.coreData.coreType);
             }
             else
             {

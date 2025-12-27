@@ -121,9 +121,19 @@ namespace CHAL.Systems.Skill
                 case CoreType.Venomous:
                     return DamageType.Poison;
                 case CoreType.Infernal:
-                    return DamageType.Dark;
+                    return DamageType.Daemonic;
                 case CoreType.Radiant:
                     return DamageType.Holy;
+                case CoreType.Seismic:
+                    return DamageType.Earth;
+                case CoreType.Aetheric:
+                    return DamageType.Arcane;
+                case CoreType.Nullified:
+                    return DamageType.Void;
+                case CoreType.Cthonic:
+                    return DamageType.Abyssal;
+                case CoreType.Cerebral:
+                    return DamageType.Psychic;
 
                 default:
                     return module.BaseDamageType;

@@ -6,9 +6,15 @@ namespace CHAL.Data
         Fire,
         Cold,
         Lightning,
+        Earth,
         Poison,
-        Dark,
-        Holy
+        Arcane,
+        Daemonic,
+        Holy,
+        Void,
+        Abyssal,
+        Psychic,
+
         // … erweiterbar
     }
 }
