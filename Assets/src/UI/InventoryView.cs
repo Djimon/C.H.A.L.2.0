@@ -1,4 +1,4 @@
-﻿using CHAL.Core;
+using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
@@ -350,7 +350,7 @@ namespace CHAL.UI
             return tile;
         }
 
-        private void OnSlotChanged(string instanceId, int slotIndex, ItemStack? newStack)
+        private void OnSlotChanged(string instanceId, int slotIndex, ItemStackRef? newStack)
         {
             if (instanceId != _instanceID) return;
             UpdateTileVisual(slotIndex);

@@ -11,7 +11,7 @@ namespace CHAL.Systems.Inventory
         public string NameKey;
         [Min(1)]  public int cols;
         [Min(1)]  public int rows;
-        public int defaultMaxStackPerSlot = 250;
+        public int defaultMaxStackPerSlot = 100;
 
         public SlotFilter globalSlotFilter;
     }

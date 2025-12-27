@@ -6,7 +6,7 @@ namespace CHAL.Systems.Inventory
     {
         public bool success = false;
         public string reason;
-        public List<(int slotIndex, ItemStack? newStack)> SlotDeltas = new();
+        public List<(int slotIndex, ItemStackRef? newStack)> SlotDeltas = new();
     }
 
 }

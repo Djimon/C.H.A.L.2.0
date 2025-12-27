@@ -22,7 +22,7 @@ namespace CHAL.Systems.Inventory
         public DragDropService(IInventoryDomain domain) { _domain = domain; }
 
         //events
-        public event Action<ItemStack,bool> OnBeginDrag;
+        public event Action<ItemStackRef,bool> OnBeginDrag;
         public event Action OnEndDrag;
 
         // “Pickup” (auch per RMB für Split möglich)

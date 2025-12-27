@@ -491,7 +491,7 @@ namespace CHAL.Systems.Wave
                 gm.EnsureInstance(instanceId, invType);
 
                 // In die DOMAIN buchen
-                var ok = domain.TryAdd(instanceId, new ItemStack(itemId, count), out var tx);
+                var ok = domain.TryAdd(instanceId, new ItemStackRef(itemId, count), out var tx);
                 if (!ok)
                 {
                     DebugManager.Log($"TryAdd failed for {itemId} x{count} â†’ {tx.reason}",

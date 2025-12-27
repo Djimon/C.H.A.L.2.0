@@ -11,6 +11,7 @@ namespace CHAL.Data
         Part,
         Rune,
         Module,
-        Gear
+        Gear,
+        Core
     }
 }

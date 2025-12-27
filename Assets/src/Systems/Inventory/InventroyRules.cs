@@ -20,6 +20,7 @@ namespace CHAL.Systems.Inventory
                 "remains" => 10000,
                 "part" => 250,
                 "module" => 10,
+                "gear" => 1,
                 _ => 100
             };
         }
@@ -38,6 +39,7 @@ namespace CHAL.Systems.Inventory
                 "remains" => 12,
                 "part" => 100,
                 "module" => 30,
+                "gear" => 30,
                 _ => 30
             };
         }

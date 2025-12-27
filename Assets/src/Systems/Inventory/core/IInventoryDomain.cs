@@ -7,14 +7,14 @@ namespace CHAL.Systems.Inventory
 /// </summary>
     public interface IInventoryDomain
     {
-        bool CanAccept(string instanceId, in ItemStack stack);
-        bool TryAdd(string instanceId, in ItemStack stack, out TransactionResult result);
+        bool CanAccept(string instanceId, in ItemStackRef stack);
+        bool TryAdd(string instanceId, in ItemStackRef stack, out TransactionResult result);
         bool TryMove(in MoveRequest req, out TransactionResult result);
         bool TryRemove(string instanceId, int slotIndex, int amount, out TransactionResult result);
 
-        event Action<string, int, ItemStack?> OnSlotChanged; // (instanceId, slot, newStack)
+        event Action<string, int, ItemStackRef?> OnSlotChanged; // (instanceId, slot, newStack)
 
-        ItemStack? Peek(string instanceId, int slotIndex);
+        ItemStackRef? Peek(string instanceId, int slotIndex);
         int SlotCount(string instanceId);
     }
 }

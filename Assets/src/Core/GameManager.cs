@@ -79,6 +79,8 @@ namespace CHAL.Core
         public ImplicitRegistry ImplicitRegistry { get; private set; }
         public GearRoller gearRoller { get; private set; }
 
+        Dictionary<string, GearInstance> _gearInstances = new Dictionary<string, GearInstance>();
+
 
         public GameBalanceConfig BalanceConfig
         {
@@ -500,7 +502,7 @@ namespace CHAL.Core
                 foreach (var kv in source)
                 {
                     if (kv.Value <= 0) continue;
-                    Inventory.TryAdd(instanceId, new ItemStack(kv.Key, kv.Value), out _);
+                    Inventory.TryAdd(instanceId, new ItemStackRef(kv.Key, kv.Value), out _);
                     x += kv.Value;
                 }
                 DebugManager.Log($"Refilled Inventory {instanceId} (amount:{x})", DebugManager.EDebugLevel.Dev, "Inventory");
@@ -635,5 +637,47 @@ namespace CHAL.Core
             if (researchNodes == null || researchNodes.Count == 0)
                 researchNodes = Resources.LoadAll<ResearchNodeDef>("data/Research/Nodes").ToList();
         }
+
+
+        public void RegisterGearInstance(GearInstance gear)
+        {
+            if (gear == null)
+            {
+                DebugManager.Warning("RegisterGearInstance: gear is null.", "Gearing");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(gear.instanceId))
+            {
+                DebugManager.Warning("RegisterGearInstance: gear.instanceId is null/empty.", "Gearing");
+                return;
+            }
+
+            if (_gearInstances.ContainsKey(gear.instanceId))
+            {
+                    DebugManager.Warning($"RegisterGearInstance: duplicate instanceId '{gear.instanceId}'. Overwriting.", "Gearing");
+            }
+
+            _gearInstances[gear.instanceId] = gear;
+        }
+
+        public bool TryGetGearInstance(string instanceId, out GearInstance gear)
+        {
+            if (string.IsNullOrWhiteSpace(instanceId))
+            {
+                gear = null;
+                return false;
+            }
+            return _gearInstances.TryGetValue(instanceId, out gear);
+        }
+
+        public bool RemoveGearInstance(string instanceId)
+        {
+            if (string.IsNullOrWhiteSpace(instanceId))
+                    return false;
+
+            return _gearInstances.Remove(instanceId);
+        }
+
     }
 }

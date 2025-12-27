@@ -59,7 +59,12 @@ namespace CHAL.Systems.Crafting
 /// <returns>A RecipePreview object representing the recipe output.</returns>
         public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, IWallet wallet)
         {
-            var outStack = new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+            var outType = ItemTypeUtils.FromId(recipe.outputItemId);
+            var isGear = outType == ItemType.Gear;
+
+
+            var outStack = isGear ? new ItemStackRef(recipe.outputItemId, 1, "__preview__")
+                                  : new ItemStackRef(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
 
             bool OutputOk()
             {
@@ -130,7 +135,7 @@ namespace CHAL.Systems.Crafting
         public static bool CanCraft(RecipeDef recipe, InventoryDomain inv, string outputInventoryId, IWallet wallet)
             => GetPreview(recipe,  outputInventoryId, inv, wallet).canCraft;
 
-        private static void DebugOutputReject(InventoryDomain inv, string instanceId, ItemStack outStack)
+        private static void DebugOutputReject(InventoryDomain inv, string instanceId, ItemStackRef outStack)
         {
             // Existiert die Instanz?
             bool hasInst = inv.HasInstance(instanceId);
@@ -204,7 +209,17 @@ namespace CHAL.Systems.Crafting
         {
             failReason = null;
 
-            var outStack = new ItemStack(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+            var outType = ItemTypeUtils.FromId(recipe.outputItemId);
+            var isGear = outType == ItemType.Gear;
+
+            if (isGear && recipe.outputCount != 1)
+            {
+                failReason = "Gear output must be unstackable (outputCount must be 1).";
+                return false;
+            }
+
+            var outStack = isGear ? new ItemStackRef(recipe.outputItemId, 1, "__guard__")
+                                  : new ItemStackRef(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
 
             // [G0] Output zuerst
             if (!inv.CanAccept(outputInventoryId, outStack))
@@ -212,6 +227,7 @@ namespace CHAL.Systems.Crafting
                 failReason = $"Output inventory cannot accept: {outputInventoryId}";
                 return false;
             }
+
 
             // [G1] Guards read-only
             var preview = GetPreview(recipe, outputInventoryId, inv, wallet);
@@ -222,7 +238,7 @@ namespace CHAL.Systems.Crafting
             }
 
             // ===== Commit-Phase =====
-            var removed = new List<(string instId, int slot, ItemStack oldStack, int amount)>();
+            var removed = new List<(string instId, int slot, ItemStackRef oldStack, int amount)>();
 
             bool TryConsumeOne(string itemId, int qty)
             {
@@ -283,22 +299,120 @@ namespace CHAL.Systems.Crafting
                 return false;
             }
 
-            // 3) Output
-            if (!inv.TryAdd(outputInventoryId, outStack, out var addTx) || !addTx.success)
-            {
-                if (gold > 0) wallet.Refund("gold", gold);
-                foreach (var rem in removed)
-                    inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+            //// 3) Output
+            //if (!inv.TryAdd(outputInventoryId, outStack, out var addTx) || !addTx.success)
+            //{
+            //    if (gold > 0) wallet.Refund("gold", gold);
+            //    foreach (var rem in removed)
+            //        inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
 
-                failReason = $"Output inventory full: {outputInventoryId}";
-                return false;
+            //    failReason = $"Output inventory full: {outputInventoryId}";
+            //    return false;
+            //}
+
+            // 3) Output
+            if (isGear)
+            {
+                // Create concrete gear instance
+                var baseTier = recipe.tier <= 1 ? GearBaseTier.T1 : (recipe.tier == 2 ? GearBaseTier.T2 : GearBaseTier.T3);
+
+                var gear = GearInstance.CreateNew(recipe.outputItemId, baseTier);
+
+                // Resolve ArmorClass (V1 fallback: parse from itemId; replace with ItemDef lookup when available)
+                var armorClass = ResolveArmorClass(recipe.outputItemId);
+
+                var gm = GameManager.Instance;
+                if (gm == null || gm.gearRoller == null)
+                {
+                    if (gold > 0) wallet.Refund("gold", gold);
+                    foreach (var rem in removed)
+                        inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
+                    failReason = "Missing GameManager or GearRoller.";
+                    return false;
+                }
+
+                // Roll implicits
+                var rng = new System.Random(UnityEngine.Random.Range(int.MinValue, int.MaxValue));
+                var rolls = gm.gearRoller.RollImplicits(recipe.slotType, armorClass, baseTier, rng);
+
+                // Apply to instance (capacity is enforced by GearInstance)
+                var caps = gm.BalanceConfig.gear.slotCapsByTier.GetCaps(baseTier);
+                for (int i = 0; i < rolls.Count; i++)
+                    gear.TryAddImplicit(rolls[i], caps.maxImplicits);
+
+                // Register runtime instance before placing the ref into inventory
+                gm.RegisterGearInstance(gear);
+
+
+                // Add instanced ref to inventory
+                outStack = new ItemStackRef(recipe.outputItemId, 1, gear.instanceId);
+
+                if (!inv.TryAdd(outputInventoryId, outStack, out var addTx) || !addTx.success)
+                {
+                    // Cleanup: don't keep dangling instances if inventory add fails
+                    gm.RemoveGearInstance(gear.instanceId);
+
+                    if (gold > 0) wallet.Refund("gold", gold);
+                    foreach (var rem in removed)
+                        inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
+                    failReason = $"Output inventory full: {outputInventoryId}";
+                    return false;
+                }
+            }
+            else
+            {
+                outStack = new ItemStackRef(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+
+                if (!inv.TryAdd(outputInventoryId, outStack, out var addTx) || !addTx.success)
+                {
+                    if (gold > 0) wallet.Refund("gold", gold);
+                    foreach (var rem in removed)
+                        inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
+                    failReason = $"Output inventory full: {outputInventoryId}";
+                    return false;
+                }
             }
 
             GameManager.Instance.Stats.OnCraftExecuted(recipe.Id);
 
             return true;
         }
-               
+
+        private static ArmorClass ResolveArmorClass(string gearItemId)
+        {
+            // Preferred: ItemDef -> GearData -> armorClass
+            if (!string.IsNullOrEmpty(gearItemId))
+            {
+                var reg = ItemRegistry.Instance;
+                if (reg != null && reg.TryGet(gearItemId, out var def) && def != null && def.gearData != null)
+                    return def.gearData.armorClass;
+            }
+
+            // Fallback heuristic
+            return InferArmorClassFromGearId(gearItemId);
+        }
+
+private static ArmorClass InferArmorClassFromGearId(string gearItemId)
+        {
+            if (string.IsNullOrEmpty(gearItemId))
+                return ArmorClass.Medium;
+
+            var id = gearItemId.ToLowerInvariant();
+
+            // Conservative heuristics; replace with ItemDef lookup as soon as you have it.
+            if (id.Contains("plate") || id.Contains("heavy"))
+                return ArmorClass.Heavy;
+
+            if (id.Contains("cloth") || id.Contains("light"))
+                return ArmorClass.Light;
+
+            // leather/medium/default
+            return ArmorClass.Medium;
+        }
+
     }
 
     public enum CraftBlocker

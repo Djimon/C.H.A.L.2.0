@@ -11,7 +11,8 @@ namespace CHAL.Systems.Inventory
         public int index { get; }
         public int maxStack { get; internal set; } // aus Def oder Fallback-Regeln
         public SlotFilter Filter { get; internal set; } // optional
-        public ItemStack? stack { get; internal set; } // null => leer
+        public ItemStackRef? stack { get; internal set; } // null => leer
+
 
 
         public Slot(int i, int mStack, SlotFilter filter = null)

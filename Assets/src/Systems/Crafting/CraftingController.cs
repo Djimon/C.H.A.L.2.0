@@ -272,7 +272,7 @@ namespace CHAL.Systems.Crafting
             // TODO: SFX/VFX triggern
         }
 
-        private void HandleSlotChanged(string instanceId, int slotIndex, ItemStack? newStack)
+        private void HandleSlotChanged(string instanceId, int slotIndex, ItemStackRef? newStack)
         {
             // Nur refreshen, wenn relevante Inventare betroffen sind
             if (_relevantInvIds != null && _relevantInvIds.Contains(instanceId))

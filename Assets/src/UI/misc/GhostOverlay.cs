@@ -16,7 +16,7 @@ namespace CHAL.UI
     
         VisualElement _ghost, _icon;
         Label _count;
-        ItemStack? _current; 
+        ItemStackRef? _current; 
         bool _split; 
         UIDocument _currentDoc;
 
@@ -82,7 +82,7 @@ namespace CHAL.UI
             _ghost.Add(_count);
         }
 
-        void HandleBegin(ItemStack stack, bool split)
+        void HandleBegin(ItemStackRef stack, bool split)
         {
             _current = stack; _split = split;
             EnsureParent();

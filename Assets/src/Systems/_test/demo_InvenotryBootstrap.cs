@@ -29,10 +29,10 @@ public class InventoryDemoBootstrap : MonoBehaviour
         _domain.RegisterInstance(_bagB);
 
         // Test-Items (nutz deine IDs aus ItemRegistry)
-        _domain.TryAdd(_bagA.instanceID, new ItemStack("part:eye", 7), out _);
-        _domain.TryAdd(_bagA.instanceID, new ItemStack("remains:glitter_dust", 12), out _);
-        _domain.TryAdd(_bagB.instanceID, new ItemStack("module:core", 3), out _);
-        _domain.TryAdd(_bagB.instanceID, new ItemStack("remains:blood", 6), out _);
+        _domain.TryAdd(_bagA.instanceID, new ItemStackRef("part:eye", 7), out _);
+        _domain.TryAdd(_bagA.instanceID, new ItemStackRef("remains:glitter_dust", 12), out _);
+        _domain.TryAdd(_bagB.instanceID, new ItemStackRef("module:core", 3), out _);
+        _domain.TryAdd(_bagB.instanceID, new ItemStackRef("remains:blood", 6), out _);
 
         // UI binden
         if (bagAView) bagAView.Bind(_domain, _bagA.instanceID, _bagA.InvDef.cols, _bagA.InvDef.rows);
