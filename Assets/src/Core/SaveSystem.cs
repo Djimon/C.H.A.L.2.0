@@ -56,7 +56,13 @@ namespace CHAL.Core
             }
             ConfigureSaveGame();
 
-            profile.PrepareInventorySnapshot();
+            // Wenn der GameManager bereits einen Domain-Snapshot (Slots + Instances) gebaut hat,
+            // dürfen wir ihn hier nicht überschreiben.
+            if (profile.InventorySave == null || profile.InventorySave.Count == 0)
+            {
+                profile.PrepareInventorySnapshot();
+            }
+
             profile.LastSaveTime = DateTime.UtcNow;
             var id = FileId();
             
