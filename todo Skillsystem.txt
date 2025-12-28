@@ -3,7 +3,9 @@ ToDO:
 0. Testen von echten Skills nach neuem System
 - item:Modul erstellen und dem heroController mitgeben (check)
 
--> gnaz viele ksills erstellen udn enue Modul-parts-map afubauen
+-> gnaz viele skills erstellen 
+-> neue Modul-parts-map aufbauen
+-> Loot-Jsons prüfne und updaten
 
 1. ModifierStack
 - SkillTag-Enum mit deinen neuen Tags (AoE, Projectile, Minion, Curse, Movement, Buff, DoT, …) abgleichen.
