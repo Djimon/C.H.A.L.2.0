@@ -24,7 +24,7 @@ namespace CHAL.Systems.Items
                 var d = def.Implicits[i];
                 if (d == null) continue;
 
-                var id = (d.Id ?? string.Empty).Trim();
+                var id = (d.ImplicitId ?? string.Empty).Trim();
                 if (string.IsNullOrEmpty(id)) continue;
 
                 if (_byId.ContainsKey(id))

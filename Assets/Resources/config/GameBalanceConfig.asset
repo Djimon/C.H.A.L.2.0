@@ -163,6 +163,48 @@ MonoBehaviour:
         defense: 25
         offense: 60
         utility: 15
+    defaultAffixFamilyWeights:
+      core: 0.4
+      defensive: 0.25
+      synergy: 0.1
+      utility: 0.25
+    affixFamilyWeightsByGearType:
+    - gearType: 2
+      weights:
+        core: 0.2
+        defensive: 0.1
+        synergy: 0.35
+        utility: 0.35
+    - gearType: 4
+      weights:
+        core: 0.4
+        defensive: 0.2
+        synergy: 0
+        utility: 0.4
+    - gearType: 5
+      weights:
+        core: 0.25
+        defensive: 0.25
+        synergy: 0.25
+        utility: 0.25
+    affixRules:
+      allowDuplicateAffixId: 0
+      categoryCaps:
+        globalCaps:
+        - category: 1
+          maxOnItem: 1
+        - category: 2
+          maxOnItem: 1
+        - category: 3
+          maxOnItem: 2
+        - category: 4
+          maxOnItem: 2
+        - category: 5
+          maxOnItem: 1
+        - category: 6
+          maxOnItem: 2
+        - category: 7
+          maxOnItem: 1
   skillRanges:
     selfRange: 1
     meleeRange: 3

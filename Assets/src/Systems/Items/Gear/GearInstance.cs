@@ -103,20 +103,24 @@ namespace CHAL.Data
     [Serializable]
     public struct AffixRoll
     {
-        [Tooltip("Reference to AffixDef.Id (future)")]
+        [Tooltip("Reference to AffixDef.Id")]
         public string affixId;
 
         [Tooltip("Rolled value (interpretation is defined by AffixDef)")]
         public float value;
 
-        [Tooltip("Optional: prefix/suffix grouping etc. (future)")]
-        public int index;
+        [Tooltip("0..maxAffixes-1 (useful for debugging/UI)")]
+        public int slotIndex;
 
-        public AffixRoll(string affixId, float value, int index = 0)
+        [Tooltip("Optional: store the base tier used for the roll (debug/consistency)")]
+        public GearBaseTier rolledFromTier;
+
+        public AffixRoll(string affixId, float value, int slotIndex = 0, GearBaseTier rolledFromTier = GearBaseTier.T1)
         {
             this.affixId = affixId;
             this.value = value;
-            this.index = index;
+            this.slotIndex = slotIndex;
+            this.rolledFromTier = rolledFromTier;
         }
     }
 

@@ -14,7 +14,7 @@ namespace CHAL.Data
     {
         [Header("Identity")]
         [Tooltip("Stable identifier, recommended: lower_snake_case (e.g. armor_pct).")]
-        public string Id;
+        public string ImplicitId;
 
         [Header("Categorization")]
         //public ImplicitPool Pool;
@@ -43,12 +43,12 @@ namespace CHAL.Data
 
         private void OnValidate()
         {
-            Id = (Id ?? string.Empty).Trim();
+            ImplicitId = (ImplicitId ?? string.Empty).Trim();
 
-            if (!string.IsNullOrEmpty(Id) && !IsValidId(Id))
+            if (!string.IsNullOrEmpty(ImplicitId) && !IsValidId(ImplicitId))
             {
                 DebugManager.Warning(
-                    $"[ImplicitDef] Unusual Id '{Id}' in asset '{name}'. Recommended format: lower_snake_case (a-z, 0-9, _).",
+                    $"[ImplicitDef] Unusual Id '{ImplicitId}' in asset '{name}'. Recommended format: lower_snake_case (a-z, 0-9, _).",
                     "System");
             }
 

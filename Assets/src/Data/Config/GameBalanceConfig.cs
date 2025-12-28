@@ -246,18 +246,149 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
+        public struct AffixFamilyWeights
+        {
+            [Range(0f, 1f)] public float core;
+            [Range(0f, 1f)] public float defensive;
+            [Range(0f, 1f)] public float synergy;
+            [Range(0f, 1f)] public float utility;
+
+            public void Normalize()
+            {
+                var sum = core + defensive + synergy + utility;
+                if (sum <= 0.0001f) { core = 1f; defensive = synergy = utility = 0f; return; }
+                core /= sum; defensive /= sum; synergy /= sum; utility /= sum;
+            }
+
+            public float Get(AffixFamily family)
+            {
+                return family switch
+                {
+                    AffixFamily.Core => core,
+                    AffixFamily.Defensive => defensive,
+                    AffixFamily.Synergy => synergy,
+                    AffixFamily.Utility => utility,
+                    _ => core
+                };
+            }
+        }
+
+        [System.Serializable]
+        public struct GearTypeAffixFamilyWeights
+        {
+            public GearType gearType;
+            public AffixFamilyWeights weights;
+        }
+
+        [System.Serializable]
+        public struct AffixCategoryCap
+        {
+            public AffixCategory category;
+
+            [Min(0)]
+            [Tooltip("Max number of affixes with this Category allowed on a single item. 0 = not allowed.")]
+            public int maxOnItem;
+        }
+
+        [System.Serializable]
+        public struct GearAffixCategoryCaps
+        {
+            [Tooltip("Global caps (applies to all gear types unless overridden).")]
+            public List<AffixCategoryCap> globalCaps;
+
+            //[Tooltip("Optional per-gear-type overrides. If a category is present here, it overrides the global cap for that gear type.")]
+            //public List<GearTypeAffixCategoryCaps> overridesByGearType;
+
+            public int GetCap(GearType gearType, AffixCategory category, int fallbackIfMissing = 99)
+            {
+                // 1) overrides
+                //if (overridesByGearType != null)
+                //{
+                //    for (int i = 0; i < overridesByGearType.Count; i++)
+                //    {
+                //        var o = overridesByGearType[i];
+                //        if (o.gearType != gearType) continue;
+
+                //        var cap = o.GetCap(category, int.MinValue);
+                //        if (cap != int.MinValue) return cap;
+                //        break;
+                //    }
+                //}
+
+                // 2) global
+                if (globalCaps != null)
+                {
+                    for (int i = 0; i < globalCaps.Count; i++)
+                        if (globalCaps[i].category == category)
+                            return globalCaps[i].maxOnItem;
+                }
+
+                return fallbackIfMissing;
+            }
+        }
+
+        [System.Serializable]
+        public struct GearTypeAffixCategoryCaps
+        {
+            public GearType gearType;
+            public List<AffixCategoryCap> caps;
+
+            public int GetCap(AffixCategory category, int fallbackIfMissing)
+            {
+                if (caps == null) return fallbackIfMissing;
+                for (int i = 0; i < caps.Count; i++)
+                    if (caps[i].category == category)
+                        return caps[i].maxOnItem;
+                return fallbackIfMissing;
+            }
+        }
+
+        [System.Serializable]
+        public struct GearAffixRules
+        {
+            [Header("Duplicate Rules")]
+            [Tooltip("If false, the same AffixId cannot appear twice on one item.")]
+            public bool allowDuplicateAffixId;
+
+            [Header("Category Caps")]
+            public GearAffixCategoryCaps categoryCaps;
+        }
+
+        [System.Serializable]
         public struct GearSettings
         {
             [Header("Slot Caps per Base Tier")]
             public GearSlotCapsByTier slotCapsByTier;
 
-
             [Header("Implicit Roll Settings")]
             public SlotPoolWeights slot1PoolWeights;
             public SlotPoolWeights slot2PoolWeights;
             public SlotPoolWeights slot3PoolWeights;
-
             public List<GearTypeRoleWeights> roleWeightsByGearType;
+
+            [Header("Affix Roll Settings")]
+            [Tooltip("Used for non-family-selected rolls (e.g. drops). If the player explicitly chooses a family in crafting, this is ignored.")]
+            public AffixFamilyWeights defaultAffixFamilyWeights;
+
+            [Tooltip("Optional gear-type-specific affix family weights.")]
+            public List<GearTypeAffixFamilyWeights> affixFamilyWeightsByGearType;
+
+            [Header("Affix Rules")]
+            public GearAffixRules affixRules;
+
+            public float GetAffixFamilyWeight(GearType gearType, AffixFamily family)
+            {
+                if (affixFamilyWeightsByGearType != null)
+                {
+                    for (int i = 0; i < affixFamilyWeightsByGearType.Count; i++)
+                    {
+                        var e = affixFamilyWeightsByGearType[i];
+                        if (e.gearType == gearType)
+                            return e.weights.Get(family);
+                    }
+                }
+                return defaultAffixFamilyWeights.Get(family);
+            }
         }
 
         [Header("Gear Settings")]

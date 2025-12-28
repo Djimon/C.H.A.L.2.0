@@ -24,7 +24,7 @@ namespace CHAL.Data
                     continue;
                 }
 
-                var id = (d.Id ?? string.Empty).Trim();
+                var id = (d.ImplicitId ?? string.Empty).Trim();
                 if (string.IsNullOrEmpty(id))
                 {
                     DebugManager.Warning($"[ImplicitRegistryDef] Implicit asset '{d.name}' has empty Id. Removed.", "System");
