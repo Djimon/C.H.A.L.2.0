@@ -3,7 +3,7 @@
 _Automatically generated/updated from `Assets/src/Data/Enums/DamageType.cs`._
 
 # Purpose
-- Defines an enumeration for different types of damage.
+- Defines enumerations for different types of damage and attunements.
 
 # Public API
 - Namespace: `CHAL.Data`
@@ -14,10 +14,24 @@ _Automatically generated/updated from `Assets/src/Data/Enums/DamageType.cs`._
       - `Fire`
       - `Cold`
       - `Lightning`
+      - `Earth`
       - `Poison`
       - `Arcane`
-      - `Dark`
-      - `Holy`
+      - `Daemonic` // cap with Attunement to "Diabolic"
+      - `Holy` // cap with Attunement to "Seraphic"
+      - `Void`
+      - `Abyssal`
+  - `public enum Attunement`
+    - Values:
+      - `Diabolic` = -4
+      - `Infernal` = -3
+      - `Fallen` = -2
+      - `Tainted` = -1
+      - `Neutral` = 0
+      - `Blessed` = 1
+      - `Sanctified` = 2
+      - `Celestial` = 3
+      - `Seraphic` = 4
 
 # Key Behavior & Side Effects
 - None specified.
@@ -28,6 +42,7 @@ _Automatically generated/updated from `Assets/src/Data/Enums/DamageType.cs`._
 # Example
 ```csharp
 DamageType damage = DamageType.Fire;
+Attunement attunement = Attunement.Blessed;
 ```
 
 # Unknowns
