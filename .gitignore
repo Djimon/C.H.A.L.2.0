@@ -103,7 +103,11 @@ InitTestScene*.unity*
 #exclude missing items - they are jsut placeholders
 **/missing/
 /Assets/Resources/data/Items/remains/missing.meta
+
+#ignore stub-folder for creative input only
 stub
+
+#ignore latex-generated files
 *.toc
 *.aux
 *.pdf
@@ -112,4 +116,6 @@ stub
 *.pdf
 *.gz
 *.toc
+
+#ignore qlik
 *.qvw
