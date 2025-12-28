@@ -18,11 +18,13 @@ All documented namespaces and types.
 
 ### Data
 
+- [AffixCategory](CHAL/Data/AffixCategory.md) (2025-12-28)
 - [AffixEntry](CHAL/Data/AffixEntry.md) (2025-12-07)
+- [AffixRegsitryDef](CHAL/Data/AffixRegsitryDef.md) (2025-12-28)
 - [AnimationType](CHAL/Data/AnimationType.md) (2025-11-09)
 - [ArchetypeDef](CHAL/Data/ArchetypeDef.md) (2025-12-07)
 - [AttackDef](CHAL/Data/AttackDef.md) (2025-12-07)
-- [DamageType](CHAL/Data/DamageType.md) (2025-12-07)
+- [DamageType](CHAL/Data/DamageType.md) (2025-12-28)
 - [EnemyDef](CHAL/Data/EnemyDef.md) (2025-11-09)
 - [EnemyRank](CHAL/Data/EnemyRank.md) (2025-11-09)
 - [EnemyStruct](CHAL/Data/EnemyStruct.md) (2025-11-09)
@@ -34,6 +36,9 @@ All documented namespaces and types.
 - [HeroSlot](CHAL/Data/HeroSlot.md) (2025-12-07)
 - [HeroXPConfig](CHAL/Data/HeroXPConfig.md) (2025-12-07)
 - [ImplicitGearTypeConfig](CHAL/Data/ImplicitGearTypeConfig.md) (2025-11-09)
+- [ImplicitPool](CHAL/Data/ImplicitPool.md) (2025-12-28)
+- [ImplicitRegistryDef](CHAL/Data/ImplicitRegistryDef.md) (2025-12-28)
+- [ImplicitRoll](CHAL/Data/ImplicitRoll.md) (2025-12-28)
 - [ItemDef](CHAL/Data/ItemDef.md) (2025-12-07)
 - [ItemStruct](CHAL/Data/ItemStruct.md) (2025-12-07)
 - [ItemType](CHAL/Data/ItemType.md) (2025-11-09)
@@ -52,6 +57,8 @@ All documented namespaces and types.
 - [RuneColorType](CHAL/Data/RuneColorType.md) (2025-11-09)
 - [RuneForgeEntry](CHAL/Data/RuneForgeEntry.md) (2025-11-09)
 - [SkillData](CHAL/Data/SkillData.md) (2025-12-07)
+- [SkillModifierDef](CHAL/Data/SkillModifierDef.md) (2025-12-26)
+- [SkillModuleDef](CHAL/Data/SkillModuleDef.md) (2025-12-08)
 - [SkillType](CHAL/Data/SkillType.md) (2025-12-07)
 - [SocketType](CHAL/Data/SocketType.md) (2025-11-23)
 - [SocketTypedef](CHAL/Data/SocketTypedef.md) (2025-11-23)
@@ -99,14 +106,20 @@ All documented namespaces and types.
 - [InventoryInstance](CHAL/Systems/Inventory/InventoryInstance.md) (2025-12-07)
 - [InventoryRules](CHAL/Systems/Inventory/InventoryRules.md) (2025-12-07)
 - [ItemStack](CHAL/Systems/Inventory/ItemStack.md) (2025-11-09)
+- [ItemStackRef](CHAL/Systems/Inventory/ItemStackRef.md) (2025-12-27)
 - [MoveRequest](CHAL/Systems/Inventory/MoveRequest.md) (2025-11-09)
 - [Slot](CHAL/Systems/Inventory/Slot.md) (2025-11-09)
 - [TransactionResult](CHAL/Systems/Inventory/TransactionResult.md) (2025-11-09)
 
 #### Items
 
-- [ItemRegistry](CHAL/Systems/Items/ItemRegistry.md) (2025-11-09)
+- [GearModRegistry](CHAL/Systems/Items/GearModRegistry.md) (2025-12-28)
+- [GearRoller](CHAL/Systems/Items/GearRoller.md) (2025-12-28)
+- [ImplicitRegistry](CHAL/Systems/Items/ImplicitRegistry.md) (2025-12-28)
+- [ItemRegistry](CHAL/Systems/Items/ItemRegistry.md) (2025-12-27)
 - [ItemType](CHAL/Systems/Items/ItemType.md) (2025-12-07)
+- [Old_AffixRegistry](CHAL/Systems/Items/Old_AffixRegistry.md) (2025-12-28)
+- [Old_ImplicitRegistry](CHAL/Systems/Items/Old_ImplicitRegistry.md) (2025-12-28)
 
 #### Localization
 
@@ -160,6 +173,8 @@ All documented namespaces and types.
 - [SkillExecuter](CHAL/Systems/Skill/SkillExecuter.md) (2025-12-07)
 - [SkillImpactBase](CHAL/Systems/Skill/SkillImpactBase.md) (2025-11-30)
 - [SkillInstance](CHAL/Systems/Skill/SkillInstance.md) (2025-12-07)
+- [SkillRegistry](CHAL/Systems/Skill/SkillRegistry.md) (2025-12-27)
+- [SkillResolveUtility](CHAL/Systems/Skill/SkillResolveUtility.md) (2025-12-26)
 - [TriggerSkillImpact](CHAL/Systems/Skill/TriggerSkillImpact.md) (2025-12-07)
 
 #### Stats
@@ -213,6 +228,7 @@ All documented namespaces and types.
 
 ## global
 
+- [ArchetypeModuleOverrideDef](global/ArchetypeModuleOverrideDef.md) (2025-12-07)
 - [DamageModifier](global/DamageModifier.md) (2025-11-30)
 - [DebugConfig](global/DebugConfig.md) (2025-11-09)
 - [DebugCraftingRunner](global/DebugCraftingRunner.md) (2025-11-09)
@@ -236,7 +252,11 @@ All documented namespaces and types.
 - [patchCSfiles](global/patchCSfiles.md) (2025-12-07)
 - [ResearchNodeEditorWindow](global/ResearchNodeEditorWindow.md) (2025-12-07)
 - [ResearchTreeeEditor](global/ResearchTreeeEditor.md) (2025-11-09)
+- [ResolvedSkill](global/ResolvedSkill.md) (2025-12-08)
 - [review_agent](global/review_agent.md) (2025-11-09)
 - [RuneForgeConfigEditor](global/RuneForgeConfigEditor.md) (2025-12-07)
 - [SkillDataEditor](global/SkillDataEditor.md) (2025-11-09)
+- [SkillFamilyDef](global/SkillFamilyDef.md) (2025-12-07)
+- [SkillModuleDef](global/SkillModuleDef.md) (2025-12-07)
+- [TagContext](global/TagContext.md) (2025-12-08)
 
