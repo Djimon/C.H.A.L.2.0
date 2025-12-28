@@ -52,6 +52,7 @@ namespace CHAL.Core
         public MapDef pendingMap { get; private set; }
 
         // ---- INVENTORY -----
+        private const string InventoryDefsPath = "data/Inventory";
         public InventoryDomain Inventory { get; private set; }
         public bool InventoryReady { get; private set; }
 
@@ -231,7 +232,7 @@ namespace CHAL.Core
             if (Inventory == null)
                 Inventory = new InventoryDomain();
 
-            BuildPlayerInventoriesFromFolder();
+            BootstrapInventoryDomain();
             BuildInventoryRoutingMaps();
             MapProfileToDomain();
             InventoryReady = true;
@@ -274,7 +275,7 @@ namespace CHAL.Core
             }
 
             //Inventroy
-            BuildPlayerInventoriesFromFolder();
+            BootstrapInventoryDomain();
             BuildInventoryRoutingMaps();
             MapProfileToDomain();
             InventoryReady = true;
@@ -308,7 +309,7 @@ namespace CHAL.Core
 /// </summary>
         public void TestInitInventory()
         {
-            BuildPlayerInventoriesFromFolder();
+            BootstrapInventoryDomain();
             MapProfileToDomain();
         }
 
@@ -327,21 +328,41 @@ namespace CHAL.Core
         }
 
         //INVENTORY
-        private void BuildPlayerInventoriesFromFolder()
+        private void BootstrapInventoryDomain()
         {
-            if (Inventory == null) Inventory = new InventoryDomain();
+            EnsureInventoryDomain();
+            LoadInventoryTemplatesIfNeeded();
+            RegisterPlayerInventoryInstancesFromTemplates();
+        }
 
-            const string path = "data/Inventory";
-            var defs = Resources.LoadAll<InventoryDef>(path);
+        private void EnsureInventoryDomain()
+        {
+            Inventory ??= new InventoryDomain();
+        }
+
+        private void LoadInventoryTemplatesIfNeeded()
+        {
+            if (_inventoryTemplates.Count > 0) return;
+
+            var defs = Resources.LoadAll<InventoryDef>(InventoryDefsPath);
             foreach (var def in defs)
             {
                 if (def == null) continue;
+                _inventoryTemplates[def.TypeId] = def;
+            }
+        }
 
-                // Player-Inventare: alles auÃŸer 'all' (du hast Remains/Parts/Runes/Modules/Gear)
-                if (def.TypeId == PlayerInventoryType.all) continue;
+        private void RegisterPlayerInventoryInstancesFromTemplates()
+        {
+            foreach (var kv in _inventoryTemplates)
+            {
+                var type = kv.Key;
+                var def = kv.Value;
 
-                // Konvention: instanceId = "player_" + enum-name in lowercase
-                string instanceId = "player_" + def.TypeId.ToString().ToLowerInvariant();
+                if (def == null) continue;
+                if (type == PlayerInventoryType.all) continue;
+
+                var instanceId = BuildInstanceId(type);
                 if (Inventory.HasInstance(instanceId)) continue;
 
                 var inst = InventoryInstance.Create(instanceId, def);
@@ -349,11 +370,11 @@ namespace CHAL.Core
             }
         }
 
-/// <summary>
-/// Retrieves the inventory template for the specified player inventory type.
-/// </summary>
-/// <param name="typeId">The type ID of the player inventory.</param>
-/// <returns>The corresponding InventoryDef, or null if not found.</returns>
+        /// <summary>
+        /// Retrieves the inventory template for the specified player inventory type.
+        /// </summary>
+        /// <param name="typeId">The type ID of the player inventory.</param>
+        /// <returns>The corresponding InventoryDef, or null if not found.</returns>
         public InventoryDef GetTemplate(PlayerInventoryType typeId)
         {
             if (_inventoryTemplates.TryGetValue(typeId, out var def)) return def;
