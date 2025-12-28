@@ -30,6 +30,6 @@ namespace CHAL.Data
         Radiant,
         Nullified, // void
         Cthonic, //abyssal
-        Cerebral //psychich
+
     }
 }

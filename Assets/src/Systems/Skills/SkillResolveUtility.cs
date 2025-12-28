@@ -132,9 +132,6 @@ namespace CHAL.Systems.Skill
                     return DamageType.Void;
                 case CoreType.Cthonic:
                     return DamageType.Abyssal;
-                case CoreType.Cerebral:
-                    return DamageType.Psychic;
-
                 default:
                     return module.BaseDamageType;
             }

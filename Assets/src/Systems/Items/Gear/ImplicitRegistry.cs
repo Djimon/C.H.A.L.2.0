@@ -35,13 +35,16 @@ namespace CHAL.Systems.Items
 
                 _byId[id] = d;
 
-                var key = new PoolRoleKey(d.Pool, d.Role);
-                if (!_byPoolRole.TryGetValue(key, out var list))
+                foreach (var pool in d.EnumeratePools())
                 {
-                    list = new List<ImplicitDef>(16);
-                    _byPoolRole[key] = list;
+                    var key = new PoolRoleKey(pool, d.Role);
+                    if (!_byPoolRole.TryGetValue(key, out var list))
+                    {
+                        list = new List<ImplicitDef>(16);
+                        _byPoolRole[key] = list;
+                    }
+                    list.Add(d);
                 }
-                list.Add(d);
             }
         }
 

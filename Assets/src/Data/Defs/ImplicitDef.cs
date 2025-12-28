@@ -17,12 +17,14 @@ namespace CHAL.Data
         public string Id;
 
         [Header("Categorization")]
-        public ImplicitPool Pool;
+        //public ImplicitPool Pool;
         public ImplicitRole Role;
+        public ImplicitPoolBitMask PoolMembership;
 
         [Header("Slot Restrictions (optional)")]
         [Tooltip("If empty, this implicit is allowed on all gear types. If set, it can only roll on these GearTypes.")]
         public GearType[] AllowedGearTypes;
+        
 
         [Header("Effect")]
         [Tooltip("Which stat is modified by this implicit (gear/base stats, not combat buffs).")]
@@ -53,20 +55,19 @@ namespace CHAL.Data
             if (customWeight < 0f) customWeight = 0f;
 
             // Normalize/validate ranges
-            Ranges = Ranges.Normalize();
+            //Ranges = Ranges.Normalize();
+        }
 
-            // Deduplicate AllowedGearTypes
-            if (AllowedGearTypes != null && AllowedGearTypes.Length > 1)
-            {
-                var set = new HashSet<GearType>();
-                var list = new List<GearType>(AllowedGearTypes.Length);
-                for (int i = 0; i < AllowedGearTypes.Length; i++)
-                {
-                    var gt = AllowedGearTypes[i];
-                    if (set.Add(gt)) list.Add(gt);
-                }
-                AllowedGearTypes = list.ToArray();
-            }
+        public IEnumerable<ImplicitPool> EnumeratePools()
+        {
+            // If no mask set, treat as legacy single-pool.
+            var mask = PoolMembership;
+
+            // Fixed order => deterministic, no duplicates.
+            if ((mask & ImplicitPoolBitMask.Melee) != 0) yield return ImplicitPool.Melee;
+            if ((mask & ImplicitPoolBitMask.Ranged) != 0) yield return ImplicitPool.Ranged;
+            if ((mask & ImplicitPoolBitMask.Caster) != 0) yield return ImplicitPool.Caster;
+            if ((mask & ImplicitPoolBitMask.Neutral) != 0) yield return ImplicitPool.Neutral;
         }
 
         public bool Allows(GearType gearType)
@@ -97,6 +98,16 @@ namespace CHAL.Data
         Ranged = 1,
         Caster = 2,
         Neutral = 3
+    }
+
+    [Flags]
+    public enum ImplicitPoolBitMask
+    {
+        None = 0,
+        Melee = 1 << 0,     // 0001
+        Ranged = 1 << 1,    // 0010
+        Caster = 1 << 2,    // 0100
+        Neutral = 1 << 3,   // 1000
     }
 
     [Serializable]
@@ -134,6 +145,8 @@ namespace CHAL.Data
         // Utility
         MovementSpeed = 20,
         ItemRarity = 21,
+        GoldFind = 22,
+        RemainsDop = 23,
 
         // Offense (basic)
         Damage = 30,

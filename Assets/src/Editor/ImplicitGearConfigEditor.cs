@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using CHAL.Data;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
+[Obsolete("LEGACY Editor: kept for reference. New system uses BalanceConfig + ImplicitRegistryDef.", false)]
 [CustomEditor(typeof(ImplicitGearTypeConfig))]
 /// <summary>
 /// Provides a custom editor for the implicit gear type configuration.
@@ -27,6 +28,13 @@ public class ImplicitGearTypeConfigEditor : UnityEditor.Editor
 /// </summary>
     public override void OnInspectorGUI()
     {
+        EditorGUILayout.HelpBox(
+            "LEGACY CONFIG (Deprecated)\n" +
+            "This asset is no longer used by runtime logic.\n" +
+            "New system: BalanceConfig role weights + slot pool weights + ImplicitRegistryDef/ImplicitDef.\n" +
+            "Kept only to reuse the old matrix editor workflow as reference.",
+            MessageType.Warning);
+
         DrawDefaultInspector();
 
         EditorGUILayout.Space();

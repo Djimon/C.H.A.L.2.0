@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2815c02335c67b478e3da58a6dbd4db, type: 3}
+  m_Name: i_Rarity_incr
+  m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ImplicitDef
+  Id: increase_rarity_percent
+  Role: 2
+  PoolMembership: 8
+  AllowedGearTypes: 010000000200000003000000050000000000000004000000
+  Target: 21
+  ValueKind: 1
+  Ranges:
+    Tier1:
+      Min: 1
+      Max: 5
+    Tier2:
+      Min: 5
+      Max: 10
+    Tier3:
+      Min: 10
+      Max: 15
+  customWeight: 1

@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CHAL.Data
 {
-    [CreateAssetMenu(fileName = "ImplicitGearTypeConfig", menuName = "Data/ImplicitGearTypeConfig")]
+    [Obsolete("LEGACY: replaced by BalanceConfig (role weights + slot pool weights) and ImplicitRegistryDef/ImplicitDef. Kept for reference/editor tooling only.", false)]
+    [CreateAssetMenu(fileName = "ImplicitGearTypeConfig (deprecated)", menuName = "Data/ImplicitGearTypeConfig")]
 /// <summary>
 /// Represents the configuration for implicit gear types in the game.
 /// This class inherits from ScriptableObject to allow for easy asset management.

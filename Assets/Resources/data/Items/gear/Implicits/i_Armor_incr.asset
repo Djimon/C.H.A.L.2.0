@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2815c02335c67b478e3da58a6dbd4db, type: 3}
+  m_Name: i_Armor_incr
+  m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ImplicitDef
+  Id: increase_armor_percent
+  Role: 0
+  PoolMembership: 1
+  AllowedGearTypes: 010000000000000003000000
+  Target: 0
+  ValueKind: 1
+  Ranges:
+    Tier1:
+      Min: 1
+      Max: 10
+    Tier2:
+      Min: 10
+      Max: 20
+    Tier3:
+      Min: 20
+      Max: 30
+  customWeight: 1
