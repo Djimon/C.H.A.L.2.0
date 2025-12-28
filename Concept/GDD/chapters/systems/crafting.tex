@@ -484,11 +484,11 @@ A late-game mechanic that permanently increases item potential through tier rein
 \subparagraph{Cost Scaling}
 
 see Cost Multiplicator in Hardening Tiers
-
+% =============================================================
 
 \vspace{1em}
 % =============================================================
-\subsubsection{General Validation Rules}
+\subsubsection*{General Validation Rules}
 
 \begin{itemize}
 	\item Recipes must define $\leq 4$ ingredients and $\leq 1$ booster.
@@ -497,7 +497,6 @@ see Cost Multiplicator in Hardening Tiers
 	\item Atomic transactions: no partial resource consumption.
 	\item Rollback mandatory on any failure path.
 \end{itemize}
-
 
 % =============================================================
 \subsection{Skill Module Crafting}
@@ -622,6 +621,97 @@ VFX are assumed to react to damage type (color/intensity/particles) via a modula
 \vspace{1em}
 % =============================================================
 
+\subsection{Attunement (Endgame)}
+
+\paragraph{Purpose}
+
+Attunement is an endgame progression system that creates \textbf{meaningful specialization} into either Holy or Daemonic defense while enforcing \textbf{strategic trade-offs} (resistance vs.\ one mythic damage type at the cost of vulnerability to the opposite).
+It is designed to:
+
+\begin{itemize}
+	\item Provide a \textbf{clear late-game build identity} per hero (Holy-aligned vs.\ Daemonic-aligned), encouraging distinct roster roles rather than a single universal character.
+	\item Turn \textbf{Map Consecration / Desecration} into a high-impact endgame decision that alters enemy composition (tags and damage conversion) and thereby increases the chance for \textbf{higher-quality loot} (e.g., \texttt{rarity: mythic}) and improved crafting materials.
+	\item Establish a deliberate \textbf{grind loop with variety}: Holy-aligned progress depends on farming Daemonic enemies (and vice versa), ensuring that the optimal path involves alternating content types instead of repeating the same setup indefinitely.
+	\item Encourage \textbf{hero rotation} as a core endgame behavior: due to opposing-essence requirements and the vulnerability created by extreme attunement, players are incentivized to swap between specialized heroes rather than continuously pushing only one character.
+\end{itemize}
+
+\paragraph{Sequence}
+
+\begin{center}
+	\begin{tikzpicture}[node distance=1.2cm]
+		\node[draw,rounded corners,fill=gray!15,minimum width=5.5cm] (choosemap) {Select Map \& Choose: Consecrate / Desecrate};
+		\node[draw,rounded corners,fill=gray!15,below of=choosemap] (infuse) {Apply Map Rite: Enemies gain Holy / Daemonic Tag (x\%)};
+		\node[draw,rounded corners,fill=gray!15,below of=infuse] (farm) {Run Map \& Farm Opposing Essence Drops};
+		\node[draw,rounded corners,fill=gray!15,below of=farm] (altar) {Use Altar: Select Hero \& Attunement Direction};
+		\node[draw,rounded corners,fill=gray!15,below of=altar] (pay) {Pay Essence Cost (Account-wide Storage)};
+		\node[draw,rounded corners,fill=gray!15,below of=pay] (gain) {Gain Attunement Tier (+1 Step)};
+		\path[->] (choosemap) edge (infuse)
+		(infuse) edge (farm)
+		(farm) edge (altar)
+		(altar) edge (pay)
+		(pay) edge (gain);
+	\end{tikzpicture}
+\end{center}
+
+\subsubsection*{Description}
+
+Each hero can be attuned towards exactly one of two opposing mythic alignments: \textbf{Holy} or \textbf{Daemonic}.
+Attunement provides \textbf{tiered resistance} against one mythic damage type while simultaneously causing a \textbf{tiered vulnerability} against the opposing type.
+Different heroes may specialize into different attunement directions.
+
+\medskip
+\noindent
+\textbf{Core rule:}
+\begin{itemize}
+	\item High \textbf{Holy Attunement} $\Rightarrow$ high resistance vs.\ Holy damage \emph{and} high vulnerability vs.\ Daemonic damage.
+	\item High \textbf{Daemonic Attunement} $\Rightarrow$ high resistance vs.\ Daemonic damage \emph{and} high vulnerability vs.\ Holy damage.
+	\item Attunement is expressed in \textbf{fixed tiers} (not a continuously scaled value).
+\end{itemize}
+
+\begin{center}
+	\begin{tabular}{c|l|l}
+		\textbf{Tier} & \textbf{Holy} & \textbf{Daemonic} \\
+		\hline
+		1 & Blessed     & Tainted  \\
+		2 & Sanctified  & Fallen   \\
+		3 & Celestial   & Infernal \\
+		4 & Seraphic    & Diabolic \\
+	\end{tabular}
+\end{center}
+
+\noindent
+\textbf{Essence-driven progression:}
+\begin{itemize}
+	\item Increasing attunement requires \textbf{Essences}. Each tier costs a \textbf{multiple} of the previous tier's cost.
+	\item To gain \textbf{Holy Attunement}, the player must spend \textbf{Daemonic Essence} (dropped by enemies tagged \texttt{Daemonic}).
+	\item To gain \textbf{Daemonic Attunement}, the player must spend \textbf{Holy Essence} (dropped by enemies tagged \texttt{Holy}).
+\end{itemize}
+
+\noindent
+\textbf{Map rites (Consecration / Desecration):}
+\begin{itemize}
+	\item Once \textbf{Map Consecration} is researched, the player may choose per map whether to \textbf{Consecrate} (Holy) or \textbf{Desecrate} (Daemonic) it.
+	\item Higher rite levels can be researched. At higher levels, a larger share of enemies is affected.
+	\item If a map is \textbf{Consecrated}, then \textbf{x\%} of all enemies gain the \texttt{Holy} tag and their damage is converted to \textbf{Holy}.
+	\item If a map is \textbf{Desecrated}, then \textbf{x\%} of all enemies gain the \texttt{Daemonic} tag and their damage is converted to \textbf{Daemonic}.
+\end{itemize}
+
+\noindent
+\textbf{Intentional design decision (grind / roster play):}
+To maximize attunement, the player is deliberately encouraged (and eventually forced) to \textbf{rotate between multiple heroes} and alternate farming of opposing essence types.
+
+\subsubsection*{Execution}
+
+To attune a hero, the player interacts with the \textbf{Altar} and selects a hero.
+The Altar automatically displays the hero's current attunement tier and the essence costs for the next tier.
+
+\begin{itemize}
+	\item The player chooses the attunement direction (\textbf{Holy} or \textbf{Daemonic}). Only \textbf{one step} can be taken at a time.
+	\item If sufficient essences are available, the player presses \textbf{Attune} to increase the tier by one.
+	\item Essences are consumed on use. Essences are \textbf{account-wide} (not bound to a specific hero) and can be collected globally.
+\end{itemize}
+
+% =============================================================
 
 \subsection{Rune Crafting}
 Future Idea for endgame progression of skills/heroes
