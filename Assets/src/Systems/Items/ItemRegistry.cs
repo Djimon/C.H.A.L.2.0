@@ -229,6 +229,10 @@ namespace CHAL.Systems.Items
             }
         }
 
+/// <summary>
+/// Exports the item index to a CSV file at the specified output path.
+/// </summary>
+/// <param name="outputPath">The path where the CSV file will be saved.</param>
         public void ExportItemIndexCsv(string outputPath)
         {
             if (string.IsNullOrWhiteSpace(outputPath))

@@ -24,8 +24,17 @@ namespace CHAL.Systems.Inventory
         /// <param name="newCount">The new count for the ItemStack.</param>
         /// <returns>A new instance of ItemStack with the updated count.</returns>
         public ItemStackRef WithCount(int newCount) => new ItemStackRef(itemID, newCount, instanceId);
+/// <summary>
+/// Creates a new ItemStackRef with the specified instance ID.
+/// </summary>
+/// <param name="newInstanceId">The new instance ID to set.</param>
+/// <returns>A new ItemStackRef object.</returns>
         public ItemStackRef WithInstance(string newInstanceId) => new ItemStackRef(itemID, count, newInstanceId);
 
+/// <summary>
+/// Returns a string representation of the object, including item ID and count.
+/// </summary>
+/// <returns>A formatted string with item details.</returns>
         public override string ToString()
             => IsInstanced ? $"{itemID} x{count} (inst:{instanceId})" : $"{itemID} x{count}";
 

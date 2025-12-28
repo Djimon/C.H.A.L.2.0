@@ -415,6 +415,11 @@ namespace CHAL.Data
             }
         }
 
+/// <summary>
+/// Retrieves the hero progress data for the specified hero ID, or creates a new entry if it does not exist.
+/// </summary>
+/// <param name="heroId">The ID of the hero.</param>
+/// <returns>The hero progress data associated with the hero ID, or null if the ID is empty.</returns>
         public HeroProgressData GetOrCreateHeroProgress(string heroId)
         {
             if (string.IsNullOrEmpty(heroId))
@@ -443,6 +448,10 @@ namespace CHAL.Data
             return hp;
         }
 
+/// <summary>
+/// Updates the hero's progress based on the provided hero instance.
+/// </summary>
+/// <param name="inst">The hero instance containing progress data.</param>
         public void UpdateHeroProgressFromInstance(HeroInstance inst)
         {
             if (inst == null || inst.heroDef == null)
