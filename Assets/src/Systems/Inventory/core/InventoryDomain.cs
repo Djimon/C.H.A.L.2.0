@@ -139,6 +139,14 @@ namespace CHAL.Systems.Inventory
             return true;
         }
 
+/// <summary>
+/// Attempts to set an item stack in a specified slot of an instance.
+/// Returns true if the operation was successful; otherwise, false.
+/// </summary>
+/// <param name="instanceId">The ID of the instance to modify.</param>
+/// <param name="slotIndex">The index of the slot to set.</param>
+/// <param name="stack">The item stack reference to set, or null to clear the slot.</param>
+/// <returns>True if the item stack was set successfully; otherwise, false.</returns>
         public bool TrySetSlot(string instanceId, int slotIndex, ItemStackRef? stack)
         {
             if (!_instances.TryGetValue(instanceId, out var inv) || inv?.slots == null)

@@ -734,6 +734,10 @@ namespace CHAL.Core
         }
 
 
+/// <summary>
+/// Registers a new gear instance if it is valid.
+/// </summary>
+/// <param name="gear">The gear instance to register.</param>
         public void RegisterGearInstance(GearInstance gear)
         {
             if (gear == null)
@@ -756,6 +760,12 @@ namespace CHAL.Core
             _gearInstances[gear.instanceId] = gear;
         }
 
+/// <summary>
+/// Tries to get a gear instance by its instance ID.
+/// </summary>
+/// <param name="instanceId">The ID of the gear instance to retrieve.</param>
+/// <param name="gear">The retrieved gear instance, if found.</param>
+/// <returns>True if the gear instance was found; otherwise, false.</returns>
         public bool TryGetGearInstance(string instanceId, out GearInstance gear)
         {
             if (string.IsNullOrWhiteSpace(instanceId))
@@ -766,6 +776,11 @@ namespace CHAL.Core
             return _gearInstances.TryGetValue(instanceId, out gear);
         }
 
+/// <summary>
+/// Removes a gear instance identified by the given instance ID.
+/// </summary>
+/// <param name="instanceId">The ID of the gear instance to remove.</param>
+/// <returns>True if the instance was successfully removed; otherwise, false.</returns>
         public bool RemoveGearInstance(string instanceId)
         {
             if (string.IsNullOrWhiteSpace(instanceId))

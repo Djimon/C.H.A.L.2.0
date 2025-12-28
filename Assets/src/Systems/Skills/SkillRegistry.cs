@@ -11,6 +11,9 @@ namespace CHAL.Systems.Skill
     public sealed class SkillRegistry : ScriptableObject
     {
         private static SkillRegistry _instance;
+/// <summary>
+/// Gets the singleton instance of the SkillRegistry.
+/// </summary>
         public static SkillRegistry Instance
         {
             get
@@ -30,6 +33,12 @@ namespace CHAL.Systems.Skill
 
         private readonly Dictionary<string, SkillModuleDef> _byId = new();
 
+/// <summary>
+/// Reloads the skill definitions from resources.
+/// </summary>
+/// <summary>
+/// Reloads the skill definitions from resources.
+/// </summary>
         public void Reload()
         {
             _byId.Clear();
@@ -60,6 +69,11 @@ namespace CHAL.Systems.Skill
                 DebugManager.EDebugLevel.Production, "System");
         }
 
+/// <summary>
+/// Retrieves a skill module definition by its unique identifier.
+/// </summary>
+/// <param name="skillId">The unique identifier of the skill.</param>
+/// <returns>The skill module definition if found; otherwise, null.</returns>
         public SkillModuleDef GetById(string skillId)
         {
             return _byId.TryGetValue(skillId, out var def) ? def : null;

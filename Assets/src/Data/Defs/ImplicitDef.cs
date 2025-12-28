@@ -58,6 +58,10 @@ namespace CHAL.Data
             //Ranges = Ranges.Normalize();
         }
 
+/// <summary>
+/// Enumerates the available implicit pools based on the current membership mask.
+/// </summary>
+/// <returns>An enumerable collection of implicit pools.</returns>
         public IEnumerable<ImplicitPool> EnumeratePools()
         {
             // If no mask set, treat as legacy single-pool.
@@ -70,6 +74,11 @@ namespace CHAL.Data
             if ((mask & ImplicitPoolBitMask.Neutral) != 0) yield return ImplicitPool.Neutral;
         }
 
+/// <summary>
+/// Determines if the specified gear type is allowed.
+/// </summary>
+/// <param name="gearType">The gear type to check.</param>
+/// <returns>True if the gear type is allowed; otherwise, false.</returns>
         public bool Allows(GearType gearType)
         {
             if (AllowedGearTypes == null || AllowedGearTypes.Length == 0) return true;
@@ -177,6 +186,10 @@ namespace CHAL.Data
             Max = max;
         }
 
+/// <summary>
+/// Normalizes the roll range by ensuring the minimum is less than or equal to the maximum.
+/// </summary>
+/// <returns>The normalized roll range.</returns>
         public RollRange Normalize()
         {
             if (Min > Max)
@@ -199,6 +212,10 @@ namespace CHAL.Data
         public RollRange Tier2;
         public RollRange Tier3;
 
+/// <summary>
+/// Normalizes the tiers of the roll range.
+/// </summary>
+/// <returns>A normalized instance of the TieredRollRange.</returns>
         public TieredRollRange Normalize()
         {
             Tier1 = Tier1.Normalize();
