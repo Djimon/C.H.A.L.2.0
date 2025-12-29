@@ -40,6 +40,17 @@ MonoBehaviour:
       elite: 7
       boss: 25
       champion: 100
+  waves:
+    budgetPoints:
+      spawn: 5
+      normal: 10
+      magic: 15
+      elite: 30
+      boss: 50
+      champion: 100
+    scalingIncrfeasedPercent:
+      hpPerLevel: 30
+      dmgPerLevel: 20
   enemies:
     budgetPoints:
       spawn: 1
@@ -188,7 +199,7 @@ MonoBehaviour:
         synergy: 0.25
         utility: 0.25
     affixRules:
-      allowDuplicateAffixId: 0
+      allowDuplicateAffixIdPerItem: 0
       categoryCaps:
         globalCaps:
         - category: 1

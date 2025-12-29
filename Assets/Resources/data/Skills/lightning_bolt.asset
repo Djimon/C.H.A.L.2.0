@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillId: lightning_bolt
   DisplayName: Lightning Bolt
-  AttributeAffinity: 0
+  AttributeAffinity: 1
   BaseDamage: 5
   minRequiredTier: 1
   BaseDamageType: 3

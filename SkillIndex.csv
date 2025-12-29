@@ -1,7 +1,7 @@
 ﻿Attribute,Tier,SkillId,Type,Core
+DEX,1,lightning_bolt,Ranged,Static,
+INT,1,ice_bomb,Spell,Glacial,
+INT,1,spell_fireball,Spell,Blazing,
 STR,1,base_attack,Melee,Basic,
 STR,1,base_attack_ranged,Ranged,Basic,
 STR,1,bladestorm,Melee,Basic,
-STR,1,ice_bomb,Spell,Glacial,
-STR,1,lightning_bolt,Ranged,Static,
-STR,1,spell_fireball,Spell,Blazing,

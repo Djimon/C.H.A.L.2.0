@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2815c02335c67b478e3da58a6dbd4db, type: 3}
   m_Name: i_Life_incr
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ImplicitDef
-  Id: increase_life_percent
+  ImplicitId: incr_life_percent
   Role: 1
   PoolMembership: 8
   AllowedGearTypes: 0100000002000000030000000500000000000000

@@ -17,7 +17,6 @@ namespace CHAL.Data
 
         public int[] wavesRequiredPerLevel = new int[100];
 
-        //TODO: Insert nice Level Curve visual (with movable points) in custom Editor
         public AnimationCurve wavesCurve = new AnimationCurve();
 
         /// <summary>

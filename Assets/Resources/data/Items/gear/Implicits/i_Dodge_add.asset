@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2815c02335c67b478e3da58a6dbd4db, type: 3}
   m_Name: i_Dodge_add
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ImplicitDef
-  Id: add_dodge_flat
+  ImplicitId: add_dodge_flat
   Role: 0
   PoolMembership: 2
   AllowedGearTypes: 01000000000000000300000005000000

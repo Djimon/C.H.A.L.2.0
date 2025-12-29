@@ -9,23 +9,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2815c02335c67b478e3da58a6dbd4db, type: 3}
-  m_Name: i_Thorns_add
-  m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ImplicitDef
-  ImplicitId: add_thorns_flat
-  Role: 0
-  PoolMembership: 1
-  AllowedGearTypes: 010000000300000000000000
-  Target: 33
+  m_Script: {fileID: 11500000, guid: b739e8bec8d3d7e448e18d6f8920b73a, type: 3}
+  m_Name: a_to_STR
+  m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.AffixDef
+  AffixId: add_str_flat
+  Category: 1
+  FamilyMembership: 1
+  AllowedGearTypes: 
+  Target: 40
   ValueKind: 0
   Ranges:
     Tier1:
       Min: 1
-      Max: 5
+      Max: 7
     Tier2:
-      Min: 5
-      Max: 12
+      Min: 7
+      Max: 15
     Tier3:
-      Min: 12
-      Max: 24
+      Min: 15
+      Max: 25
   customWeight: 1

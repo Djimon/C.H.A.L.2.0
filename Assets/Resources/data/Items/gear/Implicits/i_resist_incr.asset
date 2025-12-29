@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2815c02335c67b478e3da58a6dbd4db, type: 3}
   m_Name: i_resist_incr
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ImplicitDef
-  Id: increase_elemental_resistance_percent
+  ImplicitId: incr_elem_resis_percent
   Role: 0
   PoolMembership: 8
   AllowedGearTypes: 01000000000000000300000005000000

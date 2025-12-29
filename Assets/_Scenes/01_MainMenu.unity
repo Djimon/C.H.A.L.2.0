@@ -331,6 +331,7 @@ MonoBehaviour:
   researchTree: {fileID: 11400000, guid: c3345df8e3b12a8418a76b89cc04dbbd, type: 2}
   researchNodes: []
   implicitRegistrySO: {fileID: 11400000, guid: e44a2ac9f225db84aa018a2e87fb0594, type: 2}
+  affixRegistryDef: {fileID: 11400000, guid: 828f99e6346866e47aceff815542a39d, type: 2}
 --- !u!1 &1482080552
 GameObject:
   m_ObjectHideFlags: 0

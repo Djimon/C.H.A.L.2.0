@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2815c02335c67b478e3da58a6dbd4db, type: 3}
   m_Name: i_gold_incr
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ImplicitDef
-  Id: increase_gold_percent
+  ImplicitId: incr_gold_found_percent
   Role: 2
   PoolMembership: 8
   AllowedGearTypes: 010000000200000003000000050000000000000004000000

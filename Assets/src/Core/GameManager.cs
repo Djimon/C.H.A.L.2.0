@@ -76,8 +76,6 @@ namespace CHAL.Core
 
 
         // Gearing
-        public ImplicitRegistryDef implicitRegistrySO;
-        public AffixRegistryDef affixRegistryDef;
         public GearModRegistry gearModRegistry;
         public GearRoller gearRoller { get; private set; }
 
@@ -134,7 +132,7 @@ namespace CHAL.Core
 
             Unlucky ??= new UnluckyProtection();
             Stats = new StatisticsService();
-            gearModRegistry = new GearModRegistry(implicitRegistrySO,affixRegistryDef);
+            gearModRegistry = new GearModRegistry();
             gearRoller = new GearRoller(BalanceConfig, gearModRegistry);
 
             if (Profile != null)

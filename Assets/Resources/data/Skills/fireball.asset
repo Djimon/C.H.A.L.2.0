@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillId: spell_fireball
   DisplayName: Fireball
-  AttributeAffinity: 0
+  AttributeAffinity: 3
   BaseDamage: 10
   minRequiredTier: 1
   BaseDamageType: 1

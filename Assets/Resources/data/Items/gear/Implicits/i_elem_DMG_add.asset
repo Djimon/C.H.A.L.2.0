@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2815c02335c67b478e3da58a6dbd4db, type: 3}
   m_Name: i_elem_DMG_add
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ImplicitDef
-  Id: add_elemental_damage_flat
+  ImplicitId: add_elem_dmg_flat
   Role: 1
   PoolMembership: 6
   AllowedGearTypes: 01000000020000000300000005000000

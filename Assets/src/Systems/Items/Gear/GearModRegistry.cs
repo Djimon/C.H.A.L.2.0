@@ -1,7 +1,10 @@
 // File: Assets/src/CHAL/Systems/Gear/GearModRegistry.cs
+using CHAL.Data;
 using System;
 using System.Collections.Generic;
-using CHAL.Data;
+using System.IO;
+using System.Text;
+using UnityEngine;
 
 namespace CHAL.Systems.Items
 {
@@ -19,23 +22,113 @@ namespace CHAL.Systems.Items
         private readonly Dictionary<AffixFamily, List<AffixDef>> _affixByFamily = new();
 
         // --- ctor builds everything once (same pattern as current ImplicitRegistry) ---
-        public GearModRegistry(ImplicitRegistryDef implicitsDef, AffixRegistryDef affixesDef)
+        public GearModRegistry()
         {
-            BuildImplicits(implicitsDef);
-            BuildAffixes(affixesDef);
+            //                           data\Items\gear\Implicits
+            BuildImplicitsFromResources("data/Items/gear/Implicits");
+            BuildAffixesFromResources("data/Items/gear/Affixes");
+
+            DebugManager.Log($"[GearModRegistry] Loaded Implicits: {_implicitById.Count} / Affixes: {_affixById.Count}",DebugManager.EDebugLevel.Production,"System");
+
+            ExportModsCsv("../GearModIndex.csv");
         }
 
         // =====================================================================
         // PUBLIC API (unified facade)
         // =====================================================================
 
-/// <summary>
-/// Attempts to retrieve an implicit definition by its identifier.
-/// Returns false if the identifier is null or empty, or if the definition is not found.
-/// </summary>
-/// <param name="implicitId">The identifier of the implicit definition to retrieve.</param>
-/// <param name="def">The output parameter that will hold the implicit definition if found.</param>
-/// <returns>True if the implicit definition was found; otherwise, false.</returns>
+
+        public void ExportModsCsv(string outputPath)
+        {
+            if (string.IsNullOrWhiteSpace(outputPath))
+            {
+                DebugManager.Warning("[GearModRegistry] ExportModsCsv: outputPath is null/empty.");
+                return;
+            }
+
+            try
+            {
+                // If relative path: interpret relative to Assets folder
+                var finalPath = Path.IsPathRooted(outputPath)
+                    ? outputPath
+                    : Path.GetFullPath(Path.Combine(Application.dataPath, outputPath));
+
+                var rows = new List<ModCsvRow>(_implicitById.Count + _affixById.Count);
+
+                // ---- Implicits ----
+                foreach (var kv in _implicitById)
+                {
+                    var d = kv.Value;
+                    if (d == null) continue;
+
+                    rows.Add(new ModCsvRow
+                    {
+                        type = "implicit",
+                        id = kv.Key, // use dictionary key -> robust even if field names change
+                        target = d.Target.ToString(),
+                        valueKind = d.ValueKind.ToString(),
+                        membership = ToPipe(d.PoolMembership),
+                        categoryOrRole = d.Role.ToString(),
+                        allowedGearTypes = GearTypesToPipe(d.AllowedGearTypes)
+                    });
+                }
+
+                // ---- Affixes ----
+                foreach (var kv in _affixById)
+                {
+                    var d = kv.Value;
+                    if (d == null) continue;
+
+                    rows.Add(new ModCsvRow
+                    {
+                        type = "affix",
+                        id = kv.Key, // use dictionary key
+                        target = d.Target.ToString(),
+                        valueKind = d.ValueKind.ToString(),
+                        membership = ToPipe(d.FamilyMembership),
+                        categoryOrRole = d.Category.ToString(),
+                        allowedGearTypes = GearTypesToPipe(d.AllowedGearTypes)
+                    });
+                }
+
+                // Sort: type -> categoryOrRole -> target -> id
+                rows.Sort(ModCsvRowComparer);
+
+                var sb = new StringBuilder(64 * 1024);
+                sb.AppendLine("type,id,target,valueKind,membership,categoryOrRole,allowedGearTypes");
+
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    var r = rows[i];
+                    sb.Append(Csv(r.type)).Append(',')
+                      .Append(Csv(r.id)).Append(',')
+                      .Append(Csv(r.target)).Append(',')
+                      .Append(Csv(r.valueKind)).Append(',')
+                      .Append(Csv(r.membership)).Append(',')
+                      .Append(Csv(r.categoryOrRole)).Append(',')
+                      .Append(Csv(r.allowedGearTypes)).AppendLine();
+                }
+
+                var dir = Path.GetDirectoryName(finalPath);
+                if (!string.IsNullOrWhiteSpace(dir))
+                    Directory.CreateDirectory(dir);
+
+                File.WriteAllText(finalPath, sb.ToString(), Encoding.UTF8);
+                DebugManager.Log($"[GearModRegistry] Exported gear mods CSV: {finalPath}", DebugManager.EDebugLevel.Production, "System");
+            }
+            catch (Exception ex)
+            {
+                DebugManager.Warning($"[GearModRegistry] ExportModsCsv failed: {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Attempts to retrieve an implicit definition by its identifier.
+        /// Returns false if the identifier is null or empty, or if the definition is not found.
+        /// </summary>
+        /// <param name="implicitId">The identifier of the implicit definition to retrieve.</param>
+        /// <param name="def">The output parameter that will hold the implicit definition if found.</param>
+        /// <returns>True if the implicit definition was found; otherwise, false.</returns>
         public bool TryGetImplicit(string implicitId, out ImplicitDef def)
         {
             def = null;
@@ -114,21 +207,27 @@ namespace CHAL.Systems.Items
         // BUILD: IMPLICITS
         // =====================================================================
 
-        private void BuildImplicits(ImplicitRegistryDef def)
+        private void BuildImplicitsFromResources(string resourcesPath)
         {
             _implicitById.Clear();
             _implicitByPoolRole.Clear();
 
-            if (def == null || def.Implicits == null)
+            if (string.IsNullOrWhiteSpace(resourcesPath))
             {
-                DebugManager.Error("[GearModRegistry] ImplicitRegistryDef missing or empty.", "System");
+                DebugManager.Error("[GearModRegistry] BuildImplicitsFromResources: path is empty.", "System");
                 return;
             }
 
-            var list = def.Implicits;
-            for (int i = 0; i < list.Count; i++)
+            var all = Resources.LoadAll<ImplicitDef>(resourcesPath);
+            if (all == null || all.Length == 0)
             {
-                var d = list[i];
+                DebugManager.Warning($"[GearModRegistry] No ImplicitDef found at Resources/{resourcesPath}", "System");
+                return;
+            }
+
+            for (int i = 0; i < all.Length; i++)
+            {
+                var d = all[i];
                 if (d == null) continue;
 
                 var id = (d.ImplicitId ?? string.Empty).Trim();
@@ -155,28 +254,27 @@ namespace CHAL.Systems.Items
             }
         }
 
-        private static int MakePoolRoleKey(int poolMask, int role)
-            => (poolMask << 8) ^ role;
-
-        // =====================================================================
-        // BUILD: AFFIXES
-        // =====================================================================
-
-        private void BuildAffixes(AffixRegistryDef def)
+        private void BuildAffixesFromResources(string resourcesPath)
         {
             _affixById.Clear();
             _affixByFamily.Clear();
 
-            if (def == null || def.Affixes == null)
+            if (string.IsNullOrWhiteSpace(resourcesPath))
             {
-                DebugManager.Error("[GearModRegistry] AffixRegistryDef missing or empty.", "System");
+                DebugManager.Error("[GearModRegistry] BuildAffixesFromResources: path is empty.", "System");
                 return;
             }
 
-            var list = def.Affixes;
-            for (int i = 0; i < list.Count; i++)
+            var all = Resources.LoadAll<AffixDef>(resourcesPath);
+            if (all == null || all.Length == 0)
             {
-                var d = list[i];
+                DebugManager.Warning($"[GearModRegistry] No AffixDef found at Resources/{resourcesPath}", "System");
+                return;
+            }
+
+            for (int i = 0; i < all.Length; i++)
+            {
+                var d = all[i];
                 if (d == null) continue;
 
                 var id = (d.AffixId ?? string.Empty).Trim();
@@ -201,5 +299,104 @@ namespace CHAL.Systems.Items
                 }
             }
         }
+
+       
+        private static int MakePoolRoleKey(int poolMask, int role)
+            => (poolMask << 8) ^ role;
+
+
+        // ==========================
+        // Internals (CSV helpers)
+        // ==========================
+
+        private struct ModCsvRow
+        {
+            public string type;
+            public string id;
+            public string target;
+            public string valueKind;
+            public string membership;
+            public string categoryOrRole;
+            public string allowedGearTypes;
+        }
+
+        private static int ModCsvRowComparer(ModCsvRow a, ModCsvRow b)
+        {
+            int c;
+
+            c = StringComparer.OrdinalIgnoreCase.Compare(a.type, b.type);
+            if (c != 0) return c;
+
+            c = StringComparer.OrdinalIgnoreCase.Compare(a.categoryOrRole, b.categoryOrRole);
+            if (c != 0) return c;
+
+            c = StringComparer.OrdinalIgnoreCase.Compare(a.target, b.target);
+            if (c != 0) return c;
+
+            return StringComparer.OrdinalIgnoreCase.Compare(a.id, b.id);
+        }
+
+        private static string Csv(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            var needsQuote = s.Contains(',') || s.Contains('"') || s.Contains('\n') || s.Contains('\r');
+            if (!needsQuote) return s;
+            return "\"" + s.Replace("\"", "\"\"") + "\"";
+        }
+
+        private static string GearTypesToPipe(GearType[] allowed)
+        {
+            if (allowed == null || allowed.Length == 0) return "*";
+
+            // Deterministic, no spaces
+            var sb = new StringBuilder(64);
+            for (int i = 0; i < allowed.Length; i++)
+            {
+                if (i > 0) sb.Append('|');
+                sb.Append(allowed[i].ToString());
+            }
+            return sb.ToString();
+        }
+
+        private static string ToPipe(ImplicitPoolBitMask mask)
+        {
+            if (mask == 0) return "None";
+
+            var sb = new StringBuilder(32);
+            bool first = true;
+
+            foreach (ImplicitPoolBitMask v in Enum.GetValues(typeof(ImplicitPoolBitMask)))
+            {
+                if (v == 0) continue;
+                if ((mask & v) == 0) continue;
+
+                if (!first) sb.Append('|');
+                sb.Append(v.ToString());
+                first = false;
+            }
+
+            return first ? "None" : sb.ToString();
+        }
+
+        private static string ToPipe(AffixFamilyBitMask mask)
+        {
+            if (mask == 0) return "None";
+
+            var sb = new StringBuilder(32);
+            bool first = true;
+
+            foreach (AffixFamilyBitMask v in Enum.GetValues(typeof(AffixFamilyBitMask)))
+            {
+                if (v == 0) continue;
+                if ((mask & v) == 0) continue;
+
+                if (!first) sb.Append('|');
+                sb.Append(v.ToString());
+                first = false;
+            }
+
+            return first ? "None" : sb.ToString();
+        }
+
     }
 }
