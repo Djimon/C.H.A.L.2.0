@@ -23,6 +23,15 @@ namespace CHAL.Systems.Items
         // ==========================
         // IMPLICITS
         // ==========================
+/// <summary>
+/// Rolls implicit modifiers for a given gear type and armor class.
+/// </summary>
+/// <param name="gearType">The type of gear to roll for.</param>
+/// <param name="armorClass">The armor class associated with the gear.</param>
+/// <param name="baseTier">The base tier of the gear.</param>
+/// <param name="rng">The random number generator to use for rolling.</param>
+/// <param name="outRolls">An optional list to store the resulting rolls.</param>
+/// <returns>A list of implicit rolls generated.</returns>
         public List<ImplicitRoll> RollImplicits(
             GearType gearType,
             ArmorClass armorClass,
@@ -233,6 +242,16 @@ namespace CHAL.Systems.Items
         // AFFIXES
         // ==========================
 
+/// <summary>
+/// Rolls affixes for a given gear type and base tier.
+/// Optionally, it can use a specified random number generator and chosen family.
+/// </summary>
+/// <param name="gearType">The type of gear to roll affixes for.</param>
+/// <param name="baseTier">The base tier of the gear.</param>
+/// <param name="rng">The random number generator to use.</param>
+/// <param name="chosenFamily">An optional chosen affix family.</param>
+/// <param name="outRolls">An optional list to store the resulting rolls.</param>
+/// <returns>A list of rolled affixes.</returns>
         public List<AffixRoll> RollAffixes(
             GearType gearType,
             GearBaseTier baseTier,

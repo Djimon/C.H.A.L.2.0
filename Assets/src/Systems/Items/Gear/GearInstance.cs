@@ -24,6 +24,12 @@ namespace CHAL.Data
 
         //public bool isIdentified = true;
 
+/// <summary>
+/// Creates a new instance of GearInstance with specified gear definition and base tier.
+/// </summary>
+/// <param name="gearDefId">The identifier for the gear definition.</param>
+/// <param name="baseTier">The base tier of the gear.</param>
+/// <returns>A new GearInstance object.</returns>
         public static GearInstance CreateNew(string gearDefId, GearBaseTier baseTier)
         {
             return new GearInstance
@@ -36,12 +42,22 @@ namespace CHAL.Data
             };
         }
 
+/// <summary>
+/// Returns a string representation of the GearInstance.
+/// </summary>
+/// <returns>A formatted string with instance details.</returns>
         public override string ToString()
         {
             return $"GearInstance(id={instanceId}, def={gearItemId}, tier={baseTier}, implicits={implicits?.Count ?? 0}, affixes={affixes?.Count ?? 0})";
         }
 
 
+/// <summary>
+/// Attempts to add an implicit roll to the collection if the maximum limit is not reached.
+/// </summary>
+/// <param name="roll">The implicit roll to add.</param>
+/// <param name="maxAllowed">The maximum number of implicit rolls allowed.</param>
+/// <returns>True if the roll was added; otherwise, false.</returns>
         public bool TryAddImplicit(ImplicitRoll roll, int maxAllowed)
         {
             if (implicits == null)
@@ -54,6 +70,13 @@ namespace CHAL.Data
             return true;
         }
 
+/// <summary>
+/// Tries to add an affix to the collection if the maximum allowed is not exceeded.
+/// Returns true if the affix was added successfully; otherwise, false.
+/// </summary>
+/// <param name="roll">The affix roll to add.</param>
+/// <param name="maxAllowed">The maximum number of affixes allowed.</param>
+/// <returns>True if the affix was added; otherwise, false.</returns>
         public bool TryAddAffix(AffixRoll roll, int maxAllowed)
         {
             if (affixes == null)

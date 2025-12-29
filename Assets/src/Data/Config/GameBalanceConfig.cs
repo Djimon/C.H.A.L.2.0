@@ -200,6 +200,11 @@ namespace CHAL.Data
             public GearTierSlotCaps tier2;
             public GearTierSlotCaps tier3;
 
+/// <summary>
+/// Gets the slot capabilities for the specified gear tier.
+/// </summary>
+/// <param name="tier">The gear base tier to get capabilities for.</param>
+/// <returns>The gear tier slot capabilities.</returns>
             public GearTierSlotCaps GetCaps(GearBaseTier tier)
             {
                 return tier switch
@@ -232,6 +237,9 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
+/// <summary>
+/// Represents a collection of weights for different slot pools.
+/// </summary>
         public struct SlotPoolWeights
         {
             [Range(0f, 1f)] public float main;
@@ -248,6 +256,9 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
+/// <summary>
+/// Represents a collection of weights for different affix families.
+/// </summary>
         public struct AffixFamilyWeights
         {
             [Range(0f, 1f)] public float core;
@@ -255,6 +266,9 @@ namespace CHAL.Data
             [Range(0f, 1f)] public float synergy;
             [Range(0f, 1f)] public float utility;
 
+/// <summary>
+/// Normalizes the values of core, defensive, synergy, and utility.
+/// </summary>
             public void Normalize()
             {
                 var sum = core + defensive + synergy + utility;

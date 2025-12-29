@@ -79,9 +79,23 @@ namespace CHAL.Systems.Skill
             return _byId.TryGetValue(skillId, out var def) ? def : null;
         }
 
+/// <summary>
+/// Tries to retrieve a skill module definition by its skill ID.
+/// </summary>
+/// <param name="skillId">The ID of the skill to retrieve.</param>
+/// <param name="def">The skill module definition if found; otherwise, null.</param>
+/// <returns>True if the skill was found; otherwise, false.</returns>
         public bool TryGet(string skillId, out SkillModuleDef def) => _byId.TryGetValue(skillId, out def);
 
+/// <summary>
+/// Gets all skill IDs from the registry.
+/// </summary>
+/// <returns>An enumerable collection of skill IDs.</returns>
         public IEnumerable<string> GetAllSkillIds() => _byId.Keys;
+/// <summary>
+/// Retrieves all skill modules from the registry.
+/// </summary>
+/// <returns>An enumerable collection of skill module definitions.</returns>
         public IEnumerable<SkillModuleDef> GetAllSkills() => _byId.Values;
 
 #if UNITY_EDITOR
@@ -98,6 +112,10 @@ namespace CHAL.Systems.Skill
         }
 #endif
 
+/// <summary>
+/// Exports the item index to a CSV file at the specified path.
+/// </summary>
+/// <param name="outputPath">The path where the CSV file will be saved.</param>
         public void ExportItemIndexCsv(string outputPath)
         {
             if (string.IsNullOrWhiteSpace(outputPath))

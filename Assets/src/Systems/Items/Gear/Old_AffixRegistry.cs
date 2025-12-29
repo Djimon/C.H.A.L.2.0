@@ -88,8 +88,22 @@ namespace CHAL.Systems.Items
                 Family = family;
             }
 
+/// <summary>
+/// Determines whether this instance is equal to another FamilyKey instance.
+/// </summary>
+/// <param name="other">The FamilyKey instance to compare with.</param>
+/// <returns>True if the instances are equal; otherwise, false.</returns>
             public bool Equals(FamilyKey other) => Family == other.Family;
+/// <summary>
+/// Determines whether the specified object is equal to the current instance.
+/// </summary>
+/// <param name="obj">The object to compare with the current instance.</param>
+/// <returns>True if the specified object is equal to the current instance; otherwise, false.</returns>
             public override bool Equals(object obj) => obj is FamilyKey other && Equals(other);
+/// <summary>
+/// Returns a hash code for the current instance based on the Family value.
+/// </summary>
+/// <returns>A hash code as an integer.</returns>
             public override int GetHashCode() => (int)Family;
         }
     }
