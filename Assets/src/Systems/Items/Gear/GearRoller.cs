@@ -292,7 +292,7 @@ namespace CHAL.Systems.Items
                 if (string.IsNullOrEmpty(id)) { _affixCandidates.RemoveAt(i); continue; }
 
                 // no duplicate affix ids on same item
-                if (!_balance.gear.affixRules.allowDuplicateAffixId && ContainsAffix(exclude, id))
+                if (!_balance.gear.affixRules.allowDuplicateAffixIdPerItem && ContainsAffix(exclude, id))
                 {
                     _affixCandidates.RemoveAt(i);
                     continue;

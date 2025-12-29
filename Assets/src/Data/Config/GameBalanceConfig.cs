@@ -117,8 +117,10 @@ namespace CHAL.Data
         public struct WaveSettings
         {
             public EnemyBudget budgetPoints;
-            public EnemyScaling scaling;
+            public EnemyScaling scalingIncrfeasedPercent;
         }
+
+        public WaveSettings waves;
 
 
         // ==========================
@@ -348,7 +350,7 @@ namespace CHAL.Data
         {
             [Header("Duplicate Rules")]
             [Tooltip("If false, the same AffixId cannot appear twice on one item.")]
-            public bool allowDuplicateAffixId;
+            public bool allowDuplicateAffixIdPerItem;
 
             [Header("Category Caps")]
             public GearAffixCategoryCaps categoryCaps;
