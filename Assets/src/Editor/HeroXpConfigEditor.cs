@@ -3,6 +3,9 @@ using UnityEngine;
 using CHAL.Data;
 
 [CustomEditor(typeof(HeroXPConfig))]
+/// <summary>
+/// Custom editor for configuring Hero XP settings.
+/// </summary>
 public class HeroXpConfigEditor : Editor
 {  
     private const string PrefKey_WaveSec_L1 = "HeroXpConfigEditor.WaveSec_L1";
@@ -13,6 +16,9 @@ public class HeroXpConfigEditor : Editor
     private static float s_waveSecL60 = 120f;
     private static float s_waveSecL90 = 200f;
 
+/// <summary>
+/// Draws the custom inspector GUI for the HeroXPConfig object.
+/// </summary>
     public override void OnInspectorGUI()
     {
         var cfg = (HeroXPConfig)target;

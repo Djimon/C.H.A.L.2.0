@@ -39,6 +39,11 @@ namespace CHAL.Data
         public float customWeight = 1f;
 
 
+/// <summary>
+/// Determines if the specified gear type is allowed.
+/// </summary>
+/// <param name="gearType">The gear type to check.</param>
+/// <returns>True if the gear type is allowed; otherwise, false.</returns>
         public bool Allows(GearType gearType)
         {
             if (AllowedGearTypes == null || AllowedGearTypes.Length == 0) return true;

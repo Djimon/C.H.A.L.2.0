@@ -29,6 +29,13 @@ namespace CHAL.Systems.Items
         // PUBLIC API (unified facade)
         // =====================================================================
 
+/// <summary>
+/// Attempts to retrieve an implicit definition by its identifier.
+/// Returns false if the identifier is null or empty, or if the definition is not found.
+/// </summary>
+/// <param name="implicitId">The identifier of the implicit definition to retrieve.</param>
+/// <param name="def">The output parameter that will hold the implicit definition if found.</param>
+/// <returns>True if the implicit definition was found; otherwise, false.</returns>
         public bool TryGetImplicit(string implicitId, out ImplicitDef def)
         {
             def = null;
@@ -36,6 +43,13 @@ namespace CHAL.Systems.Items
             return _implicitById.TryGetValue(implicitId, out def) && def != null;
         }
 
+/// <summary>
+/// Attempts to retrieve an affix definition by its identifier.
+/// Returns false if the identifier is null or empty, or if the affix is not found.
+/// </summary>
+/// <param name="affixId">The identifier of the affix to retrieve.</param>
+/// <param name="def">The output parameter that will hold the affix definition if found.</param>
+/// <returns>True if the affix was found; otherwise, false.</returns>
         public bool TryGetAffix(string affixId, out AffixDef def)
         {
             def = null;
@@ -51,6 +65,14 @@ namespace CHAL.Systems.Items
         //   every matching single-pool bucket via EnumeratePools().
         // - If we ever want "union" queries (mask with multiple bits), we must implement an
         //   EnumeratePools(mask) + merge/dedupe across buckets.
+/// <summary>
+/// Retrieves implicit candidates based on the specified gear type and role.
+/// Clears the provided buffer and populates it with matching implicit definitions.
+/// </summary>
+/// <param name="gearType">The type of gear to filter candidates.</param>
+/// <param name="poolMaskAsInt">An integer representing the pool mask.</param>
+/// <param name="roleAsInt">An integer representing the role.</param>
+/// <param name="buffer">The list to store the resulting implicit definitions.</param>
         public void GetImplicitCandidates(GearType gearType, int poolMaskAsInt, int roleAsInt, List<ImplicitDef> buffer)
         {
             buffer.Clear();

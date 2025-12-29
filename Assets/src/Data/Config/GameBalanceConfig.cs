@@ -198,8 +198,21 @@ namespace CHAL.Data
         {
             public GearTierSlotCaps tier1;
             public GearTierSlotCaps tier2;
+/// <summary>
+/// Represents the capabilities of the third gear tier slot.
+/// </summary>
             public GearTierSlotCaps tier3;
 
+/// <summary>
+/// Gets the slot capabilities for the specified gear tier.
+/// </summary>
+/// <param name="tier">The gear base tier to get capabilities for.</param>
+/// <returns>The gear tier slot capabilities.</returns>
+/// <summary>
+/// Gets the slot capabilities for the specified gear tier.
+/// </summary>
+/// <param name="tier">The gear base tier to get capabilities for.</param>
+/// <returns>The gear tier slot capabilities.</returns>
             public GearTierSlotCaps GetCaps(GearBaseTier tier)
             {
                 return tier switch
@@ -232,6 +245,9 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
+/// <summary>
+/// Represents a collection of weights for different slot pools.
+/// </summary>
         public struct SlotPoolWeights
         {
             [Range(0f, 1f)] public float main;
@@ -248,6 +264,9 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
+/// <summary>
+/// Represents a collection of weights for different affix families.
+/// </summary>
         public struct AffixFamilyWeights
         {
             [Range(0f, 1f)] public float core;
@@ -255,6 +274,9 @@ namespace CHAL.Data
             [Range(0f, 1f)] public float synergy;
             [Range(0f, 1f)] public float utility;
 
+/// <summary>
+/// Normalizes the values of core, defensive, synergy, and utility.
+/// </summary>
             public void Normalize()
             {
                 var sum = core + defensive + synergy + utility;
@@ -296,6 +318,9 @@ namespace CHAL.Data
         public struct GearAffixCategoryCaps
         {
             [Tooltip("Global caps (applies to all gear types unless overridden).")]
+/// <summary>
+/// Holds the global caps for affix categories.
+/// </summary>
             public List<AffixCategoryCap> globalCaps;
 
             //[Tooltip("Optional per-gear-type overrides. If a category is present here, it overrides the global cap for that gear type.")]
@@ -333,6 +358,9 @@ namespace CHAL.Data
         public struct GearTypeAffixCategoryCaps
         {
             public GearType gearType;
+/// <summary>
+/// A list of affix category caps.
+/// </summary>
             public List<AffixCategoryCap> caps;
 
             public int GetCap(AffixCategory category, int fallbackIfMissing)
@@ -376,6 +404,9 @@ namespace CHAL.Data
             public List<GearTypeAffixFamilyWeights> affixFamilyWeightsByGearType;
 
             [Header("Affix Rules")]
+/// <summary>
+/// Holds the rules for gear affixes.
+/// </summary>
             public GearAffixRules affixRules;
 
             public float GetAffixFamilyWeight(GearType gearType, AffixFamily family)
