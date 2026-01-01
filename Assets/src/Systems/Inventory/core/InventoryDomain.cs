@@ -16,6 +16,11 @@ namespace CHAL.Systems.Inventory
 
         public event Action<string, int, ItemStackRef?> OnSlotChanged;
 
+        public IEnumerable<InventoryInstance> GetInstances()
+        { 
+            return _instances.Values;
+        }
+
 
         /// <summary>
         /// Checks if an instance exists by its ID.

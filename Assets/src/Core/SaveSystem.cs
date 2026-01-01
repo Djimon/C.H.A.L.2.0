@@ -60,7 +60,17 @@ namespace CHAL.Core
             // dürfen wir ihn hier nicht überschreiben.
             if (profile.InventorySave == null || profile.InventorySave.Count == 0)
             {
-                profile.PrepareInventorySnapshot();
+                var gm = GameManager.Instance;
+                if (gm != null && ReferenceEquals(gm.Profile, profile) && gm.InventoryReady)
+                {
+                    gm.MapDomainToProfile();
+                }
+                else
+                {
+                    DebugManager.Log(
+                        "SaveSystem.Save: InventorySave is empty and no InventoryDomain snapshot is available. Saving without inventory slots.",
+                        DebugManager.EDebugLevel.Production, "Save", LogType.Warning);
+                }
             }
 
             profile.LastSaveTime = DateTime.UtcNow;
@@ -94,7 +104,11 @@ namespace CHAL.Core
                 return null;
             }
 
-            p.RestoreInventoriesFromSnapshot();
+            //TODO: entfenren anch phasse 4 lagacyInventory
+            //p.RestoreInventoriesFromSnapshot();
+
+            //BootstrapInventoryDomain()(Phase 2)
+            //MapProfileToDomain()(Phase 3)
 
             p.profileId = CurrentProfileId();
 
