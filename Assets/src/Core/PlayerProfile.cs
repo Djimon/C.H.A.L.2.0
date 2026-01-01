@@ -89,6 +89,7 @@ namespace CHAL.Data
             Inventories.Add(new("rune"));
             Inventories.Add(new("module"));
             Inventories.Add(new("gear"));
+            Inventories.Add(new("core"));
         }
 
 /// <summary>
