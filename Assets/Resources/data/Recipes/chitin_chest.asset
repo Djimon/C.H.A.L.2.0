@@ -18,14 +18,18 @@ MonoBehaviour:
   tier: 1
   slotType: 1
   inputs:
-  - itemId: part:chitin
+  - itemref: {fileID: 11400000, guid: 9c24bcfb58336934a9a7f13c95794d6b, type: 2}
+    itemId: part:chitin
     qty: 30
-  - itemId: part:capsule
+  - itemref: {fileID: 11400000, guid: c1f0ed34a4e5e1a48af7a2c79904c356, type: 2}
+    itemId: part:capsule
     qty: 10
-  - itemId: remains:glitter_dust
+  - itemref: {fileID: 11400000, guid: 78e36c4f9738ee44a970a15fdb1e88f9, type: 2}
+    itemId: remains:glitter_dust
     qty: 20
   currencyCosts:
   - currencyId: gold
     amount: 2500
+  outputRef: {fileID: 11400000, guid: 3bdaa2eb44b82d64aaa44791d9325f23, type: 2}
   outputItemId: gear:chitin_chest
   outputCount: 1

@@ -16,7 +16,7 @@ MonoBehaviour:
   itemType: 3
   description: 
   icon: {fileID: 0}
-  rarity: 2
+  rarity: 6
   lootValue: 100
   remainData:
     remainType: 
@@ -32,8 +32,8 @@ MonoBehaviour:
     coreType: 0
   gearData:
     slotType: 0
+    armorClass: 0
     tags: []
-    runeSocketType: 0
   coreData:
     coreType: 8
     defualtDmgType: 8

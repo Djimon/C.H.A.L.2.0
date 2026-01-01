@@ -23,7 +23,7 @@ MonoBehaviour:
   allowedEnemies:
   - {fileID: 11400000, guid: f1846d707583dd640a447f05eff0d54d, type: 2}
   allowedModifiers:
-  - poison
+  - poisonous
   - insectoid
   - swarm
   waveDefs:

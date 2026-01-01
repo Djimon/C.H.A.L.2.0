@@ -1,5 +1,5 @@
 {
-  "tag": "poisoned",
+  "tag": "poisonous",
   "drops": [
     { "itemId": "part:venom_gland", "chance": 40, "quantity": 1 },
     { "itemId": "part:venom_sac", "chance": 30, "quantity": 1 },

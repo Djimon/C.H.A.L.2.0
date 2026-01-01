@@ -1,12 +1,12 @@
 ﻿itemType,itemId,rarity
 Core,core:base,Common
-Core,core:missing_abyssal,Common
-Core,core:missing_void,Common
+Core,core:radiant,Holy
+Core,core:cthonic,Mythic
+Core,core:infernal,Mythic
+Core,core:nullified,Mythic
 Core,core:aetheric,Rare
 Core,core:blazing,Rare
 Core,core:glacial,Rare
-Core,core:infernal,Rare
-Core,core:radiant,Rare
 Core,core:seismic,Rare
 Core,core:static,Rare
 Core,core:venomous,Rare

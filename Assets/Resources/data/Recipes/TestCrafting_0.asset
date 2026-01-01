@@ -18,10 +18,12 @@ MonoBehaviour:
   tier: 1
   slotType: 0
   inputs:
-  - itemId: part:gland
+  - itemref: {fileID: 11400000, guid: 00ace7a85b644d44eab81aee0ac5fef6, type: 2}
+    itemId: part:gland
     qty: 10
   currencyCosts:
   - currencyId: gold
     amount: 2000
+  outputRef: {fileID: 11400000, guid: d6445fdb0cfc28642a6c279c4a7ec761, type: 2}
   outputItemId: module:piercing_fang
   outputCount: 1
