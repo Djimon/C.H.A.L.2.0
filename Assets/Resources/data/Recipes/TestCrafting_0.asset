@@ -23,5 +23,5 @@ MonoBehaviour:
   currencyCosts:
   - currencyId: gold
     amount: 2000
-  outputItemId: module:barrier_crystal
+  outputItemId: module:piercing_fang
   outputCount: 1
