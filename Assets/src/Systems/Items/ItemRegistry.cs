@@ -338,6 +338,9 @@ namespace CHAL.Systems.Items
             }
         }
 
+/// <summary>
+/// Validates and collects unused items from the collection.
+/// </summary>
         public void ValidateUnusedItems()
         {
             var unused = new List<string>();

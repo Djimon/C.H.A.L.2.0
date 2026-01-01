@@ -20,6 +20,11 @@ namespace CHAL.Systems.Enemy
         // Pfad: Assets/Resources/data/MonsterTags/*.asset
         private const string RES_PATH = "data/MonsterTags";
 
+/// <summary>
+/// Loads all monster tag definitions. 
+/// If already loaded, it will reload only if forced.
+/// </summary>
+/// <param name="force">Indicates whether to force reload the definitions.</param>
         public void LoadAll(bool force = false)
         {
             if (_loaded && !force) return;
@@ -55,6 +60,12 @@ namespace CHAL.Systems.Enemy
             ExportCsv(reportPath);
         }
 
+/// <summary>
+/// Tries to get the MonsterTagDef associated with the specified tag ID.
+/// </summary>
+/// <param name="tagId">The ID of the tag to retrieve.</param>
+/// <param name="def">The MonsterTagDef associated with the tag ID, if found.</param>
+/// <returns>True if the tag ID is found; otherwise, false.</returns>
         public bool TryGet(string tagId, out MonsterTagDef def)
         {
             def = null;
@@ -63,6 +74,11 @@ namespace CHAL.Systems.Enemy
             return _byId.TryGetValue(tagId.Trim(), out def);
         }
 
+/// <summary>
+/// Checks if the specified tag ID is known.
+/// </summary>
+/// <param name="tagId">The ID of the tag to check.</param>
+/// <returns>True if the tag ID is known; otherwise, false.</returns>
         public bool IsKnown(string tagId)
         {
             return TryGet(tagId, out _);
