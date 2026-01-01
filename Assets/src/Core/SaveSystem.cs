@@ -104,16 +104,7 @@ namespace CHAL.Core
                 return null;
             }
 
-            //TODO: entfenren anch phasse 4 lagacyInventory
-            //p.RestoreInventoriesFromSnapshot();
-
-            //BootstrapInventoryDomain()(Phase 2)
-            //MapProfileToDomain()(Phase 3)
-
             p.profileId = CurrentProfileId();
-
-            //var snap = LoadResearch("");
-            //p.RestoreResearchInto(p.ResearchRuntime, snap);
 
             DebugManager.Log($"SaveSystem: loaded ← {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
             return p;

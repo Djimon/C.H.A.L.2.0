@@ -71,8 +71,6 @@ namespace CHAL.Data
             var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
             EnsureStarterHeroUnlocked(starterId);
             
-            //TODO: Delete in Phase 4
-            //InitInventories();
 
             AddCurrency("gold", 0);
 
@@ -466,7 +464,7 @@ namespace CHAL.Data
         public int slot;              // SlotIndex im InventoryInstance
         public string itemId;         // ItemDef id
         public int count;             // StackCount (instanced => 1)
-        public string instanceId;     // null/empty => nicht-instanced
+        public string IteminstanceId;     // null/empty => nicht-instanced
     }
 
     [Serializable]

@@ -8,6 +8,7 @@ using CHAL.Systems.Research;
 using CHAL.Systems.Skill;
 using CHAL.Systems.Stats;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
@@ -150,7 +151,6 @@ namespace CHAL.Core
             ItemRegistry.Instance.TriggerInstance();
             SkillRegistry.Instance.TriggertInstanc();
             MonsterTagRegistry.Instance.LoadAll();
-            //TODO Skill-registry
         }
 
         private void WiringServices()
@@ -335,6 +335,12 @@ namespace CHAL.Core
             RegisterPlayerInventoryInstancesFromTemplates();
         }
 
+        public void BuildInventroyfromSave()
+        {
+            BootstrapInventoryDomain();
+            MapProfileToDomain();
+        }
+
         private void EnsureInventoryDomain()
         {
             Inventory ??= new InventoryDomain();
@@ -475,7 +481,7 @@ namespace CHAL.Core
         /// <summary>
         /// Maps the profile data to the domain model.
         /// </summary>
-        public void MapProfileToDomain()
+        private void MapProfileToDomain()
         {
             if (Inventory == null || Profile == null) 
                 return;
@@ -816,6 +822,7 @@ namespace CHAL.Core
 
         private List<InventorySlotSnapshot> ReadDomainAsSlotSnapshots(string instanceId)
         {
+            instanceId = string.IsNullOrWhiteSpace(instanceId) ? null : instanceId;
             var slotsOut = new List<InventorySlotSnapshot>();
             int slots = Inventory.SlotCount(instanceId);
 
@@ -829,7 +836,7 @@ namespace CHAL.Core
                     slot = i,
                     itemId = st.Value.itemID,
                     count = st.Value.count,
-                    instanceId = st.Value.instanceId
+                    IteminstanceId = st.Value.instanceId
                 });
             }
 
@@ -861,9 +868,9 @@ namespace CHAL.Core
             for (int i = 0; i < slots.Count; i++)
             {
                 var s = slots[i];
-                if (string.IsNullOrWhiteSpace(s.instanceId)) continue;
+                if (string.IsNullOrWhiteSpace(s.IteminstanceId)) continue;
 
-                if (_gearInstances != null && _gearInstances.TryGetValue(s.instanceId, out var gear) && gear != null)
+                if (_gearInstances != null && _gearInstances.TryGetValue(s.IteminstanceId, out var gear) && gear != null)
                 {
                     result ??= new List<GearInstance>();
                     result.Add(gear);
@@ -871,7 +878,7 @@ namespace CHAL.Core
                 else
                 {
                     DebugManager.Log(
-                        $"CollectGearPayloads: instanceId '{s.instanceId}' referenced in inventory but not found in _gearInstances.",
+                        $"CollectGearPayloads: instanceId '{s.IteminstanceId}' referenced in inventory but not found in _gearInstances.",
                         DebugManager.EDebugLevel.Dev, "Save", LogType.Warning);
                 }
             }
@@ -890,7 +897,7 @@ namespace CHAL.Core
                 var s = slots[i];
                 if (s.count <= 0 || string.IsNullOrEmpty(s.itemId)) continue;
 
-                var stack = new ItemStackRef(s.itemId, s.count, s.instanceId);
+                var stack = new ItemStackRef(s.itemId, s.count, s.IteminstanceId);
 
                 // Use domain API to preserve slot AND trigger events
                 if (!Inventory.TrySetSlot(instanceId, s.slot, stack))
