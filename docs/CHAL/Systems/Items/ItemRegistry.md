@@ -23,10 +23,12 @@ _Automatically generated/updated from `Assets/src/Systems/Items/ItemRegistry.cs`
       - `bool IsType(string itemId, ItemType t)`: Checks if the specified item ID matches the given item type.
       - `void TriggerInstance()`: Triggers an instance action in the ItemRegistry.
       - `void ExportItemIndexCsv(string outputPath)`: Exports the item index to a CSV file at the specified path.
+      - `bool EnsureExistsAndMarkUsed(string itemId, string domain, string context, out ItemDef def)`: Ensures the item exists in the registry and marks it as used, creating a placeholder if missing.
 
 # Key Behavior & Side Effects
 - The `Reload` method clears existing item definitions and loads new ones from the Resources folder, validating gear and recipes.
 - The `CreatePlaceholderitem` method generates a placeholder item asset if an item ID is missing or invalid.
+- The `EnsureExistsAndMarkUsed` method marks an item as used and creates a placeholder if it does not exist.
 - Validation reports are generated and saved to a CSV file if discrepancies are found during loading.
 - The `ExportItemIndexCsv` method exports item data to a CSV file, logging warnings for null or empty output paths.
 
@@ -35,6 +37,7 @@ _Automatically generated/updated from `Assets/src/Systems/Items/ItemRegistry.cs`
 - The `LoadModulePartMap` method warns if the ModulePartMap asset is not found.
 - File operations in `ValidateGearAndRecipes` and `ValidateModulePartMap` may fail, with exceptions logged.
 - The `ExportItemIndexCsv` method checks for null or empty output paths and logs a warning if found.
+- The `EnsureExistsAndMarkUsed` method returns false if the item ID is empty or invalid.
 
 # Example
 ```csharp
