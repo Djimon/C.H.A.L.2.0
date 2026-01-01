@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace CHAL.Systems.Inventory
 {
@@ -16,5 +17,6 @@ namespace CHAL.Systems.Inventory
 
         ItemStackRef? Peek(string instanceId, int slotIndex);
         int SlotCount(string instanceId);
+
     }
 }

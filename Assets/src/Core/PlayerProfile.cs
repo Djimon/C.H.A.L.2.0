@@ -49,7 +49,6 @@ namespace CHAL.Data
         // Abfragen:  GetMapProgress(1, MapDifficulty.medium)
 
         // --- Items ---
-        [NonSerialized] public List<Inventory> Inventories = new();
         // Persistenter Snapshot aller Inventare (nur für Save/Load)
         public List<InventorySnapshot> InventorySave = new();
 
@@ -71,24 +70,12 @@ namespace CHAL.Data
 
             var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
             EnsureStarterHeroUnlocked(starterId);
-            InitInventories();
+            
 
             AddCurrency("gold", 0);
 
 
             SaveSystem.Save(this);
-        }
-
-/// <summary>
-/// Initializes the inventories with default items.
-/// </summary>
-        public void InitInventories()
-        {
-            Inventories.Add(new("remains"));
-            Inventories.Add(new("part")); 
-            Inventories.Add(new("rune"));
-            Inventories.Add(new("module"));
-            Inventories.Add(new("gear"));
         }
 
 /// <summary>
@@ -274,21 +261,22 @@ namespace CHAL.Data
         }
 
 
-/// <summary>
-/// Prepares a snapshot of the current inventory by clearing and populating the inventory save list.
-/// </summary>
+        /// <summary>
+        /// Prepares a snapshot of the current inventory by clearing and populating the inventory save list.
+        /// </summary>
+        [System.Obsolete("LEGACY: Use GameManager.MapDomainToProfile / MapProfileToDomain instead. Remove in Phase 4.", false)]
         public void PrepareInventorySnapshot()
         {
             InventorySave ??= new List<InventorySnapshot>();
             InventorySave.Clear();
 
-            foreach (var inv in Inventories)
-            {
-                if (inv == null) continue;
-                //DebugManager.Log($"inv: {inv.invID} -  {inv.GetAllItems().Count}");
-                var dict = inv.ToDictionary() ?? new Dictionary<string, int>();
-                InventorySave.Add(new InventorySnapshot { id = inv.invID, items = dict });
-            }
+            ////foreach (var inv in Inventories)
+            ////{
+            ////    if (inv == null) continue;
+            ////    //DebugManager.Log($"inv: {inv.invID} -  {inv.GetAllItems().Count}");
+            ////    var dict = inv.ToDictionary() ?? new Dictionary<string, int>();
+            ////    InventorySave.Add(new InventorySnapshot { id = inv.invID, items = dict });
+            ////}
 
             // kleine, robuste Logs
             DebugManager.Log("InventorySnapshot built:", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
@@ -297,39 +285,36 @@ namespace CHAL.Data
         }
 
         // Nach dem Laden: Snapshot zurück in die Live-Inventare schieben
-/// <summary>
-/// Restores inventories from a saved snapshot if available.
-/// Initializes live inventories if none exist.
-/// </summary>
+        /// <summary>
+        /// Restores inventories from a saved snapshot if available.
+        /// Initializes live inventories if none exist.
+        /// </summary>
+        [System.Obsolete("LEGACY: Do not use. Use Domain snapshot path. Remove in Phase 4.", false)]
         public void RestoreInventoriesFromSnapshot()
         {
             if (InventorySave == null) return;
 
-            // Falls z.B. frisch aus Menü geladen wurde: sicherstellen, dass Live-Inventare existieren
-            if (Inventories.Count == 0)
-                InitInventories();
-
             // Hilfsresolver
-            Inventory GetById(string id)
-            {
-                for (int i = 0; i < Inventories.Count; i++)
-                    if (string.Equals(Inventories[i].invID, id, StringComparison.Ordinal))
-                        return Inventories [i];
-                return null;
-            }
+            //Inventory GetById(string id)
+            //{
+            //    for (int i = 0; i < Inventories.Count; i++)
+            //        if (string.Equals(Inventories[i].invID, id, StringComparison.Ordinal))
+            //            return Inventories [i];
+            //    return null;
+            //}
 
-            int applied = 0;
-            foreach (var snap in InventorySave)
-            {
-                if (string.IsNullOrEmpty(snap.id)) continue;
-                var inv = GetById(snap.id);
-                if (inv == null) continue;
+            //int applied = 0;
+            //foreach (var snap in InventorySave)
+            //{
+            //    if (string.IsNullOrEmpty(snap.id)) continue;
+            //    var inv = GetById(snap.id);
+            //    if (inv == null) continue;
 
-                inv.FromDictionary(snap.items ?? new Dictionary<string, int>());
-                applied++;
-            }
+            //    inv.FromDictionary(snap.items ?? new Dictionary<string, int>());
+            //    applied++;
+            //}
 
-            DebugManager.Log($"InventorySnapshot restored — applied:{applied}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            //DebugManager.Log($"InventorySnapshot restored — applied:{applied}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
 /// <summary>
@@ -479,7 +464,7 @@ namespace CHAL.Data
         public int slot;              // SlotIndex im InventoryInstance
         public string itemId;         // ItemDef id
         public int count;             // StackCount (instanced => 1)
-        public string instanceId;     // null/empty => nicht-instanced
+        public string IteminstanceId;     // null/empty => nicht-instanced
     }
 
     [Serializable]

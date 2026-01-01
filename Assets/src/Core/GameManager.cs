@@ -8,6 +8,7 @@ using CHAL.Systems.Research;
 using CHAL.Systems.Skill;
 using CHAL.Systems.Stats;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
@@ -150,7 +151,6 @@ namespace CHAL.Core
             ItemRegistry.Instance.TriggerInstance();
             SkillRegistry.Instance.TriggertInstanc();
             MonsterTagRegistry.Instance.LoadAll();
-            //TODO Skill-registry
         }
 
         private void WiringServices()
@@ -335,6 +335,12 @@ namespace CHAL.Core
             RegisterPlayerInventoryInstancesFromTemplates();
         }
 
+        public void BuildInventroyfromSave()
+        {
+            BootstrapInventoryDomain();
+            MapProfileToDomain();
+        }
+
         private void EnsureInventoryDomain()
         {
             Inventory ??= new InventoryDomain();
@@ -423,9 +429,9 @@ namespace CHAL.Core
             return inst;
         }
 
-/// <summary>
-/// Maps domain data to the profile's inventory.
-/// </summary>
+        /// <summary>
+        /// Maps domain data to the profile's inventory.
+        /// </summary>
         public void MapDomainToProfile()
         {
             if (Inventory == null || Profile == null) return;
@@ -434,29 +440,31 @@ namespace CHAL.Core
             Profile.InventorySave.Clear();
 
             int applied = 0;
-            var invs = Profile.Inventories;
-            for (int i = 0; i < invs.Count; i++)
-            {
-                var inv = invs[i];
-                if (inv == null || string.IsNullOrEmpty(inv.invID)) continue;
 
-                string instanceId = "player_" + inv.invID.ToLowerInvariant();
+            foreach (var inst in Inventory.GetInstances())
+            {
+                if (inst == null || string.IsNullOrEmpty(inst.instanceID)) continue;
+
+                // Wir snapshotten hier bewusst nur Player-Inventare (wie vorher via Profile.Inventories)
+                var instanceId = inst.instanceID;
+                if (!instanceId.StartsWith("player_", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                // Snapshot-id bleibt kompatibel zum alten inv.invID (Suffix nach "player_")
+                var snapId = instanceId.Substring("player_".Length);
 
                 // 1) Slots (positionsgenau + instanceId)
                 var slotSnaps = ReadDomainAsSlotSnapshots(instanceId);
 
-                // 2) Legacy dict (für Counts/UI)
+                // 2) Flat dict (Counts/UI convenience, aber nicht mehr Wahrheit)
                 var dict = BuildFlatDict(slotSnaps);
 
                 // 3) GearInstance payloads (nur wenn instanceId gesetzt)
                 var gearPayloads = CollectGearPayloads(slotSnaps);
 
-                // optional: alte "Inventory" weiterhin füllen (Legacy UI/Logik)
-                inv.FromDictionary(dict);
-
                 Profile.InventorySave.Add(new InventorySnapshot
                 {
-                    id = inv.invID,
+                    id = snapId,
                     items = dict,
                     slots = slotSnaps,
                     gearInstances = gearPayloads
@@ -470,10 +478,10 @@ namespace CHAL.Core
                 DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
         }
 
-/// <summary>
-/// Maps the profile data to the domain model.
-/// </summary>
-        public void MapProfileToDomain()
+        /// <summary>
+        /// Maps the profile data to the domain model.
+        /// </summary>
+        private void MapProfileToDomain()
         {
             if (Inventory == null || Profile == null) 
                 return;
@@ -524,28 +532,19 @@ namespace CHAL.Core
                         TryFillDomainFrom(snap.items ?? new Dictionary<string, int>(), instanceId);
                     }
 
+                    //TODO: delete after funcitonal test  (remove in Phase 4):
                     // Optional: keep legacy Inventory objects in sync (if still used somewhere)
-                    var legacyInv = Profile.Inventories?.FirstOrDefault(x => x != null && x.invID == snap.id);
-                    if (legacyInv != null)
-                        legacyInv.FromDictionary(snap.items ?? new Dictionary<string, int>());
+                    //var legacyInv = Profile.Inventories?.FirstOrDefault(x => x != null && x.invID == snap.id);
+                    //if (legacyInv != null)
+                    //    legacyInv.FromDictionary(snap.items ?? new Dictionary<string, int>());
 
                     applied++;
                 }
             }
             else
             {
-                // Legacy fallback
-                var invs = Profile.Inventories;
-                for (int i = 0; i < invs.Count; i++)
-                {
-                    var inv = invs[i];
-                    if (inv == null || string.IsNullOrEmpty(inv.invID)) continue;
-
-                    string instanceId = "player_" + inv.invID.ToLowerInvariant();
-                    var dict = inv.ToDictionary();
-                    TryFillDomainFrom(dict, instanceId);
-                    applied++;
-                }
+                // TODO: LEGACY FALLBACK (remove in Phase 4):
+                DebugManager.Warning("Inventory: Should not reach","System");
             }
 
             DebugManager.Log(
@@ -632,12 +631,22 @@ namespace CHAL.Core
             _prefixToType.Clear();
             _typeToInstanceId.Clear();
 
-            // NUR die Typen registrieren, fÃ¼r die du auch tatsÃ¤chlich Defs/Inventare hast
-            // Falls du schon eine Liste deiner geladenen InventoryDefs hast, nimm die.
-            // Minimalvariante: alle Enumwerte erlauben.
-            foreach (PlayerInventoryType t in Enum.GetValues(typeof(PlayerInventoryType)))
+            // Stelle sicher, dass Templates geladen sind (sonst wären die Maps leer)
+            if (_inventoryTemplates.Count == 0)
             {
-                var prefix = t.ToString().ToLowerInvariant(); // 1:1-Regel
+                const string path = "data/Inventory";
+                var defs = Resources.LoadAll<InventoryDef>(path);
+                foreach (var d in defs)
+                    if (d != null)
+                        _inventoryTemplates[d.TypeId] = d;
+            }
+
+            // Nur Typen registrieren, für die es auch wirklich Defs gibt
+            foreach (var t in _inventoryTemplates.Keys.OrderBy(x => x.ToString()))
+            {
+                if (t == PlayerInventoryType.all) continue;
+
+                var prefix = t.ToString().ToLowerInvariant();
                 if (!_prefixToType.ContainsKey(prefix))
                     _prefixToType.Add(prefix, t);
 
@@ -813,6 +822,7 @@ namespace CHAL.Core
 
         private List<InventorySlotSnapshot> ReadDomainAsSlotSnapshots(string instanceId)
         {
+            instanceId = string.IsNullOrWhiteSpace(instanceId) ? null : instanceId;
             var slotsOut = new List<InventorySlotSnapshot>();
             int slots = Inventory.SlotCount(instanceId);
 
@@ -826,7 +836,7 @@ namespace CHAL.Core
                     slot = i,
                     itemId = st.Value.itemID,
                     count = st.Value.count,
-                    instanceId = st.Value.instanceId
+                    IteminstanceId = st.Value.instanceId
                 });
             }
 
@@ -858,9 +868,9 @@ namespace CHAL.Core
             for (int i = 0; i < slots.Count; i++)
             {
                 var s = slots[i];
-                if (string.IsNullOrWhiteSpace(s.instanceId)) continue;
+                if (string.IsNullOrWhiteSpace(s.IteminstanceId)) continue;
 
-                if (_gearInstances != null && _gearInstances.TryGetValue(s.instanceId, out var gear) && gear != null)
+                if (_gearInstances != null && _gearInstances.TryGetValue(s.IteminstanceId, out var gear) && gear != null)
                 {
                     result ??= new List<GearInstance>();
                     result.Add(gear);
@@ -868,7 +878,7 @@ namespace CHAL.Core
                 else
                 {
                     DebugManager.Log(
-                        $"CollectGearPayloads: instanceId '{s.instanceId}' referenced in inventory but not found in _gearInstances.",
+                        $"CollectGearPayloads: instanceId '{s.IteminstanceId}' referenced in inventory but not found in _gearInstances.",
                         DebugManager.EDebugLevel.Dev, "Save", LogType.Warning);
                 }
             }
@@ -887,7 +897,7 @@ namespace CHAL.Core
                 var s = slots[i];
                 if (s.count <= 0 || string.IsNullOrEmpty(s.itemId)) continue;
 
-                var stack = new ItemStackRef(s.itemId, s.count, s.instanceId);
+                var stack = new ItemStackRef(s.itemId, s.count, s.IteminstanceId);
 
                 // Use domain API to preserve slot AND trigger events
                 if (!Inventory.TrySetSlot(instanceId, s.slot, stack))
