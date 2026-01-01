@@ -17,6 +17,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/RecipeDef.cs`._
       - `GearType slotType`: Type of gear slot for the recipe.
       - `List<MaterialCost> inputs`: List of materials required for the recipe.
       - `List<CurrencyCost> currencyCosts`: List of currency costs for the recipe.
+      - `ItemDef outputRef`: Reference to the output item definition.
       - `string outputItemId`: Identifier for the output item (e.g., "gear:chest_leather").
       - `int outputCount`: Number of output items produced, minimum is 1.
     - Public methods:
@@ -26,7 +27,9 @@ _Automatically generated/updated from `Assets/src/Data/Defs/RecipeDef.cs`._
 - `OnValidate` method ensures that:
   - `outputCount` is at least 1.
   - Each `MaterialCost` in `inputs` has a quantity of at least 1.
-  - Each `CurrencyCost` in `currencyCosts` has an amount of at least 1.
+  - Each `CurrencyCost` in `currencyCosts` has an amount of at least 0.
+  - Updates `outputItemId` if `outputRef` is set and its `itemId` differs from `outputItemId`.
+  - Resets `qty` in `inputs` to 0 if it is negative.
 
 4) Constraints & Failure Modes
 - If `outputCount`, `qty` in `inputs`, or `amount` in `currencyCosts` are less than 1, they are reset to 1 during validation.
@@ -42,6 +45,7 @@ recipe.tier = 1;
 recipe.slotType = GearType.Weapon;
 recipe.inputs = new List<MaterialCost> { new MaterialCost { itemId = "part:iron_ingot", qty = 2 } };
 recipe.currencyCosts = new List<CurrencyCost> { new CurrencyCost { currencyId = "gold", amount = 10 } };
+recipe.outputRef = someItemDef; // Reference to an ItemDef
 recipe.outputItemId = "gear:chest_leather";
 recipe.outputCount = 1;
 ```
