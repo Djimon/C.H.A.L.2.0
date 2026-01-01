@@ -23,7 +23,7 @@ namespace CHAL.Data
 
         [Header("Enemy Pools")]
         public List<EnemyDef> allowedEnemies;
-        public List<string> allowedModifiers;
+        public List<string> allowedMonsterTags;
 
         [Header("Wave Templates")]
         public List<WaveDef> waveDefs;     // aktuell noch konkret, später Constraints

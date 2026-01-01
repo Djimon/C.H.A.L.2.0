@@ -1,4 +1,5 @@
 using CHAL.Data;
+using CHAL.Systems.Enemy;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
@@ -148,6 +149,7 @@ namespace CHAL.Core
             //Preload all registries
             ItemRegistry.Instance.TriggerInstance();
             SkillRegistry.Instance.TriggertInstanc();
+            MonsterTagRegistry.Instance.LoadAll();
             //TODO Skill-registry
         }
 

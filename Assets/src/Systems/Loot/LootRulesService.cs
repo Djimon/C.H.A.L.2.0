@@ -1,4 +1,5 @@
 using CHAL.Data;
+using CHAL.Systems.Enemy;
 using CHAL.Systems.Items;
 using CHAL.Systems.Loot.Models;
 using System.Collections.Generic;
@@ -44,7 +45,139 @@ namespace CHAL.Systems.Loot
             LoadSecretRules();
 
             ItemRegistry.Instance.ValidateUnusedItems();
+
+
+            //DumpAllKnownTagsOnce();
+
+            WarnIfMissingLootRulesForAllMonsterTags();
         }
+
+        private void WarnIfMissingLootRulesForAllMonsterTags()
+        {
+            MonsterTagRegistry.Instance.LoadAll();
+
+            var allTags = MonsterTagRegistry.Instance.All;
+            int missing = 0;
+
+#if UNITY_EDITOR
+            
+#endif
+
+            foreach (var tagDef in allTags)
+            {
+                if (tagDef == null) continue;
+
+                var id = (tagDef.tagId ?? string.Empty).Trim();
+                if (string.IsNullOrWhiteSpace(id)) continue;
+
+                if (_byTag.ContainsKey(id))
+                    continue;
+
+                missing++;
+                DebugManager.Warning($"[LootRules] No LootRule for MonsterTag '{id}' (category={tagDef.category})", "Validation");
+
+#if UNITY_EDITOR
+                var misisng_path = "Assets/Resources/data/LootRules/missing";
+                if (!Directory.Exists(misisng_path))
+                    Directory.CreateDirectory(misisng_path);
+
+                try
+                {
+                    var fileName = SanitizeFileName(id) + ".json";
+                    var fullPath = Path.Combine(misisng_path, fileName);
+
+                    if (!File.Exists(fullPath))
+                    {
+                        File.WriteAllText(fullPath, BuildMissingLootRuleJson(id));
+                        DebugManager.Log($"[LootRules] Created placeholder LootRule: {fullPath}", DebugManager.EDebugLevel.Dev, "System");
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    DebugManager.Warning($"[LootRules] Failed to create placeholder LootRule for '{id}': {ex.Message}", "Validation");
+                }
+#endif
+            }
+
+            if (missing > 0)
+                DebugManager.Warning($"[LootRules] Missing LootRules for {missing} MonsterTags", "Validation");
+
+        }
+
+        private void DumpAllKnownTagsOnce()
+        {
+            try
+            {
+                // Sammeln mit Source-Info
+                var buckets = new Dictionary<string, HashSet<string>>(System.StringComparer.OrdinalIgnoreCase);
+
+                void AddTag(string tag, string source)
+                {
+                    tag = NormalizeTag(tag);
+                    if (string.IsNullOrEmpty(tag)) return;
+
+                    if (!buckets.TryGetValue(tag, out var set))
+                    {
+                        set = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+                        buckets[tag] = set;
+                    }
+                    set.Add(source);
+                }
+
+                // 1) LootRule Tags (aus geladenen JSONs)
+                foreach (var kv in _byTag)
+                    AddTag(kv.Key, "lootrules:tag");
+
+                // 2) EnemyDef.baseTags
+                var enemies = Resources.LoadAll<EnemyDef>("data/Enemies");
+                foreach (var e in enemies)
+                {
+                    if (e == null || e.baseTags == null) continue;
+                    foreach (var t in e.baseTags)
+                        AddTag(t, $"enemydef:{e.enemyId}");
+                }
+
+                // 3) MapDef.allowedModifiers
+                var maps = Resources.LoadAll<MapDef>("data/Maps");
+                foreach (var m in maps)
+                {
+                    if (m == null || m.allowedMonsterTags == null) continue;
+                    foreach (var t in m.allowedMonsterTags)
+                        AddTag(t, $"mapdef:{m.mapId}");
+                }
+
+                // Export
+                var exportDir = Path.Combine(Application.dataPath, "../");
+                if (!Directory.Exists(exportDir)) Directory.CreateDirectory(exportDir);
+
+                var exportPath = Path.Combine(exportDir, "monster_tags_dump.csv");
+
+                var lines = new List<string>{"tagId,sources"};
+
+                foreach (var tag in buckets.Keys.OrderBy(x => x))
+                {
+                    var sources = string.Join("|", buckets[tag].OrderBy(x => x));
+                    lines.Add($"{tag},{sources}");
+                }
+
+                File.WriteAllLines(exportPath, lines);
+
+                DebugManager.Log($"[TagDump] Wrote {buckets.Count} tags to {exportPath}", DebugManager.EDebugLevel.Dev, "System");
+
+            }
+            catch (System.Exception ex)
+            {
+                DebugManager.Error($"[TagDump] Failed: {ex.Message}");
+            }
+        }
+
+        private static string NormalizeTag(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag)) return null;
+            return tag.Trim(); // absichtlich kein ToLower() -> falls du Groß/Klein behalten willst
+        }
+
+
 
         private LootRule ToRule(LootRuleDto dto, string sourceName)
         {
@@ -245,5 +378,31 @@ namespace CHAL.Systems.Loot
             }
             return true;
         }
+
+
+#if UNITY_EDITOR
+        private static string SanitizeFileName(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return "missing_tag";
+            foreach (var c in Path.GetInvalidFileNameChars())
+                s = s.Replace(c, '_');
+            return s.Trim();
+        }
+
+        private static string BuildMissingLootRuleJson(string tagId)
+        {
+            // Genau im Stil, den du wolltest
+            return
+        $@"{{
+  ""tag"": ""{tagId}"",
+  ""drops"": [
+    {{ ""itemId"": ""part:none"", ""chance"": 100, ""quantity"": 1 }}
+  ],
+  ""minDrops"": 1,
+  ""maxDrops"": 1,
+  ""rarityGuarantees"": []
+}}";
+        }
+#endif
     }
 }

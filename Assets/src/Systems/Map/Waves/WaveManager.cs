@@ -594,7 +594,7 @@ namespace CHAL.Systems.Wave
             else if (rank == EnemyRank.Elite)
             {
                 var minEliteTags = Mathf.Max(BalanceManager.Instance.Config.enemies.minEliteTags, 4);
-                var mods = mapDef.allowedModifiers ?? new List<string>();
+                var mods = mapDef.allowedMonsterTags ?? new List<string>();
                 if (mods.Count > 0)
                 {
                     inst.bonusTags.Add(mods[UnityEngine.Random.Range(0, mods.Count)]);
