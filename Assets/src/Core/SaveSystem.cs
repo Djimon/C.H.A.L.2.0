@@ -115,25 +115,45 @@ namespace CHAL.Core
         {
             ConfigureSaveGame();
             var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
-            var id = ResearchFileId(pid);
-            if (!SaveGame.Exists(id)) return false;
-            SaveGame.Delete(id);
-            DebugManager.Log($"SaveSystem: deleted '{id}'", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
-            return true;
+
+            var ids = new[]
+            {
+                ProfileFileId(pid),
+                ResearchFileId(pid),
+                StatisticsFileId(pid),
+            };
+
+            bool deletedAny = false;
+
+            foreach (var id in ids)
+            {
+                if (!SaveGame.Exists(id)) continue;
+                SaveGame.Delete(id);
+                deletedAny = true;
+                DebugManager.Log($"DeleteProfileData: deleted '{id}'", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            }
+
+            return deletedAny;
         }
 
-/// <summary>
-/// Saves a research snapshot associated with the specified profile ID.
-/// If the profile ID is empty, the current profile ID is used.
-/// </summary>
-/// <param name="profileId">The ID of the profile to save the research snapshot for.</param>
-/// <param name="snap">The research snapshot to save.</param>
+        private static string ProfileFileId(string profileId)
+        {
+            // gleiche Struktur wie FileId() (standard: "profiles/main/profile.json")
+            return $"profiles/{profileId}/profile.json";
+        }
+
+        /// <summary>
+        /// Saves a research snapshot associated with the specified profile ID.
+        /// If the profile ID is empty, the current profile ID is used.
+        /// </summary>
+        /// <param name="profileId">The ID of the profile to save the research snapshot for.</param>
+        /// <param name="snap">The research snapshot to save.</param>
         public static void SaveResearch(string profileId, ResearchSnapshot snap)
         {
             ConfigureSaveGame(); // Encoder/Passwort etc. aus GameSaveConfig
 
             var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
-            var id = ResearchFileId(profileId);
+            var id = ResearchFileId(pid);
 
             SaveGame.Save(id, snap ?? new ResearchSnapshot());
 
