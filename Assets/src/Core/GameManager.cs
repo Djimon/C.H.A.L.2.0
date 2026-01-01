@@ -538,24 +538,7 @@ namespace CHAL.Core
             else
             {
                 // TODO: LEGACY FALLBACK (remove in Phase 4):
-                // Only supports old profiles where InventorySave is missing.
-                var invs = Profile.Inventories;
-                if (invs == null || invs.Count == 0)
-                {
-                    DebugManager.Log("MapProfileToDomain: InventorySave missing and no legacy Inventories present. Nothing to restore.", DebugManager.EDebugLevel.Production, "Inventory", LogType.Warning);
-                    return;
-                }
-
-                for (int i = 0; i < invs.Count; i++)
-                {
-                    var inv = invs[i];
-                    if (inv == null || string.IsNullOrEmpty(inv.invID)) continue;
-
-                    string instanceId = "player_" + inv.invID.ToLowerInvariant();
-                    var dict = inv.ToDictionary();
-                    TryFillDomainFrom(dict, instanceId);
-                    applied++;
-                }
+                DebugManager.Warning("Inventory: Should not reach","System");
             }
 
             DebugManager.Log(
