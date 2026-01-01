@@ -1,10 +1,9 @@
 {
   "tag": "molten",
   "drops": [
-    { "itemId": "part:ember_remnant", "chance": 40, "quantity": 1 },
-    { "itemId": "part:fire_gland", "chance": 30, "quantity": 1 },
+    { "itemId": "part:fire_gland", "chance": 40, "quantity": 1 },
     { "itemId": "part:charred_scale", "chance": 30, "quantity": 1 },
-    { "itemId": "remains:ashes", "chance": 30, "quantity": 5 }
+    { "itemId": "remains:ashes", "chance": 70, "quantity": 5 }
   ],
   "minDrops": 1,
   "maxDrops": 2,

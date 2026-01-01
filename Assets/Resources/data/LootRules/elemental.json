@@ -1,7 +1,7 @@
 {
   "tag": "elemental",
   "drops": [
-    { "itemId": "part:ember_remnant", "chance": 30, "quantity": 1 },
+    { "itemId": "part:essence_shard", "chance": 30, "quantity": 1 },
     { "itemId": "part:arcane_fragment", "chance": 40, "quantity": 1 },
     { "itemId": "part:charred_scale", "chance": 10, "quantity": 1 },
     { "itemId": "remains:charged_crystal", "chance": 20, "quantity": 1 },

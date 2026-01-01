@@ -1,7 +1,7 @@
 {
   "tag": "caster",
   "drops": [
-    { "itemId": "part:soul_dust", "chance": 40, "quantity": 1 },
+    { "itemId": "part:soul_fragment", "chance": 40, "quantity": 1 },
     { "itemId": "part:arcane_fragment", "chance": 40, "quantity": 1 },
     { "itemId": "part:eye", "chance": 20, "quantity": 1 },
     { "itemId": "remains:etheral_thread", "chance": 10, "quantity": 1 },	

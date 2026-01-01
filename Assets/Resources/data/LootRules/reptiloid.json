@@ -6,7 +6,6 @@
     { "itemId": "part:secretions", "chance": 20, "quantity": 1 },
     { "itemId": "part:slime", "chance": 20, "quantity": 1 },
     { "itemId": "part:tongue", "chance": 30, "quantity": 1 },
-    { "itemId": "part:venom_tooth", "chance": 20, "quantity": 1 },
     { "itemId": "remains:tears", "chance": 60, "quantity": 1 }
   ],
   "minDrops": 2,

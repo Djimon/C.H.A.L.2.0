@@ -1,7 +1,7 @@
 {
   "tag": "undead",
   "drops": [
-    { "itemId": "part:bone_fragments", "chance": 40, "quantity": 1 },
+    { "itemId": "part:bone_fragment", "chance": 40, "quantity": 1 },
     { "itemId": "part:soul_fragment", "chance": 30, "quantity": 1 },
     { "itemId": "part:cursed_essence", "chance": 20, "quantity": 1 },
 	{ "itemId": "remains:bone_powder", "chance": 40, "quantity": 1 },

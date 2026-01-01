@@ -30,12 +30,16 @@ namespace CHAL.Systems.Items
 
         private readonly Dictionary<string, ItemDef> _byId = new();
 
-/// <summary>
-/// Reloads the item definitions from the Resources folder.
-/// </summary>
+        private readonly Dictionary<string, bool> _used = new(StringComparer.OrdinalIgnoreCase);
+        private string unusedExportPath = Path.Combine(Application.dataPath, "../UnusedItems.csv");
+
+        /// <summary>
+        /// Reloads the item definitions from the Resources folder.
+        /// </summary>
         public void Reload()
         {
             _byId.Clear();
+            _used.Clear();
             // Alle ItemDef-Assets unter Resources/Items/ laden
             var defs = Resources.LoadAll<ItemDef>("data/Items");
             foreach (var def in defs)
@@ -51,6 +55,8 @@ namespace CHAL.Systems.Items
                     continue;
                 }
                 _byId.Add(def.itemId, def);
+
+                _used[def.itemId] = false;
             }
             DebugManager.Log($"[ItemRegistry] Loaded: {_byId.Count} items",DebugManager.EDebugLevel.Production,"System");
 
@@ -59,11 +65,56 @@ namespace CHAL.Systems.Items
             var mod_part_map = LoadModulePartMap();
             ValidateModulePartMap(mod_part_map);
 
-            var reportPath = Path.Combine(Application.dataPath, "../ModulePartValidation.csv"); // gleiche CSV, wir appenden
+            var reportPath = Path.Combine(Application.dataPath, "../ModulePartValidation.csv"); 
             ValidateGearAndRecipes(reportPath);
+
+            // NEW: Core coverage
+            ValidateCoreCoverage();
+
+       
+            // NEW: Unused items audit
+            ValidateUnusedItems();
 
             //TODO: export all items from _byID with Name and rarity as json: grouped by ItemType 
 
+        }
+
+        /// <summary>
+        /// Ensures the item exists in registry (creates placeholder if missing) AND marks it as used.
+        /// Returns false only if itemId is empty/invalid.
+        /// </summary>
+        public bool EnsureExistsAndMarkUsed(string itemId, string domain, string context, out ItemDef def)
+        {
+            def = null;
+
+            if (string.IsNullOrWhiteSpace(itemId) || !ItemKey.TryParse(itemId, out _))
+            {
+                DebugManager.Warning($"[ItemRegistry] Invalid itemId ref: '{itemId}' (domain={domain}, ctx={context})", "Validation");
+                return false;
+            }
+
+            // mark used (even if it doesn't exist yet -> placeholder will be created)
+            _used[itemId] = true;
+
+            if (_byId.TryGetValue(itemId, out def) && def != null)
+                return true;
+
+            // Missing: create placeholder + add to registry so subsequent lookups work
+            CreatePlaceholderitem(itemId);
+
+            // Try to load it back into registry in-memory (editor context).
+            // NOTE: placeholder asset exists now, but Resources.LoadAll won't refresh _byId automatically.
+            // We add a minimal in-memory placeholder entry to avoid null refs.
+            var ph = ScriptableObject.CreateInstance<ItemDef>();
+            ph.itemId = itemId;
+            ph.description = "Placeholder Item: auto-generated (in-memory fallback).";
+            ph.rarity = Rarity.Common;
+            ph.lootValue = 0;
+            _byId[itemId] = ph;
+            def = ph;
+
+            DebugManager.Warning($"[ItemRegistry] Missing item ref -> placeholder created: '{itemId}' (domain={domain}, ctx={context})", "Validation");
+            return true;
         }
 
         private void ValidateGearAndRecipes(string reportPath)
@@ -119,15 +170,38 @@ namespace CHAL.Systems.Items
                         continue;
                     }
 
+                    EnsureExistsAndMarkUsed(outId, "recipes", $"recipeAsset={r.name} output", out _);
+
                     // existiert Output-Item?
                     if (!_byId.ContainsKey(outId))
                     {
-                        // Placeholder erzeugen (wie bei anderen Validierungen)
-                        CreatePlaceholderitem(outId);
-
                         // analog "missing" kennzeichnen + Kontext anhÃ¤ngen
                         rows.Add($"missing,recipe_output,{outId},recipeAsset={r.name}");
                     }
+
+                    if (r.inputs != null)
+                    {
+                        for (int i = 0; i < r.inputs.Count; i++)
+                        {
+                            var inId = r.inputs[i].itemId;
+                            if (string.IsNullOrWhiteSpace(inId))
+                            {
+                                rows.Add($"warn,recipe_input,empty,recipeAsset={r.name},index={i}");
+                                continue;
+                            }
+
+                            EnsureExistsAndMarkUsed(inId, "recipes", $"recipeAsset={r.name} input[{i}]", out _);
+
+                            if (!_byId.ContainsKey(inId))
+                            {
+                                // analog "missing" kennzeichnen + Kontext anhÃ¤ngen
+                                rows.Add($"missing,recipe_input,{inId},recipeAsset={r.name}");
+                            }
+                        }
+                    }
+
+
+
                 }
             }
 
@@ -156,6 +230,38 @@ namespace CHAL.Systems.Items
             }
         }
 
+        private void ValidateCoreCoverage()
+        {
+            // Alle cores sammeln
+            var coreDefs = _byId.Values
+                .Where(d => d != null && !string.IsNullOrEmpty(d.itemId) && d.itemId.StartsWith("core:", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            // Coverage map
+            var covered = new HashSet<DamageType>();
+
+            for (int i = 0; i < coreDefs.Count; i++)
+            {
+                var d = coreDefs[i];
+                if (d.coreData == null) continue; // core ohne coreData -> ignorieren
+                covered.Add(d.coreData.defualtDmgType); // (ja, typo im Feldnamen existiert bei dir)
+                _used[d.itemId] = true; // cores sind "verwendet" per Definition
+            }
+
+            // Für jeden DamageType: mindestens 1 core?
+            foreach (DamageType dt in Enum.GetValues(typeof(DamageType)))
+            {
+                if (covered.Contains(dt)) continue;
+
+                var placeholderId = $"core:missing_{dt.ToString().ToLowerInvariant()}";
+                DebugManager.Warning($"[ItemRegistry] No Core covers DamageType '{dt}'. Creating placeholder '{placeholderId}'.", "Validation");
+
+                // placeholder + used mark (damit es nicht gleich im Unused Audit nervt)
+                EnsureExistsAndMarkUsed(placeholderId, "core_coverage", $"missing coverage for {dt}", out _);
+            }
+        }
+
+
         private Dictionary<string, string[]> LoadModulePartMap()
         {
             TextAsset json = Resources.Load<TextAsset>("data/Items/ModulePartMap");
@@ -178,9 +284,11 @@ namespace CHAL.Systems.Items
             // Check: jedes Modul existiert
             foreach (var module in _modulePartMap.Keys)
             {
+
+                EnsureExistsAndMarkUsed(module, "module_part_map", "moduleKey", out _);
+
                 if (!_byId.ContainsKey(module))
                 {
-                    CreatePlaceholderitem(module);
                     errors.Add($"Module {module} existiert nicht in ItemRegistry!");
                 }      
             }
@@ -190,9 +298,10 @@ namespace CHAL.Systems.Items
             {
                 foreach (var part in parts)
                 {
+                    EnsureExistsAndMarkUsed(part, "module_part_map", "mappedPart", out _);
+
                     if (!_byId.ContainsKey(part))
                     {
-                        CreatePlaceholderitem(part);
                         errors.Add($"Part {part} existiert nicht in ItemRegistry!");
                     }      
                 }
@@ -229,10 +338,56 @@ namespace CHAL.Systems.Items
             }
         }
 
-/// <summary>
-/// Exports the item index to a CSV file at the specified output path.
-/// </summary>
-/// <param name="outputPath">The path where the CSV file will be saved.</param>
+        public void ValidateUnusedItems()
+        {
+            var unused = new List<string>();
+
+            foreach (var kv in _byId)
+            {
+                var id = kv.Key;
+                if (string.IsNullOrEmpty(id)) continue;
+
+                if (_used.TryGetValue(id, out var isUsed) && isUsed)
+                    continue;
+
+                // nicht verwendet
+                unused.Add(id);
+            }
+
+            if (unused.Count == 0)
+            {
+                DebugManager.Log("[ItemRegistry] UnusedItems: none", DebugManager.EDebugLevel.Production, "System");
+                return;
+            }
+
+            // Warnungen (kompakt)
+            for (int i = 0; i < unused.Count; i++)
+                DebugManager.Warning($"[ItemRegistry] Unused item: {unused[i]}", "Validation");
+
+            // Optional: CSV append
+            try
+            {
+                var rows = unused.Select(id => $"warn,unused_item,{id},no_known_system_reference").ToArray();
+                var header = "level,domain,kind,value,context";
+                var lines = new List<string>(1 + rows.Length) { header };
+                lines.AddRange(rows);
+
+                var dir = Path.GetDirectoryName(unusedExportPath);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                File.WriteAllLines(unusedExportPath, lines);
+            }
+            catch (Exception ex)
+            {
+                DebugManager.Warning($"[ItemRegistry] Failed to write unused-items report: {ex.Message}", "Validation");
+            }
+        }
+
+        /// <summary>
+        /// Exports the item index to a CSV file at the specified output path.
+        /// </summary>
+        /// <param name="outputPath">The path where the CSV file will be saved.</param>
         public void ExportItemIndexCsv(string outputPath)
         {
             if (string.IsNullOrWhiteSpace(outputPath))

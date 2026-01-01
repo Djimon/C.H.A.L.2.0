@@ -42,6 +42,8 @@ namespace CHAL.Systems.Loot
             DebugManager.Log($"[LootRules] Loaded: {_byTag.Count} tag rules",DebugManager.EDebugLevel.Dev,"System");
 
             LoadSecretRules();
+
+            ItemRegistry.Instance.ValidateUnusedItems();
         }
 
         private LootRule ToRule(LootRuleDto dto, string sourceName)
@@ -70,12 +72,12 @@ namespace CHAL.Systems.Loot
                 if (!ItemKey.TryParse(d.itemId, out _))
                     throw new System.Exception($"Ungültige itemId '{d.itemId}'");
 
-                if (!ItemRegistry.Instance.TryGet(d.itemId, out var def))
-                {
-                    ItemRegistry.Instance.CreatePlaceholderitem(d.itemId);
-                    throw new System.Exception($"Item '{d.itemId}' nicht in ItemRegistry gefunden");  
-                }
-                    
+                if (!ItemRegistry.Instance.EnsureExistsAndMarkUsed(d.itemId, "lootrules", $"file={sourceName}, tag={dto.tag}", out var def))
+                    throw new System.Exception($"Ungültige itemId '{d.itemId}'");
+
+                if (def == null)
+                    throw new System.Exception($"Item '{d.itemId}' konnte nicht aufgelöst werden (file={sourceName})");
+
 
                 var drop = new LootDrop
                 {

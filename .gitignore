@@ -119,3 +119,4 @@ stub
 
 #ignore qlik
 *.qvw
+/Assets/Resources/data/Items/core/missing.meta
