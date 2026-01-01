@@ -52,6 +52,7 @@ Part,part:fur,Uncommon
 Part,part:horn,Uncommon
 Part,part:leather,Uncommon
 Part,part:tongue,Uncommon
+Part,part:none,unknown
 Remains,remains:ashes,Common
 Remains,remains:glitter_dust,Common
 Remains,remains:charged_crystal,Epic

@@ -31,7 +31,7 @@ namespace CHAL.Systems.Items
         private readonly Dictionary<string, ItemDef> _byId = new();
 
         private readonly Dictionary<string, bool> _used = new(StringComparer.OrdinalIgnoreCase);
-        private string unusedExportPath = Path.Combine(Application.dataPath, "../UnusedItems.csv");
+        private string unusedExportPath = Path.Combine(Application.dataPath, "../Export/UnusedItems.csv");
 
         /// <summary>
         /// Reloads the item definitions from the Resources folder.
@@ -60,12 +60,12 @@ namespace CHAL.Systems.Items
             }
             DebugManager.Log($"[ItemRegistry] Loaded: {_byId.Count} items",DebugManager.EDebugLevel.Production,"System");
 
-            ExportItemIndexCsv("../ItemIndex.csv");
+            ExportItemIndexCsv("../Export/ItemIndex.csv");
 
             var mod_part_map = LoadModulePartMap();
             ValidateModulePartMap(mod_part_map);
 
-            var reportPath = Path.Combine(Application.dataPath, "../ModulePartValidation.csv"); 
+            var reportPath = Path.Combine(Application.dataPath, "../Export/ModulePartValidation.csv"); 
             ValidateGearAndRecipes(reportPath);
 
             // NEW: Core coverage
@@ -327,7 +327,7 @@ namespace CHAL.Systems.Items
                 foreach (var e in errors)
                     DebugManager.Warning(e, "Validation");
 
-                string path = Path.Combine(Application.dataPath, "../ModulePartValidation.csv");
+                string path = Path.Combine(Application.dataPath, "../Export/ModulePartValidation.csv");
                 File.WriteAllLines(path, errors);
                 DebugManager.Log($"[ItemRegistry] Validation report saved: {path}", DebugManager.EDebugLevel.Production, "System");
 

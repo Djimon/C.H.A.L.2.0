@@ -30,7 +30,7 @@ namespace CHAL.Systems.Items
 
             DebugManager.Log($"[GearModRegistry] Loaded Implicits: {_implicitById.Count} / Affixes: {_affixById.Count}",DebugManager.EDebugLevel.Production,"System");
 
-            ExportModsCsv("../GearModIndex.csv");
+            ExportModsCsv("../Export/GearModIndex.csv");
         }
 
         // =====================================================================

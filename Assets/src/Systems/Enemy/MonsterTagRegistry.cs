@@ -51,7 +51,7 @@ namespace CHAL.Systems.Enemy
 
             DebugManager.Log($"[MonsterTags] Loaded: {_byId.Count} tags", DebugManager.EDebugLevel.Dev, "System");
 
-            var reportPath = Path.Combine(Application.dataPath, "../mosnterTags.csv");
+            var reportPath = Path.Combine(Application.dataPath, "../Export/monsterTags.csv");
             ExportCsv(reportPath);
         }
 

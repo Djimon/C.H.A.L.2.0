@@ -47,7 +47,7 @@ namespace CHAL.Systems.Loot
             ItemRegistry.Instance.ValidateUnusedItems();
 
 
-            //DumpAllKnownTagsOnce();
+            DumpAllKnownTagsOnce();
 
             WarnIfMissingLootRulesForAllMonsterTags();
         }
@@ -147,7 +147,7 @@ namespace CHAL.Systems.Loot
                 }
 
                 // Export
-                var exportDir = Path.Combine(Application.dataPath, "../");
+                var exportDir = Path.Combine(Application.dataPath, "../Export/");
                 if (!Directory.Exists(exportDir)) Directory.CreateDirectory(exportDir);
 
                 var exportPath = Path.Combine(exportDir, "monster_tags_dump.csv");

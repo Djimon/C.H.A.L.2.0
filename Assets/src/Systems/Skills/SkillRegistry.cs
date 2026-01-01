@@ -61,7 +61,7 @@ namespace CHAL.Systems.Skill
                 _byId.Add(def.SkillId, def);
             }
 
-            ExportItemIndexCsv("../SkillIndex.csv");
+            ExportItemIndexCsv("../Export/SkillIndex.csv");
 
             //TODO: Do some validations?
 
