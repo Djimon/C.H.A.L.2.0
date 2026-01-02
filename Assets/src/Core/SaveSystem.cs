@@ -104,6 +104,15 @@ namespace CHAL.Core
                 return null;
             }
 
+            //HeroData checken:
+            DebugManager.Log($"[SaveSystem.Load] HeroesData={p.HeroesData.Count}", DebugManager.EDebugLevel.Test, "Hero");
+            for (int i = 0; i < p.HeroesData.Count; i++)
+            {
+                var h = p.HeroesData[i];
+                DebugManager.Log($"  - {h.HeroId}: L{h.Level} XP={h.CurrentXP} TotalXP={h.TotalXP}",
+                    DebugManager.EDebugLevel.Test, "Hero");
+            }
+
             p.profileId = CurrentProfileId();
 
             DebugManager.Log($"SaveSystem: loaded ← {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);

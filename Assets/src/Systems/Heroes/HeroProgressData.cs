@@ -1,3 +1,6 @@
+using System;
+
+[Serializable]
 public class HeroProgressData
 {
     public string HeroId;           // referenziert HeroDef

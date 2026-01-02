@@ -151,7 +151,7 @@ namespace CHAL.Systems.Hero
             _totalGrowth = _goals.Values.Sum();
         }
 
-        // dein alter LevelUp-Body, aber ohne Level++ & Debug:
+
         private void InternalLevelUpAttributesOnly()
         {
             int ptsThisLevel = (Level % 5 == 0) ? 5 : 4;
@@ -313,6 +313,11 @@ namespace CHAL.Systems.Hero
                 CurrentXP -= required;
                 ApplyLevelUp();
             }
+        }
+
+        public int GetRequiredXPForNextLevel(int level)
+        {
+            return _heroXPconfig.GetRequiredXPForLevel(Level);
         }
 
 

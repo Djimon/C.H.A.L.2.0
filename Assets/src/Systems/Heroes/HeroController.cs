@@ -134,15 +134,17 @@ namespace CHAL.Systems.Hero
             HeroDef = def;
 
             //TODO: build SkillInstances based on SocketedModules + def.Archetype
-            heroInstance = new HeroInstance(def, progressData);
+            heroInstance = new HeroInstance(HeroDef, progressData);
             heroInstance.Team = UnitTeam.Player;
 
             RebuildSocketedSkills();
 
             heroInstance.Died += OnHeroInstanceDied;
 
+            var xpforNextLevel = heroInstance.GetRequiredXPForNextLevel(heroInstance.Level + 1);
+
             DebugManager.Log(
-                $"[HeroController] Spawned Hero {def.HeroId} ({def.DisplayName}) at L{heroInstance.Level} XP={heroInstance.CurrentXP}",
+                $"[HeroController] Spawned Hero {def.HeroId} ({def.DisplayName}) at L{heroInstance.Level} current XP={heroInstance.CurrentXP} (next level: {xpforNextLevel} XP)",
                 DebugManager.EDebugLevel.Test,
                 "Hero"
             );

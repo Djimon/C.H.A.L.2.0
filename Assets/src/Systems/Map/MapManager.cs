@@ -145,6 +145,8 @@ namespace CHAL.Systems.Map
                 }
             }
 
+            _activeHeroes.Clear();
+
             DebugManager.Log($"ResetHeroesForNewWave: cleared {count} existing hero instance(s).",
                 DebugManager.EDebugLevel.Test, "Map");
         }

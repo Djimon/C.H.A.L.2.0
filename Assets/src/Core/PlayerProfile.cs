@@ -413,10 +413,11 @@ namespace CHAL.Data
                 return null;
             }
 
-            var hp = HeroesData.FirstOrDefault(h => h.HeroId == heroId);
-            if (hp == null)
+            var hpd = HeroesData.FirstOrDefault(h => h.HeroId == heroId);
+
+            if (hpd == null)
             {
-                hp = new HeroProgressData
+                hpd = new HeroProgressData
                 {
                     HeroId = heroId,
                     Level = 1,
@@ -426,11 +427,11 @@ namespace CHAL.Data
                     UnspentOrbitPoints = 0,
                     UnlockedSockets = 0
                 };
-                HeroesData.Add(hp);
+                HeroesData.Add(hpd);
                 DebugManager.Log($"[Profile] Created new HeroProgress for {heroId}.", DebugManager.EDebugLevel.Debug, "Hero");
             }
 
-            return hp;
+            return hpd;
         }
 
 /// <summary>
