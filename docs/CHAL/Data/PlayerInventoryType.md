@@ -16,6 +16,9 @@ _Automatically generated/updated from `Assets/src/Data/Enums/InventroyType.cs`._
       - `Rune`: Represents runes in the inventory.
       - `Module`: Represents modules in the inventory.
       - `Gear`: Represents gear in the inventory.
+      - `Core`: Represents core items in the inventory.
+      - `HeroGear`: Represents hero gear in the inventory.
+      - `HeroSockets`: Represents hero sockets in the inventory.
 
 # Key Behavior & Side Effects
 - No explicit behavior or side effects defined; serves as a simple enumeration.
