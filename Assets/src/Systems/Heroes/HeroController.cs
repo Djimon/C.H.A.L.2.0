@@ -133,7 +133,6 @@ namespace CHAL.Systems.Hero
 
             HeroDef = def;
 
-            //TODO: build SkillInstances based on SocketedModules + def.Archetype
             heroInstance = new HeroInstance(HeroDef, progressData);
             heroInstance.Team = UnitTeam.Player;
 

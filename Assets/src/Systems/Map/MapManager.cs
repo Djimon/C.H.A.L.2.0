@@ -316,7 +316,7 @@ namespace CHAL.Systems.Map
             // temporäre HeroInstance NUR für XP-/Level-Logik
             var tempInstance = new HeroInstance(heroDef, progress);
             tempInstance.AddXP(xpAmount);          // nutzt HeroXpConfig
-            tempInstance.FillProgressData(progress); // schreibt Level/XP/Orbit zurück in Progress
+            tempInstance.FillProgressData(progress); // schreibt Level/XP/Orbit zurück in ProgressData des Profils
         }
 
 /// <summary>
