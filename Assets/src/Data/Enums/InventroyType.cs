@@ -6,12 +6,16 @@ namespace CHAL.Data
     [Serializable]
     public enum PlayerInventoryType
     {
-        all,
+        all = 0,
         Remains,
         Part,
         Rune,
         Module,
         Gear,
-        Core
+        Core,
+
+        //HeroInvetory
+        HeroGear = 20,
+        HeroSockets
     }
 }
