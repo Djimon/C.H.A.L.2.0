@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9381806e225998048a538a34116647f4, type: 3}
   m_Name: Hero_Loadout_Gear
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Systems.Inventory.InventoryDef
-  TypeId: 5
-  NameKey: hero_gear
+  TypeId: 20
+  NameKey: hero_loadout_gear
   cols: 1
   rows: 6
   defaultMaxStackPerSlot: 1
