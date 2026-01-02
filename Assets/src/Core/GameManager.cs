@@ -313,6 +313,11 @@ namespace CHAL.Core
             MapProfileToDomain();
         }
 
+/// <summary>
+/// Starts the map with the specified scene and selected map definition.
+/// </summary>
+/// <param name="sceneName">The name of the scene to load.</param>
+/// <param name="selectedMap">The map definition to use.</param>
         internal void StartMap(string sceneName, MapDef selectedMap)
         {
             pendingMap = selectedMap;

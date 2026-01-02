@@ -19,6 +19,17 @@ namespace CHAL.Systems.Hero
         // --------------------------------------------------------------------
 
 
+/// <summary>
+/// Attempts to equip gear for a hero from a specified inventory slot.
+/// Returns false if the operation fails, along with a reason for the failure.
+/// </summary>
+/// <param name="inventory">The inventory domain containing the gear.</param>
+/// <param name="heroId">The ID of the hero to equip the gear for.</param>
+/// <param name="fromInstanceId">The instance ID of the gear source.</param>
+/// <param name="fromSlotIndex">The slot index of the gear to equip.</param>
+/// <param name="heroGearSlotIndex">The gear slot index on the hero.</param>
+/// <param name="failReason">An output parameter that provides the reason for failure.</param>
+/// <returns>True if the gear was equipped successfully; otherwise, false.</returns>
         public static bool TryEquipGear(
             InventoryDomain inventory,
             string heroId,
@@ -148,6 +159,15 @@ namespace CHAL.Systems.Hero
         // GEAR: UNEQUIP
         // --------------------------------------------------------------------
 
+/// <summary>
+/// Attempts to unequip gear from a hero's gear slot.
+/// </summary>
+/// <param name="inventory">The inventory domain to modify.</param>
+/// <param name="gm">The game manager instance.</param>
+/// <param name="heroId">The ID of the hero.</param>
+/// <param name="heroGearSlotIndex">The index of the gear slot to unequip.</param>
+/// <param name="failReason">An output parameter that describes the failure reason, if any.</param>
+/// <returns>True if the gear was successfully unequipped; otherwise, false.</returns>
         public static bool TryUnequipGear(
             InventoryDomain inventory,
             GameManager gm,
@@ -222,6 +242,18 @@ namespace CHAL.Systems.Hero
         // MODULE: SOCKET
         // --------------------------------------------------------------------
 
+/// <summary>
+/// Attempts to process a socket module for a hero in the game.
+/// Returns true if successful, otherwise false with a reason for failure.
+/// </summary>
+/// <param name="inventory">The inventory domain of the hero.</param>
+/// <param name="gm">The game manager instance.</param>
+/// <param name="heroId">The ID of the hero.</param>
+/// <param name="fromInstanceId">The ID of the instance to transfer from.</param>
+/// <param name="fromSlotIndex">The slot index to transfer from.</param>
+/// <param name="heroSocketSlotIndex">The socket slot index for the hero.</param>
+/// <param name="failReason">Output parameter for the failure reason.</param>
+/// <returns>True if the operation was successful; otherwise, false.</returns>
         public static bool TrySocketModule(
             InventoryDomain inventory,
             GameManager gm,
@@ -349,6 +381,16 @@ namespace CHAL.Systems.Hero
         // MODULE: UNSOCKET
         // --------------------------------------------------------------------
 
+/// <summary>
+/// Attempts to unsocket a module from a hero's socket slot.
+/// Returns false if the operation fails, along with a failure reason.
+/// </summary>
+/// <param name="inventory">The inventory domain to check for the module.</param>
+/// <param name="gm">The game manager instance.</param>
+/// <param name="heroId">The ID of the hero.</param>
+/// <param name="heroSocketSlotIndex">The index of the socket slot to unsocket from.</param>
+/// <param name="failReason">Output parameter for the failure reason, if any.</param>
+/// <returns>True if the module was successfully unsocketed; otherwise, false.</returns>
         public static bool TryUnsocketModule(
             InventoryDomain inventory,
             GameManager gm,

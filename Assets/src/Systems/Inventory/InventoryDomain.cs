@@ -16,6 +16,10 @@ namespace CHAL.Systems.Inventory
 
         public event Action<string, int, ItemStackRef?> OnSlotChanged;
 
+/// <summary>
+/// Retrieves all inventory instances.
+/// </summary>
+/// <returns>An enumerable collection of inventory instances.</returns>
         public IEnumerable<InventoryInstance> GetInstances()
         { 
             return _instances.Values;

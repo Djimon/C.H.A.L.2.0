@@ -315,6 +315,11 @@ namespace CHAL.Systems.Hero
             }
         }
 
+/// <summary>
+/// Calculates the required experience points for the next level.
+/// </summary>
+/// <param name="level">The current level of the hero.</param>
+/// <returns>The experience points needed to reach the next level.</returns>
         public int GetRequiredXPForNextLevel(int level)
         {
             return _heroXPconfig.GetRequiredXPForLevel(Level);

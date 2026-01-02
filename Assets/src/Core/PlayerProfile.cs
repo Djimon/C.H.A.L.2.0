@@ -265,6 +265,10 @@ namespace CHAL.Data
         /// Prepares a snapshot of the current inventory by clearing and populating the inventory save list.
         /// </summary>
         [System.Obsolete("LEGACY: Use GameManager.MapDomainToProfile / MapProfileToDomain instead. Remove in Phase 4.", false)]
+/// <summary>
+/// Prepares a snapshot of the current inventory by clearing the existing data.
+/// Logs the completion of the snapshot preparation.
+/// </summary>
         public void PrepareInventorySnapshot()
         {
             InventorySave ??= new List<InventorySnapshot>();
@@ -290,6 +294,10 @@ namespace CHAL.Data
         /// Initializes live inventories if none exist.
         /// </summary>
         [System.Obsolete("LEGACY: Do not use. Use Domain snapshot path. Remove in Phase 4.", false)]
+/// <summary>
+/// Restores inventories from a saved snapshot.
+/// This method will do nothing if the snapshot is null.
+/// </summary>
         public void RestoreInventoriesFromSnapshot()
         {
             if (InventorySave == null) return;
