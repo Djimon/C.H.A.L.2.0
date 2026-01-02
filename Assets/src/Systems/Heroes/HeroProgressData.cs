@@ -1,6 +1,9 @@
 using System;
 
 [Serializable]
+/// <summary>
+/// Represents the progress data for a hero, including experience and level information.
+/// </summary>
 public class HeroProgressData
 {
     public string HeroId;           // referenziert HeroDef
