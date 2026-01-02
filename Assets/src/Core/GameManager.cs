@@ -333,6 +333,8 @@ namespace CHAL.Core
             EnsureInventoryDomain();
             LoadInventoryTemplatesIfNeeded();
             RegisterPlayerInventoryInstancesFromTemplates();
+
+            EnsureHeroLoadoutInventoriesFromProfile();
         }
 
         public void BuildInventroyfromSave()
@@ -366,13 +368,43 @@ namespace CHAL.Core
                 var def = kv.Value;
 
                 if (def == null) continue;
+
+                // Player-Inventare nur für "echte" Player-Typen erzeugen.
+                // HeroGear/HeroSockets sind Templates für hero:{id}:* Instanzen und werden manuell gebootstrappt.
                 if (type == PlayerInventoryType.all) continue;
+                if (type == PlayerInventoryType.HeroGear) continue;
+                if (type == PlayerInventoryType.HeroSockets) continue;
 
                 var instanceId = BuildInstanceId(type);
                 if (Inventory.HasInstance(instanceId)) continue;
 
                 var inst = InventoryInstance.Create(instanceId, def);
                 Inventory.RegisterInstance(inst);
+            }
+        }
+
+        private void EnsureHeroLoadoutInventoriesFromProfile()
+        {
+            if (Inventory == null || Profile == null) return;
+
+            // Robust: leere Listen tolerieren
+            var unlocked = Profile.UnlockedHeroes;
+            if (unlocked == null || unlocked.Count == 0) return;
+
+            for (int i = 0; i < unlocked.Count; i++)
+            {
+                var heroId = unlocked[i];
+                if (string.IsNullOrEmpty(heroId)) continue;
+
+                // Ensure HeroProgress exists (UnlockedSockets etc.)
+                Profile.GetOrCreateHeroProgress(heroId);
+
+                // Deterministische InstanceIds
+                var gearInvId = $"hero:{heroId}:gear";
+                var socketInvId = $"hero:{heroId}:sockets";
+
+                EnsureInstance(gearInvId, PlayerInventoryType.HeroGear);
+                EnsureInstance(socketInvId, PlayerInventoryType.HeroSockets);
             }
         }
 
@@ -447,11 +479,15 @@ namespace CHAL.Core
 
                 // Wir snapshotten hier bewusst nur Player-Inventare (wie vorher via Profile.Inventories)
                 var instanceId = inst.instanceID;
-                if (!instanceId.StartsWith("player_", StringComparison.OrdinalIgnoreCase))
+
+                bool isPlayerInv = instanceId.StartsWith("player_", StringComparison.OrdinalIgnoreCase);
+                bool isHeroInv = instanceId.StartsWith("hero:", StringComparison.OrdinalIgnoreCase);
+
+                if (!isPlayerInv && !isHeroInv)
                     continue;
 
                 // Snapshot-id bleibt kompatibel zum alten inv.invID (Suffix nach "player_")
-                var snapId = instanceId.Substring("player_".Length);
+                var snapId = isPlayerInv ? instanceId.Substring("player_".Length): instanceId;
 
                 // 1) Slots (positionsgenau + instanceId)
                 var slotSnaps = ReadDomainAsSlotSnapshots(instanceId);
@@ -513,7 +549,15 @@ namespace CHAL.Core
                 {
                     if (string.IsNullOrEmpty(snap.id)) continue;
 
-                    string instanceId = "player_" + snap.id.ToLowerInvariant();
+                    string instanceId;
+                    if (snap.id.StartsWith("hero:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        instanceId = snap.id;
+                    }
+                    else
+                    {
+                        instanceId = "player_" + snap.id.ToLowerInvariant();
+                    }
 
                     // Ensure instance exists (TryFillDomainFrom already does this, but we need it for slots too)
                     EnsureInstanceByInstanceId(instanceId);
@@ -532,12 +576,6 @@ namespace CHAL.Core
                         TryFillDomainFrom(snap.items ?? new Dictionary<string, int>(), instanceId);
                     }
 
-                    //TODO: delete after funcitonal test  (remove in Phase 4):
-                    // Optional: keep legacy Inventory objects in sync (if still used somewhere)
-                    //var legacyInv = Profile.Inventories?.FirstOrDefault(x => x != null && x.invID == snap.id);
-                    //if (legacyInv != null)
-                    //    legacyInv.FromDictionary(snap.items ?? new Dictionary<string, int>());
-
                     applied++;
                 }
             }
@@ -547,9 +585,89 @@ namespace CHAL.Core
                 DebugManager.Warning("Inventory: Should not reach","System");
             }
 
+            // 3) Safety: verschobene/zu viele Module aus gesperrten Hero-Sockets zurück ins Player-Gear
+            RepairHeroSocketOverflowToPlayerGear();
+
             DebugManager.Log(
                 $"MapProfileToDomain: applied {applied} inventories",
                 DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
+        }
+
+        private void RepairHeroSocketOverflowToPlayerGear()
+        {
+            // Voraussetzung: 
+            // - Hero-Socket-Inventories folgen dem Schema "hero:{HeroId}:sockets"
+            // - Player-Gear-Inventar hat InstanceId "player_gear"
+            // - Profile.HeroesData enthält UnlockedSockets pro Hero
+
+            if (Inventory == null || Profile == null)
+                return;
+
+            if (Profile.HeroesData == null || Profile.HeroesData.Count == 0)
+                return;
+
+            // Ziel-Inventar für überzählige Module
+            string playerGearInstanceId = BuildInstanceId(PlayerInventoryType.Gear);
+            EnsureInstanceByInstanceId(playerGearInstanceId);
+
+            foreach (var heroProgress in Profile.HeroesData)
+            {
+                if (heroProgress == null || string.IsNullOrEmpty(heroProgress.HeroId))
+                    continue;
+
+                // Konkrete, nicht-heuristische InstanceId gemäß unserem Schema
+                string socketsInstanceId = $"hero:{heroProgress.HeroId}:sockets";
+
+                if (!Inventory.HasInstance(socketsInstanceId))
+                    continue;
+
+                int slotCount = Inventory.SlotCount(socketsInstanceId);
+                if (slotCount <= 0)
+                    continue;
+
+                int unlocked = heroProgress.UnlockedSockets;
+                if (unlocked < 0) unlocked = 0;
+                if (unlocked >= slotCount)
+                    continue; // nichts zu reparieren
+
+                for (int slot = unlocked; slot < slotCount; slot++)
+                {
+                    var maybeStack = Inventory.Peek(socketsInstanceId, slot);
+                    if (!maybeStack.HasValue || maybeStack.Value.count <= 0)
+                        continue;
+
+                    var stack = maybeStack.Value;
+
+                    var request = new MoveRequest
+                    {
+                        fromInventory = new ItemMoveObject
+                        {
+                            instanceID = socketsInstanceId,
+                            slot = slot
+                        },
+                        toInventory = new ItemMoveObject
+                        {
+                            instanceID = playerGearInstanceId,
+                            slot = -1 // beliebiger freier Slot im Gear-Inventar
+                        },
+                        amount = null,          // kompletter Stack
+                        moveMode = MoveMode.Move
+                    };
+
+                    if (!Inventory.TryMove(in request, out var tx))
+                    {
+                        DebugManager.Log(
+                            $"RepairHeroSocketOverflowToPlayerGear: failed to move {stack.itemID} (x{stack.count}) from {socketsInstanceId}:{slot} to {playerGearInstanceId}: {tx.reason}",
+                            DebugManager.EDebugLevel.Dev, "Inventory", LogType.Warning);
+                    }
+                    else
+                    {
+                        DebugManager.Log(
+                            $"RepairHeroSocketOverflowToPlayerGear: moved {stack.itemID} (x{stack.count}) from {socketsInstanceId}:{slot} to {playerGearInstanceId}.",
+                            DebugManager.EDebugLevel.Debug, "Inventory", LogType.Log);
+                    }
+                }
+            }
         }
 
         private void EnsureInstanceByInstanceId(string instanceId)
@@ -559,8 +677,30 @@ namespace CHAL.Core
             if (Inventory.HasInstance(instanceId))
                 return;
 
-            // same logic as TryFillDomainFrom: parse suffix to PlayerInventoryType and EnsureInstance(...)
-            var suffix = instanceId.StartsWith("player_") ? instanceId.Substring("player_".Length) : instanceId;
+            // Hero-Loadout: hero:{HeroId}:gear / hero:{HeroId}:sockets
+            if (instanceId.StartsWith("hero:", StringComparison.OrdinalIgnoreCase))
+            {
+                if (instanceId.EndsWith(":gear", StringComparison.OrdinalIgnoreCase))
+                {
+                    EnsureInstance(instanceId, PlayerInventoryType.HeroGear);
+                    return;
+                }
+
+                if (instanceId.EndsWith(":sockets", StringComparison.OrdinalIgnoreCase))
+                {
+                    EnsureInstance(instanceId, PlayerInventoryType.HeroSockets);
+                    return;
+                }
+
+                DebugManager.Warning($"EnsureInstanceByInstanceId: Unknown hero inventory id '{instanceId}'", "Inventory");
+                return;
+            }
+
+            // Player: player_<suffix> -> enum
+            var suffix = instanceId.StartsWith("player_", StringComparison.OrdinalIgnoreCase)
+                ? instanceId.Substring("player_".Length)
+                : instanceId;
+
             if (Enum.TryParse<PlayerInventoryType>(suffix, true, out var type))
             {
                 EnsureInstance(instanceId, type);
@@ -645,6 +785,11 @@ namespace CHAL.Core
             foreach (var t in _inventoryTemplates.Keys.OrderBy(x => x.ToString()))
             {
                 if (t == PlayerInventoryType.all) continue;
+
+                // HeroGear/HeroSockets sind keine ItemId-Prefix-Targets für Player-Routing.
+                // Diese Inventories werden manuell pro Hero instanziiert (hero:{id}:*), daher hier nicht routen.
+                if (t == PlayerInventoryType.HeroGear) continue;
+                if (t == PlayerInventoryType.HeroSockets) continue;
 
                 var prefix = t.ToString().ToLowerInvariant();
                 if (!_prefixToType.ContainsKey(prefix))
