@@ -137,100 +137,15 @@ All subsequent phases are strictly separated:
 \end{itemize}
 
 % ---------------------------------------------------------------------------
-\subsubsection{Accuracy, Evasion \& Hit Chance}
+\subsubsection{Accuracy \& Hit Chance}
 
-Each attack against a specific target first resolves a hit roll based on the
-attacker's \textbf{Accuracy} and the defender's \textbf{Evasion}. Both are
-expressed as percentages with caps.
+Each attack is by default a hit. There only is a Evasion-mechanic that can evade a portion of the damage. This evasion can be countered by stacking accuracy.
 
-\paragraph{Inputs}
-
-\begin{itemize}
-	\item \textbf{Accuracy\%} – effective hit accuracy of the attacker against this target.
-	This value may include:
-	\begin{itemize}
-		\item class baseline (e.g. melee, caster, ranged),
-		\item flat and \% accuracy bonuses from gear, passives, buffs.
-	\end{itemize}
-	It is capped at a game-defined maximum, e.g.\ 150\,\%.
-	\item \textbf{Evasion\%} – evasion power of the defender.
-	It is capped at a game-defined maximum, e.g.\ 75\,\%.
-\end{itemize}
-
-\paragraph{Hit Chance Calculation}
-
-\[
-\text{Accuracy\%} = \operatorname{clamp}(\text{Accuracy\%}, 0\%, \text{AccCap\%})
-\]
-\[
-\text{Evasion\%}  = \operatorname{clamp}(\text{Evasion\%},  0\%, \text{EvaCap\%})
-\]
-
-The raw hit chance is defined as:
-
-\[
-\text{HitChance}_{\text{raw}} = \text{Accuracy\%} - \text{Evasion\%}
-\]
-
-This is then clamped into a valid probability range:
-
-\[
-\text{HitChance} = \operatorname{clamp}\!\left(
-\text{HitChance}_{\text{raw}},
-\text{MinHit\%},
-\text{MaxHit\%}
-\right)
-\]
-
-Typical design values:
-\begin{itemize}
-	\item $\text{AccCap\%} = 150\%$,
-	\item $\text{EvaCap\%} = 75\%$,
-	\item $\text{MinHit\%} = 5\%$ (no target is completely unhittable),
-	\item $\text{MaxHit\%} = 99\%$ (no attack is perfectly reliable).
-\end{itemize}
-
-\paragraph{Examples}
-
-\begin{itemize}
-	\item Attacker at 150\,\% Accuracy vs defender at 75\,\% Evasion:
-	\[
-	\text{HitChance}_{\text{raw}} = 150\% - 75\% = 75\% \Rightarrow \text{HitChance} = 75\%
-	\]
-	\item Attacker at 100\,\% Accuracy vs defender at 75\,\% Evasion:
-	\[
-	\text{HitChance}_{\text{raw}} = 25\% \Rightarrow \text{HitChance} = 25\%
-	\]
-\end{itemize}
-
-\paragraph{Hit Roll}
-
-For each target, the engine performs a single random roll:
-
-\[
-\text{isHit} =
-\begin{cases}
-	\text{false}, & \text{if } r > \text{HitChance} \\
-	\text{true},  & \text{if } r \le \text{HitChance}
-\end{cases}
-\quad\text{with } r \sim U(0,1)
-\]
-
-If \texttt{isHit = false}, the attack \emph{misses} this target:
-
-\begin{itemize}
-	\item no damage is dealt,
-	\item optional \emph{OnMiss}/\emph{OnDodge} triggers may fire,
-	\item subsequent phases are skipped for this target.
-\end{itemize}
-
-Only if \texttt{isHit = true} does the system proceed to critical strike resolution.
 
 % ---------------------------------------------------------------------------
 \subsubsection{Critical Strike Resolution}
 
-Critical strikes are resolved \emph{after} a successful hit and are independent
-from accuracy/evasion (unless explicitly modified by special mechanics).
+Critical strikes are resolved \emph{after} a successful hit.
 
 \paragraph{Inputs}
 
@@ -733,6 +648,7 @@ For each hit that passed Phase~1 and Phase~2, the defender receives:
 	\begin{itemize}
 		\item \textbf{HP} – current health points,
 		\item \textbf{Barrier} – current barrier (overshield) value,
+		\item \textbf{Evasion} - evades damage via expected-value evasion (glancing blows) - can be countered by Accuracy
 		\item \textbf{Armor} – armor rating (physical mitigation),
 		\item \textbf{ElemResist\%} – elemental resistance (shared for all elemental types in V1),
 		\item optional \textbf{DamageTakenMods} – global \emph{less/more damage taken} modifiers
@@ -839,6 +755,9 @@ Total damage after mitigation (and optional damage-taken mods) is:
 \]
 
 This is the amount that will be applied to barrier and health.
+
+\paragraph{future idea: Global Damage Reduciton}
+there may be a global damage reduction mechanic avialable for all archetpyes/heroes on a very rare base (Elite-Affixe, Corwn-sockets, Master-Orbit-Modifier) that will reduce all damage by a flat number e.g. -25 before apllied to barrier/helath.
 
 % ---------------------------------------------------------------------------
 \subsubsection{Step 2: Barrier \& HP Application}

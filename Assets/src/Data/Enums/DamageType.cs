@@ -3,14 +3,14 @@ namespace CHAL.Data
     public enum DamageType
     {
         Physical,
-        Fire,
-        Cold,
-        Lightning,
-        Earth,
+        Fire,       // 1 elem resistance for all elements
+        Cold,       // 1 elem resistance for all elements
+        Lightning,  // 1 elem resistance for all elements
+        Earth,      // not uses atm, 1 elem resistance for all elements
         Poison,
         Arcane,
-        Daemonic, //cap with Attunement to "Diabolic"
-        Holy,     //cap with Attunement to "Seraphic"
+        Daemonic, // only in endgame, resist with Attunement to "Diabolic"
+        Holy,     // only in endgame, resist with Attunement to "Seraphic"
         Void,
         Abyssal,
 

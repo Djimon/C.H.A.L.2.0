@@ -85,15 +85,241 @@ Each archetype defines:
 	\item remaining stats as low-impact for that archetype.
 \end{itemize}
 
-Exact numeric growth per level and per-stat distributions are defined in the balance sheets. 
-For the GDD, it is sufficient that:
+Exact numeric growth per level and per-stat distributions are defined in the balance config.\\
 
+There are some general rules: Each Archetype has a \textbf{Growth Priority Pattern} which defines what attributes will be increased during leveling. So depending on this configuration you have deterministic end values for each attribute.
+So each hero/archetype has: 
 \begin{itemize}
-	\item Vanguard and Bruiser lean heavily into \textbf{CON/STR},
-	\item Ranger and Marksman lean into \textbf{DEX} (with some INT or STR depending on design),
-	\item Arcanist, Alchemist, Saboteur rely on \textbf{INT},
-	\item Summoner, Hierophant, Oracle rely on \textbf{WIL}.
-\end{itemize}
+	\item 1 \textbf{core} attribute: end value ~ 120
+	\item 2 \textbf{secondary} attributes: end value ~100
+	\item 1 tertiary attribute: end value ~ 80
+	\item 1 edge atttribute: end value ~ 65
+\end{itemize} 
+
+Some example \textbf{Growth Priority Pattern}:\\
+\begin{tabular}{l|c|c|c|c|c}
+	example & core & secondary & secondary & tertiary & edge \\ \hline
+	Vanguard  & STR & CON & WIL & DEX & INT \\
+	Arcanist & INT & WIL & DEX & CON & STR \\
+	Ranger & DEX & WIL & CON & DEX & STR \\
+\end{tabular}
+
+\subsubsection{Hero Stats}
+
+Hero Stats describe all numeric parameters that influence combat behavior, survivability, utility, and progression.
+Some stats are directly derived from primary attributes, while others are modified through Gear, Orbit nodes, Passives, or temporary effects.
+
+Stats are intentionally separated by mechanical role, not by acquisition source.
+\paragraph{List of Stats}
+
+\subparagraph{Core Offense (global, always present)}
+
+These stats apply to all offensive actions unless explicitly overridden by a skill or mechanic.
+
+\begin{tabular}{l|p{10cm}}
+	\textbf{StatId} & \textbf{Description} \\ \hline
+	BaseDamage\_Flat & Base damage foundation before damage type splitting or scaling. \\
+	AttackSpeed\_Pct & Modifier to attack execution speed. \\
+	CastSpeed\_Pct & Modifier to spell cast time. \\
+	Accuracy\_Rating & Hit accuracy; only counters Evasion. If target Evasion = 0, hit chance is 100\%. \\
+	CritChance\_Pct & Chance to critically strike. Baseline scaling only from attributes. \\
+	CritMultiplier\_Pct & Critical damage multiplier. Never derived from attributes. \\
+	GlobalDamage\_IncPct & Additive global Increased'' damage bucket. \\ 
+	GlobalDamage\_MorePct & Multiplicative More'' damage modifier. Rare and source-restricted. \\
+\end{tabular}
+
+\subparagraph{Damage Scaling by Type (granular build axes)}
+
+Type-specific additive scaling. These stats do not affect damage conversion rules.
+
+\begin{tabular}{l|l}
+	\textbf{StatId} & \textbf{Description} \\ \hline
+	DamageInc\_Physical\_Pct & Increased Physical damage \\
+	DamageInc\_Fire\_Pct & Increased Fire damage \\
+	DamageInc\_Cold\_Pct & Increased Cold damage \\
+	DamageInc\_Lightning\_Pct & Increased Lightning damage \\
+	DamageInc\_Earth\_Pct & Increased Earth damage \\
+	DamageInc\_Poison\_Pct & Increased Poison damage \\
+	DamageInc\_Arcane\_Pct & Increased Arcane damage \\
+	DamageInc\_Daemonic\_Pct & Increased Daemonic damage (endgame axis) \\
+	DamageInc\_Holy\_Pct & Increased Holy damage (endgame axis) \\
+\end{tabular}
+
+\subparagraph{Core Defense (layered, mixable)}
+
+Defense stats form layered mitigation systems. Mixing layers is allowed; parity is enforced via tuning, not via exclusivity.
+
+\begin{tabular}{l|p{10cm}}
+	\textbf{StatId} & \textbf{Description} \\ \hline
+	Max\_HP\_Flat & Maximum health pool. \\
+	HP\_Regen\_Pct & Health regeneration scaling (percentage based). \\
+	Armor\_Rating & Armor value (linear mitigation model). \\
+	Evasion\_Rating & Evasion value (linear avoidance model). \\
+	Barrier\_Max\_Flat & Maximum barrier / shield capacity. \\
+	BarrierRechargeRate\_Pct & Barrier recharge speed. \\
+	DamageReduction\_Cap\_Pct & Global effective damage reduction (post-layer-mitigation, restricted, cap-affeting, endgame). \\
+	Resist\_Elemental\_Pct & Elemental resistance (Fire, Cold, Lightning, Earth). \\
+\end{tabular}
+
+\subparagraph{Crowd Control / Ailment Defense (WIL domain)}
+
+Stats that reduce or mitigate control-impairing effects.
+
+\begin{tabular}{l|p{10cm}}
+	\textbf{StatId} & \textbf{Description} \\ \hline
+	StatusAvoid\_Pct & Chance to avoid Slow.Stun Knockback, etc. \\
+	AilmentsAvoid\_Pct & Chance to avoid non-Slow Ailments. \\
+	StatusDuration\_Taken\_Pct & Multiplier to negative status durations (lower is better). \\
+	ControlResist\_Pct & Reduces stun/knockback impact or susceptibility. \\
+\end{tabular}
+
+\subparagraph{DoT / Ailment Offense (granular flavor)}
+
+Offensive stats related to damage over time and secondary effects.
+
+\begin{tabular}{l|l}
+	\textbf{StatId} & \textbf{Description} \\ \hline
+	DoTDamage\_Inc\_Pct & Increased damage over time (generic). \\
+	DoTDuration\_Inc\_Pct & Increased DoT duration. \\
+	PoisonChance\_Pct & Chance to inflict Poison. \\
+	BleedChance\_Pct & Chance to inflict Bleed (Physical axis). \\
+	AilmentChance\_Pct & Chance to inflict elmental Ailments (Fire, Cold, Lightning). \\
+
+\end{tabular}
+\subparagraph{Archetype / Skill-defining Stats (never from attributes)}
+
+These stats define build identity and skill behavior. They are never derived from attributes.
+
+\begin{tabular}{l|p{10cm}}
+	\textbf{StatId} & \textbf{Description} \\ \hline
+	AoE\_Inc\_Pct & Area of effect scaling. \\
+	Projectiles\_Add\_Flat & Additional projectiles. \\
+	Chain\_Add\_Flat & Additional chains. \\
+	Pierce\_Add\_Flat & Additional pierces. \\
+	TriggerChance\_Pct & Chance to trigger auxiliary effects. \\
+	CooldownReduction\_Pct & Cooldown reduction (restricted, significant). \\
+	SkillCharges\_Add\_Flat & Additional skill charges. \\
+\end{tabular}
+
+\subparagraph{Mobility / Execution Speed}
+
+\begin{tabular}{l|l}
+	\textbf{StatId} & \textbf{Description} \\ \hline
+	MoveSpeed\_Pct & Movement speed modifier. \\
+	ActionSpeed\_Pct & Optional global action speed modifier (AttackSpeed, CastSpeed). \\
+\end{tabular}
+
+\subparagraph{Meta / Economy (optional for V1)}
+
+\begin{tabular}{l|l}
+	\textbf{StatId} & \textbf{Description} \\ \hline
+	XPGain\_Pct & Experience gain. \\
+	LootRarity\_Pct & Loot rarity modifier. \\
+	LootQuantity\_Pct & Loot quantity modifier. \\
+	GoldFind\_Pct & Currency gain modifier. \\
+\end{tabular}
+
+\paragraph{Attribute Derivation Rules}
+
+\begin{tabular}{l|p{10cm}}
+	\textbf{Rule} & \textbf{Intent} \\ \hline
+	No build-defining stats & AoE, +Projectiles, Chain, Pierce, large CDR, CritMultiplier never originate from attributes. \\
+	Baseline only & CritChance from DEX is baseline-limited; CritMultiplier never from attributes. \\
+	Endgame viability & MaxHP scales primarily with Level; CON grants a 50–100\% relative advantage, not multiplicative extremes. \\
+	Layer parity & Armor, Evasion, and Barrier are endgame-equivalent in power; differences are behavioral. \\
+	Accuracy model & Accuracy only counters Evasion; if target Evasion = 0, hit chance = 100%. \\
+\end{tabular}
+
+\subparagraph{STR Derivation}
+\begin{tabular}{l|l|l|l}
+	\textbf{From} & \textbf{To StatId} & \textbf{Form} & \textbf{Cap/Intent} \\ \hline
+	Attr\_STR & Armor\_Rating & +\% & Soft scaling; does not bypass DR cap \\
+	Attr\_STR & DamageInc\_Physical\_Pct & +\% & Moderate; not best for elemental builds \\
+	Attr\_STR & GlobalDamage\_Inc\_Pct & +\% & Small general bump (optional) \\
+	Attr\_STR & StatusAvoid\_Stun\_Pct & +\% & Small general bump \\
+\end{tabular}
+
+\subparagraph{DEX Derivation}
+\begin{tabular}{l|l|l|l}
+	\textbf{From} & \textbf{To StatId} & \textbf{Form} & \textbf{Cap/Intent} \\ \hline
+	Attr\_DEX & Evasion\_Rating & +\% & Soft scaling; must stay parity with Armor/Barrier \\
+	Attr\_DEX & AttackSpeed\_Pct & +\% & Soft cap recommended (prevents DEX meta) \\
+	Attr\_DEX & Accuracy\_Rating & +\% & Primary counter to Evasion \\
+	Attr\_DEX & CritChance\_Pct & +\% & Baseline only (e.g., low ceiling) \\
+	Attr\_DEX & MoveSpeed\_Pct & +\% & Very small (feel), not scaling axis \\
+\end{tabular}
+
+\subparagraph{CON Derivation}
+\begin{tabular}{l|l|l|l}
+	\textbf{From} & \textbf{To StatId} & \textbf{Form} & \textbf{Cap/Intent} \\ \hline
+	Attr\_CON & MaxHP\_Flat & +\% & Relative advantage 50--100\% vs low CON \\
+	Attr\_CON & HPRegen\_Pct & +\% & Moderate sustain; not main defense layer \\
+	Attr\_CON & Barrier\_Max\_Flat & +\% & Supports LightArmor/Barrier archetypes \\
+	Attr\_CON & Resist\_Physical\_Pct & +\% & Optional and small if used \\
+\end{tabular}
+
+\subparagraph{INT Derivation}
+\begin{tabular}{l|l|l|l}
+	\textbf{From} & \textbf{To StatId} & \textbf{Form} & \textbf{Cap/Intent} \\ \hline
+	Attr\_INT & DamageInc\_Fire\_Pct & +\% & Elemental scaling axis \\
+	Attr\_INT & DamageInc\_Cold\_Pct & +\% & Elemental scaling axis \\
+	Attr\_INT & DamageInc\_Lightning\_Pct & +\% & Elemental scaling axis \\
+	Attr\_INT & DamageInc\_Elemental\_Pct & +\% & overall Elemental scaling axis \\
+	Attr\_INT & CastSpeed\_Pct & +\% & Small QoL only (avoid INT meta) \\
+	Attr\_INT & CooldownRecovery\_Pct & +\% & Small QoL only\\
+\end{tabular}
+
+\subparagraph{WIL Derivation}
+\begin{tabular}{l|l|l|l}
+	\textbf{From} & \textbf{To StatId} & \textbf{Form} & \textbf{Cap/Intent} \\ \hline
+	Attr\_WIL & StatusAvoid\_Slow\_Pct & +\% & Defensive stability axis \\
+	Attr\_WIL & StatusAvoid\_Ailments\_Pct & +\% & Defensive stability axis \\
+	Attr\_WIL & StatusAvoid\_Stun\_Pct & +\% & Defensive stability axis \\
+	Attr\_WIL & StatusAvoid\_Knockback\_Pct & +\% & Defensive stability axis \\
+	Attr\_WIL & StatusDurationTaken\_Pct & -\% & Reduces negative durations (lower is better) \\
+	Attr\_WIL & StunResist\_Pct & +\% & Smooth gameplay; helps auto-heroes \\
+	Attr\_WIL & KnockbackResist\_Pct & +\% & Smooth gameplay; helps auto-heroes \\
+	Attr\_WIL & BarrierRechargeRate\_Pct & +\% & Optional synergy for Barrier builds \\
+\end{tabular}
+
+\paragraph{Static Derivation Tables}
+
+Stats may exist in multiple stages, but magnitude and mechanical role differ by stage.
+
+\subparagraph{Stage 3A -- Gear Modifiers (Affixes/Implicits)}
+\begin{tabular}{l|p{11cm}}
+	\textbf{Category} & \textbf{Allowed StatIds (examples)} \\ \hline
+	Core power & MaxHP\_Flat, Armor\_Rating, Evasion\_Rating, Barrier\_MaxFlat, BlockChance\_Pct, AttackSpeed\_Pct, CastSpeed\_Pct \\
+	Damage flavor & DamageInc\_Pct, DamageInc\_Cold\_Pct, DamageInc\_Poison\_Pct, DamageInc\_Arcane\_Pct, etc. \\
+	Ailments & AilmentChance\_Poison\_Pct, AilmentChance\_Bleed\_Pct, AilmentChance\_Burn\_Pct, DoT\_Damage\_Inc\_Pct \\
+	Resists & Resist\_Elemental\_Pct, Resist\_Physical\_Pct (Attunement excluded) \\
+	Utility & MoveSpeed\_Pct, ActionSpeed\_Pct, XPGain\_Pct (optional) \\
+	Restricted & CritMultiplier\_Pct (rare), GlobalDamage\_More\_Pct (very rare), CooldownReduction\_Pct (rare, small) \\
+\end{tabular}
+
+\subparagraph{Stage 3B -- Orbit Modifiers (Build Identity)}
+\begin{tabular}{l|p{11cm}} 
+	\textbf{Category} & \textbf{Allowed StatIds (examples)} \\ \hline
+	Build form & AoE\_Inc\_Pct, Projectiles\_Add\_Flat, Chain\_Add\_Flat, Pierce\_Add\_Flat, SkillCharges\_Add\_Flat \\
+	Mechanic gates & TriggerChance\_Pct, CooldownReduction\_Pct (meaningful but controlled) \\
+	Archetype synergy & Conversions (e.g., ``X\% of Evasion granted as Physical Damage'') as special nodes \\
+	Risk/Reward & ``More'' multipliers as high-tier/late nodes with downsides \\
+\end{tabular}
+
+\subparagraph{Stage 3C -- Archetype Passives (Baseline Identity)}
+\begin{tabular}{l|p{11cm}}
+	\textbf{Intent} & \textbf{Allowed StatIds (examples)} \\ \hline
+	Identity baseline & Small, reliable bumps: MaxHP\_Flat, Armor\_Rating/Evasion\_Rating/Barrier\_Max\_Flat, DamageType\_Inc\_Pct \\
+	No hard meta & Avoid giving AoE\_Inc\_Pct + high CritChance at the same time \\
+	Defense leaning & Heavy: Armor\_Rating/Block; Medium: Evasion/Accuracy; Light: Barrier/Recharge \\
+\end{tabular}
+
+\paragraph{Design Constraints (short)}
+\begin{tabular}{l|p{11cm}}
+	\textbf{Constraint} & \textbf{Reason} \\ \hline
+	AoE and Crit stacking & Prevent top-tier AoE and top-tier Crit being trivial simultaneously (Orbit/Gear tradeoffs). \\
+	Defense mixing allowed & Encourage experimentation (e.g., Evasion on a tank) but keep primary armor-class intuitive. \\
+\end{tabular}
 
 \subsection{Archetype Passives}
 
@@ -192,7 +418,7 @@ These are always active once the Hero is in the team and help differentiate play
 
 \subsection{Sockets and Orbit Progression (Hero Perspective)}
 
-Details of sockets, modules and orbits are defined in the Skill System (Section~\ref{sec:skill-system}). 
+Details of sockets, modules are defined in the Skill System (Section~\ref{sec:skill-system}). 
 From the Heroes perspective, the important points are:
 
 \begin{itemize}

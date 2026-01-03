@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
-  m_Name: stardust
+  m_Name: remains_soul_dust
   m_EditorClassIdentifier: 
-  itemId: remains:star_dust
+  itemId: remains:soul_dust
   description: 'Type: Remains'
   icon: {fileID: 0}
-  rarity: 4
-  lootValue: 250
+  rarity: 2
+  lootValue: 120
   remainData:
     remainType: 
   runeData:
     effectType: 
-    hexColor: 
+    power: 0
   partData:
     dnaType: 
     moduleFuel: []

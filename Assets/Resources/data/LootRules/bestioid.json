@@ -7,6 +7,7 @@
     { "itemId": "part:bone", "chance": 20, "quantity": 1 },
     { "itemId": "part:horn", "chance": 25, "quantity": 1 },
     { "itemId": "remains:blood", "chance": 40, "quantity": 1 },
+	{ "itemId": "remains:tears", "chance": 60, "quantity": 1 },
 	{ "itemId": "remains:bone_powder", "chance": 80, "quantity": 1 }
   ],
   "minDrops": 2,

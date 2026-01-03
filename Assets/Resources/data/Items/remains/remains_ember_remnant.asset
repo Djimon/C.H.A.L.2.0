@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
-  m_Name: ember_remnant
+  m_Name: remains_ember_remnant
   m_EditorClassIdentifier: 
-  itemId: remains:ember_remnant
+  itemId: remains:ember_remnants
+  itemType: 1
   description: 'Type: Remains'
   icon: {fileID: 0}
   rarity: 2
@@ -21,10 +22,18 @@ MonoBehaviour:
     remainType: 
   runeData:
     effectType: 
-    power: 0
+    runeColortType: 0
   partData:
     dnaType: 
     moduleFuel: []
   moduleData:
-    effect: 
-    modulePower: 0
+    skillId: 
+    frameTier: 1
+    coreType: 0
+  gearData:
+    slotType: 0
+    armorClass: 0
+    tags: []
+  coreData:
+    coreType: 0
+    defualtDmgType: 0

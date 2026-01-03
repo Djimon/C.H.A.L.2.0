@@ -1,9 +1,9 @@
 {
   "tag": "swarm",
   "drops": [
-    { "itemId": "remains:ashes", "chance": 90, "quantity": 1 },
-    { "itemId": "part:wing", "chance": 25, "quantity": 1 },
-    { "itemId": "part:antenna", "chance": 25, "quantity": 1 }
+    { "itemId": "remains:glitter_dust", "chance": 90, "quantity": 1 },
+    { "itemId": "part:wing", "chance": 5, "quantity": 1 },
+    { "itemId": "part:antenna", "chance": 5, "quantity": 1 }
   ],
   "minDrops": 1,
   "maxDrops": 3,

@@ -4,6 +4,8 @@
     { "itemId": "part:bone_fragment", "chance": 90, "quantity": 1 },
 	{ "itemId": "part:claw", "chance": 90, "quantity": 1 },
 	{ "itemId": "part:hardened_scale", "chance": 90, "quantity": 1 },
+	{ "itemId": "part:skull_shard", "chance": 30, "quantity": 1 },
+	{ "itemId": "part:obsidian_fragment", "chance": 30, "quantity": 1 },
 	{ "itemId": "part:armor_plate", "chance": 90, "quantity": 1 },
 	{ "itemId": "part:tooth", "chance": 90, "quantity": 1 },
 	{ "itemId": "remains:blood", "chance": 70, "quantity": 1 },

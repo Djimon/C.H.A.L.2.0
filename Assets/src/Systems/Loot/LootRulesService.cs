@@ -58,9 +58,10 @@ namespace CHAL.Systems.Loot
 
             var allTags = MonsterTagRegistry.Instance.All;
             int missing = 0;
+            List<string> errors = new();
 
 #if UNITY_EDITOR
-            
+
 #endif
 
             foreach (var tagDef in allTags)
@@ -74,6 +75,7 @@ namespace CHAL.Systems.Loot
                     continue;
 
                 missing++;
+                errors.Add($"MonsterTag; {id}; missing lootRule"); ;
                 DebugManager.Warning($"[LootRules] No LootRule for MonsterTag '{id}' (category={tagDef.category})", "Validation");
 
 #if UNITY_EDITOR
@@ -100,7 +102,13 @@ namespace CHAL.Systems.Loot
             }
 
             if (missing > 0)
+            {
+                string path = Path.Combine(Application.dataPath, "../Export/TagValidation.csv");
+                File.WriteAllLines(path, errors);
+
                 DebugManager.Warning($"[LootRules] Missing LootRules for {missing} MonsterTags", "Validation");
+            }
+                
 
         }
 

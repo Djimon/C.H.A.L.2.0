@@ -289,7 +289,7 @@ namespace CHAL.Systems.Items
 
                 if (!_byId.ContainsKey(module))
                 {
-                    errors.Add($"Module {module} existiert nicht in ItemRegistry!");
+                    errors.Add($"Module; {module}; existiert nicht in ItemRegistry!");
                 }      
             }
 
@@ -302,7 +302,7 @@ namespace CHAL.Systems.Items
 
                     if (!_byId.ContainsKey(part))
                     {
-                        errors.Add($"Part {part} existiert nicht in ItemRegistry!");
+                        errors.Add($"Part; {part}; existiert nicht in ItemRegistry!");
                     }      
                 }
             }
@@ -311,7 +311,7 @@ namespace CHAL.Systems.Items
             foreach (var kv in _modulePartMap)
             {
                 if (kv.Value == null || kv.Value.Length == 0)
-                    errors.Add($"Module {kv.Key} hat keine Parts!");
+                    errors.Add($"Module; {kv.Key}; hat keine Parts!");
             }
 
             // Check: gibt es Parts, die in keinem Modul vorkommen?
@@ -319,7 +319,7 @@ namespace CHAL.Systems.Items
             foreach (var item in _byId.Keys.Where(id => id.StartsWith("part:")))
             {
                 if (!allMappedParts.Contains(item))
-                    errors.Add($"Part {item} wird in keinem Modul verwendet!");
+                    errors.Add($"Part; {item}; wird in keinem Modul verwendet!");
             }
 
             if (errors.Count > 0)

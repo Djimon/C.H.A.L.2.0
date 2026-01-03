@@ -105,7 +105,7 @@ This section focuses on how Heroes interface with the Skill System via sockets, 
 Heroes do not „learn“ traditional skill trees; instead, they use \textbf{Skill Modules} socketed into fixed positions.
 
 \begin{itemize}
-	\item Each Hero has \textbf{5 chakra-style sockets}, not bound to gear:
+	\item Each Hero has \textbf{5-6 chakra-style sockets}, not bound to gear:
 	\begin{itemize}
 		\item e.g. Heart, Hands, Head, Core, Movement.
 	\end{itemize}
@@ -121,7 +121,8 @@ Heroes do not „learn“ traditional skill trees; instead, they use \textbf{Ski
 		Heart       & \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} + \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} & courage, passion, determination \\
 		Core       & \textbf{INT} \colorsquare{INT} \texttt{\#5626e3} + \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} & technique, core strength, effective power \\
 		Handling   & \textbf{STR} \colorsquare{STR} \texttt{\#e3263e} + \textbf{DEX} \colorsquare{DEX} \texttt{\#9ce326} & Weapon handling, dexterity, precision  \\
-		Movement   & \textbf{DEX} \colorsquare{DEX} \texttt{\#9ce326} + \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} & Speed, endurance, reaction \\
+		Awareness   & \textbf{DEX} \colorsquare{DEX} \texttt{\#9ce326} + \textbf{WIL} \colorsquare{WIL} \texttt{\#26e3e3} & Speed, endurance, reaction \\
+		Calibration   & \textbf{INT} \colorsquare{INT} \texttt{\#5626e3} +  \textbf{DEX} \colorsquare{DEX} \texttt{\#9ce326} & optimization, execution, control \\
 		
 	\end{tabular}
 	\item Each socket can hold \textbf{exactly one Skill Module item} from the Inventory.
@@ -188,29 +189,29 @@ Each socket has its own \textbf{Orbit}: a layered progression ring around the so
 	\item the \emph{socket} is the core,
 	\item each \emph{orbit tier} is an electron shell around that core,
 	\item orbit \emph{points} are the electrons on that shell.
-	\item an orbit \emph{Mod} is a "Super-electron" (not scientific related) unlocked when electron hsell full
+	\item an orbit \emph{Mod} is a "Super-electron" (not scientific related) unlocked when electron shell full
 \end{itemize}
 
 \paragraph{Structure}
 
 \begin{itemize}
-	\item Each socket orbit contains a fixed number of points (e.g. 22 points) spread across multiple tiers (Tier~1, Tier~2, Tier~3).
+	\item Each socket orbit contains a fixed number of points (e.g. 70 points) spread across multiple layers.
 	\item Points are \textbf{small, incremental stat buffs}:
 	\begin{itemize}
 		\item e.g. +\% damage, +\% life, +crit chance, +status effect, +resource regen,
 		\item tuned per socket identity (crit/burst vs. sustain vs. utility, etc.).
 	\end{itemize}
-	\item Points are invested in free order along the orbit path for that socket.
+	\item Points are invested in free order along the orbit path within the active layer for that socket.
 \end{itemize}
 
 \paragraph{Tier Gates and Orbit Mods}
 
-Orbit progression is divided into tiers, each with a gate:
+Orbit progression is divided into layers, each with a gate:
 
 \begin{itemize}
-	\item After investing a required number of points on the current tier (e.g. 6--8 points on Tier~1),
-	the player unlocks a \textbf{Tier Mod Choice} for that tier.
-	\item A Tier Mod is a \textbf{behaviour/synergy modifier}, not a small stat buff. Examples:
+	\item After investing a required number of points on the current tier (e.g. 6--10 points on Layer~1),
+	the player unlocks a \textbf{Orbit Mod Choice} for that layer.
+	\item An ORbit Mod is a \textbf{behaviour/synergy modifier}, not a small stat buff. Examples:
 	\begin{itemize}
 		\item convert a single-target skill into a small AoE,
 		\item add a nova or chain effect on hit,
@@ -218,27 +219,336 @@ Orbit progression is divided into tiers, each with a gate:
 		\item convert damage type (e.g. phys to fire) or add penetration,
 		\item change targeting logic (e.g. prioritise bosses / clusters).
 	\end{itemize}
-	\item When a Tier Mod is chosen:
+	\item When an Orbit Mod is chosen:
 	\begin{itemize}
 		\item its effect is applied permanently to the socketed skill,
 		\item the next outer orbit tier is unlocked and becomes available for point investment.
 	\end{itemize}
 \end{itemize}
 
-\paragraph{Socket Identity}
+\paragraph{Socket Identity - Orbit Mods}
 
-Each socket has its own themed orbit and Tier Mod pools:
+The listed Mods below are freely chosable for each Orbit-Mode within the socket in any order.
+The Category column is just for clarification and has no selction/filtering impact.
 
-\begin{itemize}
-	\item \textbf{Example (conceptual only):}
-	\begin{itemize}
-		\item Torso socket: sustain/defence (life, barrier, mitigation, „on damage taken“ effects).
-		\item Right Hand: crit and burst (crit chance/multi, „execute“ style effects, high-risk/high-reward).
-		\item Left Hand: utility/control (crowd control, debuffs, resource manipulation).
-		\item Head: AoE/range/complex mechanics (larger areas, extra projectiles, complex triggers).
-	\end{itemize}
-	\item Tier Mods are drawn from socket-specific pools to reinforce the identity of that slot.
-\end{itemize}
+\subparagraph{Orbit MainMods -- Canonical Attribute Assignment (sorted by Attribute)}
+Mods from the \textbf{CON-Pool} are allowed in each socket.\\
+
+\begin{tabular}{l|l|l}
+	\textbf{Attribute Pool} & \textbf{MainMod} & \textbf{Category (info)} \\ \hline
+	
+	CON & DamageEffectiveness\_Pct & Core Power \\
+	CON & GainDamageAs\_X\_Pct & Mechanics \\
+	CON & Chain\_AddFlat & Shape \\ \hline
+	
+	STR & MeleeDamage\_MorePct & Core Power \\
+	STR & CritEffectOverride\_Pct & Mechanics \\
+	STR & DamageSpread\_Pct & Mechanics \\ \hline
+	
+	DEX & RangedDamage\_MorePct & Core Power \\
+	DEX & Projectiles\_AddFlat & Shape \\
+	DEX & ProjectileSpeed\_Pct & Shape \\
+	DEX & Pierce\_AddFlat & Shape \\ \hline
+	
+	INT & SpellDamage\_MorePct & Core Power \\
+	INT & AoE\_IncPct & Shape \\
+	INT & CooldownReduction\_Pct & Mechanics \\
+	INT & AilmentChance\_Pct & Mechanics \\ \hline
+	
+	WIL & TriggerChance\_Pct & Mechanics \\
+	WIL & DelayedDamage\_Pct & Mechanics \\
+	WIL & HitTwiceChance\_Pct & Mechanics \\
+	
+\end{tabular}
+
+\subparagraph{Orbit MainMods -- Mind Socket (WIL + INT)}
+\begin{tabular}{l|l}
+	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
+	DamageEffectiveness\_Pct & CON \\
+	GainDamageAs\_X\_Pct & CON \\
+	Chain\_AddFlat & CON \\
+	SpellDamage\_MorePct & INT \\
+	AoE\_IncPct & INT \\
+	CooldownReduction\_Pct & INT \\
+	AilmentChance\_Pct & INT \\
+	TriggerChance\_Pct & WIL \\
+	DelayedDamage\_Pct & WIL \\
+	HitTwiceChance\_Pct & WIL \\
+\end{tabular}
+
+\subparagraph{Orbit MainMods -- Heart Socket (STR + WIL)}
+\begin{tabular}{l|l}
+	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
+	DamageEffectiveness\_Pct & CON \\
+	GainDamageAs\_X\_Pct & CON \\
+	Chain\_AddFlat & CON \\
+	MeleeDamage\_MorePct & STR \\
+	CritEffectOverride\_Pct & STR \\
+	DamageSpread\_Pct & STR \\
+	TriggerChance\_Pct & WIL \\
+	DelayedDamage\_Pct & WIL \\
+	HitTwiceChance\_Pct & WIL \\
+\end{tabular}
+
+\subparagraph{Orbit MainMods -- Core Socket (INT + STR)}
+\begin{tabular}{l|l}
+	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
+	DamageEffectiveness\_Pct & CON \\
+	GainDamageAs\_X\_Pct & CON \\
+	Chain\_AddFlat & CON \\
+	SpellDamage\_MorePct & INT \\
+	AoE\_IncPct & INT \\
+	CooldownReduction\_Pct & INT \\
+	AilmentChance\_Pct & INT \\
+	MeleeDamage\_MorePct & STR \\
+	CritEffectOverride\_Pct & STR \\
+	DamageSpread\_Pct & STR \\
+\end{tabular}
+
+\subparagraph{Orbit MainMods -- Handling Socket (STR + DEX)}
+\begin{tabular}{l|l}
+	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
+	DamageEffectiveness\_Pct & CON \\
+	GainDamageAs\_X\_Pct & CON \\
+	Chain\_AddFlat & CON \\
+	MeleeDamage\_MorePct & STR \\
+	CritEffectOverride\_Pct & STR \\
+	DamageSpread\_Pct & STR \\
+	RangedDamage\_MorePct & DEX \\
+	Projectiles\_AddFlat & DEX \\
+	ProjectileSpeed\_Pct & DEX \\
+	Pierce\_AddFlat & DEX \\
+\end{tabular}
+
+\subparagraph{Orbit MainMods -- Awareness Socket (DEX + WIL)}
+\begin{tabular}{l|l}
+	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
+	DamageEffectiveness\_Pct & CON \\
+	GainDamageAs\_X\_Pct & CON \\
+	Chain\_AddFlat & CON \\
+	RangedDamage\_MorePct & DEX \\
+	Projectiles\_AddFlat & DEX \\
+	ProjectileSpeed\_Pct & DEX \\
+	Pierce\_AddFlat & DEX \\
+	TriggerChance\_Pct & WIL \\
+	DelayedDamage\_Pct & WIL \\
+	HitTwiceChance\_Pct & WIL \\
+\end{tabular}
+
+\subparagraph{Orbit MainMods -- Calibration Socket (DEX + INT)}
+\begin{tabular}{l|l}
+	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
+	DamageEffectiveness\_Pct & CON \\
+	GainDamageAs\_X\_Pct & CON \\
+	Chain\_AddFlat & CON \\
+	RangedDamage\_MorePct & DEX \\
+	Projectiles\_AddFlat & DEX \\
+	ProjectileSpeed\_Pct & DEX \\
+	Pierce\_AddFlat & DEX \\
+	SpellDamage\_MorePct & INT \\
+	AoE\_IncPct & INT \\
+	CooldownReduction\_Pct & INT \\
+	AilmentChance\_Pct & INT \\
+\end{tabular}
+
+\paragraph{Orbit Points - Soft Mods}
+
+Soft Mods are small, repeatable upgrades that provide steady, incremental progression within a Socket. A large number of Orbit points (typically 70–100) can be invested, while Main Mods are unlocked at fixed thresholds and define the build’s core mechanics. Soft Mods are intentionally linear and low-impact on their own; their purpose is to reinforce socket identity, improve consistency, and support long-term scaling without replacing or competing with Main Mods.
+
+\subparagraph{Soft Mods -- Socket 1 (Mind: WIL + INT)}
+\begin{tabular}{l|p{9.5cm}}
+	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline	
+	FocusedDamage\_IncPct &
+	+1.0\% increased damage for this skill \\	
+	SpellClarity\_Pct &
+	+0.8\% Spell Damage effectiveness \\	
+	CooldownFlow\_Pct &
+	+0.6\% Cooldown Recovery for this skill \\	
+	EffectReliability\_Pct &
+	+0.7\% chance that secondary effects apply successfully \\	
+	MentalFocus\_Pct &
+	+0.5\% reduced variance on damage rolls (more consistent hits) \\	
+	AilmentApplication\_Pct &
+	+0.8\% increased chance to apply this skill’s ailments \\	
+	DelayedImpact\_Pct &
+	+0.6\% increased effectiveness of delayed damage effects \\	
+	OverloadStability\_Pct &
+	+0.5\% increased chance that overload-style effects trigger \\	
+	ExecutionPrecision\_Pct &
+	+0.4\% increased damage against targets above 80\% HP \\	
+	ControlRetention\_Pct &
+	+0.5\% reduced decay on damage-over-time or delayed effects \\	
+\end{tabular}
+
+\subparagraph{Soft Mods -- Socket 2 (Heart: STR + WIL)}
+\begin{tabular}{l|p{9.5cm}}
+	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline	
+	BrutalForce\_IncPct &
+	+1.0\% increased damage for this skill \\	
+	MomentumGain\_Pct &
+	+0.7\% increased damage while skill is used repeatedly \\	
+	RelentlessPressure\_Pct &
+	+0.6\% increased damage against targets below 50\% HP \\	
+	HitConfidence\_Pct &
+	+0.5\% increased chance for the skill to hit twice (low impact) \\	
+	DeterminationScaling\_Pct &
+	+0.8\% increased effectiveness of STR-based scaling \\	
+	PainTolerance\_Pct &
+	+0.4\% reduced interruption chance during this skill \\	
+	RageRetention\_Pct &
+	+0.6\% increased duration of self-applied offensive buffs \\	
+	ExecutionDrive\_Pct &
+	+0.5\% increased damage per active enemy near the target \\	
+	CommitmentBonus\_Pct &
+	+0.4\% increased damage per second the skill remains slotted \\	
+	WillfulImpact\_Pct &
+	+0.6\% increased effect of on-hit effects tied to this skill \\	
+\end{tabular}
+
+\subparagraph{Soft Mods -- Socket 3 (Core: INT + STR)}
+\begin{tabular}{l|p{9.5cm}}
+	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline
+	
+	EfficientForce\_IncPct &
+	+0.9\% increased damage for this skill \\
+	
+	CoreStability\_Pct &
+	+0.7\% damage effectiveness (reduces loss from conversions or scaling chains) \\
+	
+	MechanicalTiming\_Pct &
+	+0.6\% increased damage if the skill hits within optimal timing windows \\
+	
+	SpellForce\_Pct &
+	+0.6\% increased Spell Damage effectiveness \\
+	
+	PhysicalEfficiency\_Pct &
+	+0.6\% increased Melee Damage effectiveness \\
+	
+	HybridScaling\_Pct &
+	+0.5\% increased benefit from mixed STR/INT scaling \\
+	
+	ControlledImpact\_Pct &
+	+0.5\% increased damage against Rare and Boss enemies \\
+	
+	ExecutionWindow\_Pct &
+	+0.4\% increased damage during short buff or proc windows \\
+	
+	ForceRetention\_Pct &
+	+0.5\% reduced decay on stacked damage modifiers \\
+	
+	PrecisionAssembly\_Pct &
+	+0.4\% reduced variance on converted or hybrid damage \\
+	
+\end{tabular}
+
+\subparagraph{Soft Mods -- Socket 4 (Handling: STR + DEX)}
+\begin{tabular}{l|p{9.5cm}}
+	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline
+	
+	HandlingDamage\_IncPct &
+	+0.9\% increased damage for this skill \\
+	
+	WeaponControl\_Pct &
+	+0.7\% increased damage while moving or shortly after movement \\
+	
+	ImpactAlignment\_Pct &
+	+0.6\% increased damage if the skill hits from optimal range \\
+	
+	StrikePrecision\_Pct &
+	+0.6\% increased hit reliability for this skill \\
+	
+	MomentumTransfer\_Pct &
+	+0.5\% increased damage if the skill follows another attack \\
+	
+	ForceGuidance\_Pct &
+	+0.5\% increased effectiveness of projectile or melee reach \\
+	
+	AdaptiveHandling\_Pct &
+	+0.4\% reduced penalties from rapid direction changes \\
+	
+	ExecutionAccuracy\_Pct &
+	+0.5\% increased damage against moving targets \\
+	
+	GripStability\_Pct &
+	+0.4\% reduced damage variance during sustained attacks \\
+	
+	FlowOfCombat\_Pct &
+	+0.5\% increased damage during continuous attack sequences \\
+	
+\end{tabular}
+
+\subparagraph{Soft Mods -- Socket 5 (Awareness: DEX + WIL)}
+\begin{tabular}{l|p{9.5cm}}
+	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline
+	
+	ReactiveDamage\_IncPct &
+	+0.8\% increased damage for this skill \\
+	
+	ReflexTiming\_Pct &
+	+0.6\% increased damage shortly after dodging or repositioning \\
+	
+	SustainedFocus\_Pct &
+	+0.6\% increased damage during long engagements \\
+	
+	ThreatAwareness\_Pct &
+	+0.5\% increased damage against newly engaged targets \\
+	
+	RapidAdjustment\_Pct &
+	+0.5\% reduced recovery delay after using this skill \\
+	
+	EvasiveControl\_Pct &
+	+0.4\% reduced damage variance while moving \\
+	
+	SituationalPrecision\_Pct &
+	+0.5\% increased damage when enemies change direction or state \\
+	
+	EnduranceScaling\_Pct &
+	+0.5\% increased effectiveness during extended fights \\
+	
+	OpportunisticStrike\_Pct &
+	+0.4\% increased damage after enemy actions (attacks, casts) \\
+	
+	CombatReadiness\_Pct &
+	+0.5\% increased reliability of follow-up effects \\
+	
+\end{tabular}
+
+\subparagraph{Soft Mods -- Socket 6 (Calibration: DEX + INT)}
+\begin{tabular}{l|p{9.5cm}}
+	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline
+	
+	OptimizedDamage\_IncPct &
+	+0.9\% increased damage for this skill \\
+	
+	TrajectoryControl\_Pct &
+	+0.7\% increased effectiveness based on projectile path optimization \\
+	
+	ExecutionPlanning\_Pct &
+	+0.6\% increased damage if the skill is used at optimal timing \\
+	
+	PrecisionScaling\_Pct &
+	+0.6\% increased benefit from DEX-based scaling \\
+	
+	SpellCalibration\_Pct &
+	+0.6\% increased Spell Damage effectiveness \\
+	
+	RangeEfficiency\_Pct &
+	+0.5\% increased damage at ideal engagement distances \\
+	
+	PredictiveImpact\_Pct &
+	+0.5\% increased damage against targets with predictable movement \\
+	
+	OptimizationRetention\_Pct &
+	+0.4\% reduced decay on stacked optimization bonuses \\
+	
+	FineTunedOutput\_Pct &
+	+0.5\% reduced variance on projectile or spell damage \\
+	
+	CalculatedExecution\_Pct &
+	+0.4\% increased damage during planned attack sequences \\
+	
+\end{tabular}
+
 
 \paragraph{Progression Source}
 

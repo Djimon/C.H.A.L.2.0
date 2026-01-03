@@ -162,6 +162,9 @@ Mixed slots can roll from Main/Secondary/Third pools plus a small Neutral add-on
 
 \paragraph{Implicit List and Rolls (example set)}
 
+TODO: translate these stats into implicit:
+ControlResist\_Pct (Stun+Knockback)
+
 Implicit Effect Reference \\
 \begin{tabular}{|l|l|}
 	\hline
@@ -173,10 +176,10 @@ Implicit Effect Reference \\
 	Elem+       & to elemental damage \\
 	Armor\%     & increased armor \\
 	Res\%       & increased elemental resistance \\
-	Dodge\%     & increased dodge chance \\
+	Evasion\%   & increased Evasion rating \\
 	Barrier     & increased barrier \\
 	Armor+      & to armor \\
-	MaxBarrier+ & to max barrier \\
+	BarrierRecharge\% & increased barrier recharge rate \\
 	Life\%      & increased life \\
 	MaxLife+    & to max life \\
 	Rarity\%    & increased item rarity \\
@@ -197,10 +200,10 @@ Implicits and base rolls per Tier \\
 	\hline
 	Armor\%     & \%    & Melee               & Defense & 5--10   & 10--15  & 15--25 \\
 	Res\%       & \%    & Neutral             & Defense & 5--10   & 10--15  & 15--25 \\
-	Dodge\%     & \%    & Ranged              & Defense & 5--10   & 10--15  & 15--25 \\
+	Evasion\%     & \%    & Ranged              & Defense & 5--10   & 10--15  & 15--25 \\
 	Barrier     & \%    & Caster              & Defense & 5--10   & 10--15  & 15--25 \\
 	Armor+      & flat  & Melee               & Defense & 30--60  & 60--100 & 100--150 \\
-	MaxBarrier+ & flat  & Caster              & Defense & 30--60  & 60--100 & 100--150 \\
+	BarrierRecharge\% & \%  & Caster          & Defense & 10--20  & 20--40  & 40--75 \\
 	\hline
 	Life\%      & \%    & Neutral             & Defense & 5--10   & 10--15  & 15--25 \\
 	MaxLife+    & flat  & Neutral             & Defense & 20--40  & 40--75  & 75--120 \\
@@ -329,6 +332,14 @@ tbd
 
 \paragraph{Affix Pools}
 
+TODO: stats to translate into affix:
+StatusAvoid\_Pct (Slow, Stun, knockback)
+AilmentsAvoid\_Pct (Freeze, Burn, Chock)
+StatusDuration\_Taken\_Pct
+
+
+
+
 \subparagraph{Core Pool}
 \begin{center}
 	\begin{tabular}{|l|l|l|c c c|}
@@ -346,6 +357,8 @@ tbd
 		\hline
 		increased phys damage                 & \%   & damage    & 20--40 & 40--75  & 75--120 \\
 		increased elemental damage            & \%   & damage    & 20--40 & 40--75  & 75--120 \\
+		increased attack/skill Speed          & \%   & damage      & 10--15 & 15--25  & 25--40  \\
+		increased ailment chance              & \%   & damage      & 10--15 & 15--25  & 25--40  \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -357,14 +370,17 @@ tbd
 		\textbf{Affix effect} & \textbf{type} & \textbf{tag} & \textbf{T1 roll} & \textbf{T2 roll} & \textbf{T3 roll} \\
 		\hline
 		increased all resistance (phys/elem)  & \%   & defence   & 10--15 & 15--25  & 25--40  \\
-		reduced DoT duration                  & \%   & defence   & 10--15 & 15--25  & 25--40  \\
+		reduced DoT/status duration           & \%   & defence   & 10--15 & 15--25  & 25--40  \\
+		increased Status avoidance            & \%   & defence   & 10--15 & 15--25  & 25--40  \\
+		increased control resistance          & \%   & defence   & 10--15 & 15--25  & 25--40  \\
 		gain \% reflect equal to dodge rating & \%   & defence   & 20--40 & 40--75  & 75--120 \\
 		to barrier regen per second           & flat & defence   & 3--7   & 7--15   & 15--20  \\
 		reduce barrier recharge delay         & \%   & defence   & 10--15 & 15--25  & 25--40  \\
 		\hline
 		\% dmg taken recouped as life         & \%   & life      & 1--4   & 4--8    & 8--12   \\
 		leech damage as life                  & \%   & life      & 1--4   & 4--8    & 8--12   \\
-		to life regen per second              & flat & life      & 5--10  & 10--25  & 25--40  \\	
+		to life regen per second              & flat & life      & 5--10  & 10--25  & 25--40  \\
+		reduce incomming damage	 (very rare)  & flat & defense   & 3--10  &	10--25  & 25--50  \\%
 		\hline
 	\end{tabular}
 \end{center}
@@ -377,7 +393,7 @@ tbd
 		\hline
 		\% armor applies to all Dmg           & \%   & damage    & 10--15 & 15--25  & 25--40  \\
 		\% crit chance applies to phys Dmg    & \%   & damage    & 10--15 & 15--25  & 25--40  \\
-		\% dodge rating applies to thorns     & \%   & damage    & 10--15 & 15--25  & 25--40  \\
+		\% evasion rating applies to thorns     & \%   & damage    & 10--15 & 15--25  & 25--40  \\
 		\% Barrier applies to elem damage     & \%   & damage    & 10--15 & 15--25  & 25--40  \\
 		\% phys damage penetrates armor       & \%   & damage    & 10--15 & 15--25  & 25--40  \\
 		\% elem damage penetrates resistance  & \%   & damage    & 10--15 & 15--25  & 25--40  \\
@@ -392,16 +408,15 @@ tbd
 		\textbf{Affix effect} & \textbf{type} & \textbf{tag} & \textbf{T1 roll} & \textbf{T2 roll} & \textbf{T3 roll} \\
 		\hline
 		increased melee skill power           & \%   & skill     & 20--40 & 40--75  & 75--120 \\
-		increased projectile speed            & \%   & skill     & 20--40 & 40--75  & 75--120 \\
-		increased area of effect              & \%   & skill     & 20--40 & 40--75  & 75--120 \\
 		increased ranged skill power          & \%   & skill     & 20--40 & 40--75  & 75--120 \\
 		increased range                       & \%   & skill     & 20--40 & 40--75  & 75--120 \\
-		increased pierce chance               & \%   & skill     & 20--40 & 40--75  & 75--120 \\
 		\hline
 		increased cast speed                  & \%   & speed     & 20--40 & 40--75  & 75--120 \\
 		reduced cooldown                      & \%   & speed     & 10--15 & 15--25  & 25--40  \\
 		\hline
 		increased item rarity                 & \%   &    & 10--15 & 15--25  & 25--40  \\
+		increased gold found                  & \%   &    & 10--15 & 15--25  & 25--40  \\
+		increased remains found               & \%   &    & 10--15 & 15--25  & 25--40  \\
 		\hline
 	\end{tabular}
 \end{center}
