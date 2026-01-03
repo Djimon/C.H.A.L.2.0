@@ -11,19 +11,19 @@ _Automatically generated/updated from `Assets/src/Data/Enums/DamageType.cs`._
   - `public enum DamageType`
     - Values:
       - `Physical`
-      - `Fire`
-      - `Cold`
-      - `Lightning`
-      - `Earth`
+      - `Fire` // 1 elem resistance for all elements
+      - `Cold` // 1 elem resistance for all elements
+      - `Lightning` // 1 elem resistance for all elements
+      - `Earth` // not used atm, 1 elem resistance for all elements
       - `Poison`
       - `Arcane`
-      - `Daemonic` // cap with Attunement to "Diabolic"
-      - `Holy` // cap with Attunement to "Seraphic"
+      - `Daemonic` // only in endgame, resist with Attunement to "Diabolic"
+      - `Holy` // only in endgame, resist with Attunement to "Seraphic"
       - `Void`
       - `Abyssal`
   - `public enum Attunement`
     - Values:
-      - `Diabolic` = -4
+      - `Diabolic` = -4 // ~ 70% Resist against Daemonic Dmg; -70% Vulnerable against Holy Dmg
       - `Infernal` = -3
       - `Fallen` = -2
       - `Tainted` = -1
@@ -31,7 +31,7 @@ _Automatically generated/updated from `Assets/src/Data/Enums/DamageType.cs`._
       - `Blessed` = 1
       - `Sanctified` = 2
       - `Celestial` = 3
-      - `Seraphic` = 4
+      - `Seraphic` = 4 // ~ 70% Resist against Holy Dmg; -70% Vulnerable against Daemonic Dmg 
 
 # Key Behavior & Side Effects
 - None specified.
