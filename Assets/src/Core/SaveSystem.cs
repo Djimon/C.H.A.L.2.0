@@ -73,10 +73,24 @@ namespace CHAL.Core
                 }
             }
 
+            
+
+
             profile.LastSaveTime = DateTime.UtcNow;
             var id = FileId();
-            
+
+            // Inventories immer separat speichern (auch wenn sie leer sind)
+            SaveInventories(profile.profileId, profile.InventorySave);
+
+            // InventorySave soll NICHT mit ins Profil-File serialisiert werden,
+            // damit profile.json schlank bleibt.
+            var backupInventories = profile.InventorySave;
+            profile.InventorySave = null;
+
             SaveGame.Save(id, profile);
+
+            // Runtime wieder herstellen
+            profile.InventorySave = backupInventories;
 
             DebugManager.Log($"SaveSystem: saved → {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
@@ -96,7 +110,7 @@ namespace CHAL.Core
                 return null;
             }
 
-            // ⬇️ Revert: direkt PlayerProfile laden
+            //Revert: direkt PlayerProfile laden
             var p = SaveGame.Load<PlayerProfile>(id);
             if (p == null)
             {
@@ -115,6 +129,14 @@ namespace CHAL.Core
 
             p.profileId = CurrentProfileId();
 
+            // Inventories aus separater Datei nachladen
+            p.InventorySave = LoadInventories(p.profileId);
+            // Wichtig: Profile.InventorySave wird im SaveSystem.Load() aus inventory_v1.json gefüllt.
+            // Die eigentliche Überführung in den InventoryDomain passiert erst hier:
+            // - BootstrapInventoryDomain(): erzeugt Player- und Hero-Inventories (hero:{HeroId}:gear/sockets)
+            // - MapProfileToDomain(): füllt alle Instanzen aus Profile.InventorySave
+            // da spassiert im GameManager bei ContinueGame() oder StartNewGame()
+
             DebugManager.Log($"SaveSystem: loaded ← {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
             return p;
         }
@@ -130,6 +152,7 @@ namespace CHAL.Core
                 ProfileFileId(pid),
                 ResearchFileId(pid),
                 StatisticsFileId(pid),
+                InventoryFileId(pid),
             };
 
             bool deletedAny = false;
@@ -250,6 +273,75 @@ namespace CHAL.Core
             var snap = SaveGame.Load<StatisticsSnapshot>(id) ?? new StatisticsSnapshot();
             DebugManager.Log($"LoadStatistics ← {id}", DebugManager.EDebugLevel.Dev, "Save");
             return snap;
+        }
+
+
+        /// <summary>
+        /// Saves the inventory snapshots for a specified profile ID in a separate file.
+        /// </summary>
+        public static void SaveInventories(string profileId, List<InventorySnapshot> snapshots)
+        {
+            ConfigureSaveGame();
+
+            var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
+            var id = InventoryFileId(pid);
+
+            // Leere Liste als Fallback, damit die Datei immer ein valides Array enthält
+            var data = snapshots ?? new List<InventorySnapshot>();
+
+            SaveGame.Save(id, data);
+
+            DebugManager.Log($"SaveInventories → {id} (count={data.Count})",
+                DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+        }
+
+        /// <summary>
+        /// Loads inventory snapshots for a given profile ID from the separate inventory file.
+        /// Returns an empty list if no file exists.
+        /// </summary>
+        public static List<InventorySnapshot> LoadInventories(string profileId)
+        {
+            ConfigureSaveGame();
+
+            var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
+            var id = InventoryFileId(pid);
+
+            if (!SaveGame.Exists(id))
+            {
+                DebugManager.Log($"LoadInventories: no file at '{id}', returning empty list.",
+                    DebugManager.EDebugLevel.Dev, "Save", LogType.Warning);
+                return new List<InventorySnapshot>();
+            }
+
+            var list = SaveGame.Load<List<InventorySnapshot>>(id) ?? new List<InventorySnapshot>();
+            DebugManager.Log($"LoadInventories ← {id} (count={list.Count})",
+                DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            return list;
+        }
+
+        /// <summary>
+        /// Deletes the inventory save file for the given profile ID.
+        /// </summary>
+        public static bool DeleteInventories(string profileId)
+        {
+            ConfigureSaveGame();
+
+            var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
+            var id = InventoryFileId(pid);
+
+            if (!SaveGame.Exists(id)) return false;
+
+            SaveGame.Delete(id);
+            DebugManager.Log($"DeleteInventories: deleted '{id}'",
+                DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            return true;
+        }
+
+
+        private static string InventoryFileId(string profileId)
+        {
+            // Eigene Datei für Inventory-Snapshots
+            return $"profiles/{profileId}/inventory_v1.json";
         }
 
 

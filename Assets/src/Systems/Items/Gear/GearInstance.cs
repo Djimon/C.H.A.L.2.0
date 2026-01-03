@@ -105,7 +105,7 @@ namespace CHAL.Data
         public float value;
 
         [Tooltip("0 = Signature, 1 = Slot2, 2 = Slot3 (optional but useful for debugging/UI)")]
-        public int slotIndex;
+        public int implicitSlotIndex;
 
         [Tooltip("Optional: store the base tier used for the roll (debug/consistency)")]
         public GearBaseTier rolledFromTier;
@@ -114,7 +114,7 @@ namespace CHAL.Data
         {
             this.implicitId = implicitId;
             this.value = value;
-            this.slotIndex = slotIndex;
+            this.implicitSlotIndex = slotIndex;
             this.rolledFromTier = rolledFromTier;
         }
     }
@@ -133,7 +133,7 @@ namespace CHAL.Data
         public float value;
 
         [Tooltip("0..maxAffixes-1 (useful for debugging/UI)")]
-        public int slotIndex;
+        public int affixSlotIndex;
 
         [Tooltip("Optional: store the base tier used for the roll (debug/consistency)")]
         public GearBaseTier rolledFromTier;
@@ -142,7 +142,7 @@ namespace CHAL.Data
         {
             this.affixId = affixId;
             this.value = value;
-            this.slotIndex = slotIndex;
+            this.affixSlotIndex = slotIndex;
             this.rolledFromTier = rolledFromTier;
         }
     }

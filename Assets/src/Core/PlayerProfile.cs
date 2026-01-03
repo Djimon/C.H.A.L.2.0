@@ -473,7 +473,7 @@ namespace CHAL.Data
         public int slot;              // SlotIndex im InventoryInstance
         public string itemId;         // ItemDef id
         public int count;             // StackCount (instanced => 1)
-        public string IteminstanceId;     // null/empty => nicht-instanced
+        public string iteminstanceId;     // null/empty => nicht-instanced
     }
 
     [Serializable]

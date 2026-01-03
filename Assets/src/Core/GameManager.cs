@@ -986,7 +986,7 @@ namespace CHAL.Core
                     slot = i,
                     itemId = st.Value.itemID,
                     count = st.Value.count,
-                    IteminstanceId = st.Value.instanceId
+                    iteminstanceId = st.Value.instanceId
                 });
             }
 
@@ -1018,9 +1018,9 @@ namespace CHAL.Core
             for (int i = 0; i < slots.Count; i++)
             {
                 var s = slots[i];
-                if (string.IsNullOrWhiteSpace(s.IteminstanceId)) continue;
+                if (string.IsNullOrWhiteSpace(s.iteminstanceId)) continue;
 
-                if (_gearInstances != null && _gearInstances.TryGetValue(s.IteminstanceId, out var gear) && gear != null)
+                if (_gearInstances != null && _gearInstances.TryGetValue(s.iteminstanceId, out var gear) && gear != null)
                 {
                     result ??= new List<GearInstance>();
                     result.Add(gear);
@@ -1028,7 +1028,7 @@ namespace CHAL.Core
                 else
                 {
                     DebugManager.Log(
-                        $"CollectGearPayloads: instanceId '{s.IteminstanceId}' referenced in inventory but not found in _gearInstances.",
+                        $"CollectGearPayloads: instanceId '{s.iteminstanceId}' referenced in inventory but not found in _gearInstances.",
                         DebugManager.EDebugLevel.Dev, "Save", LogType.Warning);
                 }
             }
@@ -1047,7 +1047,7 @@ namespace CHAL.Core
                 var s = slots[i];
                 if (s.count <= 0 || string.IsNullOrEmpty(s.itemId)) continue;
 
-                var stack = new ItemStackRef(s.itemId, s.count, s.IteminstanceId);
+                var stack = new ItemStackRef(s.itemId, s.count, s.iteminstanceId);
 
                 // Use domain API to preserve slot AND trigger events
                 if (!Inventory.TrySetSlot(instanceId, s.slot, stack))
