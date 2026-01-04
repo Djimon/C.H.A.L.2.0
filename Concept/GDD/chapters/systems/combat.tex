@@ -3,6 +3,33 @@
 The combat proceeds automatically. \\
 Both on the player side and on the enemy side, AI priorities are automatically assigned and the characters follow their strategy (attack, evade, swarm, snipe, etc.). Attacks are executed automatically depending on cooldown and other resources. There is a separate OnHit mechanic that triggers damage and other effects (debuffs, etc.).
 
+\paragraph{Terminology (Combat System)}
+\begin{tabular}{l p{11.5cm}}
+	\hline
+	\textbf{Term} & \textbf{Definition} \\
+	\hline
+	Hit &	The binary determination of whether an attack successfully connects with a target.  
+	A Hit does not imply damage. \\
+	
+	Crit (Critical Hit) &	A special Hit result that alters subsequent resolution steps.  
+	Critical Hits are resolved before damage calculation. \\
+	
+	Offense Pipeline &	The phase in which outgoing values are assembled and modified.  
+	This includes base values, scaling, tags and offensive modifiers. \\
+	
+	Defense Pipeline &	The phase in which incoming values are mitigated or reduced.  
+	Defense modifies the final outcome, not offensive intent. \\
+	
+	Damage Packet &	A structured data container representing a single damage instance.  
+	Damage Packets are processed through the complete Combat Pipeline. \\
+	
+	Damage Type &	A categorical label defining how damage interacts with defenses and modifiers.  
+	Damage Types do not define damage magnitude. \\
+	
+	Effective Damage &	The final damage value applied to a target after all offensive and defensive calculations. \\
+	\hline
+\end{tabular}
+
 \subsection{Combat Damage Pipeline Overview}
 \label{subsec:combat-pipeline-overview}
 
@@ -756,7 +783,7 @@ Total damage after mitigation (and optional damage-taken mods) is:
 
 This is the amount that will be applied to barrier and health.
 
-\paragraph{future idea: Global Damage Reduciton}
+\paragraph{Global Damage Reduciton \futureflag{POST-MVP}}
 there may be a global damage reduction mechanic avialable for all archetpyes/heroes on a very rare base (Elite-Affixe, Corwn-sockets, Master-Orbit-Modifier) that will reduce all damage by a flat number e.g. -25 before apllied to barrier/helath.
 
 % ---------------------------------------------------------------------------

@@ -6,54 +6,63 @@
 This section provides a high-level overview of all core game systems and how they connect to the core loop. 
 Each system is defined by its main responsibility, its primary inputs and outputs, and its relation to other systems.
 
-%\begin{table}[h]
-%	\centering
-	\begin{tabular}{p{1.5cm}p{4.5cm}p{4.5cm}p{5cm}}
-		\textbf{System} & \textbf{Inputs} & \textbf{Outputs} & \textbf{Core Responsibility} \\
-		\hline
-		Research System 
-		& XP (global), Kill-Counts (type/tag-sensitive), Map completions 
-		& Unlocks (Hideout elements, Heroes, Item tiers, Crafting options, Map difficulties)
-		& Long-term meta-progression and gated introduction of new systems and content. \\
-		\hline
-		Skill System 
-		& Hero XP, build decisions (skill points, passives) 
-		& Active skills, passive effects, modified skill behaviour
-		& Defines what each Hero can do in combat (actives) and how they scale/modify via passives. \\
-		\hline
-		Crown System 
-		& Endgame resources, late-game Hero progression % ASSUMPTION (70\%): crowns = late-game unlock track
-		& Endgame skill boosts / enhancements
-		& Provides an additional endgame layer of powerful, limited boosts on top of the base Skill/Passive System. \\
-		\hline
-		Inventory System 
-		& Loot drops (from Maps), rewards (Research / Battlepass), crafting outputs 
-		& Items (gear, materials), currencies (gold, rare currencies)
-		& Persistent storage and organisation of all tangible player resources (items \& currencies). \\
-		\hline
-		Crafting System 
-		& Recipes, base items, currencies/materials 
-		& Upgraded / transformed items
-		& Transforms input items and currencies into stronger or altered items via Recipes, Upgrading and Hardening. \\
-		\hline
-		Map \& Combat System 
-		& Selected Heroes (team), their skills, gear, current Map settings 
-		& Combat results: Loot, XP per Hero, Map completion state
-		& Runs auto-battle encounters (Waves) on a selected Map and determines victory/defeat, drops and XP. \\
-		\hline
-		Loot System 
-		& Combat events (enemy deaths, chests, Map rewards) 
-		& Generated loot items, gold, rare currencies
-		& Decides what drops when and with which rarity/quality; feeds the Inventory and Crafting Systems. \\
-		\hline
-		Meta Progression / Battlepass 
-		& Playtime, completed Maps/Waves, milestones (objectives) 
-		& Cosmetic rewards, account-wide bonuses % ASSUMPTION (60\%): primär kosmetisch; keine P2W-Effekte
-		& Parallel long-term track that rewards regular play with cosmetics and light meta rewards. \\
-	\end{tabular}
-%	\caption{Core Systems Overview}
-%	\label{tab:core-systems-overview}
-%\end{table}
+\begin{tabular}{p{1.5cm}p{4.5cm}p{4.5cm}p{5cm}}
+	\textbf{System} & \textbf{Inputs} & \textbf{Outputs} & \textbf{Core Responsibility} \\
+	\hline
+	Heroes
+	& Hero XP, Orbit Points, unlocked progression options
+	& Increased Hero power, unlocked sockets, progression state
+	& Defines long-term progression of individual Heroes, including levels, Orbit progression and permanent growth. \\
+	\hline
+	
+	Map System
+	& Selected Heroes (team), equipped Gear, Skill Loadouts, Map modifiers
+	& Combat encounters (Waves), victory/defeat state, base rewards context
+	& Orchestrates auto-battle encounters on a selected Map, including Waves, enemy composition and risk modifiers. \\
+	\hline
+	
+	Combat System
+	& Combat participants (Heroes, Enemies), Skills, Stats, Tags, Modifiers
+	& Damage events, deaths, status effects, combat outcomes
+	& Resolves all combat interactions deterministically, including hit resolution, damage calculation and status application. \\
+	\hline
+	
+	Loot \& Drop System
+	& Combat results (enemy deaths, wave completion, Map completion)
+	& Generated loot items, gold, rare currencies
+	& Determines what drops, when and at which rarity/quality based on combat context and progression state. \\
+	\hline
+	
+	Inventory System
+	& Loot drops, crafting outputs, rewards (Research / Battlepass)
+	& Stored items (gear, materials), currencies
+	& Persistent storage and organisation of all tangible player-owned resources (items and currencies). \\
+	\hline
+	
+	Research System
+	& Global XP, kill counts (type/tag-based), Map completions
+	& Unlocks (Heroes, item tiers, crafting options, Maps, systems)
+	& Account-wide meta-progression that gates content, systems and progression options over time. \\
+	\hline
+	
+	Crafting System
+	& Recipes, base items, materials, currencies
+	& Upgraded, transformed or newly created items
+	& Transforms items and resources into stronger or altered items via deterministic and controlled-random crafting processes. \\
+	\hline
+		
+	Skill System
+	& Crafted Skill Modules, Hero loadout decisions
+	& Active skills, passive effects, modified skill behaviour
+	& Defines what Heroes can do in combat through active skills and how those skills are modified and combined. \\
+	\hline
+
+	Meta Progression
+	& Playtime, completed objectives, milestones
+	& Cosmetic rewards, light account-wide bonuses
+	& Parallel progression track that rewards regular play without directly impacting core combat balance. \\
+\end{tabular}
+
 
 % RISK: Many systems are tightly coupled (Research, Maps, Loot, Crafting, Skills, Meta-Progression),
 %       making iterative balancing and slicing for MVP more complex.
@@ -62,6 +71,36 @@ Each system is defined by its main responsibility, its primary inputs and output
 
 This subsection briefly defines what each system is responsible for and what it explicitly does \emph{not} handle. 
 Detailed mechanics are described in the dedicated sections (e.g. Skill System, Items and Inventory, Crafting System).
+
+\subsubsection*{Map \& Combat System}
+
+\paragraph{Responsibility}
+The Map \& Combat System takes a configured team of Heroes (including their skills and gear) and a chosen Map setup,
+spawns Waves of enemies and executes auto-battles. It decides:
+\begin{itemize}
+	\item when a Wave or Map is won or lost,
+	\item which combat events trigger loot drops,
+	\item how much XP each Hero gains per successful Wave.
+\end{itemize}
+
+\paragraph{Non-Goals}
+\begin{itemize}
+	\item Does \emph{not} decide what exact items drop (item generation is part of the Loot System).
+	\item Does \emph{not} change hero builds or gear (handled in the Hub by Skills/Crafting/Inventory).
+\end{itemize}
+
+\subsubsection*{Loot System}
+
+\paragraph{Responsibility}
+The Loot System transforms combat events (e.g. enemy deaths, Map completion) into concrete rewards: 
+items, gold, rare currencies. It controls rarity distributions, item tier chances and special drops, and 
+feeds both the Inventory and Crafting Systems.
+
+\paragraph{Non-Goals}
+\begin{itemize}
+	\item Does \emph{not} execute combat or determine victory/defeat.
+	\item Does \emph{not} handle long-term unlocks (handled by Research and Meta Progression).
+\end{itemize}
 
 \subsubsection*{Research System}
 
@@ -74,21 +113,6 @@ at which complexity and power are introduced.
 \begin{itemize}
 	\item Does \emph{not} grant temporary combat buffs for a single run or Map.
 	\item Does \emph{not} decide loot quality directly (it only unlocks higher tiers or new sources).
-\end{itemize}
-
-\subsubsection*{Skill System \& Crown System}
-
-\paragraph{Responsibility}
-The Skill System defines each Hero's active abilities and passive effects based on gained XP and allocated points. 
-Hero Passives modify base skills (damage, behaviour, synergies) and shape the role of a Hero within a team.
-
-The Crown System provides an additional endgame layer of powerful, rare upgrades that sit on top of the normal 
-Skill/Passive progression and offer long-term goals for highly invested players.
-
-\paragraph{Non-Goals}
-\begin{itemize}
-	\item Does \emph{not} manage gear or item stats (handled by Items \& Inventory / Crafting).
-	\item Does \emph{not} spawn or control enemies (handled by Map \& Combat System).
 \end{itemize}
 
 \subsubsection*{Inventory System}
@@ -121,35 +145,22 @@ It covers three main mechanic families:
 	\item Does \emph{not} track ownership or placement of items (Inventory System).
 \end{itemize}
 
-\subsubsection*{Map \& Combat System}
+
+\subsubsection*{Skill System \& Crown System}
 
 \paragraph{Responsibility}
-The Map \& Combat System takes a configured team of Heroes (including their skills and gear) and a chosen Map setup,
-spawns Waves of enemies and executes auto-battles. It decides:
-\begin{itemize}
-	\item when a Wave or Map is won or lost,
-	\item which combat events trigger loot drops,
-	\item how much XP each Hero gains per successful Wave.
-\end{itemize}
+The Skill System defines each Hero's active abilities and passive effects based on gained XP and allocated points. 
+Hero Passives modify base skills (damage, behaviour, synergies) and shape the role of a Hero within a team.
+
+The Crown System provides an additional endgame layer of powerful, rare upgrades that sit on top of the normal 
+Skill/Passive progression and offer long-term goals for highly invested players.
 
 \paragraph{Non-Goals}
 \begin{itemize}
-	\item Does \emph{not} decide what exact items drop (item generation is part of the Loot System).
-	\item Does \emph{not} change hero builds or gear (handled in the Hub by Skills/Crafting/Inventory).
+	\item Does \emph{not} manage gear or item stats (handled by Items \& Inventory / Crafting).
+	\item Does \emph{not} spawn or control enemies (handled by Map \& Combat System).
 \end{itemize}
 
-\subsubsection*{Loot System}
-
-\paragraph{Responsibility}
-The Loot System transforms combat events (e.g. enemy deaths, Map completion) into concrete rewards: 
-items, gold, rare currencies. It controls rarity distributions, item tier chances and special drops, and 
-feeds both the Inventory and Crafting Systems.
-
-\paragraph{Non-Goals}
-\begin{itemize}
-	\item Does \emph{not} execute combat or determine victory/defeat.
-	\item Does \emph{not} handle long-term unlocks (handled by Research and Meta Progression).
-\end{itemize}
 
 \subsubsection*{Meta Progression / Battlepass}
 
@@ -169,27 +180,11 @@ with cosmetic rewards and light account-wide bonuses.
 
 %----------------------------------------
 
-\input{chapters/systems/research.tex}
-
-%----------------------------------------
-
-\input{chapters/systems/inventory.tex}
-
-%----------------------------------------
-
-\input{chapters/systems/maps.tex}
-
-%----------------------------------------
-
-\input{chapters/systems/crafting.tex}
-
-%----------------------------------------
-
 \input{chapters/systems/heroes.tex}
 
 %----------------------------------------
 
-\input{chapters/systems/skillsystem.tex}
+\input{chapters/systems/maps.tex}
 
 %----------------------------------------
 
@@ -198,6 +193,22 @@ with cosmetic rewards and light account-wide bonuses.
 %----------------------------------------
 
 \input{chapters/systems/loot_drop.tex}
+
+% ---------------------------------------
+
+\input{chapters/systems/inventory.tex}
+
+%----------------------------------------
+
+\input{chapters/systems/research.tex}
+
+%----------------------------------------
+
+\input{chapters/systems/crafting.tex}
+
+%----------------------------------------
+
+\input{chapters/systems/skillsystem.tex}
 
 %----------------------------------------
 

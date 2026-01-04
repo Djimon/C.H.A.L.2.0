@@ -1,6 +1,38 @@
 \section{Skill System}
 \label{sec:skill-system}
 
+Skills are considered tools that enable build expression.
+They define what a hero can do at any given moment, but they do not permanently define who the hero is.
+
+Skill choices are expected to change frequently over time, while a hero’s long-term identity is shaped through progression systems.
+
+\paragraph{Terminology (Skill System)}
+\begin{tabular}{l p{11.5cm}}
+	\hline
+	\textbf{Term} & \textbf{Definition} \\
+	\hline
+	Skill &	A usable ability for heroes or enemies, defined by a \texttt{SkillData} instance.  
+	A Skill describes \emph{what happens} when executed, but not how it is obtained or progressed. \\	
+
+	Skill Module &	A craftable and equippable item that grants access to a Skill.  
+	Modules define availability and configuration, not execution logic. \\
+	
+	SkillData &	The static, immutable definition of a Skill, including impacts, tags and execution rules.  
+	SkillData does not change during runtime. \\
+	
+	Impact &	An atomic effect produced during Skill execution (e.g.\ damage, healing, applying a status).  
+	A single Skill usually consists of multiple Impacts. \\
+	
+	Status Effect &	A time-based or conditional effect applied by an Impact.  
+	Status Effects persist independently of the Skill that created them. \\
+	
+	ModifierData &	A data-driven rule that modifies values during Skill resolution.  
+	Modifiers are global in nature and may affect multiple Skills simultaneously. \\
+	
+	Skill Execution &	The runtime process of resolving a Skill, including targeting, hit checks, impact resolution and modifier application. \\
+	\hline
+\end{tabular}
+
 \subsection{Overview}
 
 The Skill System defines how Heroes and Monsters act in combat. 
@@ -14,7 +46,22 @@ It is built on a unified model for Skills, Impacts, Status effects and Modifiers
 \end{itemize}
 
 Heroes and Monsters use the same SkillData and Status/Modifier framework. 
-The difference lies in where these Skills come from (Hero archetypes, Modules, enemy definition) and which Modifiers apply.
+The difference lies in where these Skills come from (Hero archetypes, Modules, enemy definition) and which Modifiers apply.\\
+
+Skills do not primarily scale through level-based stat growth. Their long-term power, behaviour changes and specialization are mainly driven by Hero Orbit progression, with SkillTier and Gear acting as secondary multipliers.
+
+\subsubsection{Skill Lifecycle Overview}
+
+
+The lifecycle of a skill is intentionally modular and iterative. Skills are not permanent character traits, but crafted and replaceable tools that evolve alongside hero progression.
+
+\begin{itemize}
+	\item \textbf{Unlock} — Skill frames, tiers, or module categories are unlocked via Research or progression systems.
+	\item \textbf{Craft} — A concrete skill module is crafted, defining its base effects, tags, and parameters.
+	\item \textbf{Slot} — The crafted skill module is equipped into a hero loadout and becomes active.
+	\item \textbf{Scale} — The skill scales through hero stats, orbit modifiers, gear, and external effects.
+	\item \textbf{Replace} — Skills can be replaced, or re-crafted without affecting hero identity.
+\end{itemize}
 
 \subsection{Shared Stat Model}
 
@@ -159,437 +206,10 @@ Skill Modules represent the main active skill layer for Heroes:
 	\item Orbits, Gear, Runes and Crowns further modify behaviour and scaling via tags and ModifierData.
 \end{itemize}
 
-\begin{minipage}[t]{0.48\textwidth}
-	\textbf{Element Prefixes}\\
-	
-	\begin{tabular}{r| l}
-		\textbf{DMG-Type} & \textbf{Prefix} \\
-		\hline
-		Fire      & \glqq \textit{Blazing}\grqq   \\
-		Cold      & \glqq \textit{Glacial}\grqq   \\
-		Lightning & \glqq \textit{Static}\grqq    \\
-		Poison    & \glqq \textit{Venomous}\grqq  \\
-		Demonic   & \glqq \textit{Infernal}\grqq  \\
-		Holy      & \glqq \textit{Radiant}\grqq   \\
-	\end{tabular}
-\end{minipage}
-\hfill
-
 \vspace{1em}
-
 
 % RISK: If Modules are too numerous or too similar, the system loses clarity.
 % TODO: For MVP, keep Module count per archetype low and strongly themed.
-
-\subsubsection{Socket Orbits (Passive Progression)}
-
-Each socket has its own \textbf{Orbit}: a layered progression ring around the socket that works similar to electron shells in an atom model:
-
-\begin{itemize}
-	\item the \emph{socket} is the core,
-	\item each \emph{orbit tier} is an electron shell around that core,
-	\item orbit \emph{points} are the electrons on that shell.
-	\item an orbit \emph{Mod} is a "Super-electron" (not scientific related) unlocked when electron shell full
-\end{itemize}
-
-\paragraph{Structure}
-
-\begin{itemize}
-	\item Each socket orbit contains a fixed number of points (e.g. 70 points) spread across multiple layers.
-	\item Points are \textbf{small, incremental stat buffs}:
-	\begin{itemize}
-		\item e.g. +\% damage, +\% life, +crit chance, +status effect, +resource regen,
-		\item tuned per socket identity (crit/burst vs. sustain vs. utility, etc.).
-	\end{itemize}
-	\item Points are invested in free order along the orbit path within the active layer for that socket.
-\end{itemize}
-
-\paragraph{Tier Gates and Orbit Mods}
-
-Orbit progression is divided into layers, each with a gate:
-
-\begin{itemize}
-	\item After investing a required number of points on the current tier (e.g. 6--10 points on Layer~1),
-	the player unlocks a \textbf{Orbit Mod Choice} for that layer.
-	\item An ORbit Mod is a \textbf{behaviour/synergy modifier}, not a small stat buff. Examples:
-	\begin{itemize}
-		\item convert a single-target skill into a small AoE,
-		\item add a nova or chain effect on hit,
-		\item add a DoT component or a mark on hit,
-		\item convert damage type (e.g. phys to fire) or add penetration,
-		\item change targeting logic (e.g. prioritise bosses / clusters).
-	\end{itemize}
-	\item When an Orbit Mod is chosen:
-	\begin{itemize}
-		\item its effect is applied permanently to the socketed skill,
-		\item the next outer orbit tier is unlocked and becomes available for point investment.
-	\end{itemize}
-\end{itemize}
-
-\paragraph{Socket Identity - Orbit Mods}
-
-The listed Mods below are freely chosable for each Orbit-Mode within the socket in any order.
-The Category column is just for clarification and has no selction/filtering impact.
-
-\subparagraph{Orbit MainMods -- Canonical Attribute Assignment (sorted by Attribute)}
-Mods from the \textbf{CON-Pool} are allowed in each socket.\\
-
-\begin{tabular}{l|l|l}
-	\textbf{Attribute Pool} & \textbf{MainMod} & \textbf{Category (info)} \\ \hline
-	
-	CON & DamageEffectiveness\_Pct & Core Power \\
-	CON & GainDamageAs\_X\_Pct & Mechanics \\
-	CON & Chain\_AddFlat & Shape \\ \hline
-	
-	STR & MeleeDamage\_MorePct & Core Power \\
-	STR & CritEffectOverride\_Pct & Mechanics \\
-	STR & DamageSpread\_Pct & Mechanics \\ \hline
-	
-	DEX & RangedDamage\_MorePct & Core Power \\
-	DEX & Projectiles\_AddFlat & Shape \\
-	DEX & ProjectileSpeed\_Pct & Shape \\
-	DEX & Pierce\_AddFlat & Shape \\ \hline
-	
-	INT & SpellDamage\_MorePct & Core Power \\
-	INT & AoE\_IncPct & Shape \\
-	INT & CooldownReduction\_Pct & Mechanics \\
-	INT & AilmentChance\_Pct & Mechanics \\ \hline
-	
-	WIL & TriggerChance\_Pct & Mechanics \\
-	WIL & DelayedDamage\_Pct & Mechanics \\
-	WIL & HitTwiceChance\_Pct & Mechanics \\
-	
-\end{tabular}
-
-\subparagraph{Orbit MainMods -- Mind Socket (WIL + INT)}
-\begin{tabular}{l|l}
-	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
-	DamageEffectiveness\_Pct & CON \\
-	GainDamageAs\_X\_Pct & CON \\
-	Chain\_AddFlat & CON \\
-	SpellDamage\_MorePct & INT \\
-	AoE\_IncPct & INT \\
-	CooldownReduction\_Pct & INT \\
-	AilmentChance\_Pct & INT \\
-	TriggerChance\_Pct & WIL \\
-	DelayedDamage\_Pct & WIL \\
-	HitTwiceChance\_Pct & WIL \\
-\end{tabular}
-
-\subparagraph{Orbit MainMods -- Heart Socket (STR + WIL)}
-\begin{tabular}{l|l}
-	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
-	DamageEffectiveness\_Pct & CON \\
-	GainDamageAs\_X\_Pct & CON \\
-	Chain\_AddFlat & CON \\
-	MeleeDamage\_MorePct & STR \\
-	CritEffectOverride\_Pct & STR \\
-	DamageSpread\_Pct & STR \\
-	TriggerChance\_Pct & WIL \\
-	DelayedDamage\_Pct & WIL \\
-	HitTwiceChance\_Pct & WIL \\
-\end{tabular}
-
-\subparagraph{Orbit MainMods -- Core Socket (INT + STR)}
-\begin{tabular}{l|l}
-	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
-	DamageEffectiveness\_Pct & CON \\
-	GainDamageAs\_X\_Pct & CON \\
-	Chain\_AddFlat & CON \\
-	SpellDamage\_MorePct & INT \\
-	AoE\_IncPct & INT \\
-	CooldownReduction\_Pct & INT \\
-	AilmentChance\_Pct & INT \\
-	MeleeDamage\_MorePct & STR \\
-	CritEffectOverride\_Pct & STR \\
-	DamageSpread\_Pct & STR \\
-\end{tabular}
-
-\subparagraph{Orbit MainMods -- Handling Socket (STR + DEX)}
-\begin{tabular}{l|l}
-	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
-	DamageEffectiveness\_Pct & CON \\
-	GainDamageAs\_X\_Pct & CON \\
-	Chain\_AddFlat & CON \\
-	MeleeDamage\_MorePct & STR \\
-	CritEffectOverride\_Pct & STR \\
-	DamageSpread\_Pct & STR \\
-	RangedDamage\_MorePct & DEX \\
-	Projectiles\_AddFlat & DEX \\
-	ProjectileSpeed\_Pct & DEX \\
-	Pierce\_AddFlat & DEX \\
-\end{tabular}
-
-\subparagraph{Orbit MainMods -- Awareness Socket (DEX + WIL)}
-\begin{tabular}{l|l}
-	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
-	DamageEffectiveness\_Pct & CON \\
-	GainDamageAs\_X\_Pct & CON \\
-	Chain\_AddFlat & CON \\
-	RangedDamage\_MorePct & DEX \\
-	Projectiles\_AddFlat & DEX \\
-	ProjectileSpeed\_Pct & DEX \\
-	Pierce\_AddFlat & DEX \\
-	TriggerChance\_Pct & WIL \\
-	DelayedDamage\_Pct & WIL \\
-	HitTwiceChance\_Pct & WIL \\
-\end{tabular}
-
-\subparagraph{Orbit MainMods -- Calibration Socket (DEX + INT)}
-\begin{tabular}{l|l}
-	\textbf{MainMod} & \textbf{Attribute Pool} \\ \hline
-	DamageEffectiveness\_Pct & CON \\
-	GainDamageAs\_X\_Pct & CON \\
-	Chain\_AddFlat & CON \\
-	RangedDamage\_MorePct & DEX \\
-	Projectiles\_AddFlat & DEX \\
-	ProjectileSpeed\_Pct & DEX \\
-	Pierce\_AddFlat & DEX \\
-	SpellDamage\_MorePct & INT \\
-	AoE\_IncPct & INT \\
-	CooldownReduction\_Pct & INT \\
-	AilmentChance\_Pct & INT \\
-\end{tabular}
-
-\paragraph{Orbit Points - Soft Mods}
-
-Soft Mods are small, repeatable upgrades that provide steady, incremental progression within a Socket. A large number of Orbit points (typically 70–100) can be invested, while Main Mods are unlocked at fixed thresholds and define the build’s core mechanics. Soft Mods are intentionally linear and low-impact on their own; their purpose is to reinforce socket identity, improve consistency, and support long-term scaling without replacing or competing with Main Mods.
-
-\subparagraph{Soft Mods -- Socket 1 (Mind: WIL + INT)}
-\begin{tabular}{l|p{9.5cm}}
-	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline	
-	FocusedDamage\_IncPct &
-	+1.0\% increased damage for this skill \\	
-	SpellClarity\_Pct &
-	+0.8\% Spell Damage effectiveness \\	
-	CooldownFlow\_Pct &
-	+0.6\% Cooldown Recovery for this skill \\	
-	EffectReliability\_Pct &
-	+0.7\% chance that secondary effects apply successfully \\	
-	MentalFocus\_Pct &
-	+0.5\% reduced variance on damage rolls (more consistent hits) \\	
-	AilmentApplication\_Pct &
-	+0.8\% increased chance to apply this skill’s ailments \\	
-	DelayedImpact\_Pct &
-	+0.6\% increased effectiveness of delayed damage effects \\	
-	OverloadStability\_Pct &
-	+0.5\% increased chance that overload-style effects trigger \\	
-	ExecutionPrecision\_Pct &
-	+0.4\% increased damage against targets above 80\% HP \\	
-	ControlRetention\_Pct &
-	+0.5\% reduced decay on damage-over-time or delayed effects \\	
-\end{tabular}
-
-\subparagraph{Soft Mods -- Socket 2 (Heart: STR + WIL)}
-\begin{tabular}{l|p{9.5cm}}
-	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline	
-	BrutalForce\_IncPct &
-	+1.0\% increased damage for this skill \\	
-	MomentumGain\_Pct &
-	+0.7\% increased damage while skill is used repeatedly \\	
-	RelentlessPressure\_Pct &
-	+0.6\% increased damage against targets below 50\% HP \\	
-	HitConfidence\_Pct &
-	+0.5\% increased chance for the skill to hit twice (low impact) \\	
-	DeterminationScaling\_Pct &
-	+0.8\% increased effectiveness of STR-based scaling \\	
-	PainTolerance\_Pct &
-	+0.4\% reduced interruption chance during this skill \\	
-	RageRetention\_Pct &
-	+0.6\% increased duration of self-applied offensive buffs \\	
-	ExecutionDrive\_Pct &
-	+0.5\% increased damage per active enemy near the target \\	
-	CommitmentBonus\_Pct &
-	+0.4\% increased damage per second the skill remains slotted \\	
-	WillfulImpact\_Pct &
-	+0.6\% increased effect of on-hit effects tied to this skill \\	
-\end{tabular}
-
-\subparagraph{Soft Mods -- Socket 3 (Core: INT + STR)}
-\begin{tabular}{l|p{9.5cm}}
-	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline
-	
-	EfficientForce\_IncPct &
-	+0.9\% increased damage for this skill \\
-	
-	CoreStability\_Pct &
-	+0.7\% damage effectiveness (reduces loss from conversions or scaling chains) \\
-	
-	MechanicalTiming\_Pct &
-	+0.6\% increased damage if the skill hits within optimal timing windows \\
-	
-	SpellForce\_Pct &
-	+0.6\% increased Spell Damage effectiveness \\
-	
-	PhysicalEfficiency\_Pct &
-	+0.6\% increased Melee Damage effectiveness \\
-	
-	HybridScaling\_Pct &
-	+0.5\% increased benefit from mixed STR/INT scaling \\
-	
-	ControlledImpact\_Pct &
-	+0.5\% increased damage against Rare and Boss enemies \\
-	
-	ExecutionWindow\_Pct &
-	+0.4\% increased damage during short buff or proc windows \\
-	
-	ForceRetention\_Pct &
-	+0.5\% reduced decay on stacked damage modifiers \\
-	
-	PrecisionAssembly\_Pct &
-	+0.4\% reduced variance on converted or hybrid damage \\
-	
-\end{tabular}
-
-\subparagraph{Soft Mods -- Socket 4 (Handling: STR + DEX)}
-\begin{tabular}{l|p{9.5cm}}
-	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline
-	
-	HandlingDamage\_IncPct &
-	+0.9\% increased damage for this skill \\
-	
-	WeaponControl\_Pct &
-	+0.7\% increased damage while moving or shortly after movement \\
-	
-	ImpactAlignment\_Pct &
-	+0.6\% increased damage if the skill hits from optimal range \\
-	
-	StrikePrecision\_Pct &
-	+0.6\% increased hit reliability for this skill \\
-	
-	MomentumTransfer\_Pct &
-	+0.5\% increased damage if the skill follows another attack \\
-	
-	ForceGuidance\_Pct &
-	+0.5\% increased effectiveness of projectile or melee reach \\
-	
-	AdaptiveHandling\_Pct &
-	+0.4\% reduced penalties from rapid direction changes \\
-	
-	ExecutionAccuracy\_Pct &
-	+0.5\% increased damage against moving targets \\
-	
-	GripStability\_Pct &
-	+0.4\% reduced damage variance during sustained attacks \\
-	
-	FlowOfCombat\_Pct &
-	+0.5\% increased damage during continuous attack sequences \\
-	
-\end{tabular}
-
-\subparagraph{Soft Mods -- Socket 5 (Awareness: DEX + WIL)}
-\begin{tabular}{l|p{9.5cm}}
-	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline
-	
-	ReactiveDamage\_IncPct &
-	+0.8\% increased damage for this skill \\
-	
-	ReflexTiming\_Pct &
-	+0.6\% increased damage shortly after dodging or repositioning \\
-	
-	SustainedFocus\_Pct &
-	+0.6\% increased damage during long engagements \\
-	
-	ThreatAwareness\_Pct &
-	+0.5\% increased damage against newly engaged targets \\
-	
-	RapidAdjustment\_Pct &
-	+0.5\% reduced recovery delay after using this skill \\
-	
-	EvasiveControl\_Pct &
-	+0.4\% reduced damage variance while moving \\
-	
-	SituationalPrecision\_Pct &
-	+0.5\% increased damage when enemies change direction or state \\
-	
-	EnduranceScaling\_Pct &
-	+0.5\% increased effectiveness during extended fights \\
-	
-	OpportunisticStrike\_Pct &
-	+0.4\% increased damage after enemy actions (attacks, casts) \\
-	
-	CombatReadiness\_Pct &
-	+0.5\% increased reliability of follow-up effects \\
-	
-\end{tabular}
-
-\subparagraph{Soft Mods -- Socket 6 (Calibration: DEX + INT)}
-\begin{tabular}{l|p{9.5cm}}
-	\textbf{Soft Mod} & \textbf{Effect (per point, repeatable)} \\ \hline
-	
-	OptimizedDamage\_IncPct &
-	+0.9\% increased damage for this skill \\
-	
-	TrajectoryControl\_Pct &
-	+0.7\% increased effectiveness based on projectile path optimization \\
-	
-	ExecutionPlanning\_Pct &
-	+0.6\% increased damage if the skill is used at optimal timing \\
-	
-	PrecisionScaling\_Pct &
-	+0.6\% increased benefit from DEX-based scaling \\
-	
-	SpellCalibration\_Pct &
-	+0.6\% increased Spell Damage effectiveness \\
-	
-	RangeEfficiency\_Pct &
-	+0.5\% increased damage at ideal engagement distances \\
-	
-	PredictiveImpact\_Pct &
-	+0.5\% increased damage against targets with predictable movement \\
-	
-	OptimizationRetention\_Pct &
-	+0.4\% reduced decay on stacked optimization bonuses \\
-	
-	FineTunedOutput\_Pct &
-	+0.5\% reduced variance on projectile or spell damage \\
-	
-	CalculatedExecution\_Pct &
-	+0.4\% increased damage during planned attack sequences \\
-	
-\end{tabular}
-
-
-\paragraph{Progression Source}
-
-Orbit points are gained through levle-ups of the Heroe:
-
-\begin{itemize}
-	\item Hero level ups,
-	\item Research unlocks (Skill Tiers in the Heroes Tree),
-	\item possibly specific achievements or milestones (future).
-\end{itemize}
-
-The intended pattern is:
-
-\begin{itemize}
-	\item frequent \textbf{small numeric gains} through orbit points,
-	\item occasional \textbf{big behavioural steps} when a Tier Mod is unlocked,
-	\item each unlocked Tier Mod both upgrades the current skill and opens access to the next orbit tier.
-\end{itemize}
-
-% RISK: Too many small points per orbit can feel grindy; tier mod unlock thresholds must be tuned to feel meaningful.
-% TODO: Define exact points-per-tier and thresholds per socket in the Heroes chapter / balance sheets.
-
-\subsubsection{Crowns (Endgame)}
-
-Crowns are an \textbf{endgame progression layer}:
-
-\begin{itemize}
-	\item Crown sockets are unlocked via the Heroes Research Tree (see Research System).
-	\item Crowns apply \textbf{large, rare, endgame-level modifiers}, such as:
-	\begin{itemize}
-		\item transforming a core skill in a fundamental way,
-		\item adding strong, unique effects with clear downsides,
-		\item pushing certain stats beyond normal caps.
-	\end{itemize}
-	\item Crowns are intentionally rare and limited; they are not part of the early game.
-\end{itemize}
-
-For MVP, Crowns can be treated as \emph{future or late} content and do not need full implementation.
-
-% RISK: Too many overlapping layers (Orbits, Runes, Crowns, Gear) can overwhelm players.
-% TODO: Crowns should be reserved for clearly signposted endgame goals.
 
 \subsection{Skill Loadout and Combat Usage}
 
@@ -691,7 +311,7 @@ The player expresses build intent primarily through:
 	\end{itemize}
 \end{itemize}
 
-\subsection{MVP Scope for the Skill System}
+\subsection{Scope for the Skill System}
 
 For the MVP, the Skill System should deliver:
 
@@ -714,12 +334,12 @@ For the MVP, the Skill System should deliver:
 		\item functional Tier I/II for each socket,
 		\item Tier III and complex mutations may be endgame or future additions.
 	\end{itemize}
-	\item \textbf{Runes}:
+	\item \textbf{Runes} \futureflag{POST-MVP}:
 	\begin{itemize}
 		\item optional, simple hero-wide bonuses (1 slot is sufficient for MVP),
 		\item complex interactions can be postponed.
 	\end{itemize}
-	\item \textbf{Crowns}:
+	\item \textbf{Crowns} \futureflag{FUTURE}:
 	\begin{itemize}
 		\item treated as late-game or future content,
 		\item only minimal scaffolding needed in MVP.
