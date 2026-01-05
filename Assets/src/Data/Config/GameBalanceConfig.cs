@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -122,6 +123,34 @@ namespace CHAL.Data
 
         public WaveSettings waves;
 
+        // ==========================
+        // Heroes
+        // ==========================
+
+        [Serializable]
+        public struct HeroGrowthConfig
+        {
+            public int CoreTarget; // = 120;
+            public int SecondaryTarget; // = 100;
+            public int TertiaryTarget; // = 80;
+            public int EdgeTarget; // = 65;
+
+            public HeroGrowthConfig(int core, int sec, int tert, int edge)
+            {
+                CoreTarget = core == 0 ? 120: core;
+                SecondaryTarget = sec == 0 ? 100 : sec;
+                TertiaryTarget = tert == 0 ? 80 : tert;
+                EdgeTarget = edge == 0 ? 65 : edge;
+            }
+        }
+
+        [System.Serializable]
+        public struct HeroSettings
+        {
+            public HeroGrowthConfig GrowthConfig;
+        }
+
+        public HeroSettings heroSettings;
 
         // ==========================
         // ENEMIES

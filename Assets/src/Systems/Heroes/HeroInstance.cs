@@ -116,12 +116,13 @@ namespace CHAL.Systems.Hero
                 { LevelGrowthRole.Edge, 6 }
             };
 
+            var bm_hero = BalanceManager.Instance.Config.heroSettings;
             // Zielwerte ...
             var targetMap = new Dictionary<LevelGrowthRole, int> {
-                { LevelGrowthRole.Core, Archetype.GrowthConfig.CoreTarget },
-                { LevelGrowthRole.Secondary, Archetype.GrowthConfig.SecondaryTarget },
-                { LevelGrowthRole.Tertiary, Archetype.GrowthConfig.TertiaryTarget },
-                { LevelGrowthRole.Edge, Archetype.GrowthConfig.EdgeTarget }
+                { LevelGrowthRole.Core, bm_hero.GrowthConfig.CoreTarget },
+                { LevelGrowthRole.Secondary, bm_hero.GrowthConfig.SecondaryTarget },
+                { LevelGrowthRole.Tertiary, bm_hero.GrowthConfig.TertiaryTarget },
+                { LevelGrowthRole.Edge, bm_hero.GrowthConfig.EdgeTarget }
             };
 
             HeroAttribs[] slots = {
@@ -139,9 +140,9 @@ namespace CHAL.Systems.Hero
             foreach (HeroAttribs s in Enum.GetValues(typeof(HeroAttribs)))
                 _accumulator[s] = 0;
 
-            for (int i = 0; i < Archetype.GrowthConfig.GrowthPattern.growthPriority.Length; i++)
+            for (int i = 0; i < Archetype.GrowthPattern.growthPriority.Length; i++)
             {
-                LevelGrowthRole growthPrio = Archetype.GrowthConfig.GrowthPattern.growthPriority[i];
+                LevelGrowthRole growthPrio = Archetype.GrowthPattern.growthPriority[i];
                 HeroAttribs stat = slots[i];
 
                 attributes[stat] = startMap[growthPrio];
@@ -217,12 +218,13 @@ namespace CHAL.Systems.Hero
                 { LevelGrowthRole.Edge, 6 }
             };
 
+            var bm_hero = BalanceManager.Instance.Config.heroSettings;
             // Zielwerte aus Config
             var targetMap = new Dictionary<LevelGrowthRole, int> {
-                { LevelGrowthRole.Core, Archetype.GrowthConfig.CoreTarget },
-                { LevelGrowthRole.Secondary, Archetype.GrowthConfig.SecondaryTarget },
-                { LevelGrowthRole.Tertiary, Archetype.GrowthConfig.TertiaryTarget },
-                { LevelGrowthRole.Edge, Archetype.GrowthConfig.EdgeTarget }
+                { LevelGrowthRole.Core, bm_hero.GrowthConfig.CoreTarget },
+                { LevelGrowthRole.Secondary, bm_hero.GrowthConfig.SecondaryTarget },
+                { LevelGrowthRole.Tertiary, bm_hero.GrowthConfig.TertiaryTarget },
+                { LevelGrowthRole.Edge, bm_hero.GrowthConfig.EdgeTarget }
             };
 
             // Reihenfolge der Stats laut ArchetypeDef
@@ -239,9 +241,9 @@ namespace CHAL.Systems.Hero
                 _accumulator[s] = 0;
 
             // GrowthPattern anwenden
-            for (int i = 0; i < Archetype.GrowthConfig.GrowthPattern.growthPriority.Length; i++)
+            for (int i = 0; i < Archetype.GrowthPattern.growthPriority.Length; i++)
             {
-                LevelGrowthRole growthPrio = Archetype.GrowthConfig.GrowthPattern.growthPriority[i];
+                LevelGrowthRole growthPrio = Archetype.GrowthPattern.growthPriority[i];
                 HeroAttribs stat = slots[i];
 
                 attributes[stat] = startMap[growthPrio];

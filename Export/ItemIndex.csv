@@ -56,12 +56,11 @@ Part,part:tongue,Uncommon
 Part,part:none,unknown
 Remains,remains:ashes,Common
 Remains,remains:glitter_dust,Common
-Remains,remains:obsidian_splinter,Common
 Remains,remains:charged_crystal,Epic
 Remains,remains:etheral_thread,Epic
 Remains,remains:void_essence,Epic
 Remains,remains:moon_shard,Legendary
-Remains,remains:obsidian_fragment,Legendary
+Remains,remains:obsidian_splinter,Legendary
 Remains,remains:stardust,Legendary
 Remains,remains:ichor,Mythic
 Remains,remains:ember_remnants,Rare

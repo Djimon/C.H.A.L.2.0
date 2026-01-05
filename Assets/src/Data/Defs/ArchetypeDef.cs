@@ -27,17 +27,18 @@ namespace CHAL.Data
         public HeroAttribs Edge;
 
         // Referenz auf GrowthConfig
-        public ArchetypeGrowthConfig GrowthConfig; //TODO-> move to global gamebalance config, not per Archetpye/hero
+        public LevelGrowthPattern GrowthPattern = new LevelGrowthPattern();
+        //public ArchetypeGrowthConfig GrowthConfig; //TODO-> move to global gamebalance config, not per Archetpye/hero
 
         private void OnValidate()
         {
-            if (GrowthConfig?.GrowthPattern?.growthPriority == null)
+            if (GrowthPattern?.growthPriority == null)
             {
                 DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern must have exactly 5 entries.","Edtior");
                 return;
             }
 
-            int len = GrowthConfig.GrowthPattern.growthPriority.Length;
+            int len = GrowthPattern.growthPriority.Length;
             if (len != 5)
             {
                 DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern must have exactly 5 entries. Current: {len}", "Edtior");
@@ -45,15 +46,6 @@ namespace CHAL.Data
         }
     }
 
-    [Serializable]
-    public class ArchetypeGrowthConfig
-    {
-        public int CoreTarget = 120;
-        public int SecondaryTarget = 100;
-        public int TertiaryTarget = 80;
-        public int EdgeTarget = 65;
-        public LevelGrowthPattern GrowthPattern = new LevelGrowthPattern();
-    }
 
     [Serializable]
 /// <summary>

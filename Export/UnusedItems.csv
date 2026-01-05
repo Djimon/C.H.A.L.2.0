@@ -1,6 +1,5 @@
 level,domain,kind,value,context
 warn,unused_item,gear:medium_helmet,no_known_system_reference
-warn,unused_item,remains:obsidian_fragment,no_known_system_reference
 warn,unused_item,rune:AURAM,no_known_system_reference
 warn,unused_item,rune:ECSECUTIO,no_known_system_reference
 warn,unused_item,rune:EXTENDERE,no_known_system_reference
