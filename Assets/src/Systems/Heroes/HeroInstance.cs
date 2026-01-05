@@ -56,9 +56,9 @@ namespace CHAL.Systems.Hero
             if (Archetype == null)
                 DebugManager.Error($"No Archetype! for Hero {heroDef.name}");
 
-            if (Archetype.SignaturePassive != null)
+            if (heroDef.SignaturePassive != null)
             {
-                ActiveModifiers.AddGenericModifier(Archetype.SignaturePassive.ToModifierData());
+                ActiveModifiers.AddGenericModifier(heroDef.SignaturePassive.ToModifierData());
             }
 
             _heroXPconfig = BalanceManager.Instance.HeroXPConfig;

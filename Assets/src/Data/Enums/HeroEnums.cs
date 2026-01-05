@@ -3,14 +3,6 @@ using System;
 
 namespace CHAL.Data
 {
-    public enum HeroSlot
-    {
-        Head,
-        Charm,
-        Torso,
-        RightHand,
-        LeftHand
-    }
 
     [Serializable]
     public enum HeroAttribs

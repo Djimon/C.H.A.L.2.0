@@ -22,6 +22,9 @@ namespace CHAL.Data
         public float BaseMovementSpeed = 2f;
         public float sightRange = 20f;
 
+        [Header("Signature Passive")]
+        public SkillModifierDef SignaturePassive;   // TODO: own ScriptableObject mit ModifierData (List?)
+
 
         [Header("Visuals")]
         public Sprite Portrait;

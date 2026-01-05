@@ -353,8 +353,8 @@ namespace CHAL.Systems.Map
             if (heroCount <= 0)
                 return;
 
-            // Basis-Share pro Held (Team teilt die XP)
-            int baseShare = Mathf.Max(1, totalWaveXp / heroCount);
+            // Basis-Share pro Held (Team teilt die XP gleichmäßig)
+            int baseShare = Mathf.Max(1, totalWaveXp);  // / heroCount
 
             // Safety: HeroXPConfig vorhanden?
             var heroXpConfig = BalanceManager.GetHeroXP();

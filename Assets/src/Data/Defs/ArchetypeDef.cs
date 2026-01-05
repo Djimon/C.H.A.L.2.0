@@ -15,10 +15,8 @@ namespace CHAL.Data
         public string DisplayName;             // Lokalisierbarer Name
         public string RoleDescription;         // "Tank, Frontline, Schadensglättung"
 
-        // TODO: SignaturePassiveName / Desc
         public PrimaryAttackArchetype primAttackType;
 
-        public List<HeroSlot> PreferredSlots;  // ["Torso", "Head"]
         public List<HeroAIPrio> DefaultAIPrio; // ["AttackHighestHP", "BuffAllies", "AA"]
 
         // Stat-Zuordnung
@@ -29,10 +27,7 @@ namespace CHAL.Data
         public HeroAttribs Edge;
 
         // Referenz auf GrowthConfig
-        public ArchetypeGrowthConfig GrowthConfig;
-
-        [Header("Signature Passive")]
-        public SkillModifierDef SignaturePassive;   // ScriptableObject mit ModifierData
+        public ArchetypeGrowthConfig GrowthConfig; //TODO-> move to global gamebalance config, not per Archetpye/hero
 
         private void OnValidate()
         {
