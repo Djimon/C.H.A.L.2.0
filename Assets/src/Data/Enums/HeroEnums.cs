@@ -13,4 +13,13 @@ namespace CHAL.Data
         INT,
         WIL
     }
+
+    [Serializable]
+    public enum LevelGrowthRole
+    {
+        Core,
+        Secondary,
+        Tertiary,
+        Edge
+    }
 }

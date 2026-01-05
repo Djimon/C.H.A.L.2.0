@@ -51,6 +51,14 @@ MonoBehaviour:
     scalingIncrfeasedPercent:
       hpPerLevel: 30
       dmgPerLevel: 20
+  heroSettings:
+    GrowthConfig:
+      CoreTarget: 120
+      SecondaryTarget: 100
+      TertiaryTarget: 80
+      EdgeTarget: 65
+      GrowthPattern:
+        growthPriority: 0000000001000000010000000200000003000000
   enemies:
     budgetPoints:
       spawn: 1

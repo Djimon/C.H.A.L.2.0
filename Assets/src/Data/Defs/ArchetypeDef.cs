@@ -27,50 +27,17 @@ namespace CHAL.Data
         public HeroAttribs Edge;
 
         // Referenz auf GrowthConfig
-        public LevelGrowthPattern GrowthPattern = new LevelGrowthPattern();
+        //public LevelGrowthPattern GrowthPattern = new LevelGrowthPattern();
         //public ArchetypeGrowthConfig GrowthConfig; //TODO-> move to global gamebalance config, not per Archetpye/hero
 
         private void OnValidate()
         {
-            if (GrowthPattern?.growthPriority == null)
-            {
-                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern must have exactly 5 entries.","Edtior");
-                return;
-            }
 
-            int len = GrowthPattern.growthPriority.Length;
-            if (len != 5)
-            {
-                DebugManager.Error($"[ArchetypeDef] {name}: GrowthPattern must have exactly 5 entries. Current: {len}", "Edtior");
-            }
         }
     }
 
 
-    [Serializable]
-/// <summary>
-/// Represents a pattern for level growth with a defined priority of roles.
-/// </summary>
-    public class LevelGrowthPattern
-    {
-        [Tooltip("Pattern aus genau 5 Rollen, z.B. Core, Sec, Sec, Ter, Edge")]
-        public LevelGrowthRole[] growthPriority = new LevelGrowthRole[5]
-        {
-        LevelGrowthRole.Core,
-        LevelGrowthRole.Secondary,
-        LevelGrowthRole.Secondary,
-        LevelGrowthRole.Tertiary,
-        LevelGrowthRole.Edge
-        };
-    }
 
-    public enum LevelGrowthRole
-    {
-        Core,
-        Secondary,
-        Tertiary,
-        Edge
-    }
 
     public enum PrimaryAttackArchetype
     { 

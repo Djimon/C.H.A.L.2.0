@@ -128,6 +128,20 @@ namespace CHAL.Data
         // ==========================
 
         [Serializable]
+        public class LevelGrowthPattern
+        {
+            [Tooltip("Pattern aus genau 5 Rollen, z.B. Core, Sec, Sec, Ter, Edge")]
+            public LevelGrowthRole[] growthPriority = new LevelGrowthRole[5]
+            {
+                LevelGrowthRole.Core,
+                LevelGrowthRole.Secondary,
+                LevelGrowthRole.Secondary,
+                LevelGrowthRole.Tertiary,
+                LevelGrowthRole.Edge
+            };
+        }
+
+        [Serializable]
         public struct HeroGrowthConfig
         {
             public int CoreTarget; // = 120;
@@ -135,13 +149,7 @@ namespace CHAL.Data
             public int TertiaryTarget; // = 80;
             public int EdgeTarget; // = 65;
 
-            public HeroGrowthConfig(int core, int sec, int tert, int edge)
-            {
-                CoreTarget = core == 0 ? 120: core;
-                SecondaryTarget = sec == 0 ? 100 : sec;
-                TertiaryTarget = tert == 0 ? 80 : tert;
-                EdgeTarget = edge == 0 ? 65 : edge;
-            }
+            public LevelGrowthPattern GrowthPattern;
         }
 
         [System.Serializable]

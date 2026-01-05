@@ -108,7 +108,8 @@ namespace CHAL.Systems.Hero
         // Aus deinem bisherigen InitStats extrahiert:
         private void InitBaseStatsAtLevel1()
         {
-                // Startwerte nach GrowthRole
+            var bm_hero = BalanceManager.Instance.Config.heroSettings;
+            // Startwerte nach GrowthRole
             var startMap = new Dictionary<LevelGrowthRole, int> {
                 { LevelGrowthRole.Core, 14 },
                 { LevelGrowthRole.Secondary, 11 },
@@ -116,7 +117,7 @@ namespace CHAL.Systems.Hero
                 { LevelGrowthRole.Edge, 6 }
             };
 
-            var bm_hero = BalanceManager.Instance.Config.heroSettings;
+            
             // Zielwerte ...
             var targetMap = new Dictionary<LevelGrowthRole, int> {
                 { LevelGrowthRole.Core, bm_hero.GrowthConfig.CoreTarget },
@@ -140,9 +141,9 @@ namespace CHAL.Systems.Hero
             foreach (HeroAttribs s in Enum.GetValues(typeof(HeroAttribs)))
                 _accumulator[s] = 0;
 
-            for (int i = 0; i < Archetype.GrowthPattern.growthPriority.Length; i++)
+            for (int i = 0; i < bm_hero.GrowthConfig.GrowthPattern.growthPriority.Length; i++)
             {
-                LevelGrowthRole growthPrio = Archetype.GrowthPattern.growthPriority[i];
+                LevelGrowthRole growthPrio = bm_hero.GrowthConfig.GrowthPattern.growthPriority[i];
                 HeroAttribs stat = slots[i];
 
                 attributes[stat] = startMap[growthPrio];
@@ -241,9 +242,9 @@ namespace CHAL.Systems.Hero
                 _accumulator[s] = 0;
 
             // GrowthPattern anwenden
-            for (int i = 0; i < Archetype.GrowthPattern.growthPriority.Length; i++)
+            for (int i = 0; i < bm_hero.GrowthConfig.GrowthPattern.growthPriority.Length; i++)
             {
-                LevelGrowthRole growthPrio = Archetype.GrowthPattern.growthPriority[i];
+                LevelGrowthRole growthPrio = bm_hero.GrowthConfig.GrowthPattern.growthPriority[i];
                 HeroAttribs stat = slots[i];
 
                 attributes[stat] = startMap[growthPrio];
