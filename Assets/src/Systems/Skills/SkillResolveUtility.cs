@@ -137,6 +137,39 @@ namespace CHAL.Systems.Skill
             }
         }
 
+        public static DamageType TranslateCoreTypeToDamage(CoreType type)
+        {
+            switch (type)
+            {
+
+                case CoreType.Kinetic:
+                    return DamageType.Physical;
+                case CoreType.Blazing:
+                    return DamageType.Fire;
+                case CoreType.Glacial:
+                    return DamageType.Cold;
+                case CoreType.Static:
+                    return DamageType.Lightning;
+                case CoreType.Venomous:
+                    return DamageType.Poison;
+                case CoreType.Infernal:
+                    return DamageType.Daemonic;
+                case CoreType.Radiant:
+                    return DamageType.Holy;
+                case CoreType.Seismic:
+                    return DamageType.Earth;
+                case CoreType.Aetheric:
+                    return DamageType.Arcane;
+                case CoreType.Nullified:
+                    return DamageType.Void;
+                case CoreType.Cthonic:
+                    return DamageType.Abyssal;
+                default:
+                    return DamageType.Physical;
+            }
+
+        }
+
         /// <summary>
         /// Resolves a SkillRange to its corresponding float value.
         /// </summary>

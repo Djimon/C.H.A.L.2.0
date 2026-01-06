@@ -1,6 +1,7 @@
 using CHAL.Data;
 using CHAL.Systems.Crafting;
 using CHAL.Systems.Loot.Models;
+using CHAL.Systems.Skill;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -244,7 +245,8 @@ namespace CHAL.Systems.Items
             {
                 var d = coreDefs[i];
                 if (d.coreData == null) continue; // core ohne coreData -> ignorieren
-                covered.Add(d.coreData.defualtDmgType); // (ja, typo im Feldnamen existiert bei dir)
+                var dmgtype = SkillResolveUtility.TranslateCoreTypeToDamage(d.coreData.coreType);
+                covered.Add(dmgtype); // (ja, typo im Feldnamen existiert bei dir)
                 _used[d.itemId] = true; // cores sind "verwendet" per Definition
             }
 
