@@ -1,0 +1,111 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/src/UI/uss/CheatMenu.uss?fileID=7433441132597879392&amp;guid=b684d5544b9776d41971f05a973a0baa&amp;type=3#CheatMenu"/>
+    <ui:VisualElement class="root">
+        <ui:Label text="DEV CHEAT MENU" class="title"/>
+        <ui:ScrollView class="scroll">
+            <ui:Foldout text="Items / Inventory" name="fold_items" value="false" class="foldout">
+                <ui:VisualElement class="group">
+                    <ui:VisualElement class="row row-4">
+                        <ui:Button text="Delete all Parts" name="btn_delete_parts" class="btn danger"/>
+                        <ui:Button text="Delete all Remains" name="btn_delete_remains" class="btn danger"/>
+                        <ui:Button text="Delete all Gear" name="btn_delete_gear" class="btn danger"/>
+                        <ui:Button text="Delete all Modules" name="btn_delete_modules" class="btn danger"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Label text="Parts:" class="label"/>
+                        <ui:Label text="Add" class="hint"/>
+                        <ui:DropdownField name="dd_parts_item" class="dd"/>
+                        <ui:Label text="x" class="hint"/>
+                        <ui:IntegerField name="int_parts_amount" value="1" class="int"/>
+                        <ui:Button text="Add to Inventory" name="btn_add_parts" class="btn primary"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Label text="Remains:" class="label"/>
+                        <ui:Label text="Add" class="hint"/>
+                        <ui:DropdownField name="dd_remains_item" class="dd"/>
+                        <ui:Label text="x" class="hint"/>
+                        <ui:IntegerField name="int_remains_amount" value="1" class="int"/>
+                        <ui:Button text="Add to Inventory" name="btn_add_remains" class="btn primary"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Label text="Gear:" class="label"/>
+                        <ui:Label text="Add" class="hint"/>
+                        <ui:DropdownField name="dd_gear_item" class="dd"/>
+                        <ui:Label text="tier" class="hint"/>
+                        <ui:DropdownField name="dd_gear_tier" class="dd small"/>
+                        <ui:DropdownField name="dd_gear_type" label="GearType"/>
+                        <ui:DropdownField name="dd_gear_armorClass" label="Armor"/>
+                        <ui:Button text="Add to Inventory (rolled)" name="btn_add_gear_rolled" class="btn primary"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="subcard">
+                        <ui:Label text="Gear: Add Custom" class="subtitle"/>
+                        <ui:VisualElement class="row">
+                            <ui:Label text="Item" class="label"/>
+                            <ui:DropdownField name="dd_gear_custom_item" class="dd"/>
+                            <ui:Button text="Add to Inventory (custom)" name="btn_add_gear_custom" class="btn primary"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="row row-2" style="justify-content: space-between; flex-direction: row;">
+                            <ui:VisualElement class="col">
+                                <ui:VisualElement class="row">
+                                    <ui:Label text="Implicits" class="label"/>
+                                    <ui:Button text="+ Add" name="btn_add_implicit_row" class="btn"/>
+                                    <ui:Button text="Clear" name="btn_clear_implicits" class="btn"/>
+                                </ui:VisualElement>
+                                <ui:VisualElement name="container_implicits" class="listbox"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="col">
+                                <ui:VisualElement class="row">
+                                    <ui:Label text="Affixes" class="label"/>
+                                    <ui:Button text="+ Add" name="btn_add_affix_row" class="btn"/>
+                                    <ui:Button text="Clear" name="btn_clear_affixes" class="btn"/>
+                                </ui:VisualElement>
+                                <ui:VisualElement name="container_affixes" class="listbox"/>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="subcard">
+                        <ui:Label text="Modules: Add Custom" class="subtitle"/>
+                        <ui:VisualElement class="row">
+                            <ui:Label text="Item" class="label"/>
+                            <ui:DropdownField name="dd_module_item" class="dd"/>
+                            <ui:Label text="tier" class="hint"/>
+                            <ui:DropdownField name="dd_module_tier" class="dd small"/>
+                            <ui:Label text="Core" class="hint"/>
+                            <ui:DropdownField name="dd_module_core" class="dd"/>
+                            <ui:Button text="Add to Inventory" name="btn_add_module_custom" class="btn primary"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:Foldout>
+            <ui:Foldout text="Heroes" name="fold_heroes" value="false" class="foldout">
+                <ui:VisualElement class="group">
+                    <ui:VisualElement class="row row-3">
+                        <ui:Button text="Reset all Heroes" name="btn_reset_all_heroes" class="btn danger"/>
+                        <ui:Button text="Unlock all Heroes" name="btn_unlock_all_heroes" class="btn"/>
+                        <ui:Button text="Lock all Heroes" name="btn_lock_all_heroes" class="btn"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="VisualElement" class="row">
+                        <ui:Label text="Select Hero:" class="label"/>
+                        <ui:DropdownField name="dd_hero_select" class="dd"/>
+                        <ui:Button text="Reset to Level 1" name="btn_reset_level_1"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Label text="Add" class="hint"/>
+                        <ui:IntegerField name="int_hero_add_levels" value="1" class="int"/>
+                        <ui:Label text="levels" class="hint"/>
+                        <ui:Button text="LevelUp" name="btn_hero_levelup" class="btn primary"/>
+                        <ui:Button text="Reset All Orbit-Points" name="btn_hero_reset_orbit" class="btn"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:Foldout>
+            <ui:Foldout text="Forschung" name="fold_research" value="false" class="foldout">
+                <ui:VisualElement class="group" style="align-self: flex-start;">
+                    <ui:VisualElement class="row row-2">
+                        <ui:Button text="Reset all Research" name="btn_reset_all_research" class="btn danger"/>
+                        <ui:Button text="Unlock all Research" name="btn_unlock_all_research" class="btn"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:Foldout>
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

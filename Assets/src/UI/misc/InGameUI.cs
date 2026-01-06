@@ -25,6 +25,11 @@ namespace CHAL.UI
             root.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
+        public virtual void ToggleUI()
+        {
+            Show(!this.IsVisible);
+        }
+
         public bool IsVisible => root.style.display == DisplayStyle.Flex;
     }
 }

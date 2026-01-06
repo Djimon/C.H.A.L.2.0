@@ -12,7 +12,8 @@ namespace CHAL.Data
 /// <summary>
 /// Represents data for a skill, including its identity, damage, and casting properties.
 /// </summary>
-    public class SkillModuleDef : ScriptableObject
+    public class 
+        SkillModuleDef : ScriptableObject
     {
         [Header("Identity")]
         public string SkillId;

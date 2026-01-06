@@ -50,7 +50,7 @@ using UnityEngine;
             else if (item.itemId.StartsWith("module:"))
             {
                 Ensure(ref item.moduleData);
-                item.moduleData.skillId = EditorGUILayout.TextField("referenced SkillID", item.moduleData.skillId);
+                item.moduleData.skillInstanceId = EditorGUILayout.TextField("referenced SkillID", item.moduleData.skillInstanceId);
                 item.moduleData.coreType = (CoreType)EditorGUILayout.EnumPopup("Core Type", item.moduleData.coreType);
                 item.moduleData.frameTier = EditorGUILayout.IntField("FrameTier", item.moduleData.frameTier);
                 

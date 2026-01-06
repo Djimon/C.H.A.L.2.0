@@ -99,16 +99,16 @@ namespace CHAL.Systems.Hero
                     continue;
                 }
 
-                if (moduleItem.moduleData == null || string.IsNullOrEmpty(moduleItem.moduleData.skillId))
+                if (moduleItem.moduleData == null || string.IsNullOrEmpty(moduleItem.moduleData.skillInstanceId))
                 {
                     DebugManager.Warning($"[HeroController] Module item '{moduleItem.itemId}' missing moduleData/skillId. Skipping.", "Hero");
                     continue;
                 }
 
-                var skillDef = SkillRegistry.Instance.GetById(moduleItem.moduleData.skillId);
+                var skillDef = SkillRegistry.Instance.GetById(moduleItem.moduleData.skillInstanceId);
                 if (skillDef == null)
                 {
-                    DebugManager.Warning($"[HeroController] No SkillModuleDef found for skillId '{moduleItem.moduleData.skillId}'. Skipping.", "Hero");
+                    DebugManager.Warning($"[HeroController] No SkillModuleDef found for skillId '{moduleItem.moduleData.skillInstanceId}'. Skipping.", "Hero");
                     continue;
                 }
 

@@ -22,7 +22,7 @@ MonoBehaviour:
     active: 1
     color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   - name: Info
-    active: 0
+    active: 1
     color: {r: 0.7311321, g: 0.8089208, b: 1, a: 1}
   - name: Debug
     active: 1
@@ -46,7 +46,7 @@ MonoBehaviour:
     active: 0
     color: {r: 0.53333336, g: 0.19607843, b: 0.8117647, a: 1}
   - name: UI
-    active: 0
+    active: 1
     color: {r: 0.7935584, g: 1, b: 0.25, a: 1}
   - name: Input
     active: 0
@@ -90,4 +90,7 @@ MonoBehaviour:
   - name: Item
     active: 1
     color: {r: 0.3915094, g: 1, b: 0.6107486, a: 1}
+  - name: Cheat
+    active: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
   _seeded: 1

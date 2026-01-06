@@ -13,6 +13,7 @@ namespace CHAL.Systems.Skill
 /// </summary>
     public class SkillInstance
     {
+        public string instanceId;
         public SkillModuleDef skillModule { get; private set; }
 
         public ItemDef modulItem; //or ItemInstacne?

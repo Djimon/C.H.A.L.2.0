@@ -114,7 +114,7 @@ namespace CHAL.Data
     [System.Serializable]
     public class ModuleData
     {
-        public string skillId;
+        public string skillInstanceId;
         public int frameTier = 1;
         public CoreType coreType;
     }

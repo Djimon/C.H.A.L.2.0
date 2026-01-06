@@ -23,6 +23,20 @@ namespace CHAL.Core
                 GameManager.Instance.GoToMainMenu();
             }
 
+            //if (/*GameManager.Instance.CurrentState == GameState.Hideout &&*/ Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.O))
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.O))
+            {
+                var cheatmenu = FindFirstObjectByType<CheatMenuController>(FindObjectsInactive.Include);
+                if (cheatmenu != null)
+                {
+                    cheatmenu.ToggleUI();
+                }
+                else
+                {
+                    DebugManager.Log("CheatMenuController not found in scene.", DebugManager.EDebugLevel.Dev, "Input", LogType.Warning);
+                }
+            }
+
         }
 
         private void HandleClickableObjects()
