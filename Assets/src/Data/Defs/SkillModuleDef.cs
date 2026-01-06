@@ -24,7 +24,7 @@ namespace CHAL.Data
         public DamageType BaseDamageType = DamageType.Physical;
 
         [Header("ModuleCore Ingredients")]
-        public CoreType defualtCore;
+        public CoreType defaultCore;
         public List<CoreType> changeCoreTypesAllowed;
 
         //TODO: Deprecated: Delete if all references are remapped

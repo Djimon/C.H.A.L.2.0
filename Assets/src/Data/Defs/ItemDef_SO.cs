@@ -50,7 +50,41 @@ namespace CHAL.Data
 
             //Erzwungene Type-Safety
             ClearTypeBlocksExcept(itemType);
-            
+
+            if (itemType == ItemType.Module && moduleData != null)
+            {
+                ValidateAndSyncModuleData();
+            }
+
+        }
+
+
+        private void ValidateAndSyncModuleData()
+        {
+            // If a SkillDef is assigned -> enforce skillId from it
+            if (moduleData.skillDef != null)
+            {
+                var id = moduleData.skillDef.SkillId;
+
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    DebugManager.Warning($"[ItemDef] Module '{itemId}' has SkillDef '{moduleData.skillDef.name}' with empty SkillId.", "Validation");
+                    return;
+                }
+
+                if (!string.Equals(moduleData.skillId, id, System.StringComparison.Ordinal))
+                {
+                    moduleData.skillId = id;
+                }
+            }
+            else
+            {
+                // No SkillDef assigned, but skillId exists -> keep it, just warn so it doesn't silently drift.
+                if (string.IsNullOrWhiteSpace(moduleData.skillId))
+                {
+                    DebugManager.Warning($"[ItemDef] Module '{itemId}' has no skillDef and no skillId. This module cannot resolve a skill.", "Validation");
+                }
+            }
         }
 
         private void ClearTypeBlocksExcept(ItemType keep)
@@ -114,9 +148,9 @@ namespace CHAL.Data
     [System.Serializable]
     public class ModuleData
     {
-        public string skillInstanceId;
-        public int frameTier = 1;
-        public CoreType coreType;
+        [Tooltip("Designer-Reference: which Skill this module represents.")]
+        public SkillModuleDef skillDef;
+        public string skillId;
     }
 
     [System.Serializable]

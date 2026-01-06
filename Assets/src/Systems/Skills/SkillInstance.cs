@@ -69,7 +69,7 @@ namespace CHAL.Systems.Skill
             var archetypeId = ownedBy != null ? (ownedBy as HeroInstance)?.Archetype.ArchetypeId : string.Empty;
 
             var skilltier = 1;
-            var coreTpye = CoreType.Basic;
+            var coreTpye = CoreType.Kinetic;
 
             if (modulItem == null || modulItem.moduleData == null)
             {
@@ -77,8 +77,11 @@ namespace CHAL.Systems.Skill
             }
             else
             {
-                skilltier = modulItem.moduleData.frameTier;
-                coreTpye = modulItem.moduleData.coreType;
+                //========================================================
+                //TODO: ERSETZEN MIT DER NEUEN SKILLMODULEINSTANVCE KLASSE
+                //========================================================
+                skilltier = 1;
+                coreTpye = CoreType.Kinetic;
             }
 
             finalSkillData = SkillResolveUtility.ResolveBaseSkill(skillModule, skilltier, coreTpye);

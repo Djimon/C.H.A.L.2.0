@@ -224,12 +224,48 @@ MonoBehaviour:
           maxOnItem: 2
         - category: 7
           maxOnItem: 1
-  skillRanges:
-    selfRange: 1
-    meleeRange: 3
-    reachRange: 5
-    midDistanceRange: 10
-    farDistanceRange: 20
+  skillSettings:
+    skillRanges:
+      selfRange: 0
+      meleeRange: 0
+      reachRange: 0
+      midDistanceRange: 0
+      farDistanceRange: 0
+    skillModuleCosts:
+      TierBasedCosts:
+      - tier: 1
+        goldCost: 1000
+        Ingredients:
+        - Ingredient: {fileID: 11400000, guid: 78e36c4f9738ee44a970a15fdb1e88f9, type: 2}
+          Amount: 100
+      - tier: 2
+        goldCost: 2500
+        Ingredients:
+        - Ingredient: {fileID: 11400000, guid: 78e36c4f9738ee44a970a15fdb1e88f9, type: 2}
+          Amount: 200
+        - Ingredient: {fileID: 11400000, guid: 2cd051457780c334db6e5c9563a1d977, type: 2}
+          Amount: 10
+      - tier: 3
+        goldCost: 5000
+        Ingredients:
+        - Ingredient: {fileID: 11400000, guid: 78e36c4f9738ee44a970a15fdb1e88f9, type: 2}
+          Amount: 500
+        - Ingredient: {fileID: 11400000, guid: 2cd051457780c334db6e5c9563a1d977, type: 2}
+          Amount: 50
+      - tier: 4
+        goldCost: 10000
+        Ingredients:
+        - Ingredient: {fileID: 11400000, guid: 78e36c4f9738ee44a970a15fdb1e88f9, type: 2}
+          Amount: 1000
+        - Ingredient: {fileID: 11400000, guid: 2cd051457780c334db6e5c9563a1d977, type: 2}
+          Amount: 100
+        - Ingredient: {fileID: 11400000, guid: 6f7f6593ec1792846a33a762c20c5a97, type: 2}
+          Amount: 10
+      - tier: 5
+        goldCost: 50000
+        Ingredients:
+        - Ingredient: {fileID: 11400000, guid: 2fa9d3362ad3fbd48aaa9c60da5b5f8f, type: 2}
+          Amount: 25
   AllowFriendlyFire: 0
   economy:
     currencies:

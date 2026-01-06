@@ -205,7 +205,7 @@ namespace CHAL.UI
             SetDropdownChoices("dd_module_tier", new List<string> { "1", "2", "3", "4", "5" });
 
             // CoreType dummy for prototype (replace later with your enum values)
-            SetDropdownChoicesFromEnum<CoreType>("dd_module_core", CoreType.Basic);
+            SetDropdownChoicesFromEnum<CoreType>("dd_module_core", CoreType.Kinetic);
 
             var gm = GameManager.Instance;
             var profile = gm != null ? gm.Profile : null;

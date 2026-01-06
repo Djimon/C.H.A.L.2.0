@@ -35,7 +35,7 @@ public class SkillDataEditor : Editor
         //core ingredients
         EditorGUILayout.LabelField("ModuleCore", EditorStyles.boldLabel);
         data.BaseDamageType = (DamageType)EditorGUILayout.EnumPopup("Base Damage Type", data.BaseDamageType);
-        data.defualtCore = (CoreType)EditorGUILayout.EnumPopup("defaultCoreType", data.defualtCore);
+        data.defaultCore = (CoreType)EditorGUILayout.EnumPopup("defaultCoreType", data.defaultCore);
         EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(SkillModuleDef.changeCoreTypesAllowed)), true); //"changeCoreTypesAllowed"
 
         EditorGUILayout.Space();

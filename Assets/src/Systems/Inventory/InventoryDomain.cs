@@ -148,14 +148,36 @@ namespace CHAL.Systems.Inventory
             return true;
         }
 
-/// <summary>
-/// Attempts to set an item stack in a specified slot of an instance.
-/// Returns true if the operation was successful; otherwise, false.
-/// </summary>
-/// <param name="instanceId">The ID of the instance to modify.</param>
-/// <param name="slotIndex">The index of the slot to set.</param>
-/// <param name="stack">The item stack reference to set, or null to clear the slot.</param>
-/// <returns>True if the item stack was set successfully; otherwise, false.</returns>
+        private static bool IsStackableInstanced(string itemId)
+        {
+            // GearInstances: NOT stackable (GUID)
+            // SkillModule variants: stackable (VariantKey)
+            return ItemTypeUtils.FromId(itemId) == ItemType.Module;
+        }
+
+        private static bool CanMergeStacks(in ItemStackRef a, in ItemStackRef b)
+        {
+            if (a.itemID != b.itemID) return false;
+
+            // both non-instanced -> merge ok
+            if (!a.IsInstanced && !b.IsInstanced) return true;
+
+            // instanced merge only if BOTH are instanced and same instanceId (same variant)
+            if (a.IsInstanced && b.IsInstanced)
+                return string.Equals(a.instanceId, b.instanceId, StringComparison.Ordinal);
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Attempts to set an item stack in a specified slot of an instance.
+        /// Returns true if the operation was successful; otherwise, false.
+        /// </summary>
+        /// <param name="instanceId">The ID of the instance to modify.</param>
+        /// <param name="slotIndex">The index of the slot to set.</param>
+        /// <param name="stack">The item stack reference to set, or null to clear the slot.</param>
+        /// <returns>True if the item stack was set successfully; otherwise, false.</returns>
         public bool TrySetSlot(string instanceId, int slotIndex, ItemStackRef? stack)
         {
             if (!_instances.TryGetValue(instanceId, out var inv) || inv?.slots == null)
@@ -182,168 +204,224 @@ namespace CHAL.Systems.Inventory
             var inv = GetInstance(instanceId);
             if (inv == null || inv.slots == null) return false;
 
-            // Instanced items are unstackable -> only empty slots count.
-            if (stack.IsInstanced)
-            {
-                // Hard rule: instanced stacks must be count == 1 (caller error otherwise).
-                if (stack.count != 1) return false;
-
-                for (int i = 0; i < inv.slots.Length; i++)
-                {
-                    var slot = inv.slots[i];
-                    if (slot.stack.HasValue) continue;
-                    if (!PassesFilter(slot, stack.itemID)) continue;
-                    return true;
-                }
-                return false;
-            }
-
-            var need = stack.count;
             var itemId = stack.itemID;
 
-            // 1) fill existing stacks first (same itemID)
-            foreach (var slot in inv.slots)
+            if (stack.IsInstanced)
             {
-                if (slot.stack.HasValue && slot.stack.Value.itemID == itemId)
+                // Gear-style instanced: must be count==1 and needs empty slot
+                if (!IsStackableInstanced(itemId))
                 {
-                    if (!PassesFilter(slot, itemId)) continue;
+                    if (stack.count != 1) return false;
 
-                    var free = slot.maxStack - slot.stack.Value.count;
-                    if (free > 0)
+                    for (int i = 0; i < inv.slots.Length; i++)
                     {
-                        need -= free;
-                        if (need <= 0) return true;
+                        var slot = inv.slots[i];
+                        if (slot.stack.HasValue) continue;
+                        if (!PassesFilter(slot, itemId)) continue;
+                        return true;
                     }
+                    return false;
                 }
+
+                return CanAcceptByScan(inv, in stack, requireSameInstanceId: true);                
             }
 
-            // 2) then use empty slots
+            // Non-instanced: merge by itemId only
+            return CanAcceptByScan(inv, in stack, requireSameInstanceId: false);
+        }
+
+        private bool CanAcceptByScan(InventoryInstance inv, in ItemStackRef incoming, bool requireSameInstanceId)
+        {
+            int need = incoming.count;
+            var itemId = incoming.itemID;
+
+            // 1) fill existing stacks first
             foreach (var slot in inv.slots)
             {
-                if (!slot.stack.HasValue && PassesFilter(slot, itemId))
+                if (!slot.stack.HasValue) continue;
+                if (!PassesFilter(slot, itemId)) continue;
+
+                var existing = slot.stack.Value;
+
+                // Merge rule
+                if (existing.itemID != itemId) continue;
+
+                if (requireSameInstanceId)
                 {
-                    need -= slot.maxStack;
-                    if (need <= 0) return true;
+                    // both must be instanced and same instanceId (same variant)
+                    if (!existing.IsInstanced || !incoming.IsInstanced) continue;
+                    if (!string.Equals(existing.instanceId, incoming.instanceId, StringComparison.Ordinal)) continue;
                 }
+                else
+                {
+                    // non-instanced merge must not merge into instanced stack
+                    if (existing.IsInstanced) continue;
+                }
+
+                int free = slot.maxStack - existing.count;
+                if (free <= 0) continue;
+
+                need -= free;
+                if (need <= 0) return true;
+            }
+
+            // 2) then empty slots
+            foreach (var slot in inv.slots)
+            {
+                if (slot.stack.HasValue) continue;
+                if (!PassesFilter(slot, itemId)) continue;
+
+                need -= slot.maxStack;
+                if (need <= 0) return true;
             }
 
             return false;
         }
 
-/// <summary>
-/// Attempts to add an item stack to the inventory.
-/// </summary>
-/// <param name="instanceId">The ID of the inventory instance.</param>
-/// <param name="stack">The item stack to add.</param>
-/// <param name="result">The result of the transaction.</param>
-/// <returns>True if the item stack was added successfully; otherwise, false.</returns>
+
+        /// <summary>
+        /// Attempts to add an item stack to the inventory.
+        /// </summary>
+        /// <param name="instanceId">The ID of the inventory instance.</param>
+        /// <param name="stack">The item stack to add.</param>
+        /// <param name="result">The result of the transaction.</param>
+        /// <returns>True if the item stack was added successfully; otherwise, false.</returns>
         public bool TryAdd(string instanceId, in ItemStackRef stack, out TransactionResult result)
         {
             result = new TransactionResult();
             if (!_instances.TryGetValue(instanceId, out var inv))
             {
-                
                 result.reason = "InstanceNotFound";
                 DebugManager.Log($"Add Item failed: {result.reason}", DebugManager.EDebugLevel.Dev, "Inventory");
                 return false;
             }
 
-            // Instanced items are unstackable -> place into one empty slot, preserve instanceId.
+            int remaining = stack.count;
+
+            // Instanced items: Gear-style is unstackable, SkillModule-variant is stackable
             if (stack.IsInstanced)
             {
-                if (stack.count != 1)
+                // Gear-style instanced: must be count==1 and needs empty slot
+                if (!IsStackableInstanced(stack.itemID))
                 {
-                    result.reason = "InstancedMustBeCount1";
-                    DebugManager.Log($"Add Item failed: {result.reason} ({stack})", DebugManager.EDebugLevel.Dev, "Inventory");
+                    if (stack.count != 1)
+                    {
+                        result.reason = "InstancedMustBeCount1";
+                        DebugManager.Log($"Add Item failed: {result.reason} ({stack})", DebugManager.EDebugLevel.Dev, "Inventory");
+                        return false;
+                    }
+
+                    for (int i = 0; i < inv.slots.Length; i++)
+                    {
+                        var s = inv.slots[i];
+                        if (s.stack.HasValue) continue;
+                        if (!PassesFilter(s, stack.itemID)) continue;
+
+                        s.stack = stack;
+                        result.SlotDeltas.Add((i, s.stack));
+                        result.success = true;
+
+                        DebugManager.Log($"Instanced item {stack.itemID} placed in Slot {instanceId}:{i}", DebugManager.EDebugLevel.Debug, "Inventory");
+                        OnSlotChanged?.Invoke(instanceId, i, s.stack);
+                        return true;
+                    }
+
+                    result.reason = "NoSpace";
+                    DebugManager.Log($"Add Item {stack.itemID} failed: {result.reason}", DebugManager.EDebugLevel.Dev, "Inventory");
                     return false;
                 }
 
-                for (int i = 0; i < inv.slots.Length; i++)
+                // Stackable-instanced (SkillModule variant): merge by same variant (same instanceId)
+                result.success = TryAddByScan(instanceId, inv, in stack, requireSameInstanceId: true, ref remaining, ref result);
+                if (!result.success)
                 {
-                    var s = inv.slots[i];
-                    if (s.stack.HasValue) 
-                        continue;
-
-                    if (!PassesFilter(s, stack.itemID)) 
-                        continue;
-
-                    s.stack = stack; // keep instanceId
-                    result.SlotDeltas.Add((i, s.stack));
-                    result.success = true;
-
-                    DebugManager.Log($"Instanced item {stack.itemID} placed in Slot {instanceId}:{i}", DebugManager.EDebugLevel.Debug, "Inventory");
-                    OnSlotChanged?.Invoke(instanceId, i, s.stack);
-                    return true;
+                    result.reason = "NoSpace";
+                    DebugManager.Log($"Add Item {stack.itemID} (remaining: {remaining}) failed: {result.reason}", DebugManager.EDebugLevel.Dev, "Inventory");
                 }
-
-                result.reason = "NoSpace";
-                DebugManager.Log($"Add Item {stack.itemID} failed: {result.reason}", DebugManager.EDebugLevel.Dev, "Inventory");
-                return false;
+                return result.success;
             }
 
-
-            // 1) Versuche bestehende Stacks zu fÃ¼llen
-            int remaining = stack.count;
-            for (int i = 0; i < inv.slots.Length && remaining > 0; i++)
-            {
-                var s = inv.slots[i];
-                if (s.stack.HasValue && s.stack.Value.itemID == stack.itemID)
-                {
-                    if (!PassesFilter(s, stack.itemID)) 
-                        continue;
-
-                    int space = s.maxStack - s.stack.Value.count;
-                    if (space <= 0) 
-                        continue;
-
-                    int move = Math.Min(space, remaining);
-                    s.stack = s.stack.Value.WithCount(s.stack.Value.count + move);
-                    remaining -= move;
-                    result.SlotDeltas.Add((i, s.stack));
-                    DebugManager.Log($"Item {stack.itemID} ({move}) in Slot {instanceId}:{i} refilled", DebugManager.EDebugLevel.Debug, "Inventory");
-                    OnSlotChanged?.Invoke(instanceId, i, s.stack);
-
-                }
-            }
-
-
-            // 2) Leere Slots befÃ¼llen
-            for (int i = 0; i < inv.slots.Length && remaining > 0; i++)
-            {
-                var s = inv.slots[i];
-                if (!s.stack.HasValue)
-                {
-                    if (!PassesFilter(s, stack.itemID))
-                        continue;
-
-                    int move = Math.Min(s.maxStack, remaining);
-                    s.stack = new ItemStackRef(stack.itemID, move);
-
-                    remaining -= move;
-                    result.SlotDeltas.Add((i, s.stack));
-                    DebugManager.Log($"Item {stack.itemID} ({move}) in Slot {instanceId}:{i} legen", DebugManager.EDebugLevel.Debug, "Inventory");
-                    OnSlotChanged?.Invoke(instanceId, i, s.stack);
-                }
-            }
-
-
-            result.success = remaining == 0;
+            // Non-instanced: merge by itemId only
+            result.success = TryAddByScan(instanceId, inv, in stack, requireSameInstanceId: false, ref remaining, ref result);
             if (!result.success)
             {
                 result.reason = "NoSpace";
                 DebugManager.Log($"Add Item {stack.itemID} (remaining: {remaining}) failed: {result.reason}", DebugManager.EDebugLevel.Dev, "Inventory");
             }
-
             return result.success;
         }
 
-/// <summary>
-/// Attempts to move an item from one inventory to another.
-/// Returns true if the move is successful, otherwise false.
-/// </summary>
-/// <param name="req">The request containing details of the move operation.</param>
-/// <param name="result">The result of the transaction, including any error reasons.</param>
-/// <returns>True if the move was successful; otherwise, false.</returns>
+
+        private bool TryAddByScan(string instanceId, InventoryInstance inv, in ItemStackRef incoming, bool requireSameInstanceId, ref int remaining, ref TransactionResult result)
+        {
+            var itemId = incoming.itemID;
+
+            // 1) fill existing stacks first
+            for (int i = 0; i < inv.slots.Length && remaining > 0; i++)
+            {
+                var s = inv.slots[i];
+                if (!s.stack.HasValue) continue;
+                if (!PassesFilter(s, itemId)) continue;
+
+                var existing = s.stack.Value;
+                if (existing.itemID != itemId) continue;
+
+                if (requireSameInstanceId)
+                {
+                    // stackable-instanced: merge only into same variant
+                    if (!existing.IsInstanced || !incoming.IsInstanced) continue;
+                    if (!string.Equals(existing.instanceId, incoming.instanceId, StringComparison.Ordinal)) continue;
+                }
+                else
+                {
+                    // non-instanced: don't merge into instanced stacks
+                    if (existing.IsInstanced) continue;
+                }
+
+                int space = s.maxStack - existing.count;
+                if (space <= 0) continue;
+
+                int move = Math.Min(space, remaining);
+                s.stack = existing.WithCount(existing.count + move);
+                remaining -= move;
+
+                result.SlotDeltas.Add((i, s.stack));
+                DebugManager.Log($"Item {itemId} ({move}) in Slot {instanceId}:{i} refilled", DebugManager.EDebugLevel.Debug, "Inventory");
+                OnSlotChanged?.Invoke(instanceId, i, s.stack);
+            }
+
+            // 2) then use empty slots
+            for (int i = 0; i < inv.slots.Length && remaining > 0; i++)
+            {
+                var s = inv.slots[i];
+                if (s.stack.HasValue) continue;
+                if (!PassesFilter(s, itemId)) continue;
+
+                int move = Math.Min(s.maxStack, remaining);
+
+                // keep instanceId only for stackable-instanced variants
+                s.stack = requireSameInstanceId
+                    ? new ItemStackRef(itemId, move, incoming.instanceId)
+                    : new ItemStackRef(itemId, move);
+
+                remaining -= move;
+
+                result.SlotDeltas.Add((i, s.stack));
+                DebugManager.Log($"Item {itemId} ({move}) in Slot {instanceId}:{i} legen", DebugManager.EDebugLevel.Debug, "Inventory");
+                OnSlotChanged?.Invoke(instanceId, i, s.stack);
+            }
+
+            return remaining == 0;
+        }
+
+
+        /// <summary>
+        /// Attempts to move an item from one inventory to another.
+        /// Returns true if the move is successful, otherwise false.
+        /// </summary>
+        /// <param name="req">The request containing details of the move operation.</param>
+        /// <param name="result">The result of the transaction, including any error reasons.</param>
+        /// <returns>True if the move was successful; otherwise, false.</returns>
         public bool TryMove(in MoveRequest req, out TransactionResult result)
         {
             result = new TransactionResult();
@@ -411,7 +489,7 @@ namespace CHAL.Systems.Inventory
             int amount = req.amount ?? moving.count;
 
             // Instanced items: cannot Split or Merge; must move whole stack (count==1).
-            if (moving.IsInstanced)
+            if (moving.IsInstanced && !IsStackableInstanced(moving.itemID))
             {
                 if (req.moveMode == MoveMode.Split || req.moveMode == MoveMode.Merge)
                 {
@@ -476,6 +554,12 @@ namespace CHAL.Systems.Inventory
 
                             if (target.itemID == moving.itemID)
                             {
+                                if ((moving.IsInstanced || target.IsInstanced) && !CanMergeStacks(moving, target))
+                                {
+                                    result.reason = "DifferentInstanceVariant";
+                                    return false;
+                                }
+
                                 // Merge
                                 int space = b.maxStack - target.count;
                                 if (space <= 0) { result.reason = "MaxStackReached"; return false; }
@@ -524,7 +608,7 @@ namespace CHAL.Systems.Inventory
                         if (!b.stack.HasValue) { result.reason = "TargetEmpty"; return false; }
                         var target = b.stack.Value;
 
-                        if (moving.IsInstanced || target.IsInstanced)
+                        if ((moving.IsInstanced || target.IsInstanced) && !CanMergeStacks(moving, target))
                         {
                             result.reason = "InstancedCannotMerge";
                             return false;

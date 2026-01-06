@@ -19,7 +19,7 @@ namespace CHAL.Data
     [Serializable]
     public enum CoreType
     { 
-        Basic = 0, //Kinetic
+        Kinetic = 0, //Kinetic
         Blazing,
         Glacial,
         Static,

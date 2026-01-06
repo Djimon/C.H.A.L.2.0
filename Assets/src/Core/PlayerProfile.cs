@@ -1,6 +1,7 @@
 using CHAL.Core;
 using CHAL.Systems.Hero;
 using CHAL.Systems.Inventory;
+using CHAL.Systems.Items;
 using CHAL.Systems.Research;
 using System;
 using System.Collections.Generic;
@@ -487,8 +488,8 @@ namespace CHAL.Data
         // Neu: Slot-genau (wichtig für instanced Items, Positionen, instanceId):
         public List<InventorySlotSnapshot> slots;         // nur belegte Slots (empfohlen)
 
-        // Neu: Instance-Payloads (V1: GearInstance)
-        // Future-proof: später kannst du hier weitere Instanztypen ergänzen.
         public List<GearInstance> gearInstances;          // alle GearInstances die in 'slots' referenziert werden
+
+        public List<SkillModuleInstance> skillModuleInstances; //: SkillModule variant payloads (instanceId = VariantKey)
     }
 }

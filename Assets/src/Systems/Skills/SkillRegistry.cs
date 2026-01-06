@@ -154,7 +154,7 @@ namespace CHAL.Systems.Skill
                         var skilltype = def.SkillType.ToString();      // if rarity is enum; if string: just def.rarity
                         var skillId = kv.Key;
                         var tier = def.minRequiredTier;
-                        var core = def.defualtCore;
+                        var core = def.defaultCore;
                         return new { attribute, skillId, skilltype, tier, core };
                     })
                     .OrderBy(r => r.attribute, StringComparer.OrdinalIgnoreCase)

@@ -107,7 +107,7 @@ namespace CHAL.Core
 /// <returns>The corresponding range value as a float.</returns>
         public float GetRangeValue(SkillRange range)
         {
-            var skillRangeCOnfig = Instance.Config.skillRanges;
+            var skillRangeCOnfig = Instance.Config.skillSettings.skillRanges;
             return range switch
             {
                 SkillRange.Self => skillRangeCOnfig.selfRange,

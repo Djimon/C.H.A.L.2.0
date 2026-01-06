@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
-  m_Name: core_base
+  m_Name: core_basic
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ItemDef
-  itemId: core:base
+  itemId: core:aetheric
   itemType: 3
   description: 
   icon: {fileID: 0}
-  rarity: 0
-  lootValue: 10
+  rarity: 2
+  lootValue: 100
   remainData:
     remainType: 
   runeData:
@@ -35,5 +35,5 @@ MonoBehaviour:
     tags: []
     runeSocketType: 0
   coreData:
-    coreType: 0
-    defualtDmgType: 0
+    coreType: 6
+    defualtDmgType: 6

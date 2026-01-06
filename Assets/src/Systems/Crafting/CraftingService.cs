@@ -3,7 +3,9 @@ using CHAL.Data;
 using CHAL.Systems.Inventory; // IInventoryDomain, ItemStack
 using CHAL.Systems.Items;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static CHAL.Data.GameBalanceConfig;
 
 namespace CHAL.Systems.Crafting
 {
@@ -49,18 +51,19 @@ namespace CHAL.Systems.Crafting
         }
 
         // ---- PREVIEW ----
-/// <summary>
-/// Gets a preview of the recipe output based on the provided parameters.
-/// </summary>
-/// <param name="recipe">The recipe definition to preview.</param>
-/// <param name="outputInventoryId">The ID of the output inventory.</param>
-/// <param name="inv">The inventory domain to check against.</param>
-/// <param name="wallet">The wallet used for transactions.</param>
-/// <returns>A RecipePreview object representing the recipe output.</returns>
+        /// <summary>
+        /// Gets a preview of the recipe output based on the provided parameters.
+        /// </summary>
+        /// <param name="recipe">The recipe definition to preview.</param>
+        /// <param name="outputInventoryId">The ID of the output inventory.</param>
+        /// <param name="inv">The inventory domain to check against.</param>
+        /// <param name="wallet">The wallet used for transactions.</param>
+        /// <returns>A RecipePreview object representing the recipe output.</returns>
         public static RecipePreview GetPreview(RecipeDef recipe, string outputInventoryId, InventoryDomain inv, IWallet wallet)
         {
             var outType = ItemTypeUtils.FromId(recipe.outputItemId);
             var isGear = outType == ItemType.Gear;
+            var isModule = outType == ItemType.Module;
 
 
             var outStack = isGear ? new ItemStackRef(recipe.outputItemId, 1, "__preview__")
@@ -187,6 +190,7 @@ namespace CHAL.Systems.Crafting
                 case ItemType.Remains: instanceId = "player_remains"; break;
                 case ItemType.Part: instanceId = "player_part"; break;
                 case ItemType.Rune: instanceId = "player_rune"; break;
+                case ItemType.Core: instanceId = "player_core"; break;
                 case ItemType.Module: instanceId = "player_module"; break;
                 default: instanceId = null; break; // Gear/Unknown â†’ kein Material-Inventar
             }

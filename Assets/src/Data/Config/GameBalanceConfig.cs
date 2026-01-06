@@ -6,9 +6,9 @@ namespace CHAL.Data
 {
 
     [CreateAssetMenu(fileName = "GameBalanceConfig", menuName = "Config/GameBalanceConfig")]
-/// <summary>
-/// Holds configuration settings for game balance, including loot parameters.
-/// </summary>
+    /// <summary>
+    /// Holds configuration settings for game balance, including loot parameters.
+    /// </summary>
     public class GameBalanceConfig : ScriptableObject
     {
         // ==========================
@@ -59,11 +59,11 @@ namespace CHAL.Data
             public int elite;
             public int boss;
             public int champion;
-/// <summary>
-/// Gets the multiplier based on the specified enemy rank.
-/// </summary>
-/// <param name="rank">The rank of the enemy.</param>
-/// <returns>The multiplier associated with the enemy rank.</returns>
+            /// <summary>
+            /// Gets the multiplier based on the specified enemy rank.
+            /// </summary>
+            /// <param name="rank">The rank of the enemy.</param>
+            /// <returns>The multiplier associated with the enemy rank.</returns>
             public int GetMultiplier(EnemyRank rank)
             {
                 return rank switch
@@ -182,11 +182,11 @@ namespace CHAL.Data
             public RankScaling boss;
             public RankScaling champion;
 
-/// <summary>
-/// Gets the scaling associated with the specified enemy rank.
-/// </summary>
-/// <param name="rank">The rank of the enemy.</param>
-/// <returns>The corresponding RankScaling for the given enemy rank.</returns>
+            /// <summary>
+            /// Gets the scaling associated with the specified enemy rank.
+            /// </summary>
+            /// <param name="rank">The rank of the enemy.</param>
+            /// <returns>The corresponding RankScaling for the given enemy rank.</returns>
             public RankScaling GetScaling(EnemyRank rank)
             {
                 return rank switch
@@ -237,11 +237,11 @@ namespace CHAL.Data
             public GearTierSlotCaps tier2;
             public GearTierSlotCaps tier3;
 
-/// <summary>
-/// Gets the slot capabilities for the specified gear tier.
-/// </summary>
-/// <param name="tier">The gear base tier to get capabilities for.</param>
-/// <returns>The gear tier slot capabilities.</returns>
+            /// <summary>
+            /// Gets the slot capabilities for the specified gear tier.
+            /// </summary>
+            /// <param name="tier">The gear base tier to get capabilities for.</param>
+            /// <returns>The gear tier slot capabilities.</returns>
             public GearTierSlotCaps GetCaps(GearBaseTier tier)
             {
                 return tier switch
@@ -274,9 +274,9 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
-/// <summary>
-/// Represents a collection of weights for different slot pools.
-/// </summary>
+        /// <summary>
+        /// Represents a collection of weights for different slot pools.
+        /// </summary>
         public struct SlotPoolWeights
         {
             [Range(0f, 1f)] public float main;
@@ -293,9 +293,9 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
-/// <summary>
-/// Represents a collection of weights for different affix families.
-/// </summary>
+        /// <summary>
+        /// Represents a collection of weights for different affix families.
+        /// </summary>
         public struct AffixFamilyWeights
         {
             [Range(0f, 1f)] public float core;
@@ -303,9 +303,9 @@ namespace CHAL.Data
             [Range(0f, 1f)] public float synergy;
             [Range(0f, 1f)] public float utility;
 
-/// <summary>
-/// Normalizes the values of core, defensive, synergy, and utility.
-/// </summary>
+            /// <summary>
+            /// Normalizes the values of core, defensive, synergy, and utility.
+            /// </summary>
             public void Normalize()
             {
                 var sum = core + defensive + synergy + utility;
@@ -463,8 +463,41 @@ namespace CHAL.Data
             public float farDistanceRange;
         }
 
+        [Serializable]
+        public struct SMIngredient
+        {
+            public ItemDef Ingredient;
+            public int Amount;
+
+        }
+
+        [Serializable]
+        public struct SMTierCost
+        {
+            public int tier;
+            public int goldCost;
+            public List<SMIngredient> Ingredients;
+
+        }
+
+        [Serializable]
+        public struct SkillModuleCostConfig
+        {
+            public List<SMTierCost> TierBasedCosts;
+        }
+
+
+        [Serializable]
+        public struct SkillSettings
+        {
+            public SkillRanges skillRanges;
+            public SkillModuleCostConfig skillModuleCosts;
+        }
+
+
+        
         [Header("Skill Settings")]
-        public SkillRanges skillRanges;
+        public SkillSettings skillSettings;
         public bool AllowFriendlyFire = false;
 
 /// <summary>
@@ -476,12 +509,12 @@ namespace CHAL.Data
         {
             return range switch
             {
-                SkillRange.Self => skillRanges.selfRange,
-                SkillRange.MeleeRange => skillRanges.meleeRange,
-                SkillRange.Reach => skillRanges.reachRange,
-                SkillRange.MidDistance => skillRanges.midDistanceRange,
-                SkillRange.FarDistance => skillRanges.farDistanceRange,
-                _ => skillRanges.meleeRange
+                SkillRange.Self => skillSettings.skillRanges.selfRange,
+                SkillRange.MeleeRange => skillSettings.skillRanges.meleeRange,
+                SkillRange.Reach => skillSettings.skillRanges.reachRange,
+                SkillRange.MidDistance => skillSettings.skillRanges.midDistanceRange,
+                SkillRange.FarDistance => skillSettings.skillRanges.farDistanceRange,
+                _ => skillSettings.skillRanges.meleeRange
             };
         }
 

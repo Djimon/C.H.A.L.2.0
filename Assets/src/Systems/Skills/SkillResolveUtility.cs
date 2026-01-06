@@ -110,7 +110,7 @@ namespace CHAL.Systems.Skill
             switch (core)
             {
  
-                case CoreType.Basic:
+                case CoreType.Kinetic:
                     return DamageType.Physical;
                 case CoreType.Blazing:
                     return DamageType.Fire;
@@ -144,14 +144,15 @@ namespace CHAL.Systems.Skill
         /// <returns>The float value representing the range.</returns>
         public static float ResolveRangeAsFloat(SkillRange range)
         {
+            var skillSettings = GameManager.Instance.BalanceConfig.skillSettings;
 
             switch (range)
             {
-                case SkillRange.Self: return GameManager.Instance.BalanceConfig.skillRanges.selfRange;
-                case SkillRange.MeleeRange: return GameManager.Instance.BalanceConfig.skillRanges.meleeRange;
-                case SkillRange.Reach: return GameManager.Instance.BalanceConfig.skillRanges.reachRange;
-                case SkillRange.MidDistance: return GameManager.Instance.BalanceConfig.skillRanges.midDistanceRange;
-                case SkillRange.FarDistance: return GameManager.Instance.BalanceConfig.skillRanges.farDistanceRange;
+                case SkillRange.Self: return skillSettings.skillRanges.selfRange;
+                case SkillRange.MeleeRange: return skillSettings.skillRanges.meleeRange;
+                case SkillRange.Reach: return skillSettings.skillRanges.reachRange;
+                case SkillRange.MidDistance: return skillSettings.skillRanges.midDistanceRange;
+                case SkillRange.FarDistance: return skillSettings.skillRanges.farDistanceRange;
                 default: return 0f;
             }
         }

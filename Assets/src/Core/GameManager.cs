@@ -82,6 +82,7 @@ namespace CHAL.Core
         public GearRoller gearRoller { get; private set; }
 
         Dictionary<string, GearInstance> _gearInstances = new Dictionary<string, GearInstance>();
+        Dictionary<string, SkillModuleInstance> _skillModuleInstances = new Dictionary<string, SkillModuleInstance>();
 
 
         public GameBalanceConfig BalanceConfig
@@ -502,13 +503,15 @@ namespace CHAL.Core
 
                 // 3) GearInstance payloads (nur wenn instanceId gesetzt)
                 var gearPayloads = CollectGearPayloads(slotSnaps);
+                var smPayloads = CollectSkillModulePayloads(slotSnaps);
 
                 Profile.InventorySave.Add(new InventorySnapshot
                 {
                     id = snapId,
                     items = dict,
                     slots = slotSnaps,
-                    gearInstances = gearPayloads
+                    gearInstances = gearPayloads,
+                    skillModuleInstances = smPayloads
                 });
 
                 applied++;
@@ -517,6 +520,28 @@ namespace CHAL.Core
             DebugManager.Log(
                 $"MapDomainToProfile: applied {applied} inventories",
                 DebugManager.EDebugLevel.Dev, "Inventory", LogType.Log);
+        }
+
+        private List<SkillModuleInstance> CollectSkillModulePayloads(List<InventorySlotSnapshot> slots)
+        {
+            if (slots == null) return null;
+            List<SkillModuleInstance> result = null;
+
+            for (int i = 0; i < slots.Count; i++)
+            {
+                var s = slots[i];
+                if (string.IsNullOrWhiteSpace(s.iteminstanceId)) continue;
+
+                if (_skillModuleInstances != null &&
+                    _skillModuleInstances.TryGetValue(s.iteminstanceId, out var sm) &&
+                    sm != null)
+                {
+                    result ??= new List<SkillModuleInstance>();
+                    result.Add(sm);
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -540,6 +565,22 @@ namespace CHAL.Core
                     {
                         if (g == null || string.IsNullOrWhiteSpace(g.instanceId)) continue;
                         _gearInstances[g.instanceId] = g;
+                    }
+                }
+            }
+
+            _skillModuleInstances ??= new Dictionary<string, SkillModuleInstance>();
+            _skillModuleInstances.Clear();
+
+            if (Profile.InventorySave != null)
+            {
+                foreach (var snap in Profile.InventorySave)
+                {
+                    if (snap.skillModuleInstances == null) continue;
+                    foreach (var sm in snap.skillModuleInstances)
+                    {
+                        if (sm == null || string.IsNullOrWhiteSpace(sm.instanceId)) continue;
+                        _skillModuleInstances[sm.instanceId] = sm;
                     }
                 }
             }
@@ -969,6 +1010,39 @@ namespace CHAL.Core
 
             return _gearInstances.Remove(instanceId);
         }
+
+
+        public void RegisterSkillModuleInstance(SkillModuleInstance inst)
+        {
+            if (inst == null || string.IsNullOrWhiteSpace(inst.instanceId))
+            {
+                DebugManager.Error("RegisterSkillModuleInstance: inst or instanceId null/empty.", "Skill");
+                return;
+            }
+
+            if (_skillModuleInstances == null)
+                _skillModuleInstances = new Dictionary<string, SkillModuleInstance>();
+
+            if (_skillModuleInstances.ContainsKey(inst.instanceId))
+                DebugManager.Log($"RegisterSkillModuleInstance: instanceId '{inst.instanceId}' already exists. Overwriting.",
+                    DebugManager.EDebugLevel.Dev, "Skill");
+
+            _skillModuleInstances[inst.instanceId] = inst;
+        }
+
+        public bool TryGetSkillModuleInstance(string instanceId, out SkillModuleInstance inst)
+        {
+            inst = null;
+            if (string.IsNullOrWhiteSpace(instanceId)) return false;
+            return _skillModuleInstances != null && _skillModuleInstances.TryGetValue(instanceId, out inst);
+        }
+
+        public bool RemoveSkillModuleInstance(string instanceId)
+        {
+            if (string.IsNullOrWhiteSpace(instanceId)) return false;
+            return _skillModuleInstances != null && _skillModuleInstances.Remove(instanceId);
+        }
+
 
         private List<InventorySlotSnapshot> ReadDomainAsSlotSnapshots(string instanceId)
         {
