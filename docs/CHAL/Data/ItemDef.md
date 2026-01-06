@@ -21,6 +21,7 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
       - `PartData partData`: Data specific to parts.
       - `ModuleData moduleData`: Data specific to modules.
       - `GearData gearData`: Data specific to gear.
+      - `CoreData coreData`: Data specific to core items.
     - Public methods:
       - `void OnValidate()`: Validates item properties and ensures type safety.
   - public class `RemainData`
@@ -37,13 +38,17 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
       - `List<ItemDef> moduleFuel`: List of item definitions used as fuel for modules.
   - public class `ModuleData`
     - Public fields/properties:
-      - `string effect`: Effect of the module.
-      - `float modulePower`: Power of the module.
+      - `SkillModuleDef skillDef`: Designer reference for the skill this module represents.
+      - `string skillId`: ID of the skill associated with the module.
+  - public class `CoreData`
+    - Public fields/properties:
+      - `CoreType coreType`: Type of core.
+      - `DamageType defualtDmgType`: Default damage type.
   - public class `GearData`
     - Public fields/properties:
       - `GearType slotType`: Type of gear slot (e.g., Head, Chest).
+      - `ArmorClass armorClass`: Class of armor.
       - `string[] tags`: Tags associated with the gear.
-      - `RuneColorType runeSocketType`: Type of rune socket.
   - public static class `RuneColors`
     - Public methods:
       - `static Color Get(RuneColorType type)`: Gets the color associated with the specified rune color type.
@@ -53,11 +58,13 @@ _Automatically generated/updated from `Assets/src/Data/Defs/ItemDef_SO.cs`._
 - Ensures that `itemId` is correctly formatted and logs a warning if it is invalid.
 - Adjusts `lootValue` to be non-negative.
 - Clears type-specific data based on the `itemType`.
+- Validates and synchronizes `moduleData` if the item type is `Module`.
 
 # Constraints & Failure Modes
 - `itemId` must follow the format 'category:item'; otherwise, a warning is logged.
 - `lootValue` is clamped to a minimum of 0.
 - Type-specific data fields are cleared based on the `itemType`.
+- If `moduleData` has a `skillDef`, it enforces the `skillId` from it; otherwise, it warns if `skillId` exists without a `skillDef`.
 
 # Example
 ```csharp
