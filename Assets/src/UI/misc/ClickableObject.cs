@@ -1,4 +1,4 @@
-﻿using CHAL.Core;
+using CHAL.Core;
 using CHAL.Systems.Research;
 using UnityEngine;
 
@@ -22,7 +22,7 @@ namespace CHAL.UI
 
             if (!rend.sharedMaterial.HasProperty("_shimmerOn"))
             {
-                DebugManager.Warning($"{name}: Material has no ShimmerOn effect!", "Visual");
+                DebugManager.Warning($"{name}: Material has no ShimmerOn effect!", "UI");
             }
 
             SetShimmer(false);
@@ -49,6 +49,16 @@ namespace CHAL.UI
 /// </summary>
         public void OnClick()
         {
+            // Wenn irgendein IngameUI sichtbar ist, ignorieren wir Klicks auf Weltobjekte komplett.
+
+            var allUis = Object.FindObjectsByType<IngameUI>(FindObjectsSortMode.None); 
+            for (int i = 0; i < allUis.Length; i++)
+            {
+                if (allUis[i] != null && allUis[i].IsVisible)
+                    return;
+            }
+
+
             if (menuUI != null)
             {
                 var ui = menuUI.GetComponent<IngameUI>();

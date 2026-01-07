@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f34e3d5bc54f084b8adfe354f23906a, type: 3}
   m_Name: core_basic
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.ItemDef
-  itemId: core:aetheric
+  itemId: core:kinetic
   itemType: 3
   description: 
   icon: {fileID: 0}
-  rarity: 2
-  lootValue: 100
+  rarity: 1
+  lootValue: 50
   remainData:
     remainType: 
   runeData:
@@ -27,13 +27,11 @@ MonoBehaviour:
     dnaType: 
     moduleFuel: []
   moduleData:
+    skillDef: {fileID: 0}
     skillId: 
-    frameTier: 1
-    coreType: 0
   gearData:
     slotType: 0
+    armorClass: 0
     tags: []
-    runeSocketType: 0
   coreData:
-    coreType: 6
-    defualtDmgType: 6
+    coreType: 0

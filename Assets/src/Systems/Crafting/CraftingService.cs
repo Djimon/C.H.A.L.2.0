@@ -4,6 +4,7 @@ using CHAL.Systems.Inventory; // IInventoryDomain, ItemStack
 using CHAL.Systems.Items;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using static CHAL.Data.GameBalanceConfig;
 
@@ -50,6 +51,26 @@ namespace CHAL.Systems.Crafting
             }
         }
 
+        public readonly struct SkillModuleCraftPreview
+        {
+            public readonly bool canCraft;
+            public readonly CraftBlocker blocker;
+            public readonly IReadOnlyList<MaterialLine> materials;
+            public readonly int goldCost;
+
+            public SkillModuleCraftPreview(
+                bool canCraft,
+                CraftBlocker blocker,
+                List<MaterialLine> materials,
+                int goldCost)
+            {
+                this.canCraft = canCraft;
+                this.blocker = blocker;
+                this.materials = materials ?? new List<MaterialLine>();
+                this.goldCost = goldCost;
+            }
+        }
+
         // ---- PREVIEW ----
         /// <summary>
         /// Gets a preview of the recipe output based on the provided parameters.
@@ -66,8 +87,17 @@ namespace CHAL.Systems.Crafting
             var isModule = outType == ItemType.Module;
 
 
-            var outStack = isGear ? new ItemStackRef(recipe.outputItemId, 1, "__preview__")
-                                  : new ItemStackRef(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+            ItemStackRef outStack;
+
+            // Gear: preview guard instance
+            if (isGear)
+            {
+                outStack = new ItemStackRef(recipe.outputItemId, 1, "__preview__");
+            }
+            else
+            {
+                outStack = new ItemStackRef(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+            }
 
             bool OutputOk()
             {
@@ -215,6 +245,7 @@ namespace CHAL.Systems.Crafting
 
             var outType = ItemTypeUtils.FromId(recipe.outputItemId);
             var isGear = outType == ItemType.Gear;
+            var isModule = outType == ItemType.Module;
 
             if (isGear && recipe.outputCount != 1)
             {
@@ -222,8 +253,24 @@ namespace CHAL.Systems.Crafting
                 return false;
             }
 
-            var outStack = isGear ? new ItemStackRef(recipe.outputItemId, 1, "__guard__")
-                                  : new ItemStackRef(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+            if (isModule && recipe.outputCount != 1)
+            {
+                failReason = "SkillModule output must be 1 (stacking happens via instanceId).";
+                return false;
+            }
+
+
+            ItemStackRef outStack;
+
+            // pre-guard stack: gear uses __guard__, module uses real deterministic instanceId
+            if (isGear)
+            {
+                outStack = new ItemStackRef(recipe.outputItemId, 1, "__guard__");
+            }
+            else
+            {
+                outStack = new ItemStackRef(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
+            }
 
             // [G0] Output zuerst
             if (!inv.CanAccept(outputInventoryId, outStack))
@@ -231,7 +278,6 @@ namespace CHAL.Systems.Crafting
                 failReason = $"Output inventory cannot accept: {outputInventoryId}";
                 return false;
             }
-
 
             // [G1] Guards read-only
             var preview = GetPreview(recipe, outputInventoryId, inv, wallet);
@@ -365,6 +411,10 @@ namespace CHAL.Systems.Crafting
                     return false;
                 }
             }
+            else if (isModule)
+            {
+                DebugManager.Error("Wrong Method used. for SkillModules use: [TryCraftSkillModuleToInventory]", "Crafting");
+            }
             else
             {
                 outStack = new ItemStackRef(recipe.outputItemId, Mathf.Max(1, recipe.outputCount));
@@ -416,6 +466,336 @@ namespace CHAL.Systems.Crafting
             // leather/medium/default
             return ArmorClass.Medium;
         }
+
+        #region Skill-Crafting
+
+        public static SkillModuleCraftPreview PreviewSkillModuleCraft(
+            ItemDef moduleItem,
+            int frameTier,
+            ItemDef coreItem,
+            InventoryDomain inv,
+            IWallet wallet,
+            string outputInventoryId = "player_module")
+        {
+            var materials = new List<MaterialLine>();
+            var goldCost = 0;
+
+            // Basic sanity
+            if (moduleItem == null || moduleItem.moduleData == null || moduleItem.moduleData.skillDef == null)
+                return new SkillModuleCraftPreview(false, CraftBlocker.InvalidRefinement, materials, goldCost);
+
+            if (coreItem == null || coreItem.coreData == null)
+                return new SkillModuleCraftPreview(false, CraftBlocker.InvalidRefinement, materials, goldCost);
+
+            var skillDef = moduleItem.moduleData.skillDef;
+            var selectedCore = coreItem.coreData.coreType;
+
+            // Core-Whitelist laut Spec
+            if (!IsCoreAllowedForModule(skillDef, selectedCore))
+                return new SkillModuleCraftPreview(false, CraftBlocker.InvalidRefinement, materials, goldCost);
+
+            // Tier-Kosten aus Balance
+            frameTier = Mathf.Max(1, frameTier);
+            if (!TryGetSkillModuleTierCost(frameTier, out var tierCost))
+                return new SkillModuleCraftPreview(false, CraftBlocker.InvalidRefinement, materials, goldCost);
+
+            goldCost = Mathf.Max(0, tierCost.goldCost);
+
+            // Materials aufbauen: 1x Core + TierIngredients
+            // Core
+            materials.Add(new MaterialLine
+            {
+                itemId = coreItem.itemId,
+                required = 1,
+                playerAmount = CountItemInInventory(inv, coreItem.itemId)
+            });
+
+            // Weitere Zutaten aus Config
+            if (tierCost.Ingredients != null)
+            {
+                for (int i = 0; i < tierCost.Ingredients.Count; i++)
+                {
+                    var ing = tierCost.Ingredients[i];
+                    if (ing.Ingredient == null || string.IsNullOrEmpty(ing.Ingredient.itemId))
+                        continue;
+
+                    var itemId = ing.Ingredient.itemId;
+                    var required = Mathf.Max(1, ing.Amount);
+
+                    materials.Add(new MaterialLine
+                    {
+                        itemId = itemId,
+                        required = required,
+                        playerAmount = CountItemInInventory(inv, itemId)
+                    });
+                }
+            }
+
+            // Output-Check
+            var outStack = new ItemStackRef(moduleItem.itemId, 1, "__preview__");
+            var outputOk = inv.CanAccept(outputInventoryId, outStack);
+
+            // MaterialsOk
+            var materialsOk = true;
+            for (int i = 0; i < materials.Count; i++)
+            {
+                if (materials[i].playerAmount < materials[i].required)
+                {
+                    materialsOk = false;
+                    break;
+                }
+            }
+
+            // CurrencyOk
+            var currencyOk = goldCost <= 0 || wallet.CanSpend("gold", goldCost);
+
+            CraftBlocker blocker;
+            if (!outputOk)
+                blocker = CraftBlocker.OutputInventoryFull;
+            else if (!materialsOk)
+                blocker = CraftBlocker.MissingMaterials;
+            else if (!currencyOk)
+                blocker = CraftBlocker.NotEnoughCurrency;
+            else
+                blocker = CraftBlocker.None;
+
+            var canCraft = blocker == CraftBlocker.None;
+            return new SkillModuleCraftPreview(canCraft, blocker, materials, goldCost);
+        }
+
+        public static bool TryCraftSkillModuleToInventory(
+            ItemDef moduleItem,
+            int frameTier,
+            ItemDef coreItem,
+            InventoryDomain inv,
+            IWallet wallet,
+            string outputInventoryId,
+            out string failReason)
+        {
+            failReason = null;
+
+            if (moduleItem == null || moduleItem.moduleData == null || moduleItem.moduleData.skillDef == null)
+            {
+                failReason = "Invalid module item.";
+                return false;
+            }
+
+            if (coreItem == null || coreItem.coreData == null)
+            {
+                failReason = "Invalid core item.";
+                return false;
+            }
+
+            var gm = GameManager.Instance;
+            if (gm == null)
+            {
+                failReason = "Missing GameManager.";
+                return false;
+            }
+
+            var skillDef = moduleItem.moduleData.skillDef;
+            var selectedCore = coreItem.coreData.coreType;
+
+            // Core-Whitelist
+            if (!IsCoreAllowedForModule(skillDef, selectedCore))
+            {
+                failReason = CraftBlocker.InvalidRefinement.ToString();
+                return false;
+            }
+
+            // Tier-Kosten
+            frameTier = Mathf.Max(1, frameTier);
+            if (!TryGetSkillModuleTierCost(frameTier, out var tierCost))
+            {
+                failReason = "Missing SkillModule tier cost.";
+                return false;
+            }
+
+            // Guard-Preview (Output + Mats + Gold)
+            var preview = PreviewSkillModuleCraft(moduleItem, frameTier, coreItem, inv, wallet, outputInventoryId);
+            if (!preview.canCraft)
+            {
+                failReason = preview.blocker.ToString();
+                return false;
+            }
+
+            // ===== Commit-Phase =====
+
+            var removed = new List<(string instId, int slot, ItemStackRef oldStack, int amount)>();
+
+            bool TryConsumeOne(string itemId, int qty)
+            {
+                if (!TryGetMaterialsInventoryIdByConvention(itemId, inv, out var instId))
+                    return false;
+
+                var inst = inv.GetInstance(instId);
+                if (inst == null || inst.slots == null) return false;
+
+                var left = qty;
+                for (int i = 0; i < inst.slots.Length && left > 0; i++)
+                {
+                    var st = inst.slots[i].stack;
+                    if (!st.HasValue || st.Value.itemID != itemId) continue;
+
+                    var take = Mathf.Min(st.Value.count, left);
+                    if (take <= 0) continue;
+
+                    if (!inv.TryRemove(instId, i, take, out var tx) || !tx.success)
+                        return false;
+
+                    removed.Add((instId, i, st.Value, take));
+                    left -= take;
+                }
+                return left <= 0;
+            }
+
+            // 1) Materialien konsumieren: 1x Core + TierIngredients
+            if (!TryConsumeOne(coreItem.itemId, 1))
+            {
+                failReason = $"Missing core: {coreItem.itemId}";
+                return false;
+            }
+
+            if (tierCost.Ingredients != null)
+            {
+                for (int i = 0; i < tierCost.Ingredients.Count; i++)
+                {
+                    var ing = tierCost.Ingredients[i];
+                    if (ing.Ingredient == null || string.IsNullOrEmpty(ing.Ingredient.itemId))
+                        continue;
+
+                    var itemId = ing.Ingredient.itemId;
+                    var want = Mathf.Max(1, ing.Amount);
+
+                    if (!TryConsumeOne(itemId, want))
+                    {
+                        // Rollback Mats
+                        foreach (var rem in removed)
+                            inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
+                        failReason = $"Missing materials: {itemId}";
+                        return false;
+                    }
+                }
+            }
+
+            // 2) Gold
+            var gold = Mathf.Max(0, tierCost.goldCost);
+            if (gold > 0 && !wallet.SpendCurrency("gold", gold))
+            {
+                foreach (var rem in removed)
+                    inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
+                failReason = "Gold spend failed.";
+                return false;
+            }
+
+            // 3) Output: SkillModuleInstance bauen + registrieren + ins Inventory legen
+            var skillId = skillDef.SkillId;
+            var moduleItemId = moduleItem.itemId;
+
+            var smInstance = SkillModuleInstance.Create(moduleItemId, skillId, frameTier, selectedCore);
+            gm.RegisterSkillModuleInstance(smInstance);
+
+            var outStack = new ItemStackRef(moduleItemId, 1, smInstance.instanceId);
+
+            if (!inv.TryAdd(outputInventoryId, outStack, out var addTx) || !addTx.success)
+            {
+                // Cleanup: Instanz wieder entfernen + Rollback
+                gm.RemoveSkillModuleInstance(smInstance.instanceId);
+
+                if (gold > 0) wallet.Refund("gold", gold);
+                foreach (var rem in removed)
+                    inv.TryAdd(rem.instId, rem.oldStack.WithCount(rem.amount), out _);
+
+                failReason = $"Output inventory full: {outputInventoryId}";
+                return false;
+            }
+
+            // Stats (synthetischer "RecipeId"-Key)
+            gm.Stats.OnCraftExecuted($"skillModule:{moduleItemId}:tier{frameTier}:core{selectedCore}");
+
+            return true;
+        }
+
+        static bool IsCoreAllowedForModule(SkillModuleDef skillDef, CoreType selectedCore)
+        {
+            if (skillDef == null)
+                return false;
+
+            // 1) Default-Core ist immer erlaubt
+            if (selectedCore == skillDef.defaultCore)
+                return true;
+
+            // 2) Sonst nur, wenn explizit in changeCoreTypesAllowed enthalten
+            var list = skillDef.changeCoreTypesAllowed;
+            if (list == null || list.Count == 0)
+                return false;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] == selectedCore)
+                    return true;
+            }
+
+            return false;
+        }
+
+        static bool TryGetSkillModuleTierCost(int frameTier, out SMTierCost cost)
+        {
+            cost = default;
+
+            var gm = GameManager.Instance;
+            if (gm == null || gm.BalanceConfig == null)
+            {
+                DebugManager.Error("[Crafting] GameManager / BalanceConfig missing for SkillModule craft.", "Crafting");
+                return false;
+            }
+
+            var cfg = gm.BalanceConfig.skillSettings.skillModuleCosts;
+            if (cfg.TierBasedCosts == null || cfg.TierBasedCosts.Count == 0)
+            {
+                DebugManager.Error("[Crafting] SkillModuleCosts.TierBasedCosts is null/empty.", "Crafting");
+                return false;
+            }
+
+            for (int i = 0; i < cfg.TierBasedCosts.Count; i++)
+            {
+                if (cfg.TierBasedCosts[i].tier == frameTier)
+                {
+                    cost = cfg.TierBasedCosts[i];
+                    return true;
+                }
+            }
+
+            DebugManager.Error($"[Crafting] No SkillModule tier cost configured for tier {frameTier}.", "Crafting");
+            return false;
+        }
+
+        static int CountItemInInventory(InventoryDomain inv, string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId))
+                return 0;
+
+            if (!TryGetMaterialsInventoryIdByConvention(itemId, inv, out var instId))
+                return 0;
+
+            var inst = inv.GetInstance(instId);
+            if (inst == null || inst.slots == null)
+                return 0;
+
+            var have = 0;
+            for (int i = 0; i < inst.slots.Length; i++)
+            {
+                var st = inst.slots[i].stack;
+                if (st.HasValue && st.Value.itemID == itemId)
+                    have += st.Value.count;
+            }
+
+            return have;
+        }
+
+        #endregion
 
     }
 

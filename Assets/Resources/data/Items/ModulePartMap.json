@@ -1,7 +1,7 @@
 {
   "entries": [
     {
-      "moduleId": "module:piercing_fang",
+      "moduleId": "module:bladestorm",
       "parts": ["part:tooth", "part:stinger"]
     }    
   ]

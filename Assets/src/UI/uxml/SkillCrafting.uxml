@@ -1,0 +1,40 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/src/UI/uss/crafting.uss?fileID=7433441132597879392&amp;guid=8b07e91360515384cbd6622986ef5772&amp;type=3#crafting"/>
+    <ui:VisualElement name="skillmodule-crafting-root" class="crafting-root" style="background-color: rgba(0, 0, 0, 0.78);">
+        <ui:VisualElement name="left-pane" class="left-pane">
+            <ui:Label text="Module" class="pane-title"/>
+            <ui:ScrollView name="module-list-scroll" class="list-scroll"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="right-pane" class="right-pane">
+            <ui:Button text="X" name="exit" class="exit-btn"/>
+            <ui:VisualElement name="header" class="header">
+                <ui:VisualElement name="module-icon" class="item-icon"/>
+                <ui:VisualElement class="header-text">
+                    <ui:Label name="module-name" text="Module Name" class="item-name"/>
+                    <ui:Label name="module-base-info" text="Base info" class="base-stats"/>
+                    <ui:VisualElement class="implicit-row">
+                        <ui:Label name="module-tags" text="tags" class="implicit-info"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="core-row" class="refine-box">
+                <ui:Label text="Core:" class="refine-label"/>
+                <ui:DropdownField name="core-dropdown" class="refine-material"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="tier-row" class="refine-box">
+                <ui:Label text="Tier:" class="refine-label"/>
+                <ui:SliderInt name="tier-slider" low-value="1" high-value="10" class="refine-slider"/>
+                <ui:Label name="tier-value" text="1" class="refine-value"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="materials-row" class="refine-box">
+                <ui:Label text="Kosten:" class="refine-label"/>
+                <ui:VisualElement name="materials-list" class="materials-list"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="action-row">
+                <ui:Label name="gold-label" text="0 G" class="gold-label"/>
+                <ui:Button name="craft-btn" text="Craft" class="craft-btn"/>
+            </ui:VisualElement>
+            <ui:Label name="fail-label" class="fail-label"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

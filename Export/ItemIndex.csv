@@ -1,5 +1,4 @@
 ﻿itemType,itemId,rarity
-Core,core:base,Common
 Core,core:radiant,Holy
 Core,core:cthonic,Mythic
 Core,core:infernal,Mythic
@@ -10,9 +9,10 @@ Core,core:glacial,Rare
 Core,core:seismic,Rare
 Core,core:static,Rare
 Core,core:venomous,Rare
+Core,core:kinetic,Uncommon
 Gear,gear:chitin_chest,Common
 Gear,gear:medium_helmet,Common
-Module,module:piercing_fang,Common
+Module,module:bladestorm,Common
 Part,part:antenna,Common
 Part,part:bone_fragment,Common
 Part,part:chitin,Common
