@@ -137,6 +137,11 @@ namespace CHAL.Systems.Skill
             }
         }
 
+/// <summary>
+/// Translates a CoreType to its corresponding DamageType.
+/// </summary>
+/// <param name="type">The CoreType to translate.</param>
+/// <returns>The corresponding DamageType.</returns>
         public static DamageType TranslateCoreTypeToDamage(CoreType type)
         {
             switch (type)

@@ -11,6 +11,10 @@ using static CHAL.Systems.Crafting.CraftingService;
 
 namespace CHAL.Systems.UI
 {
+/// <summary>
+/// Represents the crafting panel for skill modules in the game UI.
+/// This panel allows users to view and manage skill modules.
+/// </summary>
     public class SkillModuleCraftingPanel : IngameUI
     {
         //private VisualElement root;

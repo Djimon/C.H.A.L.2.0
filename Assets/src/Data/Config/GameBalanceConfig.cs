@@ -237,11 +237,12 @@ namespace CHAL.Data
             public GearTierSlotCaps tier2;
             public GearTierSlotCaps tier3;
 
-            /// <summary>
-            /// Gets the slot capabilities for the specified gear tier.
-            /// </summary>
-            /// <param name="tier">The gear base tier to get capabilities for.</param>
-            /// <returns>The gear tier slot capabilities.</returns>
+
+/// <summary>
+/// Gets the gear tier slot caps for the specified gear base tier.
+/// </summary>
+/// <param name="tier">The gear base tier to get the caps for.</param>
+/// <returns>The gear tier slot caps for the specified tier.</returns>
             public GearTierSlotCaps GetCaps(GearBaseTier tier)
             {
                 return tier switch
@@ -344,6 +345,10 @@ namespace CHAL.Data
         }
 
         [System.Serializable]
+/// <summary>
+/// Represents the category caps for gear affixes.
+/// It includes global caps and optional overrides for specific gear types.
+/// </summary>
         public struct GearAffixCategoryCaps
         {
             [Tooltip("Global caps (applies to all gear types unless overridden).")]
@@ -352,6 +357,14 @@ namespace CHAL.Data
             //[Tooltip("Optional per-gear-type overrides. If a category is present here, it overrides the global cap for that gear type.")]
             //public List<GearTypeAffixCategoryCaps> overridesByGearType;
 
+/// <summary>
+/// Gets the cap value based on the specified gear type and category.
+/// Returns a fallback value if no cap is found.
+/// </summary>
+/// <param name="gearType">The type of gear to check.</param>
+/// <param name="category">The category of the affix.</param>
+/// <param name="fallbackIfMissing">The value to return if no cap is found (default is 99).</param>
+/// <returns>The cap value as an integer.</returns>
             public int GetCap(GearType gearType, AffixCategory category, int fallbackIfMissing = 99)
             {
                 // 1) overrides
@@ -421,6 +434,9 @@ namespace CHAL.Data
 
             [Header("Affix Roll Settings")]
             [Tooltip("Used for non-family-selected rolls (e.g. drops). If the player explicitly chooses a family in crafting, this is ignored.")]
+/// <summary>
+/// Represents the default weights for affix families.
+/// </summary>
             public AffixFamilyWeights defaultAffixFamilyWeights;
 
             [Tooltip("Optional gear-type-specific affix family weights.")]

@@ -57,6 +57,10 @@ namespace CHAL.Core
             => Config != null ? Config.heroXP : null;
 
         // Optional: statischer Helfer, falls du aus nicht-Mono-Klassen ranwillst
+/// <summary>
+/// Retrieves the HeroXP configuration instance.
+/// </summary>
+/// <returns>The HeroXPConfig instance, or null if not available.</returns>
         public static HeroXPConfig GetHeroXP()
         {
             return Instance != null ? Instance.HeroXPConfig : null;
