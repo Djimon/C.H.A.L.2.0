@@ -5,7 +5,7 @@ using CHAL.Data;   // ResearchNodeDef
 
 public sealed class ResearchNodeEditorWindow : EditorWindow
 {
-    private ResearchNodeDef _node;
+    private CodexNodeDef _node;
     private Editor _cachedInspector;
     private Vector2 _scroll;
 
@@ -13,7 +13,7 @@ public sealed class ResearchNodeEditorWindow : EditorWindow
 /// Displays the Research Node Editor window for the specified research node.
 /// </summary>
 /// <param name="node">The research node to display in the editor.</param>
-    public static void ShowFor(ResearchNodeDef node)
+    public static void ShowFor(CodexNodeDef node)
     {
         if (node == null) return;
         var win = CreateWindow<ResearchNodeEditorWindow>("Research Node");

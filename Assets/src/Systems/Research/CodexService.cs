@@ -7,14 +7,14 @@ using UnityEngine;
 
 namespace CHAL.Systems.Research
 {
-    public sealed class ResearchService
+    public sealed class CodexService
     {
         // ------------------ Konfiguration / Tabellen ------------------
-        private readonly Dictionary<string, ResearchNodeDef> _nodesById = new Dictionary<string, ResearchNodeDef>(StringComparer.Ordinal);
+        private readonly Dictionary<string, CodexNodeDef> _nodesById = new Dictionary<string, CodexNodeDef>(StringComparer.Ordinal);
         private readonly Dictionary<(int lane, int stage), List<string>> _idsByLaneStage = new Dictionary<(int, int), List<string>>();
 
-        private ResearchTreeDef _treeDef; // nur fÃ¼r Layout/Meta-Daten (optional fÃ¼r UI)
-        private ResearchState _state;
+        private CodexTreeDef _treeDef; // nur für Layout/Meta-Daten (optional fÃ¼r UI)
+        private CodexState _state;
 
         private Dictionary<string, List<string>> _compiledParents;
 
@@ -47,15 +47,15 @@ namespace CHAL.Systems.Research
 /// </summary>
 /// <param name="treeDef">The research tree definition to initialize from.</param>
 /// <param name="state">The research state to use; if null, a new state is created.</param>
-        public void InitFromTree(ResearchTreeDef treeDef, ResearchState state)
+        public void InitFromTree(CodexTreeDef treeDef, CodexState state)
         {
             _treeDef = treeDef;
-            _state = state ?? new ResearchState();
+            _state = state ?? new CodexState();
 
             _nodesById.Clear();
             _idsByLaneStage.Clear();
 
-            var compiled = ResearchTreeCompiler.Compile(treeDef);
+            var compiled = CodexTreeCompiler.Compile(treeDef);
 
             // nodesById + posById Ã¼bernehmen
             foreach (var kv in compiled.nodesById)
@@ -159,7 +159,7 @@ namespace CHAL.Systems.Research
 /// </summary>
 /// <param name="nodeID">The ID of the node to retrieve the definition for.</param>
 /// <returns>The ResearchNodeDef for the given node ID, or null if not found.</returns>
-        public ResearchNodeDef GetNodeDef(string nodeID)
+        public CodexNodeDef GetNodeDef(string nodeID)
         {
             return _nodesById.TryGetValue(nodeID, out var def) ? def: null;
         }
@@ -406,7 +406,7 @@ namespace CHAL.Systems.Research
 
 
         // ------------------ Completion-Check ------------------
-        private void TryComplete(ResearchNodeDef def, NodeProgress p)
+        private void TryComplete(CodexNodeDef def, NodeProgress p)
         {
             if (IsCompleted(def.id)) return;
 
@@ -421,7 +421,7 @@ namespace CHAL.Systems.Research
             OnNodeCompleted?.Invoke(def.id, def.unlocks);
         }
 
-        private static bool MeetsRequirements(ResearchNodeDef def, NodeProgress p)
+        private static bool MeetsRequirements(CodexNodeDef def, NodeProgress p)
         {
             var req = def.requirements;
             if (req == null) return true; // leere Anforderungen â†’ sofort fertig (V1 erlaubt)

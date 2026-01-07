@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CHAL.Core;   // DebugManager
 using CHAL.Data;   // ResearchNodeDef, ResearchUnlock, ResearchUnlockTypes
@@ -6,7 +6,7 @@ using CHAL.Data;   // ResearchNodeDef, ResearchUnlock, ResearchUnlockTypes
 namespace CHAL.Systems.Research
 {
 
-    public sealed class ResearchUnlockRegistry
+    public sealed class CodexUnlockRegistry
     {
         // Interne Sets fÃ¼r O(1) Lookups
         private readonly HashSet<string> _worldTiers = new HashSet<string>(StringComparer.Ordinal);
@@ -38,7 +38,7 @@ namespace CHAL.Systems.Research
 /// </summary>
 /// <param name="allNodes">The collection of all research nodes.</param>
 /// <param name="completedNodeIds">The collection of completed node IDs.</param>
-        public void RebuildFrom(IEnumerable<ResearchNodeDef> allNodes, IEnumerable<string> completedNodeIds)
+        public void RebuildFrom(IEnumerable<CodexNodeDef> allNodes, IEnumerable<string> completedNodeIds)
         {
             Clear();
 
@@ -51,7 +51,7 @@ namespace CHAL.Systems.Research
             InitializeCatalog(allNodes, resetExisting: false);
 
             // Lookup id â†’ def
-            var byId = new Dictionary<string, ResearchNodeDef>(StringComparer.Ordinal);
+            var byId = new Dictionary<string, CodexNodeDef>(StringComparer.Ordinal);
             foreach (var n in allNodes)
             {
                 if (n != null && !string.IsNullOrWhiteSpace(n.id))
@@ -77,7 +77,7 @@ namespace CHAL.Systems.Research
 /// </summary>
 /// <param name="allNodes">The collection of research nodes to add.</param>
 /// <param name="resetExisting">Indicates whether to clear existing entries.</param>
-        public void InitializeCatalog(IEnumerable<ResearchNodeDef> allNodes, bool resetExisting = false)
+        public void InitializeCatalog(IEnumerable<CodexNodeDef> allNodes, bool resetExisting = false)
         {
             if (resetExisting) _catalog.Clear();
             if (allNodes == null) return;

@@ -1377,7 +1377,7 @@ namespace CHAL.UI
 
             // Runtime-Container sicherstellen
             if (gm.Profile.ResearchRuntime == null)
-                gm.Profile.ResearchRuntime = new CHAL.Systems.Research.ResearchState();
+                gm.Profile.ResearchRuntime = new CHAL.Systems.Research.CodexState();
 
             var rt = gm.Profile.ResearchRuntime;
 
@@ -1416,7 +1416,7 @@ namespace CHAL.UI
             }
 
             if (gm.Profile.ResearchRuntime == null)
-                gm.Profile.ResearchRuntime = new CHAL.Systems.Research.ResearchState();
+                gm.Profile.ResearchRuntime = new CHAL.Systems.Research.CodexState();
 
             var rt = gm.Profile.ResearchRuntime;
 
@@ -1455,15 +1455,15 @@ namespace CHAL.UI
         }
 
         // --- local loaders (keine zusätzliche Registry-Logik; identisch zum GM-Pfad) ---
-        private static ResearchTreeDef LoadResearchTree()
+        private static CodexTreeDef LoadResearchTree()
         {
-            return Resources.Load<ResearchTreeDef>("data/Research/Tree");
+            return Resources.Load<CodexTreeDef>("data/Research/Tree");
         }
 
-        private static List<ResearchNodeDef> LoadResearchNodes()
+        private static List<CodexNodeDef> LoadResearchNodes()
         {
-            var arr = Resources.LoadAll<ResearchNodeDef>("data/Research/Nodes");
-            var list = new List<ResearchNodeDef>(arr != null ? arr.Length : 0);
+            var arr = Resources.LoadAll<CodexNodeDef>("data/Research/Nodes");
+            var list = new List<CodexNodeDef>(arr != null ? arr.Length : 0);
             if (arr != null)
             {
                 for (int i = 0; i < arr.Length; i++)

@@ -23,7 +23,7 @@ namespace CHAL.Systems.Research
     }
 
     [Serializable]
-    public sealed class ResearchState
+    public sealed class CodexState
     {
         public string activeNodeId;
         public HashSet<string> completedNodeIds = new HashSet<string>(StringComparer.Ordinal);

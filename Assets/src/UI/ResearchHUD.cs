@@ -1,4 +1,4 @@
-﻿using CHAL.Data;
+using CHAL.Data;
 using CHAL.Systems.Research;
 using System.Text;
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace CHAL.UI
         private Button _runButton;
 
         // External refs (vom Bootstrap oder MapView zuweisen)
-        public ResearchService Service { get; private set; }
+        public CodexService Service { get; private set; }
         public ResearchUIThemeDef Theme { get; private set; }
 
         // Intern
@@ -48,7 +48,7 @@ namespace CHAL.UI
 /// </summary>
 /// <param name="service">The research service to initialize.</param>
 /// <param name="theme">The theme to apply to the UI.</param>
-        public void Init(ResearchService service, ResearchUIThemeDef theme)
+        public void Init(CodexService service, ResearchUIThemeDef theme)
         {
             Service = service;
             Theme = theme;
@@ -177,7 +177,7 @@ namespace CHAL.UI
 /// </summary>
 /// <param name="def">The research node definition to format.</param>
 /// <returns>A formatted string of the unlocks.</returns>
-        public static string FormatUnlocks(ResearchNodeDef def)
+        public static string FormatUnlocks(CodexNodeDef def)
         {
             if (def == null || def.unlocks == null || def.unlocks.Count == 0) return "â€”";
             var sb = new StringBuilder();
@@ -191,7 +191,7 @@ namespace CHAL.UI
 /// </summary>
 /// <param name="def">The research node definition to format.</param>
 /// <returns>A formatted string of the requirements.</returns>
-        public static string FormatRequirements(ResearchNodeDef def)
+        public static string FormatRequirements(CodexNodeDef def)
         {
             if (def == null || def.requirements == null) return "â€”";
             var r = def.requirements;

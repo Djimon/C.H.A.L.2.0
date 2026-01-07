@@ -70,11 +70,11 @@ namespace CHAL.Core
             => "player_" + t.ToString().ToLowerInvariant();
 
         // --- Research ---
-        [SerializeField] private ResearchTreeDef researchTree;
-        [SerializeField] private List<ResearchNodeDef> researchNodes = new();
+        [SerializeField] private CodexTreeDef researchTree;
+        [SerializeField] private List<CodexNodeDef> researchNodes = new();
 
-        public ResearchService researchService { get; private set; }
-        public ResearchUnlockRegistry ResearchUnlocks { get; private set; }
+        public CodexService researchService { get; private set; }
+        public CodexUnlockRegistry ResearchUnlocks { get; private set; }
 
 
         // Gearing
@@ -906,11 +906,11 @@ namespace CHAL.Core
 
             // Runtime-Container sicherstellen
             if (Profile.ResearchRuntime == null)
-                Profile.ResearchRuntime = new ResearchState();
+                Profile.ResearchRuntime = new CodexState();
 
             // Services erstellen (einmalig)
-            researchService ??= new ResearchService();
-            ResearchUnlocks ??= new ResearchUnlockRegistry();
+            researchService ??= new CodexService();
+            ResearchUnlocks ??= new CodexUnlockRegistry();
 
             // Laden oder frischen Stand anlegen
             if (loadExisting)
@@ -951,10 +951,10 @@ namespace CHAL.Core
         private void EnsureResearchDefsLoaded()
         {
             if (researchTree == null)
-                researchTree = Resources.Load<ResearchTreeDef>("data/Research/Tree");
+                researchTree = Resources.Load<CodexTreeDef>("data/Research/Tree");
 
             if (researchNodes == null || researchNodes.Count == 0)
-                researchNodes = Resources.LoadAll<ResearchNodeDef>("data/Research/Nodes").ToList();
+                researchNodes = Resources.LoadAll<CodexNodeDef>("data/Research/Nodes").ToList();
         }
 
 

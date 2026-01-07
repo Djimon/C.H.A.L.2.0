@@ -54,7 +54,7 @@ namespace CHAL.Data
         public List<InventorySnapshot> InventorySave = new();
 
         // --- Research ---
-        [NonSerialized] public ResearchState ResearchRuntime;
+        [NonSerialized] public CodexState ResearchRuntime;
 
 /// <summary>
 /// Initializes the player with a name and a set of colors.
@@ -331,7 +331,7 @@ namespace CHAL.Data
 /// </summary>
 /// <param name="state">The ResearchState to build the snapshot from.</param>
 /// <returns>A ResearchSnapshot representing the state.</returns>
-        public ResearchSnapshot BuildResearchSnapshotFrom(ResearchState state)
+        public ResearchSnapshot BuildResearchSnapshotFrom(CodexState state)
         {
             var snap = new ResearchSnapshot();
             if (state == null) return snap;
@@ -375,7 +375,7 @@ namespace CHAL.Data
 /// </summary>
 /// <param name="state">The research state to restore data into.</param>
 /// <param name="snap">The research snapshot containing the data to restore.</param>
-        public void RestoreResearchInto(ResearchState state, ResearchSnapshot snap)
+        public void RestoreResearchInto(CodexState state, ResearchSnapshot snap)
         {
             if (state == null) return;
 

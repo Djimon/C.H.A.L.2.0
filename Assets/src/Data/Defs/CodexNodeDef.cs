@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "ResearchNodeDef", menuName = "Research/Node")]
-    public sealed class ResearchNodeDef : ScriptableObject
+    public sealed class CodexNodeDef : ScriptableObject
     {
         [Header("Identity")]
         public string id;
@@ -16,7 +16,7 @@ namespace CHAL.Data
         public List<ResearchUnlock> unlocks = new List<ResearchUnlock>();
 
         [Header("Requirements (UND-Logik)")]
-        public ResearchRequirement requirements = new ResearchRequirement();
+        public DeedRequirement requirements = new DeedRequirement();
         internal string desc;
 
         private void OnValidate()

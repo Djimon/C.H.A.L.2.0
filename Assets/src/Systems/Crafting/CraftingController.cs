@@ -23,7 +23,7 @@ namespace CHAL.Systems.Crafting
         [Header("References")]
         public CraftingCatalog catalog;
         public InventoryDomain inv;
-        public ResearchUnlockRegistry unlocks;
+        public CodexUnlockRegistry unlocks;
 
         [Header("UI")]
         public RecipeListView listView;

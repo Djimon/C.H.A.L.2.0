@@ -17,8 +17,8 @@ namespace CHAL.Systems.Research
         public Transform nodeContainer;
 
         public ResearchUIThemeDef theme;
-        public ResearchTreeDef treeDef;
-        public ResearchService service;
+        public CodexTreeDef treeDef;
+        public CodexService service;
         private bool serviceReady = false;
         public ResearchNodeWidget nodePrefab;
 
@@ -102,7 +102,7 @@ namespace CHAL.Systems.Research
             nodePositions.Clear();
 
             // Compile Tree
-            var compiled = ResearchTreeCompiler.Compile(treeDef);
+            var compiled = CodexTreeCompiler.Compile(treeDef);
 
             // ---- 1) Gruppieren: pro Lane -> pro Stage -> sortierte Node-IDs
             var laneStageIds = new Dictionary<int, Dictionary<int, List<string>>>();
@@ -365,7 +365,7 @@ namespace CHAL.Systems.Research
         // ==== Public API ====
 
         public ResearchUIThemeDef Theme => theme;
-        public ResearchService serviceRef => service;
+        public CodexService serviceRef => service;
         //TODO
 //        public string ActiveNodeId => service.ActiveNodeId;
 

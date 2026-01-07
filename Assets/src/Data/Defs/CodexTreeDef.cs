@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "ResearchTreeDef", menuName = "Research/Tree")]
-    public sealed class ResearchTreeDef : ScriptableObject
+    public sealed class CodexTreeDef : ScriptableObject
     {
         [Header("Lane Labels & Colors")]
         public List<ResearchLane> researchLanes = new List<ResearchLane>();
@@ -81,8 +81,8 @@ namespace CHAL.Data
     [Serializable]
     public sealed class ResearchTreeNodeRef
     {
-        public ResearchNodeDef node;
+        public CodexNodeDef node;
         [Tooltip("Parents als Node-Refs; wird zu IDs kompiliert.")]
-        public List<ResearchNodeDef> parentRefs = new List<ResearchNodeDef>();
+        public List<CodexNodeDef> parentRefs = new List<CodexNodeDef>();
     }
 }

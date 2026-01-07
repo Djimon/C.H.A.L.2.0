@@ -1,181 +1,253 @@
-\section{Research System}
-\label{subsec:research-system}
+\section{Codex of Potential (Meta Progression)}
 
-\subsection{Overview}
+\subsection{Purpose and Scope}
 
-The Research System provides long-term, account-wide progression by converting play (XP, kills, completed Maps) into unlocks. 
-It controls when new systems, heroes, item tiers and world variants become available and thus paces both power growth and complexity.
+The \emph{Codex of Potential} defines the primary account-wide meta-progression system.
+It does not directly increase hero power, but instead unlocks access to systems, mechanics,
+tiers, and options across the game.
 
-Research is organised into multiple \emph{research trees}. For the MVP, three main trees are planned:
+The Codex is driven exclusively by deliberate player actions and does not rely on time-based
+progression, currency investment, or passive accumulation.
+
+Its core responsibility is to gate and sequence the player's long-term possibilities
+while remaining orthogonal to Hero progression, Orbit progression, and moment-to-moment combat balance.
+
+\subsubsection{System Overview}
+
+\begin{center}
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\textbf{Input Source} & \textbf{Tracked Signal} & \textbf{Codex Element} & \textbf{Result} \\
+		\hline
+		Combat System & Enemy kills (rank / tags) & Deed Requirements & Progress increment \\
+		\hline
+		Map System & Map and Wave completions & Deed Requirements & Progress increment \\
+		\hline
+		Difficulty System & Difficulty thresholds & Deed Requirements & Completion gating \\
+		\hline
+		Codex State & Completed Deeds & Unlock Registry & Global unlocks \\
+		\hline
+	\end{tabular}
+\end{center}
+
+The Codex of Potential acts purely as a progression controller.
+It consumes gameplay signals but never injects combat effects directly.
+
+\subsection{Structural Model}
+
+The Codex is organized into multiple \emph{Chapters} (internally referred to as \emph{Pillars}),
+each representing a fundamental domain of progression (e.g. Crafting, Heroes, World Tiers).
+
+Each Chapter contains a predefined set of \emph{Deeds}, arranged in a structured and deterministic layout.
+Dependencies between Deeds are explicit and resolved through directed parent relationships.
+
+The overall structure is static and authored; Deeds are never randomized or reshuffled.
+
+\subsubsection{Chapter Examples}
+
+The following tables provide concrete examples of Chapters and their associated Deeds.
+They are illustrative and not exhaustive, but represent the intended progression flow
+and unlock pacing within each Chapter.
+
+\paragraph{Crafting Chapter}
+
+\begin{center}
+	\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
+		\textbf{Deed} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
+		\hline
+		Basic Gear &
+		\emph{``Let's see what we can do with these shreds.''} &
+		Unlocks basic gear usage and simple item crafting from common loot. Establishes the baseline of the item system. \\
+		\hline
+		Infuse I &
+		\emph{``We can make use of these magical remains.''} &
+		Unlocks the first tier of infusion: adding simple magical properties to base items using low-tier materials. \\
+		\hline
+		Re-Infuse &
+		Allows re-rolling or replacing existing infusions at a cost. &
+		Unlocks re-infusing items, enabling early deterministic rerolls instead of pure item hunting. \\
+		\hline
+		Gear II &
+		\emph{``Find some of the rarer materials, so we can improve the gear.''} &
+		Unlocks access to higher gear tiers and rarer crafting materials; raises the ceiling for item power. \\
+		\hline
+		Refine / Tempering &
+		Introduces finer control over item stats via tempering. &
+		Unlocks refining and tempering operations that adjust existing stats within defined ranges. \\
+		\hline
+		Infuse II &
+		Second tier of infusion for more powerful effects or additional affix slots. &
+		Unlocks stronger infusions and/or more slots per item, increasing build complexity. \\
+		\hline
+		Gear III &
+		Unlocks late-game gear tiers. &
+		Gives access to high-end gear bases and top-tier materials for endgame items. \\
+		\hline
+		Infuse III &
+		Third tier of infusion, oriented towards endgame builds. &
+		Unlocks the highest tier of infusions with strong, build-defining properties. \\
+		\hline
+		Over-Tempering &
+		Extreme, high-risk / high-reward tempering. &
+		Unlocks over-tempering mechanics that allow pushing items beyond normal limits at significant cost or risk. \\
+	\end{tabular}
+\end{center}
+
+
+\paragraph{World and Map Chapter}
+
+\begin{center}
+	\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
+		\textbf{Deed} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
+		\hline
+		Empower Maps &
+		Enables basic Map empowerment. &
+		Unlocks modifiers that increase Map difficulty in exchange for better rewards (e.g. more enemies, higher damage or HP, better loot). \\
+		\hline
+		Map Live-Events &
+		Introduces dynamic events during Maps. &
+		Unlocks live events during a Map (e.g. reinforcements, shrines, hazards) that alter Wave flow and risk/reward mid-run. \\
+		\hline
+		Undead Monsters &
+		Expands the enemy ecosystem with undead. &
+		Unlocks undead-themed enemy packs, bosses and tags; adds new resistances, weaknesses, and synergies. \\
+		\hline
+		Holy Monsters &
+		Introduces holy or fanatic enemy types. &
+		Unlocks holy-themed enemies and factions with their own mechanics and counters, further diversifying encounters. \\
+	\end{tabular}
+\end{center}
+
+
+\paragraph{Hero Chapter}
+
+\begin{center}
+	\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
+		\textbf{Deed} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
+		\hline
+		Hero Packs (Story / Theme) &
+		Unlocks groups of Heroes along narrative or thematic lines. &
+		Frees 2--3 Heroes at a time, grouped by story or theme, instead of single isolated Heroes. Encourages experimenting with new team archetypes. \\
+		\hline
+		Skill Tiers &
+		Unlocks deeper layers of the skill trees. &
+		Opens higher skill tiers (e.g. Tier 2/3 nodes) for existing Heroes, enabling more specialised builds and advanced synergies. \\
+		\hline
+		Orbit Access &
+		Grants access to the Orbit progression interface. &
+		Unlocks the Orbit system for Heroes; further Orbit progression unfolds inherently through Hero advancement. \\
+		\hline
+		Crown Sockets &
+		Prepares Heroes for the endgame Crown system. &
+		Unlocks Crown sockets on Heroes or their skill trees, allowing equipping powerful endgame Crown boosts once available. \\
+	\end{tabular}
+\end{center}
+
+
+\subsection{Deeds and Active Focus}
+
+A \emph{Deed} represents a deliberate, meaningful action that can be completed through normal gameplay.
+Deeds define explicit completion requirements, such as kill counts, map completions, or difficulty thresholds.
+
+At any given time, a limited number of Deeds can be assigned as the player's \emph{Active Focus}.
+Only Deeds in Active Focus receive progress updates from gameplay events.
+
+Once a Deed is completed, it occupies its Active Focus slot until its reward is consciously claimed,
+at which point the slot becomes available for a new Deed.
+
+\paragraph{Initial Deed (Onboarding)}
+
+To introduce the Codex mechanics, the first Deed is automatically assigned as an Active Focus.
+This initial Deed serves purely as an onboarding element, demonstrating the Codex workflow
+(selection, progress, completion, and claiming) once before full player control is granted.
+
+
+\subsubsection{Deed Structure}
+
+\begin{center}
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\textbf{Deed Type} & \textbf{Requirement Signal} & \textbf{Aggregation} & \textbf{Typical Unlock} \\
+		\hline
+		Combat Deed & Enemy kills & Weighted by rank & Crafting tier access \\
+		\hline
+		Exploration Deed & Map completions & Per difficulty & World tier unlock \\
+		\hline
+		Challenge Deed & Elite / Boss kills & Absolute count & System feature unlock \\
+		\hline
+		Progression Deed & Mixed signals & AND-combined & Hero or skill access \\
+		\hline
+	\end{tabular}
+\end{center}
+
+Deeds may combine multiple requirement signals.
+All requirements must be fulfilled for completion.
+
+\subsubsection{Active Focus Slots}
+
+The Codex supports a limited number of \emph{Active Focus Slots}.
+Each slot may hold exactly one Deed.
+
 \begin{itemize}
-	\item \textbf{Crafting Tree} -- unlocks and deepens all item- and crafting-related systems.
-	\item \textbf{World Tree} -- unlocks Map modifiers and enemy-ecosystem variants, XP, gold, etc..
-	\item \textbf{Heroes Tree} -- unlocks new Heroes, skill tiers and the endgame Crown system.
+	\item The player starts with a single Active Focus Slot.
+	\item Additional slots are unlocked through Codex progression.
+	\item Each slot tracks progress independently.
 \end{itemize}
 
-Inputs to the Research System:
+Multiple Deeds may be completed in parallel if sufficient slots are available.
+
+\subsection{Progress Tracking}
+
+Progress towards a Deed is tracked incrementally and persists independently of whether the Deed
+remains actively focused or is temporarily inactive.
+
+Progress evaluation is requirement-based and supports aggregated conditions
+(e.g. weighted kills, tagged enemies, map completions by difficulty).
+
+Completion checks are deterministic and occur immediately when requirements are met.
+
+\subsubsection{Progress Evaluation}
+
+\paragraph{Progress Persistence}
+
+Progress towards a Deed is stored persistently on a per-Deed basis.
+
+Switching the Active Focus:
 \begin{itemize}
-	\item XP (global or research-specific, derived from playtime and Map completions),
-	\item Kill counts (monster-type / tag sensitive),
-	\item Completed Maps and Difficulties.
+	\item does not reset progress,
+	\item does not invalidate partial completion,
+	\item does not trigger completion checks while inactive.
 \end{itemize}
 
-Outputs from the Research System:
+This allows players to pause and resume Deeds freely without penalty.
+
+\subsection{Unlock Propagation}
+
+Upon completion, a Deed emits one or more unlock events.
+Unlocks are declarative and are registered centrally in the Unlock Registry.
+
+Other systems query unlock states directly and do not maintain duplicated progression logic.
+The Codex itself does not apply gameplay effects beyond signaling completed unlocks.
+
+\subsubsection{Completion and Claiming}
+
+Completion and reward claiming are intentionally separated.
+
 \begin{itemize}
-	\item Unlocks of systems and content (Hideout elements, Heroes, item tiers, crafting options, Map tiers),
-	\item Access to higher difficulties and new enemy variants,
-	\item Endgame enhancement layers (e.g. Crown sockets).
+	\item A Deed is considered \emph{completed} once all requirements are met.
+	\item Completion immediately registers unlocks in the Unlock Registry.
+	\item Claiming the Deed reward is a conscious player action.
 \end{itemize}
 
-\subsubsection{Role of Research in Global Progression}
+A completed Deed continues to occupy its Active Focus Slot
+until its reward is claimed.
 
-The Research System represents account-level, irreversible meta progression.
-Its primary role is to unlock and enable systems, options, and complexity, not to directly scale power.
+\subsection{Non-Goals}
 
-Research acts as the structural backbone of long-term progression, ensuring that new gameplay depth is introduced in a controlled, deliberate manner across the entire game.
-
-\paragraph{Research as a System Integrator}
-Research is the only system allowed to unlock or expand other major systems, including but not limited to:
+The Codex of Potential explicitly does not:
 \begin{itemize}
-	\item Hero availability or hero-related mechanics
-	\item Skill frames, tiers, or module categories
-	\item Advanced crafting mechanics
-	\item Map modifiers, difficulties, or progression layers
+	\item provide direct numerical power increases,
+	\item replace Hero progression or Orbit-based specialization,
+	\item function as a passive or time-gated system,
+	\item enforce mandatory progression to access basic gameplay loops.
 \end{itemize}
-
-This makes Research the single source of truth for long-term system access, ensuring that progression remains readable, predictable, and extensible.
-
-\subsection{Research Trees (MVP Scope)}
-
-For MVP, the Research System is structured into three primary trees: \emph{Crafting}, \emph{World} and \emph{Heroes}. 
-Each tree focuses on a specific axis of progression and unlocks both systems and content along that axis.
-
-\paragraph{Crafting Tree}
-
-The Crafting Tree defines how quickly and in which order the player gains access to more advanced item manipulation. 
-It starts with basic gear usage and gradually unlocks more powerful and more deterministic crafting tools.
-
-%\begin{table}[h]
-%	\centering
-\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
-	\textbf{Node} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
-	\hline
-	Basic Gear &
-	\emph{„Let's see what we can do with these shreds.“} &
-	Unlocks basic gear usage and simple item crafting from common loot. Establishes the baseline of the item system. \\
-	\hline
-	Infuse I &
-	\emph{„We can make use of these magical remains.“} &
-	Unlocks the first tier of infusion: adding simple magical properties to base items using low-tier materials. \\
-	\hline
-	Re-Infuse &
-	Allows re-rolling or replacing existing infusions at a cost. &
-	Unlocks re-infusing items, enabling early deterministic rerolls instead of pure item hunting. \\
-	\hline
-	Gear II &
-	\emph{„Find some of the rarer materials, so we can improve the gear.“} &
-	Unlocks access to higher gear tiers and rarer crafting materials; raises the ceiling for item power. \\
-	\hline
-	Refine / Tempering &
-	Introduces finer control over item stats via tempering. &
-	Unlocks refining/tempering operations that adjust existing stats within defined ranges. \\
-	\hline
-	Infuse II &
-	Second tier of infusion for more powerful effects or additional affix slots. &
-	Unlocks stronger infusions and/or more slots per item, increasing build complexity. \\
-	\hline
-	Gear III &
-	Unlocks late-game gear tiers. &
-	Gives access to high-end gear bases and top-tier materials for endgame items. \\
-	\hline
-	Infuse III &
-	Third tier of infusion, oriented towards endgame builds. &
-	Unlocks the highest tier of infusions with strong, build-defining properties. \\
-	\hline
-	Over-Tempering &
-	Extreme, high-risk/high-reward tempering. &
-	Unlocks over-tempering mechanics that allow pushing items beyond normal limits at significant cost or risk. \\
-\end{tabular}
-%	\caption{Crafting Research Tree (MVP nodes)}
-%	\label{tab:research-crafting-tree}
-%\end{table}
-
-% RISK: Very deep crafting tree makes crafting central to all progression; needs to be balanced against drops and hero power.
-% TODO: Decide later which nodes are mandatory for basic functioning vs. pure endgame luxury.
-
-\paragraph{World Tree}
-
-The World Tree focuses on Maps and enemy ecosystem variants. It controls how dynamic, dangerous and diverse the world becomes.
-
-%\begin{table}[h]
-%	\centering
-\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
-	\textbf{Node} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
-	\hline
-	Empower Maps &
-	Enables basic Map empowerment. &
-	Unlocks modifiers that increase Map difficulty in exchange for better rewards (e.g. more enemies, higher damage/HP, better loot). \\
-	\hline
-	Map Live-Events &
-	Introduces dynamic events during Maps. &
-	Unlocks live events during a Map (e.g. reinforcements, shrines, hazards) that alter Wave flow and risk/reward mid-run. \\
-	\hline
-	Undead Monsters &
-	Expands the enemy ecosystem with undead. &
-	Unlocks undead-themed enemy packs, bosses and tags; adds new resistances/weaknesses and synergies. \\
-	\hline
-	Holy Monsters &
-	Introduces holy/fanatic enemy types. &
-	Unlocks holy-themed enemies and factions with their own mechanics and counters, further diversifying encounters. \\
-\end{tabular}
-%	\caption{World Research Tree (MVP nodes)}
-%	\label{tab:research-world-tree}
-%\end{table}
-
-% ASSUMPTION (70\%): Undead/Holy nodes primarily add new enemy families and tags, not global stat multipliers.
-% RISK: Gating entire enemy families behind research can make early game feel monotone if progression is too slow.
-
-\paragraph{Heroes Tree}
-
-The Heroes Tree unlocks new Heroes and deepens their progression layers. 
-It is tightly coupled to the Skill System and the Crown System and must be paced carefully to avoid overwhelming players too early.
-
-%\begin{table}[h]
-%	\centering
-\begin{tabular}{p{3.2cm}p{4cm}p{8cm}}
-	\textbf{Node} & \textbf{Short Description} & \textbf{Unlocks / Effects} \\
-	\hline
-	Hero Packs (Story / Theme) &
-	Unlocks groups of Heroes along narrative or thematic lines. &
-	Frees 2--3 Heroes at a time, grouped by story or theme, instead of single isolated Heroes. Encourages experimenting with new team archetypes. \\
-	\hline
-	Skill Tiers &
-	Unlocks deeper layers of the skill trees. &
-	Opens higher skill tiers (e.g. Tier 2/3 nodes) for existing Heroes, enabling more specialised builds and advanced synergies. \\
-	\hline
-	Crown Sockets &
-	Prepares Heroes for the endgame Crown system. &
-	Unlocks Crown sockets on Heroes or their skill trees, allowing equipping powerful endgame Crown boosts once available. \\
-\end{tabular}
-%	\caption{Heroes Research Tree (MVP nodes/concepts)}
-%	\label{tab:research-heroes-tree}
-%\end{table}
-
-% ASSUMPTION (60\%): Heroes Tree alternates between unlocking new hero packs and deepening existing heroes (skill tiers, crowns).
-% RISK: Too early access to deep skill tiers and crowns can overload casual players; pacing via Research is critical.
-
-\subsection{Research Progression and Pacing (MVP-Level)}
-
-For MVP, the Research System should:
-\begin{itemize}
-	\item Introduce \textbf{Crafting basics} and \textbf{basic Map empowerment} early, to make loot and Maps meaningful quickly.
-	\item Gate \textbf{World variants} (undead/holy) and \textbf{endgame crafting (Gear III, Infuse III, Over-Tempering)} behind mid- to late-game play.
-	\item Unlock \textbf{Hero Packs} and \textbf{Skill tiers} step by step, so that players first get to know their builds, before they Crown-Sockets come in to the game.
-\end{itemize}
-
-% TODO: In the Balance/System Tuning chapter, define target playtime to reach:
-%       - first crafting upgrades (Infuse I, Gear II),
-%       - first world variants (Undead/Holy),
-%       - first Hero Pack unlock beyond the starter team,
-%       - first Crown Socket unlock.
-

@@ -1,4 +1,4 @@
-﻿using CHAL.Data;
+using CHAL.Data;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,12 +7,12 @@ namespace CHAL.Systems.Research
 {
     public sealed class ResearchTreeCompiled
     {
-        public readonly Dictionary<string, ResearchNodeDef> nodesById;
+        public readonly Dictionary<string, CodexNodeDef> nodesById;
         public readonly Dictionary<string, (int lane, int stage)> posById;
         public readonly Dictionary<string, List<string>> parentsById;
 
         public ResearchTreeCompiled(
-            Dictionary<string, ResearchNodeDef> nodesById,
+            Dictionary<string, CodexNodeDef> nodesById,
             Dictionary<string, (int lane, int stage)> posById,
             Dictionary<string, List<string>> parentsById)
         {
@@ -22,16 +22,16 @@ namespace CHAL.Systems.Research
         }
     }
 
-    public static class ResearchTreeCompiler
+    public static class CodexTreeCompiler
     {
 /// <summary>
 /// Compiles a research tree definition into a compiled research tree.
 /// </summary>
 /// <param name="tree">The research tree definition to compile.</param>
 /// <returns>A compiled representation of the research tree.</returns>
-        public static ResearchTreeCompiled Compile(ResearchTreeDef tree)
+        public static ResearchTreeCompiled Compile(CodexTreeDef tree)
         {
-            var nodesById = new Dictionary<string, ResearchNodeDef>(StringComparer.Ordinal);
+            var nodesById = new Dictionary<string, CodexNodeDef>(StringComparer.Ordinal);
             var posById = new Dictionary<string, (int lane, int stage)>(StringComparer.Ordinal);
             var parentsById = new Dictionary<string, List<string>>(StringComparer.Ordinal);
 

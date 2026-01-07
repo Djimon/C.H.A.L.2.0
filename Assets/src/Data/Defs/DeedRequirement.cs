@@ -10,7 +10,7 @@ namespace CHAL.Systems.Research
 /// <summary>
 /// Represents the requirements for a research task, including waves, maps, and kill counts.
 /// </summary>
-    public class ResearchRequirement
+    public class DeedRequirement
     {
         [Min(0)]
         public int waves;
