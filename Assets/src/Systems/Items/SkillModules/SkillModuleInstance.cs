@@ -8,11 +8,7 @@ namespace CHAL.Systems.Items
     /// Persisted payload for a concrete SkillModule variant (module item + frameTier + coreType).
     /// IMPORTANT: instanceId is a deterministic VariantKey to enable stacking.
     /// </summary>
-    [Serializable]
-/// <summary>
-/// Represents an instance of a skill module with its properties.
-/// </summary>
-    public class SkillModuleInstance
+    [Serializable] public class SkillModuleInstance
     {
         public string instanceId;      // deterministic variant key (NOT a GUID)
         public string moduleItemId;    // e.g. "module:fireball"
