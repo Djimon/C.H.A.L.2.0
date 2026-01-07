@@ -469,6 +469,16 @@ namespace CHAL.Systems.Crafting
 
         #region Skill-Crafting
 
+/// <summary>
+/// Previews the crafting of a skill module with the specified items and parameters.
+/// </summary>
+/// <param name="moduleItem">The item definition of the module to craft.</param>
+/// <param name="frameTier">The tier level of the frame.</param>
+/// <param name="coreItem">The item definition of the core item.</param>
+/// <param name="inv">The inventory domain for crafting.</param>
+/// <param name="wallet">The wallet used for transactions.</param>
+/// <param name="outputInventoryId">The ID for the output inventory (default is "player_module").</param>
+/// <returns>A preview of the skill module crafting process.</returns>
         public static SkillModuleCraftPreview PreviewSkillModuleCraft(
             ItemDef moduleItem,
             int frameTier,
@@ -563,6 +573,18 @@ namespace CHAL.Systems.Crafting
             return new SkillModuleCraftPreview(canCraft, blocker, materials, goldCost);
         }
 
+/// <summary>
+/// Attempts to craft a skill module and add it to the inventory.
+/// Returns true if successful, otherwise false with a failure reason.
+/// </summary>
+/// <param name="moduleItem">The item definition of the module to craft.</param>
+/// <param name="frameTier">The tier level of the frame.</param>
+/// <param name="coreItem">The core item definition required for crafting.</param>
+/// <param name="inv">The inventory domain where the item will be added.</param>
+/// <param name="wallet">The wallet interface for transaction handling.</param>
+/// <param name="outputInventoryId">The ID of the inventory to output the result.</param>
+/// <param name="failReason">An output parameter that describes the failure reason if crafting fails.</param>
+/// <returns>True if the crafting was successful; otherwise, false.</returns>
         public static bool TryCraftSkillModuleToInventory(
             ItemDef moduleItem,
             int frameTier,

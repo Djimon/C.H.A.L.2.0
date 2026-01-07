@@ -25,6 +25,9 @@ namespace CHAL.UI
             root.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
+/// <summary>
+/// Toggles the visibility of the UI.
+/// </summary>
         public virtual void ToggleUI()
         {
             Show(!this.IsVisible);
