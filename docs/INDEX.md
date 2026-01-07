@@ -14,7 +14,7 @@ All documented namespaces and types.
 - [GameState](CHAL/Core/GameState.md) (2025-12-07)
 - [InputManager](CHAL/Core/InputManager.md) (2025-12-07)
 - [SaveGameConfig](CHAL/Core/SaveGameConfig.md) (2025-11-09)
-- [SaveSystem](CHAL/Core/SaveSystem.md) (2025-12-07)
+- [SaveSystem](CHAL/Core/SaveSystem.md) (2026-01-03)
 
 ### Data
 
@@ -24,29 +24,31 @@ All documented namespaces and types.
 - [AnimationType](CHAL/Data/AnimationType.md) (2025-11-09)
 - [ArchetypeDef](CHAL/Data/ArchetypeDef.md) (2025-12-07)
 - [AttackDef](CHAL/Data/AttackDef.md) (2025-12-07)
-- [DamageType](CHAL/Data/DamageType.md) (2025-12-28)
+- [DamageType](CHAL/Data/DamageType.md) (2026-01-03)
 - [EnemyDef](CHAL/Data/EnemyDef.md) (2025-11-09)
 - [EnemyRank](CHAL/Data/EnemyRank.md) (2025-11-09)
 - [EnemyStruct](CHAL/Data/EnemyStruct.md) (2025-11-09)
 - [GameBalanceConfig](CHAL/Data/GameBalanceConfig.md) (2025-12-07)
 - [GearType](CHAL/Data/GearType.md) (2025-11-09)
 - [HeroAIPrio](CHAL/Data/HeroAIPrio.md) (2025-11-09)
+- [HeroAttribs](CHAL/Data/HeroAttribs.md) (2026-01-05)
 - [HeroCatalog](CHAL/Data/HeroCatalog.md) (2025-11-09)
 - [HeroDef](CHAL/Data/HeroDef.md) (2025-12-07)
 - [HeroSlot](CHAL/Data/HeroSlot.md) (2025-12-07)
-- [HeroXPConfig](CHAL/Data/HeroXPConfig.md) (2025-12-07)
+- [HeroXPConfig](CHAL/Data/HeroXPConfig.md) (2025-12-29)
 - [ImplicitGearTypeConfig](CHAL/Data/ImplicitGearTypeConfig.md) (2025-11-09)
 - [ImplicitPool](CHAL/Data/ImplicitPool.md) (2025-12-28)
 - [ImplicitRegistryDef](CHAL/Data/ImplicitRegistryDef.md) (2025-12-28)
 - [ImplicitRoll](CHAL/Data/ImplicitRoll.md) (2025-12-28)
-- [ItemDef](CHAL/Data/ItemDef.md) (2025-12-07)
+- [ItemDef](CHAL/Data/ItemDef.md) (2026-01-06)
 - [ItemStruct](CHAL/Data/ItemStruct.md) (2025-12-07)
 - [ItemType](CHAL/Data/ItemType.md) (2025-11-09)
 - [MapDef](CHAL/Data/MapDef.md) (2025-11-09)
 - [MapDifficulty](CHAL/Data/MapDifficulty.md) (2025-11-09)
 - [ModifierDef](CHAL/Data/ModifierDef.md) (2025-11-09)
 - [ModulePartMapWrapper](CHAL/Data/ModulePartMapWrapper.md) (2025-11-09)
-- [PlayerInventoryType](CHAL/Data/PlayerInventoryType.md) (2025-11-09)
+- [MonsterTagCategory](CHAL/Data/MonsterTagCategory.md) (2026-01-01)
+- [PlayerInventoryType](CHAL/Data/PlayerInventoryType.md) (2026-01-02)
 - [PlayerProfile](CHAL/Data/PlayerProfile.md) (2025-12-07)
 - [Rarity](CHAL/Data/Rarity.md) (2025-11-09)
 - [RarityGuaranteeKV](CHAL/Data/RarityGuaranteeKV.md) (2025-11-09)
@@ -83,17 +85,19 @@ All documented namespaces and types.
 - [CraftingCatalog](CHAL/Systems/Crafting/CraftingCatalog.md) (2025-11-09)
 - [CraftingController](CHAL/Systems/Crafting/CraftingController.md) (2025-12-07)
 - [MaterialLine](CHAL/Systems/Crafting/MaterialLine.md) (2025-12-07)
-- [RecipeDef](CHAL/Systems/Crafting/RecipeDef.md) (2025-11-09)
+- [RecipeDef](CHAL/Systems/Crafting/RecipeDef.md) (2026-01-01)
 
 #### Enemy
 
 - [EnemyController](CHAL/Systems/Enemy/EnemyController.md) (2025-11-09)
 - [EnemyInstance](CHAL/Systems/Enemy/EnemyInstance.md) (2025-12-07)
+- [MonsterTagRegistry](CHAL/Systems/Enemy/MonsterTagRegistry.md) (2026-01-01)
 
 #### Hero
 
 - [HeroController](CHAL/Systems/Hero/HeroController.md) (2025-12-07)
 - [HeroInstance](CHAL/Systems/Hero/HeroInstance.md) (2025-12-07)
+- [HeroLoadoutService](CHAL/Systems/Hero/HeroLoadoutService.md) (2026-01-02)
 
 #### Inventory
 
@@ -113,13 +117,14 @@ All documented namespaces and types.
 
 #### Items
 
-- [GearModRegistry](CHAL/Systems/Items/GearModRegistry.md) (2025-12-28)
+- [GearModRegistry](CHAL/Systems/Items/GearModRegistry.md) (2025-12-29)
 - [GearRoller](CHAL/Systems/Items/GearRoller.md) (2025-12-28)
 - [ImplicitRegistry](CHAL/Systems/Items/ImplicitRegistry.md) (2025-12-28)
-- [ItemRegistry](CHAL/Systems/Items/ItemRegistry.md) (2025-12-27)
+- [ItemRegistry](CHAL/Systems/Items/ItemRegistry.md) (2026-01-01)
 - [ItemType](CHAL/Systems/Items/ItemType.md) (2025-12-07)
 - [Old_AffixRegistry](CHAL/Systems/Items/Old_AffixRegistry.md) (2025-12-28)
 - [Old_ImplicitRegistry](CHAL/Systems/Items/Old_ImplicitRegistry.md) (2025-12-28)
+- [SkillModuleInstance](CHAL/Systems/Items/SkillModuleInstance.md) (2026-01-06)
 
 #### Localization
 
@@ -182,6 +187,10 @@ All documented namespaces and types.
 - [IStatisticsService](CHAL/Systems/Stats/IStatisticsService.md) (2025-11-14)
 - [StatisticService](CHAL/Systems/Stats/StatisticService.md) (2025-12-07)
 
+#### UI
+
+- [SkillModuleCraftingPanel](CHAL/Systems/UI/SkillModuleCraftingPanel.md) (2026-01-07)
+
 #### Unit
 
 - [EffectReceiver](CHAL/Systems/Unit/EffectReceiver.md) (2025-12-07)
@@ -200,6 +209,7 @@ All documented namespaces and types.
 ### UI
 
 - [CharacterCreationUI](CHAL/UI/CharacterCreationUI.md) (2025-12-07)
+- [CheatMenuController](CHAL/UI/CheatMenuController.md) (2026-01-06)
 - [ClickableObject](CHAL/UI/ClickableObject.md) (2025-12-07)
 - [CraftingUI](CHAL/UI/CraftingUI.md) (2025-11-09)
 - [DockEdge](CHAL/UI/DockEdge.md) (2025-11-09)
@@ -243,6 +253,7 @@ All documented namespaces and types.
 - [fix_debug_manager_agent](global/fix_debug_manager_agent.md) (2025-11-09)
 - [fix_summary_agent](global/fix_summary_agent.md) (2025-11-09)
 - [HeroProgressData](global/HeroProgressData.md) (2025-12-03)
+- [HeroXpConfigEditor](global/HeroXpConfigEditor.md) (2025-12-29)
 - [ImplicitGearTypeConfigEditor](global/ImplicitGearTypeConfigEditor.md) (2025-12-07)
 - [InventoryDemoBootstrap](global/InventoryDemoBootstrap.md) (2025-11-09)
 - [ItemDefEditor](global/ItemDefEditor.md) (2025-12-07)
