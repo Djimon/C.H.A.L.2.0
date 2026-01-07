@@ -237,11 +237,7 @@ namespace CHAL.Data
             public GearTierSlotCaps tier2;
             public GearTierSlotCaps tier3;
 
-            /// <summary>
-            /// Gets the slot capabilities for the specified gear tier.
-            /// </summary>
-            /// <param name="tier">The gear base tier to get capabilities for.</param>
-            /// <returns>The gear tier slot capabilities.</returns>
+
 /// <summary>
 /// Gets the gear tier slot caps for the specified gear base tier.
 /// </summary>
