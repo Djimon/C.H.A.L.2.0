@@ -319,11 +319,6 @@ namespace CHAL.Core
 /// </summary>
 /// <param name="sceneName">The name of the scene to load.</param>
 /// <param name="selectedMap">The map definition to use.</param>
-/// <summary>
-/// Starts the map loading process with the specified scene and map definition.
-/// </summary>
-/// <param name="sceneName">The name of the scene to load.</param>
-/// <param name="selectedMap">The map definition to use.</param>
         internal void StartMap(string sceneName, MapDef selectedMap)
         {
             pendingMap = selectedMap;
