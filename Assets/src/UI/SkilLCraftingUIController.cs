@@ -52,7 +52,7 @@ namespace CHAL.Systems.UI
 
             if (root == null)
             {
-                Debug.LogError("[SkillModuleCraftingPanel] root is null (IngameUI failed to init UIDocument).");
+                DebugManager.Error("[SkillModuleCraftingPanel] root is null (IngameUI failed to init UIDocument).");
                 enabled = false;
                 return;
             }
@@ -61,7 +61,7 @@ namespace CHAL.Systems.UI
             var gm = GameManager.Instance;
             if (gm == null)
             {
-                Debug.LogError("[SkillModuleCraftingPanel] GameManager.Instance is null.");
+                DebugManager.Error("[SkillModuleCraftingPanel] GameManager.Instance is null.");
                 enabled = false;
                 return;
             }
@@ -71,7 +71,7 @@ namespace CHAL.Systems.UI
 
             if (_inv == null || _wallet == null)
             {
-                Debug.LogError("[SkillModuleCraftingPanel] Inventory or Wallet missing (GameManager.Inventory / Profile).");
+                DebugManager.Error("[SkillModuleCraftingPanel] Inventory or Wallet missing (GameManager.Inventory / Profile).");
                 enabled = false;
                 return;
             }
