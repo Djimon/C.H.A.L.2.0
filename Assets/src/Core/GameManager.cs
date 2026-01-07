@@ -888,7 +888,9 @@ namespace CHAL.Core
 /// <returns>The instance ID associated with the specified inventory type.</returns>
         public string InstanceIdFor(PlayerInventoryType t)
         {
-            if (_typeToInstanceId.TryGetValue(t, out var id)) return id;
+            if (_typeToInstanceId.TryGetValue(t, out var id)) 
+                return id;
+
             id = BuildInstanceId(t);
             _typeToInstanceId[t] = id;
             return id;

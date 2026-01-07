@@ -63,11 +63,10 @@ namespace CHAL.Systems.Items
 
             ExportItemIndexCsv("../Export/ItemIndex.csv");
 
-            var mod_part_map = LoadModulePartMap();
-            ValidateModulePartMap(mod_part_map);
+            //var mod_part_map = LoadModulePartMap();
+            //ValidateModulePartMap(mod_part_map);
 
-            var reportPath = Path.Combine(Application.dataPath, "../Export/ModulePartValidation.csv"); 
-            ValidateGearAndRecipes(reportPath);
+            ValidateGearAndRecipes("../Export/GearRecipesValidation.csv");
 
             // NEW: Core coverage
             ValidateCoreCoverage();
@@ -76,7 +75,6 @@ namespace CHAL.Systems.Items
             // NEW: Unused items audit
             ValidateUnusedItems();
 
-            //TODO: export all items from _byID with Name and rarity as json: grouped by ItemType 
 
         }
 

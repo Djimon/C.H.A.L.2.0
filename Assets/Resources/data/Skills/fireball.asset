@@ -16,9 +16,9 @@ MonoBehaviour:
   DisplayName: Fireball
   AttributeAffinity: 3
   BaseDamage: 10
-  minRequiredTier: 1
+  minRequiredTier: 3
   BaseDamageType: 1
-  defualtCore: 1
+  defaultCore: 1
   changeCoreTypesAllowed: 
   CastTime: 1
   Cooldown: 7

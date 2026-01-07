@@ -1,5 +1,7 @@
 level,domain,kind,value,context
 warn,unused_item,gear:medium_helmet,no_known_system_reference
+warn,unused_item,module:fireball,no_known_system_reference
+warn,unused_item,module:ice_bomb,no_known_system_reference
 warn,unused_item,part:none,no_known_system_reference
 warn,unused_item,part:antenna,no_known_system_reference
 warn,unused_item,part:antlers,no_known_system_reference
@@ -32,7 +34,9 @@ warn,unused_item,part:shadow_skin,no_known_system_reference
 warn,unused_item,part:skull_shard,no_known_system_reference
 warn,unused_item,part:slime,no_known_system_reference
 warn,unused_item,part:soul_fragment,no_known_system_reference
+warn,unused_item,part:stinger,no_known_system_reference
 warn,unused_item,part:tongue,no_known_system_reference
+warn,unused_item,part:tooth,no_known_system_reference
 warn,unused_item,part:venom_gland,no_known_system_reference
 warn,unused_item,part:venom_sac,no_known_system_reference
 warn,unused_item,part:wing,no_known_system_reference

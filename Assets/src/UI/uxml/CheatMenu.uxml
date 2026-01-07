@@ -5,11 +5,17 @@
         <ui:ScrollView class="scroll">
             <ui:Foldout text="Items / Inventory" name="fold_items" value="false" class="foldout">
                 <ui:VisualElement class="group">
+                    <ui:VisualElement class="row">
+                        <ui:IntegerField name="int_gold_amount" label="Gold" value="1000" />
+                        <ui:Button name="btn_gold_add" text="+ Add" />
+                        <ui:Button name="btn_gold_set" text="Set" />
+                    </ui:VisualElement>
                     <ui:VisualElement class="row row-4">
                         <ui:Button text="Delete all Parts" name="btn_delete_parts" class="btn danger"/>
                         <ui:Button text="Delete all Remains" name="btn_delete_remains" class="btn danger"/>
                         <ui:Button text="Delete all Gear" name="btn_delete_gear" class="btn danger"/>
                         <ui:Button text="Delete all Modules" name="btn_delete_modules" class="btn danger"/>
+                        <ui:Button text="Delete all Cores" name="btn_delete_cores" class="btn danger"/>
                     </ui:VisualElement>
                     <ui:VisualElement class="row">
                         <ui:Label text="Parts:" class="label"/>
@@ -26,6 +32,12 @@
                         <ui:Label text="x" class="hint"/>
                         <ui:IntegerField name="int_remains_amount" value="1" class="int"/>
                         <ui:Button text="Add to Inventory" name="btn_add_remains" class="btn primary"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:Label text="Cores" />
+                        <ui:DropdownField name="dd_core_item" label="Add" />
+                        <ui:IntegerField name="int_core_amount" label="x" value="1" />
+                        <ui:Button name="btn_add_cores" text="Add to Inventory" />
                     </ui:VisualElement>
                     <ui:VisualElement class="row">
                         <ui:Label text="Gear:" class="label"/>

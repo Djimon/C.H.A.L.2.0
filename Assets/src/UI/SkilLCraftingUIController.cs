@@ -45,6 +45,9 @@ namespace CHAL.Systems.UI
         private InventoryDomain _inv;
         private IWallet _wallet;
 
+        private int _globalTierMin = 1;
+        private int _globalTierMax = 1;
+
         // Mapping Dropdown-Text -> Core-ItemDef
         private readonly Dictionary<string, ItemDef> _coreChoices = new();
 
@@ -109,8 +112,8 @@ namespace CHAL.Systems.UI
 
             if (_tierSlider != null)
             {
-                int minTier = 1;
-                int maxTier = 1;
+                _globalTierMin = 1;
+                _globalTierMax = 1;
 
                 var gm = GameManager.Instance;
                 var cfg = gm != null ? gm.BalanceConfig : null;
@@ -118,20 +121,33 @@ namespace CHAL.Systems.UI
 
                 if (costs != null && costs.Count > 0)
                 {
-                    maxTier = minTier;
+                    // min/max aus allen Einträgen bestimmen
+                    _globalTierMin = int.MaxValue;
+                    _globalTierMax = int.MinValue;
+
                     for (int i = 0; i < costs.Count; i++)
                     {
                         var entry = costs[i];
-                        if (entry.tier > maxTier)
-                            maxTier = entry.tier;
+                        var t = entry.tier;
+                        if (t < _globalTierMin) _globalTierMin = t;
+                        if (t > _globalTierMax) _globalTierMax = t;
+                    }
+
+                    if (_globalTierMin == int.MaxValue || _globalTierMax == int.MinValue)
+                    {
+                        _globalTierMin = 1;
+                        _globalTierMax = 1;
                     }
                 }
 
-                _tierSlider.lowValue = minTier;
-                _tierSlider.highValue = maxTier;
+                // Fallback, falls keine Costs konfiguriert sind
+                if (_globalTierMin < 1) _globalTierMin = 1;
+                if (_globalTierMax < _globalTierMin) _globalTierMax = _globalTierMin;
 
-                // initial clamp + Label setzen
-                _selectedTier = Mathf.Clamp(_tierSlider.value, minTier, maxTier);
+                _tierSlider.lowValue = _globalTierMin;
+                _tierSlider.highValue = _globalTierMax;
+
+                _selectedTier = Mathf.Clamp(_selectedTier, _globalTierMin, _globalTierMax);
                 _tierSlider.value = _selectedTier;
 
                 if (_tierValue != null)
@@ -230,6 +246,25 @@ namespace CHAL.Systems.UI
             _moduleBaseInfo.text = moduleItem.itemId;
             _moduleTags.text = moduleItem.moduleData.skillDef.SkillId;
 
+            // Per-Skill-Minimum anwenden
+            var skillDef = moduleItem.moduleData.skillDef;
+            if (_tierSlider != null && skillDef != null)
+            {
+                var skillMin = Mathf.Max(1, skillDef.minRequiredTier);
+
+                // lowValue = max(globalMin, skillMin)
+                var newLow = Mathf.Max(_globalTierMin, skillMin);
+                _tierSlider.lowValue = newLow;
+                _tierSlider.highValue = _globalTierMax;
+
+                _selectedTier = Mathf.Clamp(_selectedTier, _tierSlider.lowValue, _tierSlider.highValue);
+                _tierSlider.value = _selectedTier;
+
+                if (_tierValue != null)
+                    _tierValue.text = _selectedTier.ToString();
+            }
+
+
             BuildCoreDropdownForModule(moduleItem);
             RefreshPreview();
         }
@@ -244,7 +279,7 @@ namespace CHAL.Systems.UI
             foreach (var c in cores)
             {
                 // schöneres Label: bevorzugt displayName, sonst SO-Name
-                var label = !string.IsNullOrEmpty(c.name) ? c.name : c.name;
+                var label =  c.itemId;
                 options.Add(label);
                 _coreChoices[label] = c;
             }
@@ -262,7 +297,7 @@ namespace CHAL.Systems.UI
             else if (cores.Count > 0)
             {
                 var first = cores[0];
-                var label = !string.IsNullOrEmpty(first.itemId) ? first.itemId : first.name;
+                var label = first.itemId;
                 _coreDropdown.value = label;
                 _selectedCore = first;
             }
@@ -359,7 +394,9 @@ namespace CHAL.Systems.UI
                 _materialsList.Add(label);
             }
 
-            _goldLabel.text = $"{preview.goldCost} G";
+            // Goldzeile
+            var haveGold = _wallet.GetCurrency("gold");
+            _goldLabel.text = $"{haveGold}/{preview.goldCost} G";
 
             _craftButton.SetEnabled(preview.canCraft);
 

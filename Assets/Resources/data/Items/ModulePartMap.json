@@ -1,8 +1,0 @@
-{
-  "entries": [
-    {
-      "moduleId": "module:bladestorm",
-      "parts": ["part:tooth", "part:stinger"]
-    }    
-  ]
-}

@@ -13,6 +13,8 @@ Core,core:kinetic,Uncommon
 Gear,gear:chitin_chest,Common
 Gear,gear:medium_helmet,Common
 Module,module:bladestorm,Common
+Module,module:fireball,Rare
+Module,module:ice_bomb,Rare
 Part,part:antenna,Common
 Part,part:bone_fragment,Common
 Part,part:chitin,Common

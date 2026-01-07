@@ -18,6 +18,7 @@ namespace CHAL.UI
         [SerializeField] private string remainsPrefix = "remains";
         [SerializeField] private string gearPrefix = "gear";
         [SerializeField] private string modulesPrefix = "module";
+        [SerializeField] private string corePrefix = "core";
 
         private ItemRegistry Registry => ItemRegistry.Instance;
 
@@ -63,6 +64,8 @@ namespace CHAL.UI
             FillGearEnumDropdowns();
             FillDropdownsFromRegistry();
             WireGearTypeRefresh();
+            WireModuleItemRefresh();       
+            ApplyModuleSelectionConstraints();
         }
 
         private void CacheContainers()
@@ -73,11 +76,27 @@ namespace CHAL.UI
 
         private void WireButtons()
         {
+            //Currency
+            // Gold
+            BindClick("btn_gold_add", () =>
+            {
+                var amount = GetIntValue("int_gold_amount", 1000);
+                AddGold(amount);
+            });
+
+            BindClick("btn_gold_set", () =>
+            {
+                var amount = GetIntValue("int_gold_amount", 0);
+                SetGold(amount);
+            });
+
+
             // Items / Inventory quick deletes (names must match CheatMenu.uxml)
             BindClick("btn_delete_parts", () => ClearInventoryAndCleanupGearInstances(PlayerInventoryType.Part));
             BindClick("btn_delete_remains", () => ClearInventoryAndCleanupGearInstances(PlayerInventoryType.Remains));
             BindClick("btn_delete_gear", () => ClearInventoryAndCleanupGearInstances(PlayerInventoryType.Gear));
             BindClick("btn_delete_modules", () => ClearInventoryAndCleanupGearInstances(PlayerInventoryType.Module));
+            BindClick("btn_delete_cores", () => ClearInventoryAndCleanupGearInstances(PlayerInventoryType.Core));
 
 
             // Add basic
@@ -96,6 +115,14 @@ namespace CHAL.UI
                 TryAddToInventoryDomain(item, amount, "Add Remains");
                 //LogAction("Inventory", $"Add Remains: {item} x{amount}");
             });
+
+            BindClick("btn_add_cores", () =>
+            {
+                var item = GetDropdownValue("dd_core_item");
+                var amount = GetIntValue("int_core_amount", 1);
+                TryAddToInventoryDomain(item, amount, "Add Cores");
+            });
+
 
             BindClick("btn_add_gear_rolled", () =>
             {
@@ -121,10 +148,11 @@ namespace CHAL.UI
             // Modules custom
             BindClick("btn_add_module_custom", () =>
             {
-                var item = GetDropdownValue("dd_module_item");
-                var tier = GetDropdownValue("dd_module_tier");
-                var core = GetDropdownValue("dd_module_core");
-                LogAction("Inventory", $"Add Module (custom): {item} tier {tier} core {core}");
+                var moduleItemId = GetDropdownValue("dd_module_item");
+                var tierStr = GetDropdownValue("dd_module_tier");
+                var coreStr = GetDropdownValue("dd_module_core");
+
+                AddSkillModuleCustom(moduleItemId, tierStr, coreStr);
             });
 
             // Heroes
@@ -158,12 +186,301 @@ namespace CHAL.UI
             BindClick("btn_unlock_all_research", UnlockAllResearch);
         }
 
+        private void AddGold(int amount)
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.Profile == null)
+            {
+                DebugManager.Log("CheatMenu: missing GameManager/Profile for AddGold.",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Error);
+                return;
+            }
+
+            amount = Mathf.Max(0, amount);
+            if (amount <= 0) return;
+
+            int before = gm.Profile.GetCurrency("gold");
+            gm.Profile.AddCurrency("gold", amount); 
+            int after = gm.Profile.GetCurrency("gold");
+
+            DebugManager.Log($"CheatMenu: Gold +{amount} ({before}->{after})",
+                DebugManager.EDebugLevel.Dev, "Cheat", LogType.Log);
+        }
+
+        private void SetGold(int amount)
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.Profile == null)
+            {
+                DebugManager.Log("CheatMenu: missing GameManager/Profile for SetGold.",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Error);
+                return;
+            }
+
+            amount = Mathf.Max(0, amount);
+
+            int before = gm.Profile.GetCurrency("gold");
+            int delta = amount - before;
+
+            if (delta > 0)
+            {
+                gm.Profile.AddCurrency("gold", delta);
+            }
+            else if (delta < 0)
+            {
+                // sauber runtersetzen über SpendCurrency (blockt, wenn nicht genug – aber wir sind im cheat menu)
+                gm.Profile.SpendCurrency("gold", -delta);
+            }
+
+            int after = gm.Profile.GetCurrency("gold");
+            DebugManager.Log($"CheatMenu: Gold set {before}->{after}",
+                DebugManager.EDebugLevel.Dev, "Cheat", LogType.Log);
+        }
+
+        private void AddSkillModuleCustom(string moduleItemId, string tierStr, string coreStr)
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.Inventory == null)
+            {
+                DebugManager.Log("CheatMenu: GameManager/Inventory missing (AddSkillModuleCustom).",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Error);
+                return;
+            }
+
+            moduleItemId = moduleItemId?.Trim();
+            if (string.IsNullOrEmpty(moduleItemId))
+            {
+                DebugManager.Log("CheatMenu: moduleItemId empty (AddSkillModuleCustom).",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Warning);
+                return;
+            }
+
+            // --- Parse tier (1..5) ---
+            if (!int.TryParse(tierStr, out var tierInt))
+                tierInt = 1;
+            tierInt = Mathf.Clamp(tierInt, 1, 5);
+
+            // --- Parse core ---
+            if (!Enum.TryParse(coreStr, ignoreCase: true, out CoreType selectedCore))
+                selectedCore = CoreType.Kinetic;
+
+            // --- Resolve module item + skill def reference from item ---
+            var reg = ItemRegistry.Instance;
+            if (reg == null || !reg.TryGet(moduleItemId, out var itemDef) || itemDef == null)
+            {
+                DebugManager.Log($"CheatMenu: module item not found in ItemRegistry: '{moduleItemId}'.",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Warning);
+                return;
+            }
+
+            var moduleItem = itemDef;
+            if (moduleItem.moduleData == null || moduleItem.moduleData.skillDef == null)
+            {
+                DebugManager.Log($"CheatMenu: Item '{moduleItemId}' is not a ModuleItemDef with moduleData.skillDef.",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Warning);
+                return;
+            }
+
+            var skillDef = moduleItem.moduleData.skillDef;
+            var skillId = skillDef.SkillId;
+
+            if (string.IsNullOrWhiteSpace(skillId))
+            {
+                DebugManager.Log($"CheatMenu: ModuleItem '{moduleItemId}' has empty skillDef.SkillId.",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Warning);
+                return;
+            }
+
+            // --- Guard: tier must be >= skillDef.minRequiredTier, max 5 ---
+            var minTier = Mathf.Clamp(skillDef.minRequiredTier, 1, 5);
+            if (tierInt < minTier)
+            {
+                DebugManager.Log($"CheatMenu: tier {tierInt} < skillDef.minRequiredTier {minTier} (skill='{skillId}'). Clamping up.",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Warning);
+                tierInt = minTier;
+            }
+
+            // --- Guard: core must be in AllowedCores OR be DefaultCore ---
+            var allowed = moduleItem.moduleData.skillDef.changeCoreTypesAllowed;
+            var defCore = moduleItem.moduleData.skillDef.defaultCore;
+
+            bool coreOk =
+                selectedCore == defCore ||
+                (allowed != null && allowed.Contains(selectedCore));
+
+            if (!coreOk)
+            {
+                DebugManager.Log(
+                    $"CheatMenu: Core '{selectedCore}' not allowed for '{moduleItemId}'. Default={defCore}, Allowed={FormatCores(allowed)}",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Warning);
+                return;
+            }
+
+            // --- Resolve output inventory ---
+            if (!gm.TryResolveByItemId(moduleItemId, out var invType, out var outputInventoryId))
+            {
+                DebugManager.Log($"CheatMenu: Unknown inventory prefix for moduleItemId='{moduleItemId}'.",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Warning);
+                return;
+            }
+            gm.EnsureInstance(outputInventoryId, invType);
+
+            // --- Create instance + register + add to inventory (like crafting) ---
+            var frameTier = tierInt; 
+            var smInstance = SkillModuleInstance.Create(moduleItemId, skillId, frameTier, selectedCore);
+
+            gm.RegisterSkillModuleInstance(smInstance);
+
+            var outStack = new ItemStackRef(moduleItemId, 1, smInstance.instanceId);
+
+            if (!gm.Inventory.TryAdd(outputInventoryId, outStack, out var tx) || !tx.success)
+            {
+                gm.RemoveSkillModuleInstance(smInstance.instanceId);
+                DebugManager.Log($"CheatMenu: TryAdd failed for module {moduleItemId} -> {tx.reason}",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Warning);
+                return;
+            }
+
+            DebugManager.Log(
+                $"CheatMenu: Added SkillModule '{moduleItemId}' skill='{skillId}' tier={tierInt} core={selectedCore} inst={smInstance.instanceId}",
+                DebugManager.EDebugLevel.Dev, "Cheat", LogType.Log);
+        }
+
+        private static string FormatCores(IReadOnlyList<CoreType> list)
+        {
+            if (list == null || list.Count == 0) return "[]";
+            var sb = new System.Text.StringBuilder();
+            sb.Append('[');
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i > 0) sb.Append(", ");
+                sb.Append(list[i]);
+            }
+            sb.Append(']');
+            return sb.ToString();
+        }
+
+        private void WireModuleItemRefresh()
+        {
+            var dd = _root.Q<DropdownField>("dd_module_item");
+            if (dd == null)
+            {
+                DebugManager.Log("CheatMenu: dd_module_item not found for refresh hook.",
+                    DebugManager.EDebugLevel.Dev, "UI", LogType.Warning);
+                return;
+            }
+
+            dd.RegisterValueChangedCallback(_ =>
+            {
+                ApplyModuleSelectionConstraints();
+            });
+        }
+
+        private void ApplyModuleSelectionConstraints()
+        {
+            var moduleItemId = GetDropdownValue("dd_module_item")?.Trim();
+            if (string.IsNullOrEmpty(moduleItemId) || moduleItemId == "<null>")
+                return;
+
+            var reg = ItemRegistry.Instance;
+            if (reg == null || !reg.TryGet(moduleItemId, out var itemDef) || itemDef == null)
+                return;
+
+            if (itemDef.moduleData == null || itemDef.moduleData.skillDef == null)
+                return;
+
+            var skillDef = itemDef.moduleData.skillDef;
+
+            ApplyModuleTierConstraints(skillDef);
+            ApplyModuleCoreConstraints(skillDef);
+        }
+
+        private void ApplyModuleTierConstraints(SkillModuleDef skillDef)
+        {
+            var ddTier = _root.Q<DropdownField>("dd_module_tier");
+            if (ddTier == null) return;
+
+            // minRequiredTier clamp + choices restrict
+            var minTier = Mathf.Clamp(skillDef.minRequiredTier, 1, 5);
+
+            // choices: only legal tiers [min..5]
+            var choices = new List<string>(5 - minTier + 1);
+            for (int t = minTier; t <= 5; t++)
+                choices.Add(t.ToString());
+
+            // preserve old selection if possible, else clamp up
+            var oldStr = ddTier.value;
+            ddTier.choices = choices;
+
+            int oldTier = 1;
+            if (!int.TryParse(oldStr, out oldTier))
+                oldTier = minTier;
+
+            oldTier = Mathf.Clamp(oldTier, minTier, 5);
+            ddTier.value = oldTier.ToString();
+        }
+
+        private void ApplyModuleCoreConstraints(SkillModuleDef skillDef)
+        {
+            var ddCore = _root.Q<DropdownField>("dd_module_core");
+            if (ddCore == null) return;
+
+            var defCore = skillDef.defaultCore;
+            var allowed = skillDef.changeCoreTypesAllowed;
+
+            // Build legal core list = default + allowed (unique). Default first.
+            var set = new HashSet<CoreType>();
+            var legal = new List<CoreType>(16);
+
+            void Add(CoreType c)
+            {
+                if (set.Add(c))
+                    legal.Add(c);
+            }
+
+            Add(defCore);
+            if (allowed != null)
+            {
+                for (int i = 0; i < allowed.Count; i++)
+                    Add(allowed[i]);
+            }
+
+            // Convert to string choices (default first, rest sorted for UX)
+            var choices = new List<string>(legal.Count);
+
+            // keep default at top, sort the rest alphabetically
+            choices.Add(defCore.ToString());
+
+            if (legal.Count > 1)
+            {
+                var rest = new List<string>(legal.Count - 1);
+                for (int i = 0; i < legal.Count; i++)
+                {
+                    var c = legal[i];
+                    if (c.Equals(defCore)) continue;
+                    rest.Add(c.ToString());
+                }
+                rest.Sort(StringComparer.OrdinalIgnoreCase);
+                choices.AddRange(rest);
+            }
+
+            var old = ddCore.value;
+            ddCore.choices = choices;
+
+            // keep old if still legal, else snap to default
+            if (!string.IsNullOrEmpty(old) && choices.Contains(old))
+                ddCore.value = old;
+            else
+                ddCore.value = defCore.ToString();
+        }
+
+
         private void ClearInventoryAndCleanupGearInstances(PlayerInventoryType t)
         {
             var gm = GameManager.Instance;
             if (gm == null || gm.Inventory == null) return;
 
-            var instanceId = gm.InstanceIdFor(t); // gives "player_<type>" :contentReference[oaicite:13]{index=13}
+            var instanceId = gm.InstanceIdFor(t); // gives "player_<type>" 
             if (string.IsNullOrWhiteSpace(instanceId) || !gm.Inventory.HasInstance(instanceId))
                 return;
 
@@ -176,7 +493,10 @@ namespace CHAL.UI
 
                 var instId = st.Value.instanceId;
                 if (!string.IsNullOrWhiteSpace(instId))
-                    gm.RemoveGearInstance(instId); // safe even if non-gear; it just won't exist :contentReference[oaicite:14]{index=14}
+                {
+                    gm.RemoveGearInstance(instId); // safe even if non-gear; it just won't exist 
+                    gm.RemoveSkillModuleInstance(instId);
+                }              
             }
 
             gm.Inventory.ClearAllSlots(instanceId);
@@ -199,6 +519,7 @@ namespace CHAL.UI
             SetDropdownChoices("dd_gear_item", GetIdsByPrefix(reg, gearPrefix));
             SetDropdownChoices("dd_gear_custom_item", GetIdsByPrefix(reg, gearPrefix));
             SetDropdownChoices("dd_module_item", GetIdsByPrefix(reg, modulesPrefix));
+            SetDropdownChoices("dd_core_item", GetIdsByPrefix(reg, corePrefix));
 
             // Tiers (still hardcoded prototype values)
             SetDropdownChoices("dd_gear_tier", new List<string> { "1", "2", "3" });

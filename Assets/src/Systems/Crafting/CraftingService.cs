@@ -585,14 +585,7 @@ namespace CHAL.Systems.Crafting
 /// <param name="outputInventoryId">The ID of the inventory to output the result.</param>
 /// <param name="failReason">An output parameter that describes the failure reason if crafting fails.</param>
 /// <returns>True if the crafting was successful; otherwise, false.</returns>
-        public static bool TryCraftSkillModuleToInventory(
-            ItemDef moduleItem,
-            int frameTier,
-            ItemDef coreItem,
-            InventoryDomain inv,
-            IWallet wallet,
-            string outputInventoryId,
-            out string failReason)
+        public static bool TryCraftSkillModuleToInventory(ItemDef moduleItem, int frameTier, ItemDef coreItem, InventoryDomain inv, IWallet wallet, string outputInventoryId, out string failReason)
         {
             failReason = null;
 
@@ -713,6 +706,9 @@ namespace CHAL.Systems.Crafting
             }
 
             // 3) Output: SkillModuleInstance bauen + registrieren + ins Inventory legen
+            // weiter oben: var skillDef = moduleItem.moduleData.skillDef;
+            // weiter oben: var selectedCore = coreItem.coreData.coreType;
+
             var skillId = skillDef.SkillId;
             var moduleItemId = moduleItem.itemId;
 

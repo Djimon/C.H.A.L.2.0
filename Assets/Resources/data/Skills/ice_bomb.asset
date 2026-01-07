@@ -16,10 +16,10 @@ MonoBehaviour:
   DisplayName: Ice Bomb
   AttributeAffinity: 3
   BaseDamage: 5
-  minRequiredTier: 1
+  minRequiredTier: 2
   BaseDamageType: 2
-  defualtCore: 2
-  changeCoreTypesAllowed: 
+  defaultCore: 2
+  changeCoreTypesAllowed: 0100000004000000
   CastTime: 1.5
   Cooldown: 5
   SkillType: 2

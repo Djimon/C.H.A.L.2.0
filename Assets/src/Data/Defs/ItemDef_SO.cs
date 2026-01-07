@@ -157,8 +157,6 @@ namespace CHAL.Data
     public class CoreData
     {
         public CoreType coreType;
-
-        //public DamageType defualtDmgType;
     }
 
     [System.Serializable]

@@ -22,13 +22,13 @@
                 <ui:DropdownField name="core-dropdown" class="refine-material"/>
             </ui:VisualElement>
             <ui:VisualElement name="tier-row" class="refine-box">
-                <ui:Label text="Tier:" class="refine-label"/>
+                <ui:Label text="Tier:" class="refine-label ing-text"/>
                 <ui:SliderInt name="tier-slider" low-value="1" high-value="10" class="refine-slider"/>
-                <ui:Label name="tier-value" text="1" class="refine-value"/>
+                <ui:Label name="tier-value" text="1" class="refine-value ing-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="materials-row" class="refine-box">
-                <ui:Label text="Kosten:" class="refine-label"/>
-                <ui:VisualElement name="materials-list" class="materials-list"/>
+                <ui:Label text="Kosten:" class="refine-label ing-text"/>
+                <ui:VisualElement name="materials-list" class="materials-list ing-text"/>
             </ui:VisualElement>
             <ui:VisualElement class="action-row">
                 <ui:Label name="gold-label" text="0 G" class="gold-label"/>
