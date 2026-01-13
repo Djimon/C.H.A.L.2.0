@@ -10,7 +10,7 @@ namespace CHAL.Systems.Research
     public sealed class CodexService
     {
         // ------------------ Konfiguration / Tabellen ------------------
-        private readonly Dictionary<string, CodexNodeDef> _nodesById = new Dictionary<string, CodexNodeDef>(StringComparer.Ordinal);
+        private readonly Dictionary<string, CodexDeedDef> _nodesById = new Dictionary<string, CodexDeedDef>(StringComparer.Ordinal);
         private readonly Dictionary<(int lane, int stage), List<string>> _idsByLaneStage = new Dictionary<(int, int), List<string>>();
 
         private CodexTreeDef _treeDef; // nur für Layout/Meta-Daten (optional fÃ¼r UI)
@@ -159,7 +159,7 @@ namespace CHAL.Systems.Research
 /// </summary>
 /// <param name="nodeID">The ID of the node to retrieve the definition for.</param>
 /// <returns>The ResearchNodeDef for the given node ID, or null if not found.</returns>
-        public CodexNodeDef GetNodeDef(string nodeID)
+        public CodexDeedDef GetNodeDef(string nodeID)
         {
             return _nodesById.TryGetValue(nodeID, out var def) ? def: null;
         }
@@ -406,7 +406,7 @@ namespace CHAL.Systems.Research
 
 
         // ------------------ Completion-Check ------------------
-        private void TryComplete(CodexNodeDef def, NodeProgress p)
+        private void TryComplete(CodexDeedDef def, NodeProgress p)
         {
             if (IsCompleted(def.id)) return;
 
@@ -421,7 +421,7 @@ namespace CHAL.Systems.Research
             OnNodeCompleted?.Invoke(def.id, def.unlocks);
         }
 
-        private static bool MeetsRequirements(CodexNodeDef def, NodeProgress p)
+        private static bool MeetsRequirements(CodexDeedDef def, NodeProgress p)
         {
             var req = def.requirements;
             if (req == null) return true; // leere Anforderungen â†’ sofort fertig (V1 erlaubt)

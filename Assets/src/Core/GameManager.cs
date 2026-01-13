@@ -71,7 +71,7 @@ namespace CHAL.Core
 
         // --- Research ---
         [SerializeField] private CodexTreeDef researchTree;
-        [SerializeField] private List<CodexNodeDef> researchNodes = new();
+        [SerializeField] private List<CodexDeedDef> researchNodes = new();
 
         public CodexService researchService { get; private set; }
         public CodexUnlockRegistry ResearchUnlocks { get; private set; }
@@ -954,7 +954,7 @@ namespace CHAL.Core
                 researchTree = Resources.Load<CodexTreeDef>("data/Research/Tree");
 
             if (researchNodes == null || researchNodes.Count == 0)
-                researchNodes = Resources.LoadAll<CodexNodeDef>("data/Research/Nodes").ToList();
+                researchNodes = Resources.LoadAll<CodexDeedDef>("data/Research/Nodes").ToList();
         }
 
 

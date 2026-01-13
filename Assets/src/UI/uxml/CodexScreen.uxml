@@ -1,0 +1,71 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/src/UI/uss/CodexScreen.uss?fileID=7433441132597879392&amp;guid=0f2a61fe675d22d43a333562e033d5d4&amp;type=3#CodexScreen"/>
+    <ui:VisualElement name="codex-root" class="codex-root">
+        <ui:VisualElement name="header" class="header">
+            <ui:VisualElement name="header-left" class="header-left">
+                <ui:VisualElement name="emblem-wrap" class="emblem-wrap">
+                    <ui:Image name="emblem-img" class="emblem-img"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="titles" class="titles">
+                    <ui:Label name="active-deed-label" text="Active Deed" class="title-small"/>
+                    <ui:Label name="active-deed-title" text="Champion’s Path" class="title-big"/>
+                    <ui:VisualElement name="tag-row" class="tag-row">
+                        <ui:VisualElement name="tag-chip-1" class="chip">
+                            <ui:Label text="Empowerment" class="chip-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="tag-chip-2" class="chip">
+                            <ui:Label text="Rewards" class="chip-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="reward-icons" class="reward-icons">
+                            <ui:Image name="reward-icon-1" class="reward-icon"/>
+                            <ui:Image name="reward-icon-2" class="reward-icon"/>
+                            <ui:Image name="reward-icon-3" class="reward-icon"/>
+                            <ui:Image name="reward-icon-4" class="reward-icon"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="header-right" class="header-right">
+                <ui:Button name="btn-claim-reward" text="CLAIM REWARD" class="btn btn-claim"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="main" class="main">
+            <ui:VisualElement name="chapters-panel" class="panel chapters-panel">
+                <ui:Label name="chapters-title" text="CHAPTERS" class="panel-title"/>
+                <ui:ScrollView name="chapters-scroll" class="chapters-scroll">
+                    <ui:VisualElement name="chapters-container" class="list-container"/>
+                </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:VisualElement name="deeds-panel" class="panel deeds-panel">
+                <ui:ScrollView name="deeds-scroll" class="deeds-scroll">
+                    <ui:VisualElement name="stage-groups-container" class="list-container"/>
+                </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:VisualElement name="details-panel" class="panel details-panel">
+                <ui:Label name="details-title" text="Deed Details" class="panel-title"/>
+                <ui:VisualElement name="details-content" class="details-content">
+                    <ui:Label name="details-deed-name" text="Lucky Collector" class="details-deed-name"/>
+                    <ui:Label name="details-deed-desc" text="Collect 500 Rare Items." class="details-deed-desc"/>
+                    <ui:VisualElement name="details-progress" class="details-section">
+                        <ui:Label text="Progress" class="section-title"/>
+                        <ui:VisualElement class="progress-row">
+                            <ui:VisualElement name="details-progress-bar" class="bar">
+                                <ui:VisualElement name="details-progress-fill" class="bar-fill"/>
+                            </ui:VisualElement>
+                            <ui:Label name="details-progress-text" text="320 / 500" class="progress-text"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="details-req" class="details-section">
+                        <ui:Label text="Requirements" class="section-title"/>
+                        <ui:VisualElement name="requirements-container" class="list-container"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="details-rewards" class="details-section">
+                        <ui:Label text="Rewards" class="section-title"/>
+                        <ui:VisualElement name="rewards-container" class="rewards-row"/>
+                    </ui:VisualElement>
+                    <ui:Button name="btn-activate" text="ACTIVATE" class="btn btn-activate"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

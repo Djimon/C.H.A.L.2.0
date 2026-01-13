@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace CHAL.Data
 {
-    [CreateAssetMenu(fileName = "ResearchTreeDef", menuName = "Research/Tree")]
+    [CreateAssetMenu(fileName = "CodexTreeDef", menuName = "Research/Codex")]
     public sealed class CodexTreeDef : ScriptableObject
     {
         [Header("Lane Labels & Colors")]
-        public List<ResearchLane> researchLanes = new List<ResearchLane>();
+        public List<Chapter> chapters = new List<Chapter>();
 
 
         [Header("Layout-Constants (UI)")]
@@ -27,7 +27,7 @@ namespace CHAL.Data
         public List<string> alwaysUnlockedIds = new List<string>();
 
         [Header("Actual research Tree")]
-        public List<ResearchTreeLane>   researchTreeLanes = new List<ResearchTreeLane>();
+        public List<CodexChapter>   codexChapters = new List<CodexChapter>();
 
         // Helper für UI: Lane-Name & -Farbe aus Index holen
 /// <summary>
@@ -35,10 +35,10 @@ namespace CHAL.Data
 /// </summary>
 /// <param name="lane">The index of the lane.</param>
 /// <returns>The name of the lane, or "unknown lane" if the index is out of range.</returns>
-        public string GetLaneName(int lane)
+        public string GetChapterName(int lane)
         {
-            return (lane >= 0 && lane < researchLanes.Count)
-                ? researchLanes[lane].laneName
+            return (lane >= 0 && lane < chapters.Count)
+                ? chapters[lane].chapterName
                 : "unknown lane";
         }
 
@@ -47,42 +47,42 @@ namespace CHAL.Data
 /// </summary>
 /// <param name="lane">The index of the lane.</param>
 /// <returns>The color of the lane, or black if the index is out of range.</returns>
-        public Color GetLaneColor(int lane)
+        public Color GetChapterColor(int lane)
         {
-            return (lane >= 0 && lane < researchLanes.Count)
-                ? researchLanes[lane].laneColor
+            return (lane >= 0 && lane < chapters.Count)
+                ? chapters[lane].chapterColor
                 : Color.black;
         }
     }
 
     [Serializable]
-    public struct ResearchLane
+    public struct Chapter
     { 
-        public string laneName;
-        public Color laneColor;
+        public string chapterName;
+        public Color chapterColor;
     }
 
     [Serializable]
-    public sealed class ResearchTreeLane
+    public sealed class CodexChapter
     {
-        public string laneName;
-        public Color laneColor;
+        public string chapterName;
+        public Color chapterColor;
 
-        public List<ResearchTreeStage> stages = new List<ResearchTreeStage>();
+        public List<CodexStageGroup> stages = new List<CodexStageGroup>();
     }
 
     [Serializable]
-    public sealed class ResearchTreeStage
+    public sealed class CodexStageGroup
     {
-        [Tooltip("Nodes in dieser Stage (gleiche Y-Ebene).")]
-        public List<ResearchTreeNodeRef> nodes = new List<ResearchTreeNodeRef>();
+        public string groupName;
+        public List<CodexDeedRef> deeds = new List<CodexDeedRef>();
     }
 
     [Serializable]
-    public sealed class ResearchTreeNodeRef
+    public sealed class CodexDeedRef
     {
-        public CodexNodeDef node;
+        public CodexDeedDef node;
         [Tooltip("Parents als Node-Refs; wird zu IDs kompiliert.")]
-        public List<CodexNodeDef> parentRefs = new List<CodexNodeDef>();
+        public List<CodexDeedDef> parentRefs = new List<CodexDeedDef>();
     }
 }

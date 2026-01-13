@@ -1,0 +1,396 @@
+﻿/* Root */
+.codex-root {
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+/* Header */
+.header {
+    flex-direction: row;
+    align-items: center;
+    height: 120px;
+    margin-bottom: 12px;
+}
+
+.header-left {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.emblem-wrap {
+    width: 96px;
+    height: 96px;
+    margin-right: 14px;
+}
+
+.emblem-img {
+    width: 100%;
+    height: 100%;
+}
+
+.titles {
+    flex-direction: column;
+}
+
+.title-small {
+    font-size: 16px;
+}
+
+.title-big {
+    font-size: 34px;
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+.tag-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.chip {
+    height: 28px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: 8px;
+    justify-content: center;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.chip-label {
+    font-size: 12px;
+}
+
+.reward-icons {
+    flex-direction: row;
+    margin-left: 8px;
+}
+
+.reward-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+}
+
+.header-right {
+    width: 360px;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.btn {
+    height: 54px;
+    width: 100%;
+}
+
+/* Main 3-column */
+.main {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+/* Panels */
+.panel {
+    flex-direction: column;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.panel-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Columns */
+.chapters-panel {
+    width: 320px;
+    margin-right: 12px;
+}
+
+.deeds-panel {
+    flex-grow: 1;
+    margin-right: 12px;
+}
+
+.deed-row {
+    flex-direction: row;
+    align-items: center;
+    height: 44px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 8px;
+
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.deed-title {
+    font-size: 14px;
+}
+
+.deed-spacer {
+    flex-grow: 1;
+}
+
+.deed-state {
+    font-size: 12px;
+}
+
+.deed-progress {
+    width: 140px;
+    height: 12px;
+    margin-left: 10px;
+}
+
+.is-completed {
+    opacity: 0.85;
+}
+
+.deed-entry.is-locked {
+    opacity: 0.45;
+}
+
+.deed-entry.is-selected {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+}
+
+/* Rewards: 5 tiles */
+.rewards-row {
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.reward-tile {
+    width: 38px;
+    height: 38px;
+    margin-right: 8px;
+
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.details-panel {
+    width: 420px;
+}
+
+/* Chapters list */
+.chapter-entry {
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.chapter-left {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.chapter-icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+}
+
+.chapter-name {
+    font-size: 16px;
+}
+
+.chapter-right {
+    flex-direction: row;
+    align-items: center;
+}
+
+.chapter-count {
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+.segbar {
+    width: 120px;
+    height: 10px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.segbar-fill {
+    width: 60%;
+    height: 100%;
+}
+
+/* Groups / deeds */
+.group {
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+}
+
+.group-foldout {
+    margin-top: 0px;
+}
+
+.group-header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.group-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+}
+
+.group-title {
+    font-size: 18px;
+}
+
+.group-spacer {
+    flex-grow: 1;
+}
+
+.group-mini-progress {
+    width: 70px;
+    height: 8px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.group-mini-progress-fill {
+    width: 30%;
+    height: 100%;
+}
+
+.foldout {
+    margin-top: 6px;
+}
+
+.deed-entry {
+    height: 46px;
+    margin-top: 8px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+/* Details */
+.details-content {
+    flex-direction: column;
+}
+
+.details-deed-name {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.details-deed-desc {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.details-section {
+    margin-top: 12px;
+}
+
+.section-title {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.progress-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.bar {
+    flex-grow: 1;
+    height: 14px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    margin-right: 10px;
+}
+
+.bar-fill {
+    width: 64%;
+    height: 100%;
+}
+
+.progress-text {
+    width: 90px;
+}
+
+.bullet-list {
+    flex-direction: column;
+}
+
+.bullet {
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.rewards-row {
+    flex-direction: row;
+}
+
+.reward-tile {
+    width: 40px;
+    height: 40px;
+    margin-right: 8px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.btn-activate {
+    margin-top: 14px;
+    height: 52px;
+}
+
+
+.list-container {
+    flex-direction: column;
+}
+

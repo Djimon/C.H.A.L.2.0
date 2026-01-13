@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CHAL.Data
 {
     [CreateAssetMenu(fileName = "ResearchNodeDef", menuName = "Research/Node")]
-    public sealed class CodexNodeDef : ScriptableObject
+    public sealed class CodexDeedDef : ScriptableObject
     {
         [Header("Identity")]
         public string id;

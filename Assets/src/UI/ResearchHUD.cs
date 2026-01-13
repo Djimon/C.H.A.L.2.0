@@ -177,7 +177,7 @@ namespace CHAL.UI
 /// </summary>
 /// <param name="def">The research node definition to format.</param>
 /// <returns>A formatted string of the unlocks.</returns>
-        public static string FormatUnlocks(CodexNodeDef def)
+        public static string FormatUnlocks(CodexDeedDef def)
         {
             if (def == null || def.unlocks == null || def.unlocks.Count == 0) return "â€”";
             var sb = new StringBuilder();
@@ -191,7 +191,7 @@ namespace CHAL.UI
 /// </summary>
 /// <param name="def">The research node definition to format.</param>
 /// <returns>A formatted string of the requirements.</returns>
-        public static string FormatRequirements(CodexNodeDef def)
+        public static string FormatRequirements(CodexDeedDef def)
         {
             if (def == null || def.requirements == null) return "â€”";
             var r = def.requirements;

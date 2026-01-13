@@ -52,9 +52,9 @@ public sealed class ResearchTreeDefEditor : Editor
         _stagesLists.Clear();
         _nodesLists.Clear();
 
-        if (_tree.researchTreeLanes == null) return;
+        if (_tree.codexChapters == null) return;
 
-        for (int li = 0; li < _tree.researchTreeLanes.Count; li++)
+        for (int li = 0; li < _tree.codexChapters.Count; li++)
         {
             int laneIdx = li;
             var lanesProp = serializedObject.FindProperty("researchTreeLanes");
@@ -155,10 +155,10 @@ public sealed class ResearchTreeDefEditor : Editor
                 else
                 {
                     // Fallback: _tree lesen (nur read, falls SerializedProperty fehlt)
-                    if (_tree != null && _tree.researchTreeLanes != null && _tree.researchTreeLanes.Count > 0)
+                    if (_tree != null && _tree.codexChapters != null && _tree.codexChapters.Count > 0)
                     {
-                        int safeLane = Mathf.Clamp(laneIndex, 0, _tree.researchTreeLanes.Count - 1);
-                        laneName = _tree.researchTreeLanes[safeLane]?.laneName ?? "";
+                        int safeLane = Mathf.Clamp(laneIndex, 0, _tree.codexChapters.Count - 1);
+                        laneName = _tree.codexChapters[safeLane]?.chapterName ?? "";
                     }
                 }
 
@@ -365,8 +365,8 @@ public sealed class ResearchTreeDefEditor : Editor
         EditorGUILayout.Space(6);
 
         // Aktive Tree-Lane bearbeiten
-        if (_tree.researchTreeLanes != null && _tree.researchTreeLanes.Count > 0 &&
-            _activeLane >= 0 && _activeLane < _tree.researchTreeLanes.Count)
+        if (_tree.codexChapters != null && _tree.codexChapters.Count > 0 &&
+            _activeLane >= 0 && _activeLane < _tree.codexChapters.Count)
         {
             using (var scroll = new EditorGUILayout.ScrollViewScope(_scroll))
             {
@@ -436,15 +436,15 @@ public sealed class ResearchTreeDefEditor : Editor
     private static HashSet<string> CollectNodeTargetIds(CodexTreeDef tree)
     {
         var set = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-        if (tree?.researchTreeLanes == null) return set;
+        if (tree?.codexChapters == null) return set;
 
-        foreach (var lane in tree.researchTreeLanes)
+        foreach (var lane in tree.codexChapters)
         {
             if (lane?.stages == null) continue;
             foreach (var stage in lane.stages)
             {
-                if (stage?.nodes == null) continue;
-                foreach (var nref in stage.nodes)
+                if (stage?.deeds == null) continue;
+                foreach (var nref in stage.deeds)
                 {
                     var node = nref?.node;
                     if (node?.unlocks == null) continue;
@@ -611,10 +611,10 @@ public sealed class ResearchTreeDefEditor : Editor
         {
             var compiled = CodexTreeCompiler.Compile(_tree);
 
-            int laneCount = _tree?.researchTreeLanes?.Count ?? 0;
+            int laneCount = _tree?.codexChapters?.Count ?? 0;
             int stageCount = 0;
-            if (_tree?.researchTreeLanes != null)
-                foreach (var lane in _tree.researchTreeLanes)
+            if (_tree?.codexChapters != null)
+                foreach (var lane in _tree.codexChapters)
                     if (lane != null && lane.stages != null)
                         stageCount += lane.stages.Count;
 
@@ -649,7 +649,7 @@ public sealed class ResearchTreeDefEditor : Editor
         }
     }
 
-    private CodexNodeDef CreateNewNodeAsset(string suggestedDir, string laneName)
+    private CodexDeedDef CreateNewNodeAsset(string suggestedDir, string laneName)
     {
         // Verzeichnis bestimmen
         string treePath = AssetDatabase.GetAssetPath(target);
@@ -672,7 +672,7 @@ public sealed class ResearchTreeDefEditor : Editor
         }
 
         // Asset erzeugen
-        var node = ScriptableObject.CreateInstance<CodexNodeDef>();
+        var node = ScriptableObject.CreateInstance<CodexDeedDef>();
         // sinnvolle Defaults
         string fileName = Path.GetFileNameWithoutExtension(path);
 
@@ -724,7 +724,7 @@ public sealed class ResearchTreeDefEditor : Editor
         foreach (var g in guids)
         {
             var path = AssetDatabase.GUIDToAssetPath(g);
-            var n = AssetDatabase.LoadAssetAtPath<CodexNodeDef>(path);
+            var n = AssetDatabase.LoadAssetAtPath<CodexDeedDef>(path);
             if (n != null && !string.IsNullOrWhiteSpace(n.id))
                 ids.Add(n.id);
         }

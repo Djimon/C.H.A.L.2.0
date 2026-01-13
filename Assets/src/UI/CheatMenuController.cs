@@ -1460,10 +1460,10 @@ namespace CHAL.UI
             return Resources.Load<CodexTreeDef>("data/Research/Tree");
         }
 
-        private static List<CodexNodeDef> LoadResearchNodes()
+        private static List<CodexDeedDef> LoadResearchNodes()
         {
-            var arr = Resources.LoadAll<CodexNodeDef>("data/Research/Nodes");
-            var list = new List<CodexNodeDef>(arr != null ? arr.Length : 0);
+            var arr = Resources.LoadAll<CodexDeedDef>("data/Research/Nodes");
+            var list = new List<CodexDeedDef>(arr != null ? arr.Length : 0);
             if (arr != null)
             {
                 for (int i = 0; i < arr.Length; i++)

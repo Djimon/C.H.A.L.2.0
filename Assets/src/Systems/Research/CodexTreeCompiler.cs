@@ -7,12 +7,12 @@ namespace CHAL.Systems.Research
 {
     public sealed class ResearchTreeCompiled
     {
-        public readonly Dictionary<string, CodexNodeDef> nodesById;
+        public readonly Dictionary<string, CodexDeedDef> nodesById;
         public readonly Dictionary<string, (int lane, int stage)> posById;
         public readonly Dictionary<string, List<string>> parentsById;
 
         public ResearchTreeCompiled(
-            Dictionary<string, CodexNodeDef> nodesById,
+            Dictionary<string, CodexDeedDef> nodesById,
             Dictionary<string, (int lane, int stage)> posById,
             Dictionary<string, List<string>> parentsById)
         {
@@ -31,7 +31,7 @@ namespace CHAL.Systems.Research
 /// <returns>A compiled representation of the research tree.</returns>
         public static ResearchTreeCompiled Compile(CodexTreeDef tree)
         {
-            var nodesById = new Dictionary<string, CodexNodeDef>(StringComparer.Ordinal);
+            var nodesById = new Dictionary<string, CodexDeedDef>(StringComparer.Ordinal);
             var posById = new Dictionary<string, (int lane, int stage)>(StringComparer.Ordinal);
             var parentsById = new Dictionary<string, List<string>>(StringComparer.Ordinal);
 
@@ -41,7 +41,7 @@ namespace CHAL.Systems.Research
                 return new ResearchTreeCompiled(nodesById, posById, parentsById);
             }
 
-            var lanes = tree.researchTreeLanes; // <- WICHTIG: der echte Baum!
+            var lanes = tree.codexChapters; // <- WICHTIG: der echte Baum!
             if (lanes == null || lanes.Count == 0)
             {
                 DebugManager.Log("ResearchTreeCompiler: researchTreeLanes ist leer.", DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
@@ -56,9 +56,9 @@ namespace CHAL.Systems.Research
                 for (int stage = 0; stage < laneDef.stages.Count; stage++)
                 {
                     var stageRef = laneDef.stages[stage];
-                    if (stageRef?.nodes == null) continue;
+                    if (stageRef?.deeds == null) continue;
 
-                    foreach (var entry in stageRef.nodes)
+                    foreach (var entry in stageRef.deeds)
                     {
                         if (entry?.node == null || string.IsNullOrWhiteSpace(entry.node.id))
                             continue;
