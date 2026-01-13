@@ -331,43 +331,43 @@ namespace CHAL.Data
 /// </summary>
 /// <param name="state">The ResearchState to build the snapshot from.</param>
 /// <returns>A ResearchSnapshot representing the state.</returns>
-        public ResearchSnapshot BuildResearchSnapshotFrom(CodexState state)
-        {
-            var snap = new ResearchSnapshot();
-            if (state == null) return snap;
+        //public ResearchSnapshot BuildResearchSnapshotFrom(CodexState state)
+        //{
+        //    var snap = new ResearchSnapshot();
+        //    if (state == null) return snap;
 
-            snap.activeNodeId = state.activeNodeId;
-            snap.completedNodeIds.AddRange(state.completedNodeIds);
+        //    snap.activeNodeId = state.activeNodeId;
+        //    snap.completedNodeIds.AddRange(state.completedNodeIds);
 
-            foreach (var kv in state.perNodeProgress)
-            {
-                var p = kv.Value;
-                var e = new NodeProgressEntry
-                {
-                    nodeId = kv.Key,
-                    progress = new NodeProgressSave
-                    {
-                        waves = p.waves,
-                        mapsTotal = p.mapsTotal,
-                        killsGeneralWeighted = p.killsGeneralWeighted,
-                        eliteCount = p.eliteCount,
-                        bossCount = p.bossCount,
-                        mapsByDifficulty = new List<MapRequirement>(),
-                        killsByTagWeighted = new List<KillTagCount>(),
-                    }
-                };
-                if (p.mapsByDifficulty != null)
-                    foreach (var md in p.mapsByDifficulty)
-                        e.progress.mapsByDifficulty.Add(new MapRequirement { difficulty = md.Key, amount = md.Value });
+        //    foreach (var kv in state.perDeedProgress)
+        //    {
+        //        var p = kv.Value;
+        //        var e = new NodeProgressEntry
+        //        {
+        //            nodeId = kv.Key,
+        //            progress = new NodeProgressSave
+        //            {
+        //                waves = p.waves,
+        //                mapsTotal = p.mapsTotal,
+        //                killsGeneralWeighted = p.killsGeneralWeighted,
+        //                eliteCount = p.eliteCount,
+        //                bossCount = p.bossCount,
+        //                mapsByDifficulty = new List<MapRequirement>(),
+        //                killsByTagWeighted = new List<KillTagCount>(),
+        //            }
+        //        };
+        //        if (p.mapsByDifficulty != null)
+        //            foreach (var md in p.mapsByDifficulty)
+        //                e.progress.mapsByDifficulty.Add(new MapRequirement { difficulty = md.Key, amount = md.Value });
 
-                if (p.killsByTagWeighted != null)
-                    foreach (var t in p.killsByTagWeighted)
-                        e.progress.killsByTagWeighted.Add(new KillTagCount { enemyTag = t.Key, count = t.Value });
+        //        if (p.killsByTagWeighted != null)
+        //            foreach (var t in p.killsByTagWeighted)
+        //                e.progress.killsByTagWeighted.Add(new KillTagCount { enemyTag = t.Key, count = t.Value });
 
-                snap.perNodeProgress.Add(e);
-            }
-            return snap;
-        }
+        //        snap.perNodeProgress.Add(e);
+        //    }
+        //    return snap;
+        //}
 
 /// <summary>
 /// Restores research data from a snapshot into the given research state.
@@ -375,39 +375,39 @@ namespace CHAL.Data
 /// </summary>
 /// <param name="state">The research state to restore data into.</param>
 /// <param name="snap">The research snapshot containing the data to restore.</param>
-        public void RestoreResearchInto(CodexState state, ResearchSnapshot snap)
-        {
-            if (state == null) return;
+        //public void RestoreResearchInto(CodexState state, ResearchSnapshot snap)
+        //{
+        //    if (state == null) return;
 
-            state.activeNodeId = snap?.activeNodeId;
-            state.completedNodeIds.Clear();
-            state.perNodeProgress.Clear();
+        //    state.activeNodeId = snap?.activeNodeId;
+        //    state.completedNodeIds.Clear();
+        //    state.perDeedProgress.Clear();
 
-            if (snap == null) return;
+        //    if (snap == null) return;
 
-            foreach (var id in snap.completedNodeIds)
-                state.completedNodeIds.Add(id);
+        //    foreach (var id in snap.completedNodeIds)
+        //        state.completedNodeIds.Add(id);
 
-            foreach (var e in snap.perNodeProgress)
-            {
-                var np = new DeedProgress
-                {
-                    waves = e.progress.waves,
-                    mapsTotal = e.progress.mapsTotal,
-                    killsGeneralWeighted = e.progress.killsGeneralWeighted,
-                    eliteCount = e.progress.eliteCount,
-                    bossCount = e.progress.bossCount,
-                    mapsByDifficulty = new Dictionary<MapDifficulty, int>(),
-                    killsByTagWeighted = new Dictionary<string, int>(StringComparer.Ordinal),
-                };
-                if (e.progress.mapsByDifficulty != null)
-                    foreach (var md in e.progress.mapsByDifficulty) np.mapsByDifficulty[md.difficulty] = md.amount;
-                if (e.progress.killsByTagWeighted != null)
-                    foreach (var t in e.progress.killsByTagWeighted) np.killsByTagWeighted[t.enemyTag ?? ""] = t.count;
+        //    foreach (var e in snap.perNodeProgress)
+        //    {
+        //        var np = new DeedProgress
+        //        {
+        //            waves = e.progress.waves,
+        //            mapsTotal = e.progress.mapsTotal,
+        //            killsGeneralWeighted = e.progress.killsGeneralWeighted,
+        //            eliteCount = e.progress.eliteCount,
+        //            bossCount = e.progress.bossCount,
+        //            mapsByDifficulty = new Dictionary<MapDifficulty, int>(),
+        //            killsByTagWeighted = new Dictionary<string, int>(StringComparer.Ordinal),
+        //        };
+        //        if (e.progress.mapsByDifficulty != null)
+        //            foreach (var md in e.progress.mapsByDifficulty) np.mapsByDifficulty[md.difficulty] = md.amount;
+        //        if (e.progress.killsByTagWeighted != null)
+        //            foreach (var t in e.progress.killsByTagWeighted) np.killsByTagWeighted[t.enemyTag ?? ""] = t.count;
 
-                state.perNodeProgress[e.nodeId] = np;
-            }
-        }
+        //        state.perDeedProgress[e.nodeId] = np;
+        //    }
+        //}
 
 /// <summary>
 /// Retrieves the hero progress data for the specified hero ID, or creates a new entry if it does not exist.

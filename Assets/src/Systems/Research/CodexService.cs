@@ -122,12 +122,12 @@ namespace CHAL.Systems.Research
 
         private DeedProgress EnsureProgress(string nodeId)
         {
-            if (!_state.perNodeProgress.TryGetValue(nodeId, out var p))
+            if (!_state.perDeedProgress.TryGetValue(nodeId, out var p))
             {
-                p = new DeedProgress();
-                _state.perNodeProgress[nodeId] = p;
+                //p = new DeedProgress();
+                //_state.perDeedProgress[nodeId] = p;
             }
-            return p;
+            return new DeedProgress();
         }
 
         // ------------------ Query API ------------------
@@ -151,7 +151,7 @@ namespace CHAL.Systems.Research
 /// <returns>The progress of the node.</returns>
         public DeedProgress GetNodeProgress(string nodeId)
         {
-            return _state.perNodeProgress.TryGetValue(nodeId, out var p) ? p : new DeedProgress();
+            return  new DeedProgress();
         }
 
 /// <summary>

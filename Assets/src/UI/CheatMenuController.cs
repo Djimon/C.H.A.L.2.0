@@ -1384,11 +1384,11 @@ namespace CHAL.UI
             // State leeren
             rt.activeNodeId = null;
             rt.completedNodeIds.Clear();
-            rt.perNodeProgress.Clear();
+            rt.perDeedProgress.Clear();
 
             // Save löschen + leeren Snapshot speichern (wie GameManager.InitResearch(false), aber ohne Event-Rebind)
             SaveSystem.DeleteResearch(gm.Profile.profileId);
-            SaveSystem.SaveResearch(gm.Profile.profileId, gm.Profile.BuildResearchSnapshotFrom(rt));
+            //SaveSystem.SaveResearch(gm.Profile.profileId, gm.Profile.BuildResearchSnapshotFrom(rt));
 
             // UnlockRegistry neu aufsetzen (leer, plus AlwaysUnlocked)
             if (gm.ResearchUnlocks != null)
@@ -1421,7 +1421,7 @@ namespace CHAL.UI
             var rt = gm.Profile.ResearchRuntime;
 
             rt.activeNodeId = null;
-            rt.perNodeProgress.Clear();
+            rt.perDeedProgress.Clear();
             rt.completedNodeIds.Clear();
 
             // Alle Nodes als completed markieren
@@ -1438,7 +1438,7 @@ namespace CHAL.UI
             }
 
             // Snapshot speichern
-            SaveSystem.SaveResearch(gm.Profile.profileId, gm.Profile.BuildResearchSnapshotFrom(rt));
+            //SaveSystem.SaveResearch(gm.Profile.profileId, gm.Profile.BuildResearchSnapshotFrom(rt));
 
             // UnlockRegistry rebuild + AlwaysUnlocked
             if (gm.ResearchUnlocks != null)

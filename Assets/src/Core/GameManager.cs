@@ -183,11 +183,11 @@ namespace CHAL.Core
                 SaveSystem.SaveStatistics(Profile.profileId, statsSnap);
             }
 
-            if (Profile != null && Profile.ResearchRuntime != null)
-            {
-                var snap = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
-                SaveSystem.SaveResearch(Profile.profileId, snap);
-            }
+            //if (Profile != null && Profile.ResearchRuntime != null)
+            //{
+            //    var snap = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
+            //    SaveSystem.SaveResearch(Profile.profileId, snap);
+            //}
         }
 
 /// <summary>
@@ -916,17 +916,17 @@ namespace CHAL.Core
             if (loadExisting)
             {
                 var snap = SaveSystem.LoadResearch(Profile.profileId);
-                Profile.RestoreResearchInto(Profile.ResearchRuntime, snap);
+                //Profile.RestoreResearchInto(Profile.ResearchRuntime, snap);
             }
             else
             {
                 Profile.ResearchRuntime.activeNodeId = null;
                 Profile.ResearchRuntime.completedNodeIds.Clear();
-                Profile.ResearchRuntime.perNodeProgress.Clear();
+                Profile.ResearchRuntime.perDeedProgress.Clear();
 
                 // alte Datei optional entfernen, dann leeren Snapshot sofort anlegen
                 SaveSystem.DeleteResearch(Profile.profileId);
-                SaveSystem.SaveResearch(Profile.profileId, Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime));
+                //SaveSystem.SaveResearch(Profile.profileId, Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime));
             }
 
 
@@ -935,8 +935,8 @@ namespace CHAL.Core
             researchService.OnNodeCompleted += (nodeId, unlocks) =>
             {
                 ResearchUnlocks.ApplyNodeUnlocks(nodeId, unlocks);
-                var snapNow = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
-                SaveSystem.SaveResearch(Profile.profileId, snapNow);
+                //var snapNow = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
+                //SaveSystem.SaveResearch(Profile.profileId, snapNow);
             };
 
             // Service + Registry richtig initialisieren

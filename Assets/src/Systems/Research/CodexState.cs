@@ -27,6 +27,9 @@ namespace CHAL.Systems.Research
     {
         public string activeNodeId;
         public HashSet<string> completedNodeIds = new HashSet<string>(StringComparer.Ordinal);
-        public Dictionary<string, DeedProgress> perNodeProgress = new Dictionary<string, DeedProgress>(StringComparer.Ordinal);
+        public Dictionary<string, DeedProgressState> perDeedProgress = new Dictionary<string, DeedProgressState>(StringComparer.Ordinal);
+        public List<ActiveFocusSlotState> activeFocusSlots;
+
+        public Dictionary<string, DeedGateState> gateCache;
     }
 }
