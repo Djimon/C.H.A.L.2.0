@@ -10,26 +10,31 @@ namespace CHAL.Systems.Research
         // Waves / Maps
         public int waves;
         public int mapsTotal;
-        public Dictionary<MapDifficulty, int> mapsByDifficulty = new Dictionary<MapDifficulty, int>(); // key = (int)MapDifficulty
+        public Dictionary<MapDifficulty, int> mapsByDifficulty = new Dictionary<MapDifficulty, int>();
 
         // Kills
         public int killsGeneralWeighted;
         public Dictionary<string, int> killsByTagWeighted = new Dictionary<string, int>(StringComparer.Ordinal);
 
-        // Rarities (ungewichtet, reine Stückzahlen für "Elites" / "Bosses"-Requirements)
+        // Rarities (ungewichtet, reine Stückzahlen)
         public int eliteCount;
         public int bossCount;
-        internal int champCount;
+        public int champCount;
     }
 
     [Serializable]
     public sealed class CodexState
     {
-        public string activeNodeId;
-        public HashSet<string> completedNodeIds = new HashSet<string>(StringComparer.Ordinal);
-        public Dictionary<string, DeedProgressState> perDeedProgress = new Dictionary<string, DeedProgressState>(StringComparer.Ordinal);
-        public List<ActiveFocusSlotState> activeFocusSlots;
+        // Progress pro DeedId
+        public Dictionary<string, DeedProgressState> deedProgress =
+            new Dictionary<string, DeedProgressState>(StringComparer.Ordinal);
 
-        public Dictionary<string, DeedGateState> gateCache;
+        // Aktive Fokus-Slots (UI/Gameplay)
+        public List<ActiveFocusSlotState> activeFocusSlots =
+            new List<ActiveFocusSlotState>();
+
+        // Optionaler Cache (recompute on demand reicht).
+        public Dictionary<string, DeedGateState> gateCache =
+            new Dictionary<string, DeedGateState>(StringComparer.Ordinal);
     }
 }

@@ -10,14 +10,12 @@ namespace CHAL.Data
         [Header("Chapters Labels & Colors")]
         public List<Chapter> chapters = new List<Chapter>();
 
-
         [Header("Layout-Constants (UI)")]
         [Min(1)] public int nodeWidth = 240;
         [Min(1)] public int nodeHeight = 120;
         [Min(1)] public int stageStepY = 180;
 
         public List<int> laneBaseX = new List<int> { 300, 700, 1100, 1500 };
-
         public int topMarginY = 120;
 
         [Header("View (Chips/Gates)")]
@@ -27,14 +25,11 @@ namespace CHAL.Data
         public List<string> alwaysUnlockedIds = new List<string>();
 
         [Header("Actual Codex")]
-        public List<CodexChapter>   codexChapters = new List<CodexChapter>();
+        public List<CodexChapter> codexChapters = new List<CodexChapter>();
 
-        // Helper für UI: Lane-Name & -Farbe aus Index holen
-/// <summary>
-/// Gets the name of the specified lane.
-/// </summary>
-/// <param name="lane">The index of the lane.</param>
-/// <returns>The name of the lane, or "unknown lane" if the index is out of range.</returns>
+        /// <summary>
+        /// Gets the name of the specified lane.
+        /// </summary>
         public string GetChapterName(int lane)
         {
             return (lane >= 0 && lane < chapters.Count)
@@ -42,11 +37,9 @@ namespace CHAL.Data
                 : "unknown lane";
         }
 
-/// <summary>
-/// Gets the color of the specified lane.
-/// </summary>
-/// <param name="lane">The index of the lane.</param>
-/// <returns>The color of the lane, or black if the index is out of range.</returns>
+        /// <summary>
+        /// Gets the color of the specified lane.
+        /// </summary>
         public Color GetChapterColor(int lane)
         {
             return (lane >= 0 && lane < chapters.Count)
@@ -57,7 +50,7 @@ namespace CHAL.Data
 
     [Serializable]
     public struct Chapter
-    { 
+    {
         public string chapterName;
         public Color chapterColor;
     }
@@ -68,24 +61,31 @@ namespace CHAL.Data
         public string chapterName;
         public Color chapterColor;
 
+        // entspricht deinem "Groups" Konzept (vormals "stages")
         public List<CodexChapterGroup> stages = new List<CodexChapterGroup>();
     }
 
     [Serializable]
     public sealed class CodexChapterGroup
     {
-        public string groupName;
+        public string groupid;
         public List<DeedSlot> deedSlots = new List<DeedSlot>();
 
-        public string visibleAfterGroupIndex;
-        public float visibleAfterProgress = 1f;
+        // Gate (b): Sichtbarkeit dieser Group abhängig von anderer Group (default: previous).
+        // -1 => previous group (groupIndex - 1)
+        public int dependsOnGroupId = -1;
+
+        // completion01 basiert später auf "claimedCount/total"
+        public float visibleAfterCompletion01 = 1f;
     }
 
     [Serializable]
     public sealed class DeedSlot
     {
         public CodexDeedDef deed;
+
+        // Gate (a): innerhalb Group von anderem Deed abhängig
         public string unlockAfterDeedId;
-        public float unlockAfterProgress = 1f;
+        public float unlockAfterProgress01 = 1f;
     }
 }

@@ -920,9 +920,7 @@ namespace CHAL.Core
             }
             else
             {
-                Profile.ResearchRuntime.activeNodeId = null;
-                Profile.ResearchRuntime.completedNodeIds.Clear();
-                Profile.ResearchRuntime.perDeedProgress.Clear();
+                Profile.ResearchRuntime.deedProgress.Clear();
 
                 // alte Datei optional entfernen, dann leeren Snapshot sofort anlegen
                 SaveSystem.DeleteResearch(Profile.profileId);
@@ -941,7 +939,7 @@ namespace CHAL.Core
 
             // Service + Registry richtig initialisieren
             researchService.InitFromTree(researchTree, Profile.ResearchRuntime);
-            ResearchUnlocks.RebuildFrom(researchNodes, Profile.ResearchRuntime.completedNodeIds);
+            ResearchUnlocks.RebuildFrom(researchNodes, null);
             ResearchUnlocks.ApplyAlwaysUnlocked(researchTree.alwaysUnlockedIds);
 
             WiringServices();

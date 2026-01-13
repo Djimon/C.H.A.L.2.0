@@ -1382,9 +1382,9 @@ namespace CHAL.UI
             var rt = gm.Profile.ResearchRuntime;
 
             // State leeren
-            rt.activeNodeId = null;
-            rt.completedNodeIds.Clear();
-            rt.perDeedProgress.Clear();
+            //rt.activeNodeId = null;
+            //rt.completedNodeIds.Clear();
+            rt.deedProgress.Clear();
 
             // Save löschen + leeren Snapshot speichern (wie GameManager.InitResearch(false), aber ohne Event-Rebind)
             SaveSystem.DeleteResearch(gm.Profile.profileId);
@@ -1394,7 +1394,7 @@ namespace CHAL.UI
             if (gm.ResearchUnlocks != null)
             {
                 var nodes = LoadResearchNodes();
-                gm.ResearchUnlocks.RebuildFrom(nodes, rt.completedNodeIds);
+                //gm.ResearchUnlocks.RebuildFrom(nodes, rt.completedNodeIds);
 
                 var tree = LoadResearchTree();
                 if (tree != null && tree.alwaysUnlockedIds != null)
@@ -1420,9 +1420,9 @@ namespace CHAL.UI
 
             var rt = gm.Profile.ResearchRuntime;
 
-            rt.activeNodeId = null;
-            rt.perDeedProgress.Clear();
-            rt.completedNodeIds.Clear();
+            //rt.activeNodeId = null;
+            rt.deedProgress.Clear();
+            //rt.completedNodeIds.Clear();
 
             // Alle Nodes als completed markieren
             var nodes = LoadResearchNodes();
@@ -1434,7 +1434,7 @@ namespace CHAL.UI
                 var id = string.IsNullOrWhiteSpace(n.id) ? null : n.id.Trim();
                 if (string.IsNullOrEmpty(id)) continue;
 
-                rt.completedNodeIds.Add(id);
+                //rt.completedNodeIds.Add(id);
             }
 
             // Snapshot speichern
@@ -1443,14 +1443,14 @@ namespace CHAL.UI
             // UnlockRegistry rebuild + AlwaysUnlocked
             if (gm.ResearchUnlocks != null)
             {
-                gm.ResearchUnlocks.RebuildFrom(nodes, rt.completedNodeIds);
+                //gm.ResearchUnlocks.RebuildFrom(nodes, rt.completedNodeIds);
 
                 var tree = LoadResearchTree();
                 if (tree != null && tree.alwaysUnlockedIds != null)
                     gm.ResearchUnlocks.ApplyAlwaysUnlocked(tree.alwaysUnlockedIds);
             }
 
-            DebugManager.Log($"CheatMenu: Unlock all Research (completedNodes={rt.completedNodeIds.Count}).",
+            DebugManager.Log($"CheatMenu: Unlock all Research.",
                 DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
         }
 
