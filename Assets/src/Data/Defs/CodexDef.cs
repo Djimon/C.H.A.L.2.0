@@ -7,8 +7,6 @@ namespace CHAL.Data
     [CreateAssetMenu(fileName = "CodexDef", menuName = "Research/Codex")]
     public sealed class CodexDef : ScriptableObject
     {
-        [Header("Chapters Labels & Colors")]
-        public List<Chapter> chapters = new List<Chapter>();
 
         [Header("Layout-Constants (UI)")]
         [Min(1)] public int nodeWidth = 240;
@@ -27,39 +25,13 @@ namespace CHAL.Data
         [Header("Actual Codex")]
         public List<CodexChapter> codexChapters = new List<CodexChapter>();
 
-        /// <summary>
-        /// Gets the name of the specified lane.
-        /// </summary>
-        public string GetChapterName(int lane)
-        {
-            return (lane >= 0 && lane < chapters.Count)
-                ? chapters[lane].chapterName
-                : "unknown lane";
-        }
-
-        /// <summary>
-        /// Gets the color of the specified lane.
-        /// </summary>
-        public Color GetChapterColor(int lane)
-        {
-            return (lane >= 0 && lane < chapters.Count)
-                ? chapters[lane].chapterColor
-                : Color.black;
-        }
     }
 
-    [Serializable]
-    public struct Chapter
-    {
-        public string chapterName;
-        public Color chapterColor;
-    }
 
     [Serializable]
     public sealed class CodexChapter
     {
-        public string chapterName;
-        public Color chapterColor;
+        public string chapterId;
 
         // entspricht deinem "Groups" Konzept (vormals "stages")
         public List<CodexChapterGroup> stages = new List<CodexChapterGroup>();

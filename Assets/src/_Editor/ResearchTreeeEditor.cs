@@ -158,7 +158,7 @@ public sealed class ResearchTreeDefEditor : Editor
                     if (_tree != null && _tree.codexChapters != null && _tree.codexChapters.Count > 0)
                     {
                         int safeLane = Mathf.Clamp(laneIndex, 0, _tree.codexChapters.Count - 1);
-                        laneName = _tree.codexChapters[safeLane]?.chapterName ?? "";
+                        laneName = _tree.codexChapters[safeLane]?.chapterId ?? "";
                     }
                 }
 

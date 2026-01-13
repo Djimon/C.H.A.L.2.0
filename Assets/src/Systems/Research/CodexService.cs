@@ -1,3 +1,4 @@
+using CHAL.Core;
 using CHAL.Data;
 using System;
 using System.Collections.Generic;
@@ -15,15 +16,16 @@ namespace CHAL.Systems.Research
         private CodexState _state;
 
         private Dictionary<string, List<string>> _compiledParents;
+        private CodexGateEngine _gate;
 
         private readonly Dictionary<EnemyRank, int> _rankWeights = new Dictionary<EnemyRank, int>
         {
-            { EnemyRank.Spawn,   0 },
-            { EnemyRank.Normal,  1 },
-            { EnemyRank.Magic,   1 },
-            { EnemyRank.Elite,   2 },
-            { EnemyRank.Boss,    5 },
-            { EnemyRank.Champion,10},
+            { EnemyRank.Spawn,    0 },
+            { EnemyRank.Normal,   1 },
+            { EnemyRank.Magic,    1 },
+            { EnemyRank.Elite,    2 },
+            { EnemyRank.Boss,     5 },
+            { EnemyRank.Champion, 10 },
         };
 
         private static bool IsEliteLike(EnemyRank r) => r == EnemyRank.Elite || r == EnemyRank.Champion || r == EnemyRank.Boss;
@@ -65,12 +67,22 @@ namespace CHAL.Systems.Research
 
             _compiledParents = compiled.parentsById;
 
-            // Sicherstellen: mind. 1 Focus Slot existiert (Adapter für altes "activeNodeId")
+            // Gate engine
+            _gate = new CodexGateEngine(_treeDef, _state, new CodexGateEngine.Config(
+                chainVisibilityClampEnabled: false,
+                maxFutureDeedsVisible: 1
+            ));
+
+            // Focus Slots: mindestens 1 Slot
             if (_state.activeFocusSlots == null) _state.activeFocusSlots = new List<ActiveFocusSlotState>();
             if (_state.activeFocusSlots.Count == 0)
                 _state.activeFocusSlots.Add(new ActiveFocusSlotState { deedId = null, locked = false });
 
-            DebugManager.Log($"CodexService.InitFromTree: Nodes={_nodesById.Count}", DebugManager.EDebugLevel.Dev, "Research");
+            // Slot-Lock Status nachladen/rekonstruieren
+            SyncAllSlotLocks();
+
+            DebugManager.Log($"CodexService.InitFromTree: Nodes={_nodesById.Count}, FocusSlots={_state.activeFocusSlots.Count}",
+                DebugManager.EDebugLevel.Dev, "Research");
 
             var always = (_treeDef?.alwaysUnlockedIds ?? new List<string>())
                 .Where(s => !string.IsNullOrWhiteSpace(s))
@@ -86,17 +98,224 @@ namespace CHAL.Systems.Research
             }
         }
 
+        // ------------------------------------
+        // Active Focus API (neue Wahrheit)
+        // ------------------------------------
+
+        public int GetFocusSlotCount()
+            => _state?.activeFocusSlots?.Count ?? 0;
+
+        public string GetActiveDeedId(int slotIndex)
+        {
+            if (_state.activeFocusSlots == null) return null;
+            if (slotIndex < 0 || slotIndex >= _state.activeFocusSlots.Count) return null;
+            return _state.activeFocusSlots[slotIndex].deedId;
+        }
+
+        public bool TrySetActiveFocus(int slotIndex, string deedId, out string reason)
+        {
+            reason = null;
+
+            if (_state.activeFocusSlots == null) _state.activeFocusSlots = new List<ActiveFocusSlotState>();
+            if (slotIndex < 0 || slotIndex >= _state.activeFocusSlots.Count)
+            {
+                reason = "Invalid slot index.";
+                return false;
+            }
+
+            // Slot lock: sobald claimable => erst claimen
+            if (IsSlotLocked(slotIndex))
+            {
+                reason = "Slot is locked until claim.";
+                return false;
+            }
+
+            // Clearing allowed (deedId null/empty) – aber nur wenn nicht locked (oben schon geprüft)
+            if (string.IsNullOrWhiteSpace(deedId))
+            {
+                var s0 = _state.activeFocusSlots[slotIndex];
+                s0.deedId = null;
+                s0.locked = false;
+                _state.activeFocusSlots[slotIndex] = s0;
+                return true;
+            }
+
+            deedId = deedId.Trim();
+
+            // Existenz
+            if (!_nodesById.ContainsKey(deedId))
+            {
+                reason = $"Unknown deedId '{deedId}'.";
+                return false;
+            }
+
+            // Kein Deed darf in mehreren Slots sein
+            if (TryFindSlotOfDeed(deedId, out var otherSlot) && otherSlot != slotIndex)
+            {
+                reason = $"Deed is already active in slot {otherSlot}.";
+                return false;
+            }
+
+            // Claim ist echter Abschluss => claimed Deeds nicht mehr aktivierbar
+            if (IsClaimed(deedId))
+            {
+                reason = "Deed already claimed.";
+                return false;
+            }
+
+            // Gate: nur available aktivierbar (empfohlen, sonst parken)
+            var gate = _gate != null ? _gate.ComputeDeedGate(deedId) : default;
+            if (_gate != null && !gate.isAvailable)
+            {
+                reason = "Deed is not available yet.";
+                return false;
+            }
+
+            // Set
+            var slot = _state.activeFocusSlots[slotIndex];
+            slot.deedId = deedId;
+            slot.locked = IsClaimable(deedId); // direkt synchronisieren
+            _state.activeFocusSlots[slotIndex] = slot;
+
+            DebugManager.Log($"Codex: Focus set slot={slotIndex} deed={deedId}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
+            return true;
+        }
+
+        public bool TryClaim(string deedId, out string reason)
+        {
+            reason = null;
+
+            if (string.IsNullOrWhiteSpace(deedId))
+            {
+                reason = "Invalid deedId.";
+                return false;
+            }
+
+            deedId = deedId.Trim();
+
+            if (!_nodesById.TryGetValue(deedId, out var def) || def == null)
+            {
+                reason = "Unknown deedId.";
+                return false;
+            }
+
+            EnsureProgress(deedId);
+
+            var st = _state.deedProgress[deedId];
+
+            if (st.claimed)
+            {
+                reason = "Already claimed.";
+                return false;
+            }
+
+            // Claimable = completed && !claimed
+            if (!st.completed && st.progress01 + 0.00001f < 1f)
+            {
+                reason = "Not completed yet.";
+                return false;
+            }
+
+            // Stringent (dein Slot-Lock Konzept): Claim nur wenn Deed aktiv in einem Slot
+            if (!TryFindSlotOfDeed(deedId, out var slotIndex))
+            {
+                reason = "Deed is not active in any focus slot.";
+                return false;
+            }
+
+            // Claim durchführen
+            st.completed = true;
+            st.progress01 = 1f;
+            st.claimed = true;
+            _state.deedProgress[deedId] = st;
+
+            // Slot lock updaten -> nach Claim ist es nicht mehr claimable => unlock
+            SyncSlotLock(slotIndex);
+
+            // Unlocks feuern (Claim = echter Abschluss)
+            if (def.unlocks != null && def.unlocks.Count > 0)
+                OnNodeCompleted?.Invoke(deedId, def.unlocks);
+
+            DebugManager.Log($"Codex: Claimed deed={deedId} (slot={slotIndex})", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
+            return true;
+        }
+
+        // ------------------------------------
+        // Query helpers
+        // ------------------------------------
+
+        public bool IsClaimed(string deedId)
+        {
+            if (string.IsNullOrWhiteSpace(deedId)) return false;
+            if (!_state.deedProgress.TryGetValue(deedId, out var s)) return false;
+            return s.claimed;
+        }
+
+        public bool IsClaimable(string deedId)
+        {
+            if (string.IsNullOrWhiteSpace(deedId)) return false;
+            if (!_state.deedProgress.TryGetValue(deedId, out var s)) return false;
+            return (s.completed || s.progress01 >= 1f) && !s.claimed;
+        }
+
+        public bool IsSlotLocked(int slotIndex)
+        {
+            if (_state.activeFocusSlots == null) return false;
+            if (slotIndex < 0 || slotIndex >= _state.activeFocusSlots.Count) return false;
+
+            // lock ist ableitbar: deed claimable
+            var deedId = _state.activeFocusSlots[slotIndex].deedId;
+            return !string.IsNullOrWhiteSpace(deedId) && IsClaimable(deedId);
+        }
+
+        private bool TryFindSlotOfDeed(string deedId, out int slotIndex)
+        {
+            slotIndex = -1;
+            if (_state.activeFocusSlots == null) return false;
+            for (int i = 0; i < _state.activeFocusSlots.Count; i++)
+            {
+                if (string.Equals(_state.activeFocusSlots[i].deedId, deedId, StringComparison.Ordinal))
+                {
+                    slotIndex = i;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void SyncAllSlotLocks()
+        {
+            if (_state.activeFocusSlots == null) return;
+            for (int i = 0; i < _state.activeFocusSlots.Count; i++)
+                SyncSlotLock(i);
+        }
+
+        private void SyncSlotLock(int slotIndex)
+        {
+            if (_state.activeFocusSlots == null) return;
+            if (slotIndex < 0 || slotIndex >= _state.activeFocusSlots.Count) return;
+
+            var slot = _state.activeFocusSlots[slotIndex];
+            slot.locked = !string.IsNullOrWhiteSpace(slot.deedId) && IsClaimable(slot.deedId);
+            _state.activeFocusSlots[slotIndex] = slot;
+        }
+
+        // ------------------------------------
+        // Legacy helper (noch da, aber korrekt)
+        // ------------------------------------
+
         public bool IsNodeAvailable(string nodeId)
         {
+            // Legacy/Compiler-Pfade noch drin – aber Completion ist claimed.
             if (string.IsNullOrWhiteSpace(nodeId)) return false;
             if (!_nodesById.TryGetValue(nodeId, out _)) return false;
-            if (IsCompleted(nodeId)) return false;
+            if (IsClaimed(nodeId)) return false;
 
             if (_compiledParents != null && _compiledParents.TryGetValue(nodeId, out var parents))
             {
                 foreach (var pid in parents)
                 {
-                    if (!IsCompleted(pid)) return false;
+                    if (!IsClaimed(pid)) return false;
                 }
             }
             return true;
@@ -117,7 +336,6 @@ namespace CHAL.Systems.Research
             }
             else
             {
-                // defensive: counters darf nie null sein
                 if (s.counters == null)
                 {
                     s.counters = new DeedProgress();
@@ -128,42 +346,151 @@ namespace CHAL.Systems.Research
             return _state.deedProgress[deedId].counters;
         }
 
-        // Adapter: "active node" ist Slot 0
-        public string GetActiveNodeId()
+        public DeedProgress GetNodeProgress(string deedId)
         {
-            if (_state.activeFocusSlots == null || _state.activeFocusSlots.Count == 0) return null;
-            return _state.activeFocusSlots[0].deedId;
+            if (string.IsNullOrWhiteSpace(deedId)) return null;
+            EnsureProgress(deedId);
+            return _state.deedProgress[deedId].counters;
         }
 
-        public bool IsCompleted(string nodeId)
+        public CodexDeedDef GetNodeDef(string deedId)
+            => _nodesById.TryGetValue(deedId, out var def) ? def : null;
+
+        // ------------------------------------
+        // Progress: nur über ActiveFocus Slots
+        // ------------------------------------
+
+        public void OnWaveCompleted(int waveIndex, int waveCount, MapDifficulty difficulty)
+            => ApplyToActiveDeeds((deedId, def, prog) =>
+            {
+                prog.waves++;
+                // optional: wave difficulty zählt bei maps, nicht bei waves
+                return true;
+            });
+
+        public void OnMapCompleted(int mapId, MapDifficulty difficulty)
+            => ApplyToActiveDeeds((deedId, def, prog) =>
+            {
+                prog.mapsTotal++;
+                if (prog.mapsByDifficulty == null) prog.mapsByDifficulty = new Dictionary<MapDifficulty, int>();
+                prog.mapsByDifficulty.TryGetValue(difficulty, out var cur);
+                prog.mapsByDifficulty[difficulty] = cur + 1;
+                return true;
+            });
+
+        public void OnEnemyKilled(string enemyId, EnemyRank rank, List<string> tagsWeighted, List<string> tagsRaw)
+            => ApplyToActiveDeeds((deedId, def, prog) =>
+            {
+                // killsGeneralWeighted: Gewichtung über Rank
+                _rankWeights.TryGetValue(rank, out var w);
+                if (w < 0) w = 0;
+                prog.killsGeneralWeighted += w;
+
+                // killsByTagWeighted: wir zählen hier tagsWeighted als "already weighted" (1 Eintrag = 1 Punkt)
+                if (tagsWeighted != null)
+                {
+                    if (prog.killsByTagWeighted == null)
+                        prog.killsByTagWeighted = new Dictionary<string, int>(StringComparer.Ordinal);
+
+                    foreach (var t in tagsWeighted)
+                    {
+                        if (string.IsNullOrWhiteSpace(t)) continue;
+                        prog.killsByTagWeighted.TryGetValue(t, out var cur);
+                        prog.killsByTagWeighted[t] = cur + 1;
+                    }
+                }
+
+                // Rarity counts
+                if (IsEliteLike(rank)) prog.eliteCount++;
+                if (IsBoss(rank)) prog.bossCount++;
+                if (IsChamp(rank)) prog.champCount++;
+
+                return true;
+            });
+
+        // ---- Optional: Craft Hook bleibt erstmal noop ----
+        public void OnCraftExecuted(string obj)
         {
-            if (string.IsNullOrWhiteSpace(nodeId)) return false;
-            if (!_state.deedProgress.TryGetValue(nodeId, out var s)) return false;
-            return s.claimed; // Claim ist der echte Abschluss
+            // später, falls es DeedRequirements für crafting gibt
         }
 
-        public DeedProgress GetNodeProgress(string nodeId)
+        private delegate bool MutateProgressFn(string deedId, CodexDeedDef def, DeedProgress progress);
+
+        private void ApplyToActiveDeeds(MutateProgressFn fn)
         {
-            if (string.IsNullOrWhiteSpace(nodeId)) return null;
-            EnsureProgress(nodeId);
-            return _state.deedProgress[nodeId].counters;
+            if (_state.activeFocusSlots == null || _state.activeFocusSlots.Count == 0) return;
+
+            for (int slotIndex = 0; slotIndex < _state.activeFocusSlots.Count; slotIndex++)
+            {
+                var slot = _state.activeFocusSlots[slotIndex];
+                var deedId = slot.deedId;
+
+                if (string.IsNullOrWhiteSpace(deedId))
+                    continue;
+
+                // Slot lock = claimable => MUSS erst claimen, daher kein weiteres Progress
+                if (IsSlotLocked(slotIndex))
+                    continue;
+
+                // Existence
+                if (!_nodesById.TryGetValue(deedId, out var def) || def == null)
+                    continue;
+
+                EnsureProgress(deedId);
+
+                // claimed => fertig
+                if (IsClaimed(deedId))
+                    continue;
+
+                // Gate: Progress zählt nur wenn Deed available (und natürlich active)
+                if (_gate != null)
+                {
+                    var gate = _gate.ComputeDeedGate(deedId);
+                    if (!gate.isAvailable)
+                        continue;
+                }
+
+                var progress = _state.deedProgress[deedId].counters;
+                if (progress == null) continue;
+
+                bool mutated = fn(deedId, def, progress);
+                if (!mutated) continue;
+
+                // Recompute progress01 / completed
+                RecomputeAndStoreProgress(deedId);
+
+                // Slot lock sync (kann jetzt claimable geworden sein)
+                SyncSlotLock(slotIndex);
+            }
         }
 
-        public CodexDeedDef GetNodeDef(string nodeID)
+        private void RecomputeAndStoreProgress(string deedId)
         {
-            return _nodesById.TryGetValue(nodeID, out var def) ? def : null;
+            if (string.IsNullOrWhiteSpace(deedId)) return;
+            if (!_nodesById.TryGetValue(deedId, out var def) || def == null) return;
+
+            EnsureProgress(deedId);
+
+            var st = _state.deedProgress[deedId];
+            if (st.claimed)
+            {
+                st.progress01 = 1f;
+                st.completed = true;
+                _state.deedProgress[deedId] = st;
+                return;
+            }
+
+            float p01 = ComputeProgress01(def, st.counters);
+            st.progress01 = p01;
+            st.completed = p01 >= 1f - 0.00001f;
+            _state.deedProgress[deedId] = st;
         }
 
-        public float GetNodeProgress01(string nodeId)
+        private static float ComputeProgress01(CodexDeedDef def, DeedProgress p)
         {
-            if (string.IsNullOrWhiteSpace(nodeId)) return 0f;
-            if (IsCompleted(nodeId)) return 1f;
-
-            var def = GetNodeDef(nodeId);
-            if (def == null || def.requirements == null) return 0f;
+            if (def == null || def.requirements == null || p == null) return 0f;
 
             var r = def.requirements;
-            var p = GetNodeProgress(nodeId);
 
             float have = 0f;
             float need = 0f;
@@ -184,16 +511,22 @@ namespace CHAL.Systems.Research
                 }
             }
 
-            if (r.killsGeneral > 0) { need += r.killsGeneral; have += Mathf.Clamp(p.killsGeneralWeighted, 0, r.killsGeneral); }
+            if (r.killsGeneral > 0)
+            {
+                need += r.killsGeneral;
+                have += Mathf.Clamp(p.killsGeneralWeighted, 0, r.killsGeneral);
+            }
 
             if (r.killsByTag != null)
             {
                 foreach (var kc in r.killsByTag)
                 {
-                    if (kc == null || string.IsNullOrEmpty(kc.enemyTag) || kc.count <= 0) continue;
+                    if (kc == null || string.IsNullOrWhiteSpace(kc.enemyTag) || kc.count <= 0) continue;
+
                     int cur = 0;
                     if (p.killsByTagWeighted != null && p.killsByTagWeighted.TryGetValue(kc.enemyTag, out var v))
                         cur = v;
+
                     need += kc.count;
                     have += Mathf.Clamp(cur, 0, kc.count);
                 }
@@ -201,51 +534,11 @@ namespace CHAL.Systems.Research
 
             if (r.eliteCount > 0) { need += r.eliteCount; have += Mathf.Clamp(p.eliteCount, 0, r.eliteCount); }
             if (r.bossCount > 0) { need += r.bossCount; have += Mathf.Clamp(p.bossCount, 0, r.bossCount); }
+            if (r.championCount > 0) { need += r.championCount; have += Mathf.Clamp(p.champCount, 0, r.championCount); }
 
             if (need <= 0.0001f) return 0f;
             return Mathf.Clamp01(have / need);
         }
 
-        public bool SetActive(string nodeId)
-        {
-            if (string.IsNullOrWhiteSpace(nodeId)) return false;
-            if (!_nodesById.ContainsKey(nodeId)) return false;
-            if (IsCompleted(nodeId)) return false;
-            if (!IsNodeAvailable(nodeId)) return false;
-
-            if (_state.activeFocusSlots == null) _state.activeFocusSlots = new List<ActiveFocusSlotState>();
-            if (_state.activeFocusSlots.Count == 0)
-                _state.activeFocusSlots.Add(new ActiveFocusSlotState { deedId = null, locked = false });
-
-            var slot = _state.activeFocusSlots[0];
-            slot.deedId = nodeId;
-            slot.locked = false;
-            _state.activeFocusSlots[0] = slot;
-
-            DebugManager.Log($"Active focus set (slot0): {nodeId}", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Log);
-            return true;
-        }
-
-        internal void OnEnemyKilled(string arg1, EnemyRank rank, List<string> list1, List<string> list2)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void OnWaveCompleted(int arg1, int arg2, MapDifficulty difficulty)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void OnMapCompleted(int arg1, MapDifficulty difficulty)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void OnCraftExecuted(string obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        // ---- Rest der Datei bleibt erstmal unangetastet / wird in Phase 3 ersetzt ----
     }
 }

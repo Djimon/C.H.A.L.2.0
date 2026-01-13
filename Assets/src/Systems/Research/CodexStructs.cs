@@ -28,7 +28,7 @@ public struct DeedGateState
     public string blockedByDeedId;
     public float blockedByRequProgress01;
 
-    public string blockedbyGroupId;
+    public string blockedByGroupId;
     public float blockedByRequGroupProgress01;
 
 }
@@ -40,5 +40,5 @@ public struct GroupGateState
     public float completion01;         // claimedCount/total
     public float requiredCompletion01; // visibleAfterCompletion01
 
-    public int dependsOnGroupId; 
+    public string dependsOnGroupId; 
 }
