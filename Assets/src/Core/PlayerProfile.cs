@@ -390,7 +390,7 @@ namespace CHAL.Data
 
             foreach (var e in snap.perNodeProgress)
             {
-                var np = new NodeProgress
+                var np = new DeedProgress
                 {
                     waves = e.progress.waves,
                     mapsTotal = e.progress.mapsTotal,

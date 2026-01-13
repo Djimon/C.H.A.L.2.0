@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace CHAL.Data
 {
-    [CreateAssetMenu(fileName = "CodexTreeDef", menuName = "Research/Codex")]
-    public sealed class CodexTreeDef : ScriptableObject
+    [CreateAssetMenu(fileName = "CodexDef", menuName = "Research/Codex")]
+    public sealed class CodexDef : ScriptableObject
     {
-        [Header("Lane Labels & Colors")]
+        [Header("Chapters Labels & Colors")]
         public List<Chapter> chapters = new List<Chapter>();
 
 
@@ -26,7 +26,7 @@ namespace CHAL.Data
         [Header("Initial unlocks")]
         public List<string> alwaysUnlockedIds = new List<string>();
 
-        [Header("Actual research Tree")]
+        [Header("Actual Codex")]
         public List<CodexChapter>   codexChapters = new List<CodexChapter>();
 
         // Helper für UI: Lane-Name & -Farbe aus Index holen
@@ -68,21 +68,24 @@ namespace CHAL.Data
         public string chapterName;
         public Color chapterColor;
 
-        public List<CodexStageGroup> stages = new List<CodexStageGroup>();
+        public List<CodexChapterGroup> stages = new List<CodexChapterGroup>();
     }
 
     [Serializable]
-    public sealed class CodexStageGroup
+    public sealed class CodexChapterGroup
     {
         public string groupName;
-        public List<CodexDeedRef> deeds = new List<CodexDeedRef>();
+        public List<DeedSlot> deedSlots = new List<DeedSlot>();
+
+        public string visibleAfterGroupIndex;
+        public float visibleAfterProgress = 1f;
     }
 
     [Serializable]
-    public sealed class CodexDeedRef
+    public sealed class DeedSlot
     {
-        public CodexDeedDef node;
-        [Tooltip("Parents als Node-Refs; wird zu IDs kompiliert.")]
-        public List<CodexDeedDef> parentRefs = new List<CodexDeedDef>();
+        public CodexDeedDef deed;
+        public string unlockAfterDeedId;
+        public float unlockAfterProgress = 1f;
     }
 }

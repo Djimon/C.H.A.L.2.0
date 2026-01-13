@@ -70,7 +70,7 @@ namespace CHAL.Core
             => "player_" + t.ToString().ToLowerInvariant();
 
         // --- Research ---
-        [SerializeField] private CodexTreeDef researchTree;
+        [SerializeField] private CodexDef researchTree;
         [SerializeField] private List<CodexDeedDef> researchNodes = new();
 
         public CodexService researchService { get; private set; }
@@ -951,7 +951,7 @@ namespace CHAL.Core
         private void EnsureResearchDefsLoaded()
         {
             if (researchTree == null)
-                researchTree = Resources.Load<CodexTreeDef>("data/Research/Tree");
+                researchTree = Resources.Load<CodexDef>("data/Research/Tree");
 
             if (researchNodes == null || researchNodes.Count == 0)
                 researchNodes = Resources.LoadAll<CodexDeedDef>("data/Research/Nodes").ToList();

@@ -12,7 +12,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
 {
     [Header("Wiring (optional)")]
     public ResearchMapView mapView;
-    public CodexTreeDef treeDef;
+    public CodexDef treeDef;
 
     [Header("Modus bei Play (alle optional)")]
     public bool completeAllOnPlay = false;
@@ -29,7 +29,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
 
     // --- intern ---
     private CodexService _service;
-    private CodexTreeDef _tree;
+    private CodexDef _tree;
 
     private void Start()
     {
@@ -141,7 +141,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
     private int CompleteAll()
     {
         int ops = 0;
-        var compiled = CodexTreeCompiler.Compile(_tree);
+        var compiled = CodexCompiler.Compile(_tree);
         // Elternabhängigkeiten werden durch natürliche Reihenfolge nicht garantiert,
         // aber SetActive prüft IsNodeAvailable. Wir lassen es den Service entscheiden.
         foreach (var id in compiled.nodesById.Keys)
@@ -152,7 +152,7 @@ public sealed class DevResearchFastForward : MonoBehaviour
     private int CompleteUpToStage(int stage)
     {
         int ops = 0;
-        var compiled = CodexTreeCompiler.Compile(_tree);
+        var compiled = CodexCompiler.Compile(_tree);
         foreach (var kv in compiled.posById)
         {
             var id = kv.Key;

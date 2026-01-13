@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace CHAL.Systems.Research
 {
-    public sealed class ResearchTreeCompiled
+    public sealed class CompiledCodex
     {
         public readonly Dictionary<string, CodexDeedDef> nodesById;
         public readonly Dictionary<string, (int lane, int stage)> posById;
         public readonly Dictionary<string, List<string>> parentsById;
 
-        public ResearchTreeCompiled(
+        public CompiledCodex(
             Dictionary<string, CodexDeedDef> nodesById,
             Dictionary<string, (int lane, int stage)> posById,
             Dictionary<string, List<string>> parentsById)
@@ -22,14 +22,14 @@ namespace CHAL.Systems.Research
         }
     }
 
-    public static class CodexTreeCompiler
+    public static class CodexCompiler
     {
 /// <summary>
 /// Compiles a research tree definition into a compiled research tree.
 /// </summary>
 /// <param name="tree">The research tree definition to compile.</param>
 /// <returns>A compiled representation of the research tree.</returns>
-        public static ResearchTreeCompiled Compile(CodexTreeDef tree)
+        public static CompiledCodex Compile(CodexDef tree)
         {
             var nodesById = new Dictionary<string, CodexDeedDef>(StringComparer.Ordinal);
             var posById = new Dictionary<string, (int lane, int stage)>(StringComparer.Ordinal);
@@ -38,14 +38,14 @@ namespace CHAL.Systems.Research
             if (tree == null)
             {
                 DebugManager.Log("ResearchTreeCompiler: tree=null", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Error);
-                return new ResearchTreeCompiled(nodesById, posById, parentsById);
+                return new CompiledCodex(nodesById, posById, parentsById);
             }
 
             var lanes = tree.codexChapters; // <- WICHTIG: der echte Baum!
             if (lanes == null || lanes.Count == 0)
             {
                 DebugManager.Log("ResearchTreeCompiler: researchTreeLanes ist leer.", DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
-                return new ResearchTreeCompiled(nodesById, posById, parentsById);
+                return new CompiledCodex(nodesById, posById, parentsById);
             }
 
             for (int lane = 0; lane < lanes.Count; lane++)
@@ -56,14 +56,14 @@ namespace CHAL.Systems.Research
                 for (int stage = 0; stage < laneDef.stages.Count; stage++)
                 {
                     var stageRef = laneDef.stages[stage];
-                    if (stageRef?.deeds == null) continue;
+                    if (stageRef?.deedSlots == null) continue;
 
-                    foreach (var entry in stageRef.deeds)
+                    foreach (var entry in stageRef.deedSlots)
                     {
-                        if (entry?.node == null || string.IsNullOrWhiteSpace(entry.node.id))
+                        if (entry?.deed == null || string.IsNullOrWhiteSpace(entry.deed.id))
                             continue;
 
-                        var id = entry.node.id;
+                        var id = entry.deed.id;
 
                         if (nodesById.ContainsKey(id))
                         {
@@ -71,18 +71,11 @@ namespace CHAL.Systems.Research
                             continue;
                         }
 
-                        nodesById[id] = entry.node;
+                        nodesById[id] = entry.deed;
                         posById[id] = (lane, stage);
 
                         var plist = new List<string>();
-                        if (entry.parentRefs != null)
-                        {
-                            foreach (var pref in entry.parentRefs)
-                            {
-                                if (pref == null || string.IsNullOrWhiteSpace(pref.id)) continue;
-                                plist.Add(pref.id);
-                            }
-                        }
+
                         parentsById[id] = plist;
                     }
                 }
@@ -113,7 +106,7 @@ namespace CHAL.Systems.Research
             if (HasCycle(parentsById))
                 DebugManager.Log("ResearchTreeCompiler: Zyklische AbhÃ¤ngigkeit im Tree.", DebugManager.EDebugLevel.Dev, "Research", UnityEngine.LogType.Error);
 
-            return new ResearchTreeCompiled(nodesById, posById, parentsById);
+            return new CompiledCodex(nodesById, posById, parentsById);
         }
 
         private static bool HasCycle(Dictionary<string, List<string>> parentsById)

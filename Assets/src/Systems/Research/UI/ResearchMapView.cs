@@ -17,7 +17,7 @@ namespace CHAL.Systems.Research
         public Transform nodeContainer;
 
         public ResearchUIThemeDef theme;
-        public CodexTreeDef treeDef;
+        public CodexDef treeDef;
         public CodexService service;
         private bool serviceReady = false;
         public ResearchNodeWidget nodePrefab;
@@ -102,7 +102,7 @@ namespace CHAL.Systems.Research
             nodePositions.Clear();
 
             // Compile Tree
-            var compiled = CodexTreeCompiler.Compile(treeDef);
+            var compiled = CodexCompiler.Compile(treeDef);
 
             // ---- 1) Gruppieren: pro Lane -> pro Stage -> sortierte Node-IDs
             var laneStageIds = new Dictionary<int, Dictionary<int, List<string>>>();

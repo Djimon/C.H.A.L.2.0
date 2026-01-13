@@ -1455,9 +1455,9 @@ namespace CHAL.UI
         }
 
         // --- local loaders (keine zusätzliche Registry-Logik; identisch zum GM-Pfad) ---
-        private static CodexTreeDef LoadResearchTree()
+        private static CodexDef LoadResearchTree()
         {
-            return Resources.Load<CodexTreeDef>("data/Research/Tree");
+            return Resources.Load<CodexDef>("data/Research/Tree");
         }
 
         private static List<CodexDeedDef> LoadResearchNodes()

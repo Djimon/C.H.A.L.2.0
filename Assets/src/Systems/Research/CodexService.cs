@@ -13,7 +13,7 @@ namespace CHAL.Systems.Research
         private readonly Dictionary<string, CodexDeedDef> _nodesById = new Dictionary<string, CodexDeedDef>(StringComparer.Ordinal);
         private readonly Dictionary<(int lane, int stage), List<string>> _idsByLaneStage = new Dictionary<(int, int), List<string>>();
 
-        private CodexTreeDef _treeDef; // nur für Layout/Meta-Daten (optional fÃ¼r UI)
+        private CodexDef _treeDef; // nur für Layout/Meta-Daten (optional fÃ¼r UI)
         private CodexState _state;
 
         private Dictionary<string, List<string>> _compiledParents;
@@ -47,7 +47,7 @@ namespace CHAL.Systems.Research
 /// </summary>
 /// <param name="treeDef">The research tree definition to initialize from.</param>
 /// <param name="state">The research state to use; if null, a new state is created.</param>
-        public void InitFromTree(CodexTreeDef treeDef, CodexState state)
+        public void InitFromTree(CodexDef treeDef, CodexState state)
         {
             _treeDef = treeDef;
             _state = state ?? new CodexState();
@@ -55,7 +55,7 @@ namespace CHAL.Systems.Research
             _nodesById.Clear();
             _idsByLaneStage.Clear();
 
-            var compiled = CodexTreeCompiler.Compile(treeDef);
+            var compiled = CodexCompiler.Compile(treeDef);
 
             // nodesById + posById Ã¼bernehmen
             foreach (var kv in compiled.nodesById)
@@ -120,11 +120,11 @@ namespace CHAL.Systems.Research
             return true;
         }
 
-        private NodeProgress EnsureProgress(string nodeId)
+        private DeedProgress EnsureProgress(string nodeId)
         {
             if (!_state.perNodeProgress.TryGetValue(nodeId, out var p))
             {
-                p = new NodeProgress();
+                p = new DeedProgress();
                 _state.perNodeProgress[nodeId] = p;
             }
             return p;
@@ -149,9 +149,9 @@ namespace CHAL.Systems.Research
 /// </summary>
 /// <param name="nodeId">The ID of the node to get progress for.</param>
 /// <returns>The progress of the node.</returns>
-        public NodeProgress GetNodeProgress(string nodeId)
+        public DeedProgress GetNodeProgress(string nodeId)
         {
-            return _state.perNodeProgress.TryGetValue(nodeId, out var p) ? p : new NodeProgress();
+            return _state.perNodeProgress.TryGetValue(nodeId, out var p) ? p : new DeedProgress();
         }
 
 /// <summary>
@@ -406,7 +406,7 @@ namespace CHAL.Systems.Research
 
 
         // ------------------ Completion-Check ------------------
-        private void TryComplete(CodexDeedDef def, NodeProgress p)
+        private void TryComplete(CodexDeedDef def, DeedProgress p)
         {
             if (IsCompleted(def.id)) return;
 
@@ -421,7 +421,7 @@ namespace CHAL.Systems.Research
             OnNodeCompleted?.Invoke(def.id, def.unlocks);
         }
 
-        private static bool MeetsRequirements(CodexDeedDef def, NodeProgress p)
+        private static bool MeetsRequirements(CodexDeedDef def, DeedProgress p)
         {
             var req = def.requirements;
             if (req == null) return true; // leere Anforderungen â†’ sofort fertig (V1 erlaubt)

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace CHAL.Systems.Research
 {
     [Serializable]
-    public sealed class NodeProgress
+    public sealed class DeedProgress
     {
         // Waves / Maps
         public int waves;
@@ -27,6 +27,6 @@ namespace CHAL.Systems.Research
     {
         public string activeNodeId;
         public HashSet<string> completedNodeIds = new HashSet<string>(StringComparer.Ordinal);
-        public Dictionary<string, NodeProgress> perNodeProgress = new Dictionary<string, NodeProgress>(StringComparer.Ordinal);
+        public Dictionary<string, DeedProgress> perNodeProgress = new Dictionary<string, DeedProgress>(StringComparer.Ordinal);
     }
 }

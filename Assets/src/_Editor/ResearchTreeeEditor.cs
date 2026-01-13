@@ -15,10 +15,10 @@ using UnityEngine;
 // - Visual: public List<ResearchLane> researchLanes
 // - Tree:   public List<ResearchTreeLane> researchTreeLanes
 
-[CustomEditor(typeof(CHAL.Data.CodexTreeDef))]
+[CustomEditor(typeof(CHAL.Data.CodexDef))]
 public sealed class ResearchTreeDefEditor : Editor
 {
-    private CodexTreeDef _tree;
+    private CodexDef _tree;
     private int _activeLane;
     private Vector2 _scroll;
 
@@ -33,7 +33,7 @@ public sealed class ResearchTreeDefEditor : Editor
 
     private void OnEnable()
     {
-        _tree = (CHAL.Data.CodexTreeDef)target;
+        _tree = (CHAL.Data.CodexDef)target;
         BuildAllStageAndNodeLists();
         //BuildStyles();
     }
@@ -433,7 +433,7 @@ public sealed class ResearchTreeDefEditor : Editor
         }
     }
 
-    private static HashSet<string> CollectNodeTargetIds(CodexTreeDef tree)
+    private static HashSet<string> CollectNodeTargetIds(CodexDef tree)
     {
         var set = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
         if (tree?.codexChapters == null) return set;
@@ -443,10 +443,10 @@ public sealed class ResearchTreeDefEditor : Editor
             if (lane?.stages == null) continue;
             foreach (var stage in lane.stages)
             {
-                if (stage?.deeds == null) continue;
-                foreach (var nref in stage.deeds)
+                if (stage?.deedSlots == null) continue;
+                foreach (var nref in stage.deedSlots)
                 {
-                    var node = nref?.node;
+                    var node = nref?.deed;
                     if (node?.unlocks == null) continue;
                     foreach (var u in node.unlocks)
                     {
@@ -609,7 +609,7 @@ public sealed class ResearchTreeDefEditor : Editor
     {
         try
         {
-            var compiled = CodexTreeCompiler.Compile(_tree);
+            var compiled = CodexCompiler.Compile(_tree);
 
             int laneCount = _tree?.codexChapters?.Count ?? 0;
             int stageCount = 0;
