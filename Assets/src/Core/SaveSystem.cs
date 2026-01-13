@@ -1,6 +1,6 @@
 using BayatGames.SaveGameFree;
 using CHAL.Data;
-using CHAL.Systems.Research;
+using CHAL.Systems.Codex;
 using CHAL.Systems.Stats;
 using System;
 using System.Collections.Generic;

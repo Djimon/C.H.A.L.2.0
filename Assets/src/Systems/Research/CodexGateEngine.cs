@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CHAL.Systems.Research
+namespace CHAL.Systems.Codex
 {
     /// <summary>
     /// Deterministische Gate Engine (Phase 2).

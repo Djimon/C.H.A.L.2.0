@@ -2,12 +2,12 @@ using CHAL.Core;
 using CHAL.Systems.Hero;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
-using CHAL.Systems.Research;
+using CHAL.Systems.Codex;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static CHAL.Systems.Research.ResearchSnapshot;
+using static CHAL.Systems.Codex.ResearchSnapshot;
 
 namespace CHAL.Data
 {

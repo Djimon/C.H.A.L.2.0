@@ -1377,7 +1377,7 @@ namespace CHAL.UI
 
             // Runtime-Container sicherstellen
             if (gm.Profile.ResearchRuntime == null)
-                gm.Profile.ResearchRuntime = new CHAL.Systems.Research.CodexState();
+                gm.Profile.ResearchRuntime = new CHAL.Systems.Codex.CodexState();
 
             var rt = gm.Profile.ResearchRuntime;
 
@@ -1416,7 +1416,7 @@ namespace CHAL.UI
             }
 
             if (gm.Profile.ResearchRuntime == null)
-                gm.Profile.ResearchRuntime = new CHAL.Systems.Research.CodexState();
+                gm.Profile.ResearchRuntime = new CHAL.Systems.Codex.CodexState();
 
             var rt = gm.Profile.ResearchRuntime;
 

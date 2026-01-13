@@ -1,5 +1,5 @@
 using CHAL.Core;
-using CHAL.Systems.Research;
+using CHAL.Systems.Codex;
 using UnityEngine;
 
 namespace CHAL.UI

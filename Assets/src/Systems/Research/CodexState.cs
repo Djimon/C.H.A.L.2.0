@@ -2,7 +2,7 @@ using CHAL.Data;
 using System;
 using System.Collections.Generic;
 
-namespace CHAL.Systems.Research
+namespace CHAL.Systems.Codex
 {
     [Serializable]
     public sealed class DeedProgress

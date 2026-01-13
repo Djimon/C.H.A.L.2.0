@@ -2,7 +2,7 @@ using CHAL.Core;
 using CHAL.Data;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
-using CHAL.Systems.Research;
+using CHAL.Systems.Codex;
 using CHAL.UI;
 using System;
 using System.Collections;

@@ -1,4 +1,4 @@
-using CHAL.Systems.Research;
+using CHAL.Systems.Codex;
 using UnityEngine;
 
 /// <summary>

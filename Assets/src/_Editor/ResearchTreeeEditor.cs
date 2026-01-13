@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using CHAL.Core;                    // DebugManager
 using CHAL.Data;
-using CHAL.Systems.Research;        // ResearchTreeCompiler
+using CHAL.Systems.Codex;        // ResearchTreeCompiler
 using System;
 using System.Collections.Generic;
 using System.IO;

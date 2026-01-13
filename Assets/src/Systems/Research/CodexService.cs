@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CHAL.Systems.Research
+namespace CHAL.Systems.Codex
 {
     public sealed class CodexService
     {
@@ -32,10 +32,13 @@ namespace CHAL.Systems.Research
         private static bool IsBoss(EnemyRank r) => r == EnemyRank.Boss || r == EnemyRank.Champion;
         private static bool IsChamp(EnemyRank r) => r == EnemyRank.Champion;
 
+
+        //EVENTS
         public event Action<string, IReadOnlyList<ResearchUnlock>> OnNodeCompleted;
         public event Action<IReadOnlyList<string>> OnAlwaysUnlockedReady;
+        public event Action OnCodexChanged;
 
-        public void InitFromTree(CodexDef treeDef, CodexState state)
+        public void InitFromDef(CodexDef treeDef, CodexState state)
         {
             _treeDef = treeDef;
             _state = state ?? new CodexState();
@@ -96,6 +99,8 @@ namespace CHAL.Systems.Research
                 DebugManager.Log($"CodexService: AlwaysUnlocked ready ({always.Count} IDs).",
                     DebugManager.EDebugLevel.Dev, "Research");
             }
+
+            RaiseCodexChanged();
         }
 
         // ------------------------------------
@@ -137,6 +142,8 @@ namespace CHAL.Systems.Research
                 s0.deedId = null;
                 s0.locked = false;
                 _state.activeFocusSlots[slotIndex] = s0;
+
+                RaiseCodexChanged();
                 return true;
             }
 
@@ -176,6 +183,8 @@ namespace CHAL.Systems.Research
             slot.deedId = deedId;
             slot.locked = IsClaimable(deedId); // direkt synchronisieren
             _state.activeFocusSlots[slotIndex] = slot;
+
+            RaiseCodexChanged();
 
             DebugManager.Log($"Codex: Focus set slot={slotIndex} deed={deedId}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
             return true;
@@ -235,6 +244,8 @@ namespace CHAL.Systems.Research
             // Unlocks feuern (Claim = echter Abschluss)
             if (def.unlocks != null && def.unlocks.Count > 0)
                 OnNodeCompleted?.Invoke(deedId, def.unlocks);
+
+            RaiseCodexChanged();
 
             DebugManager.Log($"Codex: Claimed deed={deedId} (slot={slotIndex})", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
             return true;
@@ -420,6 +431,8 @@ namespace CHAL.Systems.Research
         {
             if (_state.activeFocusSlots == null || _state.activeFocusSlots.Count == 0) return;
 
+            bool anyChanged = false;
+
             for (int slotIndex = 0; slotIndex < _state.activeFocusSlots.Count; slotIndex++)
             {
                 var slot = _state.activeFocusSlots[slotIndex];
@@ -456,12 +469,17 @@ namespace CHAL.Systems.Research
                 bool mutated = fn(deedId, def, progress);
                 if (!mutated) continue;
 
+                anyChanged = true;
+
                 // Recompute progress01 / completed
                 RecomputeAndStoreProgress(deedId);
 
                 // Slot lock sync (kann jetzt claimable geworden sein)
                 SyncSlotLock(slotIndex);
             }
+
+            if (anyChanged)
+                RaiseCodexChanged();
         }
 
         private void RecomputeAndStoreProgress(string deedId)
@@ -538,6 +556,219 @@ namespace CHAL.Systems.Research
 
             if (need <= 0.0001f) return 0f;
             return Mathf.Clamp01(have / need);
+        }
+
+        // ============================================================
+        //  Helper for UI ViewModelss (API-first)
+        // ============================================================
+
+        public IReadOnlyList<ChapterVM> GetChaptersVM()
+        {
+            var list = new List<ChapterVM>();
+            if (_treeDef == null || _treeDef.codexChapters == null) return list;
+
+            foreach (var ch in _treeDef.codexChapters)
+            {
+                if (ch == null) continue;
+                list.Add(BuildChapterVM(ch));
+            }
+
+            return list;
+        }
+
+        public ChapterVM GetChapterVM(string chapterId)
+        {
+            if (string.IsNullOrWhiteSpace(chapterId)) return null;
+            if (_treeDef == null || _treeDef.codexChapters == null) return null;
+
+            foreach (var ch in _treeDef.codexChapters)
+            {
+                if (ch == null) continue;
+                if (string.Equals(GetChapterId(ch), chapterId, StringComparison.Ordinal))
+                    return BuildChapterVM(ch);
+            }
+
+            return null;
+        }
+
+        private ChapterVM BuildChapterVM(CodexChapter ch)
+        {
+            var vm = new ChapterVM
+            {
+                chapterId = GetChapterId(ch)
+            };
+
+            if (ch.stages == null) return vm;
+
+            for (int groupIndex = 0; groupIndex < ch.stages.Count; groupIndex++)
+            {
+                var g = ch.stages[groupIndex];
+                if (g == null) continue;
+
+                var groupId = GetGroupId(g, vm.chapterId, groupIndex);
+
+                // Group gate via engine (wenn engine groupId kennt)
+                GroupGateState groupGate;
+                if (_gate != null)
+                    groupGate = _gate.ComputeGroupGate(groupId);
+                else
+                    groupGate = default;
+
+                var gvm = new GroupVM
+                {
+                    groupId = groupId,
+                    gate = groupGate,
+                };
+
+                if (g.deedSlots != null)
+                {
+                    for (int slotIdx = 0; slotIdx < g.deedSlots.Count; slotIdx++)
+                    {
+                        var slot = g.deedSlots[slotIdx];
+                        if (slot == null) continue;
+
+                        var deedId = GetDeedId(slot);
+                        if (string.IsNullOrWhiteSpace(deedId)) continue;
+
+                        EnsureProgressSafe(deedId);
+
+                        var st = _state.deedProgress.TryGetValue(deedId, out var s) ? s : default;
+
+                        var deedGate = _gate != null ? _gate.ComputeDeedGate(deedId) : default;
+
+                        var (isActive, activeSlotIndex) = FindActiveSlot(deedId);
+
+                        // Slot-Lock ist bei dir: claimable => locked
+                        bool claimable = (st.completed || st.progress01 >= 1f - 0.00001f) && !st.claimed;
+                        bool isSlotLocked = isActive && claimable;
+
+                        var def = GetNodeDef(deedId);
+
+                        gvm.deeds.Add(new DeedVM
+                        {
+                            deedId = deedId,
+                            title = def != null ? def.title : deedId,
+
+                            gate = deedGate,
+
+                            progress01 = st.progress01,
+                            completed = st.completed,
+                            claimed = st.claimed,
+
+                            isActive = isActive,
+                            activeSlotIndex = activeSlotIndex,
+                            isSlotLocked = isSlotLocked,
+                        });
+                    }
+                }
+
+                vm.groups.Add(gvm);
+            }
+
+            return vm;
+        }
+
+        private (bool isActive, int slotIndex) FindActiveSlot(string deedId)
+        {
+            if (string.IsNullOrWhiteSpace(deedId)) return (false, -1);
+            if (_state == null || _state.activeFocusSlots == null) return (false, -1);
+
+            for (int i = 0; i < _state.activeFocusSlots.Count; i++)
+            {
+                if (string.Equals(_state.activeFocusSlots[i].deedId, deedId, StringComparison.Ordinal))
+                    return (true, i);
+            }
+
+            return (false, -1);
+        }
+
+        private void EnsureProgressSafe(string deedId)
+        {
+            // Nur defensiv: falls deine EnsureProgress Methode anders heißt oder private ist,
+            // kannst du hier einfach deinen bestehenden EnsureProgress-Aufruf einsetzen.
+            if (_state == null) return;
+            if (_state.deedProgress == null) return;
+
+            if (!_state.deedProgress.TryGetValue(deedId, out var s))
+            {
+                // minimaler Default – dein echtes EnsureProgress macht ggf. mehr
+                s = new DeedProgressState
+                {
+                    progress01 = 0f,
+                    completed = false,
+                    claimed = false,
+                    counters = new DeedProgress()
+                };
+                _state.deedProgress[deedId] = s;
+            }
+            else
+            {
+                if (s.counters == null)
+                {
+                    s.counters = new DeedProgress();
+                    _state.deedProgress[deedId] = s;
+                }
+            }
+        }
+
+        private static string GetChapterId(CodexChapter ch)
+        {
+            // Du nutzt chapterName als Id – passt zu deinem aktuellen Stand.
+            return ch != null ? ch.chapterId : null;
+        }
+
+        private static string GetGroupId(CodexChapterGroup g, string chapterId, int groupOrderIndex)
+        {
+            // Dein aktueller Fix: g.groupid ist stable ID.
+            // Wir machen das robust: wenn field/property nicht existiert, fallback.
+            if (g == null) return $"{chapterId}:GroupIdx:{groupOrderIndex}";
+
+            // field: groupid
+            var t = g.GetType();
+            var f = t.GetField("groupid");
+            if (f != null)
+            {
+                var v = f.GetValue(g) as string;
+                if (!string.IsNullOrWhiteSpace(v))
+                    return v;
+            }
+
+            // property: groupid
+            var p = t.GetProperty("groupid");
+            if (p != null)
+            {
+                var v = p.GetValue(g) as string;
+                if (!string.IsNullOrWhiteSpace(v))
+                    return v;
+            }
+
+            return $"{chapterId}:GroupIdx:{groupOrderIndex}";
+        }
+
+        private static string GetDeedId(DeedSlot slot)
+        {
+            if (slot == null) return null;
+
+            // optional: deedId Feld
+            var t = slot.GetType();
+            var f = t.GetField("deedId");
+            if (f != null)
+            {
+                var v = f.GetValue(slot) as string;
+                if (!string.IsNullOrWhiteSpace(v))
+                    return v;
+            }
+
+            // fallback: ScriptableObject ref
+            if (slot.deed != null && !string.IsNullOrWhiteSpace(slot.deed.id))
+                return slot.deed.id;
+
+            return null;
+        }
+
+        private void RaiseCodexChanged()
+        {
+            OnCodexChanged?.Invoke();
         }
 
     }

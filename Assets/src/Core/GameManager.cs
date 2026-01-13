@@ -4,7 +4,7 @@ using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Map;
-using CHAL.Systems.Research;
+using CHAL.Systems.Codex;
 using CHAL.Systems.Skill;
 using CHAL.Systems.Stats;
 using System;
@@ -938,7 +938,7 @@ namespace CHAL.Core
             };
 
             // Service + Registry richtig initialisieren
-            researchService.InitFromTree(researchTree, Profile.ResearchRuntime);
+            researchService.InitFromDef(researchTree, Profile.ResearchRuntime);
             ResearchUnlocks.RebuildFrom(researchNodes, null);
             ResearchUnlocks.ApplyAlwaysUnlocked(researchTree.alwaysUnlockedIds);
 

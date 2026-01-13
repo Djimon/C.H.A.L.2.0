@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CHAL.Core;   // DebugManager
 using CHAL.Data;   // ResearchNodeDef, ResearchUnlock, ResearchUnlockTypes
 
-namespace CHAL.Systems.Research
+namespace CHAL.Systems.Codex
 {
 
     public sealed class CodexUnlockRegistry
