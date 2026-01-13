@@ -80,11 +80,22 @@ All documented namespaces and types.
 
 - [MoveAgent](CHAL/Systems/AI/MoveAgent.md) (2025-12-07)
 
+#### Codex
+
+- [CodexCompiler](CHAL/Systems/Codex/CodexCompiler.md) (2026-01-13)
+- [CodexGateEngine](CHAL/Systems/Codex/CodexGateEngine.md) (2026-01-13)
+- [CodexService](CHAL/Systems/Codex/CodexService.md) (2026-01-13)
+- [CodexState](CHAL/Systems/Codex/CodexState.md) (2026-01-13)
+- [CodexUnlockRegistry](CHAL/Systems/Codex/CodexUnlockRegistry.md) (2026-01-13)
+- [CodexViewModel](CHAL/Systems/Codex/CodexViewModel.md) (2026-01-13)
+- [DeedRequirement](CHAL/Systems/Codex/DeedRequirement.md) (2026-01-13)
+- [NodeProgressEntry](CHAL/Systems/Codex/NodeProgressEntry.md) (2026-01-13)
+
 #### Crafting
 
 - [CraftingCatalog](CHAL/Systems/Crafting/CraftingCatalog.md) (2025-11-09)
 - [CraftingController](CHAL/Systems/Crafting/CraftingController.md) (2025-12-07)
-- [MaterialLine](CHAL/Systems/Crafting/MaterialLine.md) (2025-12-07)
+- [MaterialLine](CHAL/Systems/Crafting/MaterialLine.md) (2026-01-07)
 - [RecipeDef](CHAL/Systems/Crafting/RecipeDef.md) (2026-01-01)
 
 #### Enemy
@@ -151,6 +162,11 @@ All documented namespaces and types.
 
 #### Research
 
+- [CodexService](CHAL/Systems/Research/CodexService.md) (2026-01-07)
+- [CodexState](CHAL/Systems/Research/CodexState.md) (2026-01-07)
+- [CodexTreeCompiler](CHAL/Systems/Research/CodexTreeCompiler.md) (2026-01-07)
+- [CodexUnlockRegistry](CHAL/Systems/Research/CodexUnlockRegistry.md) (2026-01-07)
+- [DeedRequirement](CHAL/Systems/Research/DeedRequirement.md) (2026-01-07)
 - [NodeProgressEntry](CHAL/Systems/Research/NodeProgressEntry.md) (2025-12-07)
 - [ResearchEdgeGraphic](CHAL/Systems/Research/ResearchEdgeGraphic.md) (2025-11-09)
 - [ResearchEventBridge](CHAL/Systems/Research/ResearchEventBridge.md) (2025-11-09)
@@ -209,7 +225,7 @@ All documented namespaces and types.
 ### UI
 
 - [CharacterCreationUI](CHAL/UI/CharacterCreationUI.md) (2025-12-07)
-- [CheatMenuController](CHAL/UI/CheatMenuController.md) (2026-01-06)
+- [CheatMenuController](CHAL/UI/CheatMenuController.md) (2026-01-07)
 - [ClickableObject](CHAL/UI/ClickableObject.md) (2025-12-07)
 - [CraftingUI](CHAL/UI/CraftingUI.md) (2025-11-09)
 - [DockEdge](CHAL/UI/DockEdge.md) (2025-11-09)
@@ -244,6 +260,7 @@ All documented namespaces and types.
 - [DebugCraftingRunner](global/DebugCraftingRunner.md) (2025-11-09)
 - [DebugEnemySpawner](global/DebugEnemySpawner.md) (2025-12-07)
 - [DebugResearchBootstrap](global/DebugResearchBootstrap.md) (2025-11-09)
+- [DeedProgressState](global/DeedProgressState.md) (2026-01-13)
 - [detect_encoding_issues](global/detect_encoding_issues.md) (2025-11-18)
 - [DevResearchFastForward](global/DevResearchFastForward.md) (2025-12-07)
 - [docgen](global/docgen.md) (2025-11-09)
