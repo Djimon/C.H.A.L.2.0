@@ -303,7 +303,8 @@ namespace CHAL.Systems.Hero
             {
                 float dist = Vector3.Distance(transform.position, enemyCtrl.transform.position);
                 float range = GameManager.Instance.BalanceConfig.GetRangeValue(currentSkill.Range);
-                DebugManager.DebugLog($"Range:{currentSkill.Range.ToString()} = {range}","Combat");
+
+                DebugManager.DebugLog($"Range of {currentSkill.skillModule.name}: {currentSkill.Range.ToString()} = {range}","Combat");
 
                 if (dist <= range)
                 {

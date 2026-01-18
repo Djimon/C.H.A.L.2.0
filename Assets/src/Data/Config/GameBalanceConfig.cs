@@ -523,14 +523,26 @@ namespace CHAL.Data
 /// <returns>The corresponding range value as a float.</returns>
         public float GetRangeValue(SkillRange range)
         {
+            var configuredRanges = skillSettings.skillRanges;
+            if (configuredRanges.selfRange + configuredRanges.meleeRange + configuredRanges.reachRange + configuredRanges.midDistanceRange + configuredRanges.farDistanceRange == 0)
+            {
+                configuredRanges.selfRange = 1;
+                configuredRanges.meleeRange = 3;
+                configuredRanges.reachRange = 5;
+                configuredRanges.midDistanceRange = 10;
+                configuredRanges.farDistanceRange = 20;
+
+                DebugManager.Error("Missing Values for SkillRanges!, using default values (1,3,5,10,20", "System");
+            }              
+
             return range switch
             {
-                SkillRange.Self => skillSettings.skillRanges.selfRange,
-                SkillRange.MeleeRange => skillSettings.skillRanges.meleeRange,
-                SkillRange.Reach => skillSettings.skillRanges.reachRange,
-                SkillRange.MidDistance => skillSettings.skillRanges.midDistanceRange,
-                SkillRange.FarDistance => skillSettings.skillRanges.farDistanceRange,
-                _ => skillSettings.skillRanges.meleeRange
+                SkillRange.Self => configuredRanges.selfRange,
+                SkillRange.MeleeRange => configuredRanges.meleeRange,
+                SkillRange.Reach => configuredRanges.reachRange,
+                SkillRange.MidDistance => configuredRanges.midDistanceRange,
+                SkillRange.FarDistance => configuredRanges.farDistanceRange,
+                _ => configuredRanges.meleeRange
             };
         }
 

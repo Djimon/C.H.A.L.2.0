@@ -73,7 +73,7 @@ namespace CHAL.Systems.Skill
 
             if (modulItem == null || modulItem.moduleData == null)
             {
-                DebugManager.Info($"Skill cannot be calculated (missing Module or ModulData)", "Item");            
+                DebugManager.Info($"Skill cannot be calculated (missing Module or ModulData)", "Skill");            
             }
             else
             {

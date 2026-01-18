@@ -226,11 +226,11 @@ MonoBehaviour:
           maxOnItem: 1
   skillSettings:
     skillRanges:
-      selfRange: 0
-      meleeRange: 0
-      reachRange: 0
-      midDistanceRange: 0
-      farDistanceRange: 0
+      selfRange: 1
+      meleeRange: 3
+      reachRange: 5
+      midDistanceRange: 15
+      farDistanceRange: 25
     skillModuleCosts:
       TierBasedCosts:
       - tier: 1

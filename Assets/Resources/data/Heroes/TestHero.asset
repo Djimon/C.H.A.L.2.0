@@ -16,11 +16,12 @@ MonoBehaviour:
   DisplayName: Thorben Test Hero
   Lore: ..ich lebe nur in der Konsole :(
   Archetype: {fileID: 11400000, guid: 0a6af0924f0964446ae68ef430928909, type: 2}
-  Armorclass: 1
+  Armorclass: 2
   BaseHealth: 30000
   BaseDamage: 100
   BaseMovementSpeed: 2
   sightRange: 20
+  SignaturePassive: {fileID: 0}
   Portrait: {fileID: 0}
   Prefab: {fileID: 0}
   VoiceSample: {fileID: 0}
