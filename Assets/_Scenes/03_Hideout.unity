@@ -618,6 +618,7 @@ MonoBehaviour:
   remainsPrefix: remains
   gearPrefix: gear
   modulesPrefix: module
+  corePrefix: core
 --- !u!1 &698707291
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,7 +735,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -1798,6 +1799,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc286bd5b509b5145a80ec0c2a95cb51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CHAL.Systems.UI.SkillModuleCraftingPanel
+  requiredFeatureID: none
 --- !u!114 &1935482289
 MonoBehaviour:
   m_ObjectHideFlags: 0
