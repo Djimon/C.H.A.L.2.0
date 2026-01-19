@@ -321,11 +321,6 @@ namespace CHAL.Core
 /// </summary>
 /// <param name="sceneName">The name of the scene to load.</param>
 /// <param name="selectedMap">The map definition to use.</param>
-/// <summary>
-/// Starts the map with the specified scene and selected map definition.
-/// </summary>
-/// <param name="sceneName">The name of the scene to load.</param>
-/// <param name="selectedMap">The map definition to use.</param>
         internal void StartMap(string sceneName, MapDef selectedMap)
         {
             pendingMap = selectedMap;
@@ -903,18 +898,6 @@ namespace CHAL.Core
             return id;
         }
 
-/// <summary>
-/// Initializes the research system, optionally loading existing data.
-/// </summary>
-/// <param name="loadExisting">Indicates whether to load existing research data.</param>
-/// <summary>
-/// Initializes the Codex, optionally loading existing data.
-/// </summary>
-/// <param name="loadExisting">Indicates whether to load existing Codex data.</param>
-/// <summary>
-/// Initializes the Codex, optionally loading existing data.
-/// </summary>
-/// <param name="loadExisting">Indicates whether to load existing Codex data.</param>
 /// <summary>
 /// Initializes the Codex, optionally loading existing data.
 /// </summary>
