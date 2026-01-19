@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static CHAL.Systems.Codex.ResearchSnapshot;
+using static CHAL.Systems.Codex.CodexSnapshot;
 
 namespace CHAL.Data
 {
@@ -54,7 +54,7 @@ namespace CHAL.Data
         public List<InventorySnapshot> InventorySave = new();
 
         // --- Research ---
-        [NonSerialized] public CodexState ResearchRuntime;
+        [NonSerialized] public CodexState CodexRuntimeState;
 
 /// <summary>
 /// Initializes the player with a name and a set of colors.

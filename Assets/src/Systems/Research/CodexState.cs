@@ -26,12 +26,10 @@ namespace CHAL.Systems.Codex
     public sealed class CodexState
     {
         // Progress pro DeedId
-        public Dictionary<string, DeedProgressState> deedProgress =
-            new Dictionary<string, DeedProgressState>(StringComparer.Ordinal);
+        public Dictionary<string, DeedProgressState> deedProgress = new Dictionary<string, DeedProgressState>(StringComparer.Ordinal);
 
         // Aktive Fokus-Slots (UI/Gameplay)
-        public List<ActiveFocusSlotState> activeFocusSlots =
-            new List<ActiveFocusSlotState>();
+        public List<ActiveFocusSlotState> activeFocusSlots = new List<ActiveFocusSlotState>();
 
         // Optionaler Cache (recompute on demand reicht).
         public Dictionary<string, DeedGateState> gateCache =

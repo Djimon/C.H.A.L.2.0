@@ -1376,10 +1376,10 @@ namespace CHAL.UI
             }
 
             // Runtime-Container sicherstellen
-            if (gm.Profile.ResearchRuntime == null)
-                gm.Profile.ResearchRuntime = new CHAL.Systems.Codex.CodexState();
+            if (gm.Profile.CodexRuntimeState == null)
+                gm.Profile.CodexRuntimeState = new CHAL.Systems.Codex.CodexState();
 
-            var rt = gm.Profile.ResearchRuntime;
+            var rt = gm.Profile.CodexRuntimeState;
 
             // State leeren
             //rt.activeNodeId = null;
@@ -1387,18 +1387,18 @@ namespace CHAL.UI
             rt.deedProgress.Clear();
 
             // Save löschen + leeren Snapshot speichern (wie GameManager.InitResearch(false), aber ohne Event-Rebind)
-            SaveSystem.DeleteResearch(gm.Profile.profileId);
+            SaveSystem.DeleteCodex(gm.Profile.profileId);
             //SaveSystem.SaveResearch(gm.Profile.profileId, gm.Profile.BuildResearchSnapshotFrom(rt));
 
             // UnlockRegistry neu aufsetzen (leer, plus AlwaysUnlocked)
-            if (gm.ResearchUnlocks != null)
+            if (gm.codexUnlocks != null)
             {
                 var nodes = LoadResearchNodes();
                 //gm.ResearchUnlocks.RebuildFrom(nodes, rt.completedNodeIds);
 
                 var tree = LoadResearchTree();
                 if (tree != null && tree.alwaysUnlockedIds != null)
-                    gm.ResearchUnlocks.ApplyAlwaysUnlocked(tree.alwaysUnlockedIds);
+                    gm.codexUnlocks.ApplyAlwaysUnlocked(tree.alwaysUnlockedIds);
             }
 
             DebugManager.Log("CheatMenu: Reset all Research (state cleared + snapshot saved + unlock registry rebuilt).",
@@ -1415,10 +1415,10 @@ namespace CHAL.UI
                 return;
             }
 
-            if (gm.Profile.ResearchRuntime == null)
-                gm.Profile.ResearchRuntime = new CHAL.Systems.Codex.CodexState();
+            if (gm.Profile.CodexRuntimeState == null)
+                gm.Profile.CodexRuntimeState = new CHAL.Systems.Codex.CodexState();
 
-            var rt = gm.Profile.ResearchRuntime;
+            var rt = gm.Profile.CodexRuntimeState;
 
             //rt.activeNodeId = null;
             rt.deedProgress.Clear();
@@ -1441,13 +1441,13 @@ namespace CHAL.UI
             //SaveSystem.SaveResearch(gm.Profile.profileId, gm.Profile.BuildResearchSnapshotFrom(rt));
 
             // UnlockRegistry rebuild + AlwaysUnlocked
-            if (gm.ResearchUnlocks != null)
+            if (gm.codexUnlocks != null)
             {
                 //gm.ResearchUnlocks.RebuildFrom(nodes, rt.completedNodeIds);
 
                 var tree = LoadResearchTree();
                 if (tree != null && tree.alwaysUnlockedIds != null)
-                    gm.ResearchUnlocks.ApplyAlwaysUnlocked(tree.alwaysUnlockedIds);
+                    gm.codexUnlocks.ApplyAlwaysUnlocked(tree.alwaysUnlockedIds);
             }
 
             DebugManager.Log($"CheatMenu: Unlock all Research.",

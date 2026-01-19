@@ -18,11 +18,12 @@ namespace CHAL.Systems.Codex
         // VollstÃ¤ndiger Katalog aller bekannten targetIds mit Bool-Flag
         private readonly Dictionary<string, bool> _catalog = new Dictionary<string, bool>(StringComparer.Ordinal);
 
+        private readonly HashSet<string> _codexSlots = new HashSet<string>(StringComparer.Ordinal);
 
         // Public: Clear/Reset (z. B. beim Ladevorgang)
-/// <summary>
-/// Clears all data from the internal collections.
-/// </summary>
+        /// <summary>
+        /// Clears all data from the internal collections.
+        /// </summary>
         public void Clear()
         {
             _worldTiers.Clear();
@@ -31,6 +32,7 @@ namespace CHAL.Systems.Codex
             _skillBranches.Clear();
             _heroes.Clear();
             _catalog.Clear();
+            _codexSlots.Clear();
         }
 
 /// <summary>
@@ -108,7 +110,7 @@ namespace CHAL.Systems.Codex
 /// <param name="nodeId">The ID of the node to apply unlocks to.</param>
 /// <param name="unlocks">A list of research unlocks to apply.</param>
 /// <param name="log">Indicates whether to log warnings (default is true).</param>
-        public void ApplyNodeUnlocks(string nodeId, IReadOnlyList<ResearchUnlock> unlocks, bool log = true)
+        public void ApplyNodeUnlocks(string nodeId, IReadOnlyList<CodexUnlock> unlocks, bool log = true)
         {
             if (unlocks == null || unlocks.Count == 0) return;
 
@@ -125,23 +127,26 @@ namespace CHAL.Systems.Codex
 
                 switch (eff.unlockType)
                 {
-                    case ResearchUnlockTypes.WorldTier:
+                    case CodexUnlockTypes.CodexSlots:
+                        _codexSlots.Add(eff.targetId);
+                        break;
+                    case CodexUnlockTypes.WorldTier:
                         _worldTiers.Add(eff.targetId);
                         break;
 
-                    case ResearchUnlockTypes.CraftingFeature:
+                    case CodexUnlockTypes.CraftingFeature:
                         _craftingFeatures.Add(eff.targetId);
                         break;
 
-                    case ResearchUnlockTypes.Recipe:
+                    case CodexUnlockTypes.Recipe:
                         _recipes.Add(eff.targetId);
                         break;
 
-                    case ResearchUnlockTypes.SkillBranch:
+                    case CodexUnlockTypes.Skill:
                         _skillBranches.Add(eff.targetId);
                         break;
 
-                    case ResearchUnlockTypes.Hero:
+                    case CodexUnlockTypes.Hero:
                         _heroes.Add(eff.targetId);
                         break;
 

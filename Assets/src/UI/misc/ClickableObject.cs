@@ -64,7 +64,7 @@ namespace CHAL.UI
                 var ui = menuUI.GetComponent<IngameUI>();
                 var unlocked = true;
                 if (ui.requiredFeatureID != "none")
-                    unlocked = GameManager.Instance.ResearchUnlocks.IsUnlockedCraftingFeature(ui.requiredFeatureID);
+                    unlocked = GameManager.Instance.codexUnlocks.IsUnlockedCraftingFeature(ui.requiredFeatureID);
 
                 if (ui != null && unlocked)
                     ui.Show(true);

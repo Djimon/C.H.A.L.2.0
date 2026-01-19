@@ -1,10 +1,10 @@
 using CHAL.Data;
+using CHAL.Systems.Codex;
 using CHAL.Systems.Enemy;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using CHAL.Systems.Loot;
 using CHAL.Systems.Map;
-using CHAL.Systems.Codex;
 using CHAL.Systems.Skill;
 using CHAL.Systems.Stats;
 using System;
@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -70,11 +71,12 @@ namespace CHAL.Core
             => "player_" + t.ToString().ToLowerInvariant();
 
         // --- Research ---
-        [SerializeField] private CodexDef researchTree;
-        [SerializeField] private List<CodexDeedDef> researchNodes = new();
+        [SerializeField] private CodexDef codex;
+        [SerializeField] private List<CodexDeedDef> deeds = new();
+        private CodexUnlockConsumer unlockConsumer; //new
 
-        public CodexService researchService { get; private set; }
-        public CodexUnlockRegistry ResearchUnlocks { get; private set; }
+        public CodexService codexService { get; private set; }
+        public CodexUnlockRegistry codexUnlocks { get; private set; }
 
 
         // Gearing
@@ -156,16 +158,16 @@ namespace CHAL.Core
 
         private void WiringServices()
         {
-            if (Stats == null || researchService == null)
+            if (Stats == null || codexService == null)
             {
                 DebugManager.Warning("WiringServices: Stats or researchService is null, wiring skipped.", "System");
                 return;
             }
 
-            Stats.OnEnemyKilledEvent += researchService.OnEnemyKilled;
-            Stats.OnWaveCompletedEvent += researchService.OnWaveCompleted;
-            Stats.OnMapCompletedEvent += researchService.OnMapCompleted;
-            Stats.OnCraftExecutedEvent += researchService.OnCraftExecuted;
+            Stats.OnEnemyKilledEvent += codexService.OnEnemyKilled;
+            Stats.OnWaveCompletedEvent += codexService.OnWaveCompleted;
+            Stats.OnMapCompletedEvent += codexService.OnMapCompleted;
+            Stats.OnCraftExecutedEvent += codexService.OnCraftExecuted;
         }
 
         /// <summary>
@@ -183,11 +185,11 @@ namespace CHAL.Core
                 SaveSystem.SaveStatistics(Profile.profileId, statsSnap);
             }
 
-            //if (Profile != null && Profile.ResearchRuntime != null)
-            //{
-            //    var snap = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
-            //    SaveSystem.SaveResearch(Profile.profileId, snap);
-            //}
+            if (Profile != null && Profile.CodexRuntimeState != null)
+            {
+                var snap = BuildSnapshotFromCodex(Profile.CodexRuntimeState);
+                SaveSystem.SaveCodex(Profile.profileId, snap);
+            }
         }
 
 /// <summary>
@@ -239,7 +241,7 @@ namespace CHAL.Core
             InventoryReady = true;
 
             //Research
-            InitResearch(loadExisting: false);
+            InitCodex(loadExisting: false);
 
             SaveGame();
             SetState(GameState.Hideout);
@@ -282,7 +284,7 @@ namespace CHAL.Core
             InventoryReady = true;
 
             //Research
-            InitResearch(loadExisting: true);
+            InitCodex(loadExisting: true);
 
             var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
             Profile.EnsureStarterHeroUnlocked(starterId);
@@ -900,47 +902,60 @@ namespace CHAL.Core
 /// Initializes the research system, optionally loading existing data.
 /// </summary>
 /// <param name="loadExisting">Indicates whether to load existing research data.</param>
-        public void InitResearch(bool loadExisting)
+        public void InitCodex(bool loadExisting)
         {
             EnsureResearchDefsLoaded();
 
             // Runtime-Container sicherstellen
-            if (Profile.ResearchRuntime == null)
-                Profile.ResearchRuntime = new CodexState();
+            if (Profile.CodexRuntimeState == null)
+                Profile.CodexRuntimeState = new CodexState();
 
             // Services erstellen (einmalig)
-            researchService ??= new CodexService();
-            ResearchUnlocks ??= new CodexUnlockRegistry();
+            codexService ??= new CodexService();
+            codexUnlocks ??= new CodexUnlockRegistry();
 
             // Laden oder frischen Stand anlegen
             if (loadExisting)
             {
-                var snap = SaveSystem.LoadResearch(Profile.profileId);
-                //Profile.RestoreResearchInto(Profile.ResearchRuntime, snap);
+                var snap = SaveSystem.LoadCodex(Profile.profileId);
+                RestoreCodexFromSnapshot(Profile.CodexRuntimeState, snap);
             }
             else
             {
-                Profile.ResearchRuntime.deedProgress.Clear();
+                //Gard Resett
+                Profile.CodexRuntimeState.deedProgress.Clear();
+                Profile.CodexRuntimeState.activeFocusSlots.Clear();
 
-                // alte Datei optional entfernen, dann leeren Snapshot sofort anlegen
-                SaveSystem.DeleteResearch(Profile.profileId);
-                //SaveSystem.SaveResearch(Profile.profileId, Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime));
+                SaveSystem.DeleteCodex(Profile.profileId);
+
+                // Sofort einen leeren, gültigen Snapshot schreiben (optional, aber gut fürs Debugging)
+                SaveSystem.SaveCodex(Profile.profileId, BuildSnapshotFromCodex(Profile.CodexRuntimeState));
             }
 
+            unlockConsumer = new CodexUnlockConsumer(codexService);
 
-            researchService.OnAlwaysUnlockedReady += ids => ResearchUnlocks.ApplyAlwaysUnlocked(ids);
+            codexService.OnAlwaysUnlockedReady += ids => codexUnlocks.ApplyAlwaysUnlocked(ids);
             // Speichern beim Abschluss & Registry pflegen
-            researchService.OnNodeCompleted += (nodeId, unlocks) =>
+            codexService.OnNodeCompleted += (nodeId, unlocks) =>
             {
-                ResearchUnlocks.ApplyNodeUnlocks(nodeId, unlocks);
-                //var snapNow = Profile.BuildResearchSnapshotFrom(Profile.ResearchRuntime);
-                //SaveSystem.SaveResearch(Profile.profileId, snapNow);
+                unlockConsumer.Apply(nodeId, unlocks); //Gameplay 
+                codexUnlocks.ApplyNodeUnlocks(nodeId, unlocks); //Registry
+
+                if (Profile != null && Profile.CodexRuntimeState != null)
+                {
+                    var snapNow = BuildSnapshotFromCodex(Profile.CodexRuntimeState);
+                    SaveSystem.SaveCodex(Profile.profileId, snapNow);
+                }
             };
 
             // Service + Registry richtig initialisieren
-            researchService.InitFromDef(researchTree, Profile.ResearchRuntime);
-            ResearchUnlocks.RebuildFrom(researchNodes, null);
-            ResearchUnlocks.ApplyAlwaysUnlocked(researchTree.alwaysUnlockedIds);
+            codexService.InitFromDef(codex, Profile.CodexRuntimeState);
+            int maxSlots = Mathf.Max(1, BalanceConfig.codexSettings.codexMaxFocusSlots);
+            int initialSlots = Mathf.Clamp(BalanceConfig.codexSettings.codexInitialFocusSlots, 1, maxSlots);
+            codexService.EnsureFocusSlotCount(initialSlots);
+
+            codexUnlocks.RebuildFrom(deeds, null);
+            codexUnlocks.ApplyAlwaysUnlocked(codex.alwaysUnlockedIds);
 
             WiringServices();
 
@@ -948,18 +963,200 @@ namespace CHAL.Core
 
         private void EnsureResearchDefsLoaded()
         {
-            if (researchTree == null)
-                researchTree = Resources.Load<CodexDef>("data/Research/Tree");
+            if (codex == null)
+                codex = Resources.Load<CodexDef>("data/Research/Tree");
 
-            if (researchNodes == null || researchNodes.Count == 0)
-                researchNodes = Resources.LoadAll<CodexDeedDef>("data/Research/Nodes").ToList();
+            if (deeds == null || deeds.Count == 0)
+                deeds = Resources.LoadAll<CodexDeedDef>("data/Research/Nodes").ToList();
         }
 
 
-/// <summary>
-/// Registers a new gear instance if it is valid.
-/// </summary>
-/// <param name="gear">The gear instance to register.</param>
+        private static CodexSnapshot BuildSnapshotFromCodex(CodexState state)
+        {
+            var snap = new CodexSnapshot();
+
+            if (state == null) return snap;
+
+            // deedProgress
+            if (state.deedProgress != null)
+            {
+                foreach (var kv in state.deedProgress)
+                {
+                    var deedId = kv.Key;
+                    var st = kv.Value;
+
+                    var entry = new CodexSnapshot.DeedProgressEntry
+                    {
+                        deedId = deedId,
+                        progress01 = st.progress01,
+                        completed = st.completed,
+                        claimed = st.claimed,
+                        counters = BuildCountersSave(st.counters)
+                    };
+
+                    snap.deedProgress.Add(entry);
+                }
+            }
+
+            // focus slots
+            if (state.activeFocusSlots != null)
+            {
+                for (int i = 0; i < state.activeFocusSlots.Count; i++)
+                {
+                    snap.activeFocusSlots.Add(new CodexSnapshot.FocusSlotEntry
+                    {
+                        slotIndex = i,
+                        deedId = state.activeFocusSlots[i].deedId
+                    });
+                }
+            }
+
+            return snap;
+        }
+
+        private static DeedProgressSave BuildCountersSave(DeedProgress counters)
+        {
+            var save = new DeedProgressSave();
+            if (counters == null) return save;
+
+            save.waves = counters.waves;
+            save.mapsTotal = counters.mapsTotal;
+
+            if (counters.mapsByDifficulty != null)
+            {
+                foreach (var kv in counters.mapsByDifficulty)
+                {
+                    save.mapsByDifficulty.Add(new DeedProgressSave.MapCountEntry
+                    {
+                        difficulty = kv.Key,
+                        count = kv.Value
+                    });
+                }
+            }
+
+            save.killsGeneralWeighted = counters.killsGeneralWeighted;
+
+            if (counters.killsByTagWeighted != null)
+            {
+                foreach (var kv in counters.killsByTagWeighted)
+                {
+                    save.killsByTagWeighted.Add(new DeedProgressSave.TagCountEntry
+                    {
+                        tag = kv.Key,
+                        count = kv.Value
+                    });
+                }
+            }
+
+            save.eliteCount = counters.eliteCount;
+            save.bossCount = counters.bossCount;
+            save.champCount = counters.champCount;
+
+            return save;
+        }
+
+        private static void RestoreCodexFromSnapshot(CodexState state, CodexSnapshot snap)
+        {
+            if (state == null) return;
+
+            // Defaults
+            state.deedProgress ??= new Dictionary<string, DeedProgressState>(StringComparer.Ordinal);
+            state.activeFocusSlots ??= new List<ActiveFocusSlotState>();
+
+            state.deedProgress.Clear();
+            state.activeFocusSlots.Clear();
+
+            if (snap == null) return;
+
+            // deedProgress
+            if (snap.deedProgress != null)
+            {
+                foreach (var e in snap.deedProgress)
+                {
+                    if (string.IsNullOrWhiteSpace(e.deedId)) continue;
+
+                    var st = new DeedProgressState
+                    {
+                        progress01 = e.progress01,
+                        completed = e.completed,
+                        claimed = e.claimed,
+                        counters = RestoreCounters(e.counters)
+                    };
+
+                    state.deedProgress[e.deedId.Trim()] = st;
+                }
+            }
+
+            // focus slots
+            if (snap.activeFocusSlots != null && snap.activeFocusSlots.Count > 0)
+            {
+                // slotIndex-sicher (kann Lücken haben)
+                int maxIndex = -1;
+                for (int i = 0; i < snap.activeFocusSlots.Count; i++)
+                    maxIndex = Mathf.Max(maxIndex, snap.activeFocusSlots[i].slotIndex);
+
+                for (int i = 0; i <= maxIndex; i++)
+                    state.activeFocusSlots.Add(new ActiveFocusSlotState { deedId = null, locked = false });
+
+                for (int i = 0; i < snap.activeFocusSlots.Count; i++)
+                {
+                    var se = snap.activeFocusSlots[i];
+                    if (se.slotIndex < 0 || se.slotIndex >= state.activeFocusSlots.Count) continue;
+
+                    var s = state.activeFocusSlots[se.slotIndex];
+                    s.deedId = string.IsNullOrWhiteSpace(se.deedId) ? null : se.deedId.Trim();
+                    s.locked = false; // locked ist im Service ableitbar/synchronisiert
+                    state.activeFocusSlots[se.slotIndex] = s;
+                }
+            }
+            else
+            {
+                // Mindestens 1 Slot
+                state.activeFocusSlots.Add(new ActiveFocusSlotState { deedId = null, locked = false });
+            }
+        }
+
+        private static DeedProgress RestoreCounters(DeedProgressSave save)
+        {
+            var p = new DeedProgress();
+            if (save == null) return p;
+
+            p.waves = save.waves;
+            p.mapsTotal = save.mapsTotal;
+
+            if (save.mapsByDifficulty != null)
+            {
+                for (int i = 0; i < save.mapsByDifficulty.Count; i++)
+                {
+                    var e = save.mapsByDifficulty[i];
+                    p.mapsByDifficulty[e.difficulty] = e.count;
+                }
+            }
+
+            p.killsGeneralWeighted = save.killsGeneralWeighted;
+
+            if (save.killsByTagWeighted != null)
+            {
+                for (int i = 0; i < save.killsByTagWeighted.Count; i++)
+                {
+                    var e = save.killsByTagWeighted[i];
+                    if (string.IsNullOrWhiteSpace(e.tag)) continue;
+                    p.killsByTagWeighted[e.tag.Trim()] = e.count;
+                }
+            }
+
+            p.eliteCount = save.eliteCount;
+            p.bossCount = save.bossCount;
+            p.champCount = save.champCount;
+
+            return p;
+        }
+
+
+        /// <summary>
+        /// Registers a new gear instance if it is valid.
+        /// </summary>
+        /// <param name="gear">The gear instance to register.</param>
         public void RegisterGearInstance(GearInstance gear)
         {
             if (gear == null)

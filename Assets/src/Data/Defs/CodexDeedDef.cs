@@ -13,7 +13,7 @@ namespace CHAL.Data
         public string title;
 
         [Header("Unlock Mapping")]
-        public List<ResearchUnlock> unlocks = new List<ResearchUnlock>();
+        public List<CodexUnlock> unlocks = new List<CodexUnlock>();
 
         [Header("Requirements (UND-Logik)")]
         public DeedRequirement requirements = new DeedRequirement();
@@ -27,9 +27,9 @@ namespace CHAL.Data
     }
 
     [Serializable]
-    public struct ResearchUnlock
+    public struct CodexUnlock
     {
-        public ResearchUnlockTypes unlockType;
+        public CodexUnlockTypes unlockType;
         public string targetId;
     }
 }

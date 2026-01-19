@@ -34,7 +34,7 @@ namespace CHAL.Systems.Codex
 
 
         //EVENTS
-        public event Action<string, IReadOnlyList<ResearchUnlock>> OnNodeCompleted;
+        public event Action<string, IReadOnlyList<CodexUnlock>> OnNodeCompleted;
         public event Action<IReadOnlyList<string>> OnAlwaysUnlockedReady;
         public event Action OnCodexChanged;
 
@@ -95,6 +95,8 @@ namespace CHAL.Systems.Codex
 
             if (always.Count > 0)
             {
+                EnsureFocusSlotCount(1);
+
                 OnAlwaysUnlockedReady?.Invoke(always);
                 DebugManager.Log($"CodexService: AlwaysUnlocked ready ({always.Count} IDs).",
                     DebugManager.EDebugLevel.Dev, "Research");
@@ -103,12 +105,35 @@ namespace CHAL.Systems.Codex
             RaiseCodexChanged();
         }
 
+        public void EnsureFocusSlotCount(int requiredCount)
+        {
+            if (requiredCount < 1)
+                requiredCount = 1;
+
+            if (_state.activeFocusSlots == null)
+                _state.activeFocusSlots = new List<ActiveFocusSlotState>();
+
+            while (_state.activeFocusSlots.Count < requiredCount)
+            {
+                _state.activeFocusSlots.Add(new ActiveFocusSlotState
+                {
+                    deedId = null,
+                    locked = false
+                });
+            }
+        }
+
+
+
         // ------------------------------------
         // Active Focus API (neue Wahrheit)
         // ------------------------------------
-
         public int GetFocusSlotCount()
-            => _state?.activeFocusSlots?.Count ?? 0;
+        {
+            if (_state == null) return 0;
+            if (_state.activeFocusSlots == null) return 0;
+            return _state.activeFocusSlots.Count;
+        }
 
         public string GetActiveDeedId(int slotIndex)
         {
@@ -248,6 +273,26 @@ namespace CHAL.Systems.Codex
             RaiseCodexChanged();
 
             DebugManager.Log($"Codex: Claimed deed={deedId} (slot={slotIndex})", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
+            return true;
+        }
+
+        public bool TryUnlockNextFocusSlot( out string reason)
+        {
+            reason = null;
+            int maxSlots = GameManager.Instance.BalanceConfig.codexSettings.codexMaxFocusSlots;
+
+            if (maxSlots < 1) maxSlots = 1;
+            EnsureFocusSlotCount(1);
+
+            int current = _state.activeFocusSlots.Count;
+            if (current >= maxSlots)
+            {
+                reason = $"Already at max focus slots ({maxSlots}).";
+                return false;
+            }
+
+            EnsureFocusSlotCount(current + 1);
+            RaiseCodexChanged();
             return true;
         }
 

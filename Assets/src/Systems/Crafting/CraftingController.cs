@@ -73,7 +73,7 @@ namespace CHAL.Systems.Crafting
                 DebugManager.Warning("Wallet is null. Crafting UI will not initialize.", "Crafting");
             }
 
-            unlocks = GameManager.Instance.ResearchUnlocks;
+            unlocks = GameManager.Instance.codexUnlocks;
 
             if( unlocks == null )
                 DebugManager.Warning("No UnlockRegistry!", "Crafting");

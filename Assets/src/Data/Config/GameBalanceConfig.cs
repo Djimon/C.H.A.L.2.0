@@ -584,5 +584,21 @@ namespace CHAL.Data
         [Header("Hero Progression")]
         public HeroXPConfig heroXP;   // zentrale Config für Helden-XP/Levelkurve
 
+
+        // ==========================
+        // Codex
+        // ==========================
+
+        [Header("Codex / Research")]
+        public CodexSettings codexSettings;
+
+        public struct CodexSettings
+        {
+            public int codexInitialFocusSlots;
+            public int codexMaxFocusSlots;
+
+        }
+
+
     }
 }

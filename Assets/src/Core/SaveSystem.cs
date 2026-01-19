@@ -150,7 +150,7 @@ namespace CHAL.Core
             var ids = new[]
             {
                 ProfileFileId(pid),
-                ResearchFileId(pid),
+                CodexFileId(pid),
                 StatisticsFileId(pid),
                 InventoryFileId(pid),
             };
@@ -180,16 +180,16 @@ namespace CHAL.Core
         /// </summary>
         /// <param name="profileId">The ID of the profile to save the research snapshot for.</param>
         /// <param name="snap">The research snapshot to save.</param>
-        public static void SaveResearch(string profileId, ResearchSnapshot snap)
+        public static void SaveCodex(string profileId, CodexSnapshot snap)
         {
             ConfigureSaveGame(); // Encoder/Passwort etc. aus GameSaveConfig
 
             var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
-            var id = ResearchFileId(pid);
+            var id = CodexFileId(pid);
 
-            SaveGame.Save(id, snap ?? new ResearchSnapshot());
+            SaveGame.Save(id, snap ?? new CodexSnapshot());
 
-            DebugManager.Log($"SaveResearch → {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
+            DebugManager.Log($"SaveCodex → {id}", DebugManager.EDebugLevel.Dev, "Save", LogType.Log);
         }
 
 /// <summary>
@@ -198,20 +198,20 @@ namespace CHAL.Core
 /// </summary>
 /// <param name="profileId">The ID of the profile to load research for.</param>
 /// <returns>A ResearchSnapshot object containing the loaded data.</returns>
-        public static ResearchSnapshot LoadResearch(string profileId)
+        public static CodexSnapshot LoadCodex(string profileId)
         {
             ConfigureSaveGame();
 
             var pid = string.IsNullOrWhiteSpace(profileId) ? CurrentProfileId() : profileId;
-            var id = ResearchFileId(pid);
+            var id = CodexFileId(pid);
 
             if (!SaveGame.Exists(id))
             {
                 DebugManager.Log($"LoadResearch: no file at '{id}', returning empty snapshot.", DebugManager.EDebugLevel.Dev, "Research", LogType.Warning);
-                return new ResearchSnapshot();
+                return new CodexSnapshot();
             }
 
-            var snap = SaveGame.Load<ResearchSnapshot>(id) ?? new ResearchSnapshot();
+            var snap = SaveGame.Load<CodexSnapshot>(id) ?? new CodexSnapshot();
             DebugManager.Log($"LoadResearch ← {id}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
             return snap;
         }
@@ -222,10 +222,10 @@ namespace CHAL.Core
 /// </summary>
 /// <param name="profileId">The ID of the profile whose research data is to be deleted.</param>
 /// <returns>True if the research data was deleted; otherwise, false.</returns>
-        public static bool DeleteResearch(string profileId)
+        public static bool DeleteCodex(string profileId)
         {
             ConfigureSaveGame();
-            var id = ResearchFileId(string.IsNullOrWhiteSpace(profileId) ? "main" : profileId);
+            var id = CodexFileId(string.IsNullOrWhiteSpace(profileId) ? "main" : profileId);
             if (!SaveGame.Exists(id)) return false;
             SaveGame.Delete(id);
             DebugManager.Log($"DeleteResearch: {id}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
@@ -345,10 +345,10 @@ namespace CHAL.Core
         }
 
 
-        private static string ResearchFileId(string profileId)
+        private static string CodexFileId(string profileId)
         {
             // Gleiche Struktur wie beim Profil – SaveGame speichert unter persistentDataPath/<id>
-            return $"profiles/{profileId}/research_v1.json";
+            return $"profiles/{profileId}/codex_v1.json";
         }
 
         private static string StatisticsFileId(string profileId)
