@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+<ui:VisualElement name="hud-root">
+  <ui:VisualElement name="hud-top-left">
+    <ui:Button name="btn-codex" text="Codex" />
+    <ui:Label name="codex-badge" text="0%" />
+  </ui:VisualElement>
+  <ui:VisualElement name="codex-overlay-container" />
+</ui:VisualElement>
+</ui:UXML>
