@@ -899,9 +899,9 @@ namespace CHAL.Core
         }
 
 /// <summary>
-/// Initializes the research system, optionally loading existing data.
+/// Initializes the Codex, optionally loading existing data.
 /// </summary>
-/// <param name="loadExisting">Indicates whether to load existing research data.</param>
+/// <param name="loadExisting">Indicates whether to load existing Codex data.</param>
         public void InitCodex(bool loadExisting)
         {
             EnsureResearchDefsLoaded();

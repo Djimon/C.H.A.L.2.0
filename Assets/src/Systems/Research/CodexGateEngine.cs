@@ -56,6 +56,11 @@ namespace CHAL.Systems.Codex
         // Public API (Phase 2)
         // -------------------------
 
+/// <summary>
+/// Computes the state of a group gate based on the provided group ID.
+/// </summary>
+/// <param name="groupId">The ID of the group to compute the gate state for.</param>
+/// <returns>The computed state of the group gate.</returns>
         public GroupGateState ComputeGroupGate(string groupId)
         {
             if (string.IsNullOrWhiteSpace(groupId) || !_groupById.TryGetValue(groupId, out var g))
@@ -101,6 +106,12 @@ namespace CHAL.Systems.Codex
             };
         }
 
+/// <summary>
+/// Computes the state of the deed gate based on the provided deed ID.
+/// Returns a DeedGateState indicating visibility and availability.
+/// </summary>
+/// <param name="deedId">The ID of the deed to compute the state for.</param>
+/// <returns>A DeedGateState object representing the computed state.</returns>
         public DeedGateState ComputeDeedGate(string deedId)
         {
             // Not found => unsichtbar

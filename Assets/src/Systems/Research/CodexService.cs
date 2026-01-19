@@ -38,6 +38,11 @@ namespace CHAL.Systems.Codex
         public event Action<IReadOnlyList<string>> OnAlwaysUnlockedReady;
         public event Action OnCodexChanged;
 
+/// <summary>
+/// Initializes the object using the provided Codex definition and state.
+/// </summary>
+/// <param name="treeDef">The Codex definition to initialize from.</param>
+/// <param name="state">The Codex state to use; if null, a new state is created.</param>
         public void InitFromDef(CodexDef treeDef, CodexState state)
         {
             _treeDef = treeDef;
@@ -105,6 +110,11 @@ namespace CHAL.Systems.Codex
             RaiseCodexChanged();
         }
 
+/// <summary>
+/// Ensures that the number of active focus slots meets the required count.
+/// If the count is less than one, it defaults to one.
+/// </summary>
+/// <param name="requiredCount">The minimum number of focus slots required.</param>
         public void EnsureFocusSlotCount(int requiredCount)
         {
             if (requiredCount < 1)
@@ -142,6 +152,14 @@ namespace CHAL.Systems.Codex
             return _state.activeFocusSlots[slotIndex].deedId;
         }
 
+/// <summary>
+/// Attempts to set the active focus for a specified slot index.
+/// Returns false if the slot index is invalid or locked.
+/// </summary>
+/// <param name="slotIndex">The index of the slot to set as active.</param>
+/// <param name="deedId">The ID of the deed associated with the focus.</param>
+/// <param name="reason">An output parameter that provides the reason for failure, if applicable.</param>
+/// <returns>True if the focus was successfully set; otherwise, false.</returns>
         public bool TrySetActiveFocus(int slotIndex, string deedId, out string reason)
         {
             reason = null;
@@ -215,6 +233,12 @@ namespace CHAL.Systems.Codex
             return true;
         }
 
+/// <summary>
+/// Attempts to claim a deed by its ID. Returns false if the deed ID is invalid or unknown.
+/// </summary>
+/// <param name="deedId">The ID of the deed to claim.</param>
+/// <param name="reason">An output parameter that provides the reason for failure, if applicable.</param>
+/// <returns>True if the claim is successful; otherwise, false.</returns>
         public bool TryClaim(string deedId, out string reason)
         {
             reason = null;
@@ -314,6 +338,11 @@ namespace CHAL.Systems.Codex
             return (s.completed || s.progress01 >= 1f) && !s.claimed;
         }
 
+/// <summary>
+/// Checks if the specified slot is locked based on its deed status.
+/// </summary>
+/// <param name="slotIndex">The index of the slot to check.</param>
+/// <returns>True if the slot is locked; otherwise, false.</returns>
         public bool IsSlotLocked(int slotIndex)
         {
             if (_state.activeFocusSlots == null) return false;
@@ -360,6 +389,11 @@ namespace CHAL.Systems.Codex
         // Legacy helper (noch da, aber korrekt)
         // ------------------------------------
 
+/// <summary>
+/// Checks if a node is available based on its ID.
+/// </summary>
+/// <param name="nodeId">The ID of the node to check.</param>
+/// <returns>True if the node is available; otherwise, false.</returns>
         public bool IsNodeAvailable(string nodeId)
         {
             // Legacy/Compiler-Pfade noch drin – aber Completion ist claimed.
@@ -416,6 +450,12 @@ namespace CHAL.Systems.Codex
         // Progress: nur über ActiveFocus Slots
         // ------------------------------------
 
+/// <summary>
+/// Invoked when a wave is completed, updating progress for active deeds.
+/// </summary>
+/// <param name="waveIndex">The index of the completed wave.</param>
+/// <param name="waveCount">The total number of waves.</param>
+/// <param name="difficulty">The difficulty level of the wave.</param>
         public void OnWaveCompleted(int waveIndex, int waveCount, MapDifficulty difficulty)
             => ApplyToActiveDeeds((deedId, def, prog) =>
             {
@@ -464,7 +504,10 @@ namespace CHAL.Systems.Codex
                 return true;
             });
 
-        // ---- Optional: Craft Hook bleibt erstmal noop ----
+/// <summary>
+/// Executes the crafting process for the specified object.
+/// </summary>
+/// <param name="obj">The identifier of the object being crafted.</param>
         public void OnCraftExecuted(string obj)
         {
             // später, falls es DeedRequirements für crafting gibt

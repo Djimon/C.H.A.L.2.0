@@ -19,6 +19,11 @@ namespace CHAL.Systems.Codex
             _codexService = codexService ?? throw new ArgumentNullException(nameof(codexService));
         }
 
+/// <summary>
+/// Applies the specified unlocks to the game using the given deed ID.
+/// </summary>
+/// <param name="deedId">The ID of the deed being applied.</param>
+/// <param name="unlocks">A list of unlocks to apply.</param>
         public void Apply(string deedId, IReadOnlyList<CodexUnlock> unlocks)
         {
             if (unlocks == null || unlocks.Count == 0)
