@@ -394,16 +394,6 @@ namespace CHAL.Systems.Codex
 /// </summary>
 /// <param name="nodeId">The ID of the node to check.</param>
 /// <returns>True if the node is available; otherwise, false.</returns>
-/// <summary>
-/// Checks if a node is available based on its ID.
-/// </summary>
-/// <param name="nodeId">The ID of the node to check.</param>
-/// <returns>True if the node is available; otherwise, false.</returns>
-/// <summary>
-/// Checks if a node is available based on its ID.
-/// </summary>
-/// <param name="nodeId">The ID of the node to check.</param>
-/// <returns>True if the node is available; otherwise, false.</returns>
         public bool IsNodeAvailable(string nodeId)
         {
             // Legacy/Compiler-Pfade noch drin – aber Completion ist claimed.
@@ -514,11 +504,6 @@ namespace CHAL.Systems.Codex
                 return true;
             });
 
-        // ---- Optional: Craft Hook bleibt erstmal noop ----
-/// <summary>
-/// Executes the crafting process for the specified object.
-/// </summary>
-/// <param name="obj">The identifier of the object being crafted.</param>
 /// <summary>
 /// Executes the crafting process for the specified object.
 /// </summary>
