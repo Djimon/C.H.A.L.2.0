@@ -10,30 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
-  m_Name: advanced_crafting
+  m_Name: passives_tier_2
   m_EditorClassIdentifier: 
-  id: crafting_advanced_crafting
-  title: advanced_crafting
+  id: heroes_passives_tier_2
+  title: passives_tier_2
   unlocks:
-  - unlockType: 1
-    targetId: crafting_tier_2
-  - unlockType: 2
-    targetId: advanced_helmet
-  - unlockType: 2
-    targetId: advanced_chest
-  - unlockType: 2
-    targetId: advanced_gloves
-  - unlockType: 2
-    targetId: advanced_legs
-  - unlockType: 2
-    targetId: advanced_boots
-  - unlockType: 2
-    targetId: advanced_amulet
+  - unlockType: 10
+    targetId: passives_tier_2
   requirements:
     waves: 0
     maps: 0
-    mapRequirements: []
-    killsGeneral: 2500
+    mapRequirements:
+    - difficulty: 1
+      amount: 25
+    killsGeneral: 10000
     killsByTag: []
     eliteCount: 0
     bossCount: 0

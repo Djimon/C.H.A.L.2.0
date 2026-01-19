@@ -15,19 +15,19 @@ MonoBehaviour:
   id: crafting_basic_crafting
   title: basic_crafting
   unlocks:
-  - unlockType: 1
+  - unlockType: 5
     targetId: basic_crafting
-  - unlockType: 2
+  - unlockType: 8
     targetId: basic_helmet
-  - unlockType: 2
+  - unlockType: 8
     targetId: basic_chest
-  - unlockType: 2
+  - unlockType: 8
     targetId: basic_gloves
-  - unlockType: 2
+  - unlockType: 8
     targetId: basic_legs
-  - unlockType: 2
+  - unlockType: 8
     targetId: basic_boots
-  - unlockType: 2
+  - unlockType: 8
     targetId: basic_amulet
   requirements:
     waves: 0

@@ -208,11 +208,11 @@ namespace CHAL.Systems.Codex
                 if (!_chapterById.ContainsKey(chapterId))
                     _chapterById.Add(chapterId, new ChapterIndex(chapterId, ch));
 
-                if (ch.stages == null) continue;
+                if (ch.groups == null) continue;
 
-                for (int gi = 0; gi < ch.stages.Count; gi++)
+                for (int gi = 0; gi < ch.groups.Count; gi++)
                 {
-                    var g = ch.stages[gi];
+                    var g = ch.groups[gi];
                     if (g == null) continue;
 
                     var groupId = GetGroupId(g, chapterId, gi);

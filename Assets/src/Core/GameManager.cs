@@ -906,6 +906,12 @@ namespace CHAL.Core
         {
             EnsureResearchDefsLoaded();
 
+            if (codex == null)
+            {
+                DebugManager.Error("InitResearch aborted: researchTree is null (CodexDef missing).", "System");
+                return;
+            }
+
             // Runtime-Container sicherstellen
             if (Profile.CodexRuntimeState == null)
                 Profile.CodexRuntimeState = new CodexState();
@@ -964,10 +970,22 @@ namespace CHAL.Core
         private void EnsureResearchDefsLoaded()
         {
             if (codex == null)
-                codex = Resources.Load<CodexDef>("data/Research/Tree");
+                codex = Resources.Load<CodexDef>("data/Codex");
+
+            if (codex == null)
+            {
+                DebugManager.Error("InitResearch: CodexDef not found at Resources path 'data/Codex'. " +
+                                   "Fix the asset path or assign the reference.", "System");
+                return;
+            }
 
             if (deeds == null || deeds.Count == 0)
-                deeds = Resources.LoadAll<CodexDeedDef>("data/Research/Nodes").ToList();
+                deeds = Resources.LoadAll<CodexDeedDef>("data/Codex/Deeds").ToList();
+
+            if (deeds == null || deeds.Count == 0)
+            {
+                DebugManager.Warning("InitResearch: No CodexDeedDef nodes found at Resources path 'data/Codex/Deeds'.", "System");
+            }
         }
 
 

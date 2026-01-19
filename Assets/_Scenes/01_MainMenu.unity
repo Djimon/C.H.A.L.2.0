@@ -373,8 +373,8 @@ MonoBehaviour:
   config: {fileID: 0}
   inputManager: {fileID: 0}
   heroCatalog: {fileID: 11400000, guid: b0339df6de471254690437ae7760d56c, type: 2}
-  researchTree: {fileID: 11400000, guid: c3345df8e3b12a8418a76b89cc04dbbd, type: 2}
-  researchNodes: []
+  codex: {fileID: 11400000, guid: f868a84a46829c04187417eae0e0129d, type: 2}
+  deeds: []
 --- !u!1 &1482080552
 GameObject:
   m_ObjectHideFlags: 0

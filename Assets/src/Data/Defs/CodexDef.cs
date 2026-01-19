@@ -34,7 +34,7 @@ namespace CHAL.Data
         public string chapterId;
 
         // entspricht deinem "Groups" Konzept (vormals "stages")
-        public List<CodexChapterGroup> stages = new List<CodexChapterGroup>();
+        public List<CodexChapterGroup> groups = new List<CodexChapterGroup>();
     }
 
     [Serializable]
@@ -45,7 +45,7 @@ namespace CHAL.Data
 
         // Gate (b): Sichtbarkeit dieser Group abhängig von anderer Group (default: previous).
         // -1 => previous group (groupIndex - 1)
-        public int dependsOnGroupId = -1;
+        public string dependsOnGroupId;
 
         // completion01 basiert später auf "claimedCount/total"
         public float visibleAfterCompletion01 = 1f;

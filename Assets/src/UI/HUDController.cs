@@ -7,13 +7,13 @@ using UnityEngine.UIElements;
 namespace CHAL.Systems.UI
 {
     /// <summary>
-    /// HUD button (top-left) that toggles the Codex UI as a child overlay.
-    /// Place this HUD in both Map and Hideout scenes.
+    /// HUD button that toggles the already-present CodexUI (child UIDocument).
+    /// HUD is placed in scenes manually; CodexUI is a child of HUD in the prefab.
     /// </summary>
     public sealed class HudCodexController : IngameUI
     {
-        [Header("UXML References")]
-        [SerializeField] private VisualTreeAsset codexScreenUxml; // assign CodexScreen.uxml here
+        [Header("References (optional)")]
+        [SerializeField] private UIDocument codexDocument; // assign CodexUI UIDocument or leave null (auto-find)
 
         private GameManager _gm;
         private CodexService _codex;
@@ -21,8 +21,6 @@ namespace CHAL.Systems.UI
         private Button _btnCodex;
         private Label _badge;
 
-        private VisualElement _overlayHost;
-        private VisualElement _codexRoot;
         private bool _isOpen;
 
         protected override void Awake()
@@ -46,10 +44,10 @@ namespace CHAL.Systems.UI
             }
 
             BindHudUI();
-            EnsureCodexChildCreated();
+            ResolveCodexDocument();
             HookEvents();
 
-            SetOpen(false);
+            Show(true);
             UpdateCodexBadge();
         }
 
@@ -63,45 +61,28 @@ namespace CHAL.Systems.UI
         {
             _btnCodex = root.Q<Button>("btn-codex");
             _badge = root.Q<Label>("codex-badge");
-            _overlayHost = root.Q<VisualElement>("codex-overlay-container");
 
             if (_btnCodex == null)
-                DebugManager.Error("[HudCodexController] Missing Button 'btn-codex' in HUD UXML.");
-
-            if (_overlayHost == null)
-                DebugManager.Error("[HudCodexController] Missing VisualElement 'codex-overlay-container' in HUD UXML.");
+                DebugManager.Error("[HudCodexController] Missing Button with name 'btn-codex' in HUD UXML.");
         }
 
-        private void EnsureCodexChildCreated()
+        private void ResolveCodexDocument()
         {
-            if (_overlayHost == null) return;
-            if (_codexRoot != null) return;
-
-            if (codexScreenUxml == null)
-            {
-                DebugManager.Error("[HudCodexController] codexScreenUxml not assigned (CodexScreen.uxml).");
+            if (codexDocument != null)
                 return;
+
+            // Find a child UIDocument (not our own)
+            var docs = GetComponentsInChildren<UIDocument>(true);
+            for (int i = 0; i < docs.Length; i++)
+            {
+                if (docs[i] == null) continue;
+                if (docs[i] == GetComponent<UIDocument>()) continue;
+                codexDocument = docs[i];
+                break;
             }
 
-            // Create codex UI as child
-            _codexRoot = codexScreenUxml.CloneTree();
-            _codexRoot.name = "codex-overlay-root";
-
-            // Optional: make it overlay-style
-            _codexRoot.style.position = Position.Absolute;
-            _codexRoot.style.left = 0;
-            _codexRoot.style.top = 0;
-            _codexRoot.style.right = 0;
-            _codexRoot.style.bottom = 0;
-
-            _overlayHost.Add(_codexRoot);
-
-            // Attach the CodexScreenController to this same GameObject (recommended),
-            // or ensure it exists elsewhere and points to the same UIDocument.
-            //
-            // If your CodexScreenController expects its own UIDocument root, the simplest approach:
-            // - Put CodexScreenController on the same GameObject as this HUD UIDocument
-            // - and let it use "root" already (IngameUI) — if it uses its own root, we adapt it next.
+            if (codexDocument == null)
+                DebugManager.Error("[HudCodexController] Could not find child UIDocument for CodexUI. Assign 'codexDocument' in inspector.");
         }
 
         private void HookEvents()
@@ -125,25 +106,27 @@ namespace CHAL.Systems.UI
         {
             _isOpen = open;
 
-            if (_overlayHost != null)
-                _overlayHost.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
+            if (codexDocument == null)
+                return;
 
-            // Optional: pause input behind overlay etc. (später)
+            var codexRoot = codexDocument.rootVisualElement;
+            if (codexRoot == null)
+                return;
+
+            codexRoot.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void OnCodexChanged()
         {
             UpdateCodexBadge();
-
-            // If open, CodexScreenController will refresh itself via OnCodexChanged anyway.
-            // Nothing else needed here.
         }
 
         private void UpdateCodexBadge()
         {
-            if (_badge == null) return;
+            if (_badge == null || _codex == null)
+                return;
 
-            // Minimal, useful: show progress of active deed in slot 0
+            // Minimal: show progress% of active deed in slot 0.
             var deedId = _codex.GetActiveDeedId(0);
             if (string.IsNullOrWhiteSpace(deedId))
             {
@@ -151,37 +134,32 @@ namespace CHAL.Systems.UI
                 return;
             }
 
-            // We don't have a direct API for progress-by-id in CodexService? (depends on your current service)
-            // So we use VM to get progress.
-            var chapters = _codex.GetChaptersVM();
-            if (chapters == null || chapters.Count == 0)
-            {
-                _badge.text = "";
-                return;
-            }
-
-            // Find deed in any chapter (cheap; counts are small)
+            // Find deed progress via VMs (cheap, counts small).
             float p = 0f;
             bool found = false;
 
-            for (int ci = 0; ci < chapters.Count && !found; ci++)
+            var chapters = _codex.GetChaptersVM();
+            if (chapters != null)
             {
-                var ch = _codex.GetChapterVM(chapters[ci].chapterId);
-                if (ch?.groups == null) continue;
-
-                for (int gi = 0; gi < ch.groups.Count && !found; gi++)
+                for (int ci = 0; ci < chapters.Count && !found; ci++)
                 {
-                    var g = ch.groups[gi];
-                    if (g?.deeds == null) continue;
+                    var ch = _codex.GetChapterVM(chapters[ci].chapterId);
+                    if (ch?.groups == null) continue;
 
-                    for (int di = 0; di < g.deeds.Count; di++)
+                    for (int gi = 0; gi < ch.groups.Count && !found; gi++)
                     {
-                        var d = g.deeds[di];
-                        if (d != null && d.deedId == deedId)
+                        var g = ch.groups[gi];
+                        if (g?.deeds == null) continue;
+
+                        for (int di = 0; di < g.deeds.Count; di++)
                         {
-                            p = d.progress01;
-                            found = true;
-                            break;
+                            var d = g.deeds[di];
+                            if (d != null && d.deedId == deedId)
+                            {
+                                p = d.progress01;
+                                found = true;
+                                break;
+                            }
                         }
                     }
                 }

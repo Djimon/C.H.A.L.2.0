@@ -10,21 +10,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
-  m_Name: passives_tier_2
+  m_Name: master_crafting
   m_EditorClassIdentifier: 
-  id: heroes_passives_tier_2
-  title: passives_tier_2
+  id: crafting_master_crafting
+  title: master_crafting
   unlocks:
-  - unlockType: 3
-    targetId: passives_tier_2
+  - unlockType: 5
+    targetId: crafting_tier_3
+  - unlockType: 8
+    targetId: master_helmet
+  - unlockType: 8
+    targetId: master_chest
+  - unlockType: 8
+    targetId: master_gloves
+  - unlockType: 8
+    targetId: master_legs
+  - unlockType: 8
+    targetId: master_boots
+  - unlockType: 8
+    targetId: master_amulet
   requirements:
     waves: 0
     maps: 0
     mapRequirements:
-    - difficulty: 1
+    - difficulty: 2
       amount: 25
-    killsGeneral: 10000
+    killsGeneral: 5000
     killsByTag: []
-    eliteCount: 0
+    eliteCount: 500
     bossCount: 0
-    championCount: 25
+    championCount: 100

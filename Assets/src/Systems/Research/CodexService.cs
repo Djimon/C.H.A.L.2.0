@@ -643,11 +643,11 @@ namespace CHAL.Systems.Codex
                 chapterId = GetChapterId(ch)
             };
 
-            if (ch.stages == null) return vm;
+            if (ch.groups == null) return vm;
 
-            for (int groupIndex = 0; groupIndex < ch.stages.Count; groupIndex++)
+            for (int groupIndex = 0; groupIndex < ch.groups.Count; groupIndex++)
             {
-                var g = ch.stages[groupIndex];
+                var g = ch.groups[groupIndex];
                 if (g == null) continue;
 
                 var groupId = GetGroupId(g, vm.chapterId, groupIndex);

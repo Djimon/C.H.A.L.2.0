@@ -51,11 +51,11 @@ namespace CHAL.Systems.Codex
             for (int lane = 0; lane < lanes.Count; lane++)
             {
                 var laneDef = lanes[lane];
-                if (laneDef?.stages == null) continue;
+                if (laneDef?.groups == null) continue;
 
-                for (int stage = 0; stage < laneDef.stages.Count; stage++)
+                for (int stage = 0; stage < laneDef.groups.Count; stage++)
                 {
-                    var stageRef = laneDef.stages[stage];
+                    var stageRef = laneDef.groups[stage];
                     if (stageRef?.deedSlots == null) continue;
 
                     foreach (var entry in stageRef.deedSlots)

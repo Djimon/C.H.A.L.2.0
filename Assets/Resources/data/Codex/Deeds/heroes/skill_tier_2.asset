@@ -10,21 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
-  m_Name: master_infusion
-  m_EditorClassIdentifier: 
-  id: crafting_master_infusion
-  title: master_infusion
+  m_Name: skill_tier_2
+  m_EditorClassIdentifier: Assembly-CSharp::CHAL.Data.CodexDeedDef
+  id: skill_tier_2
+  title: skill_tier_2
   unlocks:
-  - unlockType: 1
-    targetId: affix_crafting_tier_3
+  - unlockType: 15
+    targetId: tier_2
   requirements:
     waves: 0
     maps: 0
-    mapRequirements:
-    - difficulty: 2
-      amount: 25
-    killsGeneral: 10000
+    mapRequirements: []
+    killsGeneral: 0
     killsByTag: []
     eliteCount: 0
     bossCount: 0
-    championCount: 150
+    championCount: 0

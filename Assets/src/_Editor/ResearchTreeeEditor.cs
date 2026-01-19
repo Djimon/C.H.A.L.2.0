@@ -15,7 +15,7 @@ using UnityEngine;
 // - Visual: public List<ResearchLane> researchLanes
 // - Tree:   public List<ResearchTreeLane> researchTreeLanes
 
-[CustomEditor(typeof(CHAL.Data.CodexDef))]
+//[CustomEditor(typeof(CHAL.Data.CodexDef))]
 public sealed class ResearchTreeDefEditor : Editor
 {
     private CodexDef _tree;
@@ -440,8 +440,8 @@ public sealed class ResearchTreeDefEditor : Editor
 
         foreach (var lane in tree.codexChapters)
         {
-            if (lane?.stages == null) continue;
-            foreach (var stage in lane.stages)
+            if (lane?.groups == null) continue;
+            foreach (var stage in lane.groups)
             {
                 if (stage?.deedSlots == null) continue;
                 foreach (var nref in stage.deedSlots)
@@ -615,8 +615,8 @@ public sealed class ResearchTreeDefEditor : Editor
             int stageCount = 0;
             if (_tree?.codexChapters != null)
                 foreach (var lane in _tree.codexChapters)
-                    if (lane != null && lane.stages != null)
-                        stageCount += lane.stages.Count;
+                    if (lane != null && lane.groups != null)
+                        stageCount += lane.groups.Count;
 
             int nodeCount = compiled.nodesById?.Count ?? 0;
             int parentLinks = 0;

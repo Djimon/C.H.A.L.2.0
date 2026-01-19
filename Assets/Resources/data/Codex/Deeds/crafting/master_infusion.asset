@@ -10,33 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
-  m_Name: master_crafting
+  m_Name: master_infusion
   m_EditorClassIdentifier: 
-  id: crafting_master_crafting
-  title: master_crafting
+  id: crafting_master_infusion
+  title: master_infusion
   unlocks:
-  - unlockType: 1
-    targetId: crafting_tier_3
-  - unlockType: 2
-    targetId: master_helmet
-  - unlockType: 2
-    targetId: master_chest
-  - unlockType: 2
-    targetId: master_gloves
-  - unlockType: 2
-    targetId: master_legs
-  - unlockType: 2
-    targetId: master_boots
-  - unlockType: 2
-    targetId: master_amulet
+  - unlockType: 5
+    targetId: affix_crafting_tier_3
   requirements:
     waves: 0
     maps: 0
     mapRequirements:
     - difficulty: 2
       amount: 25
-    killsGeneral: 5000
+    killsGeneral: 10000
     killsByTag: []
-    eliteCount: 500
+    eliteCount: 0
     bossCount: 0
-    championCount: 100
+    championCount: 150

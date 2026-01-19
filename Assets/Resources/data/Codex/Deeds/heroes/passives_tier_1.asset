@@ -10,21 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
-  m_Name: passives_tier_3
+  m_Name: passives_tier_1
   m_EditorClassIdentifier: 
-  id: world_passives_tier_3
-  title: passives_tier_3
+  id: heroes_passives_tier_1
+  title: passives_tier_1
   unlocks:
-  - unlockType: 3
-    targetId: passives_tier_3
+  - unlockType: 10
+    targetId: passives_tier_1
   requirements:
-    waves: 100
+    waves: 250
     maps: 0
-    mapRequirements:
-    - difficulty: 2
-      amount: 10
-    killsGeneral: 15000
+    mapRequirements: []
+    killsGeneral: 5000
     killsByTag: []
-    eliteCount: 2500
-    bossCount: 100
-    championCount: 25
+    eliteCount: 0
+    bossCount: 0
+    championCount: 15

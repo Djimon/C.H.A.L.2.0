@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
-  m_Name: overtune_hardening
+  m_Name: advanced_crafting
   m_EditorClassIdentifier: 
-  id: crafting_overtune_hardening
-  title: overtune_hardening
+  id: crafting_advanced_crafting
+  title: advanced_crafting
   unlocks:
-  - unlockType: 1
-    targetId: over_hardening
+  - unlockType: 5
+    targetId: crafting_tier_2
+  - unlockType: 8
+    targetId: advanced_helmets
   requirements:
     waves: 0
     maps: 0
-    mapRequirements:
-    - difficulty: 3
-      amount: 10
-    killsGeneral: 10000
+    mapRequirements: []
+    killsGeneral: 2500
     killsByTag: []
     eliteCount: 0
-    bossCount: 5000
-    championCount: 500
+    bossCount: 0
+    championCount: 25

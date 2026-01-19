@@ -10,21 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
-  m_Name: crown_sockets
+  m_Name: affix_reroll
   m_EditorClassIdentifier: 
-  id: heroes_crown_sockets
-  title: crown_sockets
+  id: crafting_affix_reroll
+  title: affix_reroll
   unlocks:
-  - unlockType: 3
-    targetId: crown_sockets
+  - unlockType: 5
+    targetId: affix_reroll
   requirements:
     waves: 0
     maps: 0
-    mapRequirements:
-    - difficulty: 3
-      amount: 10
-    killsGeneral: 25000
+    mapRequirements: []
+    killsGeneral: 1000
     killsByTag: []
-    eliteCount: 5000
-    bossCount: 100
-    championCount: 50
+    eliteCount: 0
+    bossCount: 50
+    championCount: 5

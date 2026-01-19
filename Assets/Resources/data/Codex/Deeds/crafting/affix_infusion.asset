@@ -10,21 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceaf9a058f5b090428ec5447000ead72, type: 3}
-  m_Name: hardening
+  m_Name: affix_infusion
   m_EditorClassIdentifier: 
-  id: crafting_hardening
-  title: hardening
+  id: crafting_affix_unfusion
+  title: affix_infusion
   unlocks:
-  - unlockType: 1
-    targetId: affix_hardening
+  - unlockType: 5
+    targetId: affix_crafting
   requirements:
     waves: 0
-    maps: 0
-    mapRequirements:
-    - difficulty: 1
-      amount: 10
-    killsGeneral: 5000
+    maps: 10
+    mapRequirements: []
+    killsGeneral: 500
     killsByTag: []
-    eliteCount: 0
-    bossCount: 200
+    eliteCount: 50
+    bossCount: 0
     championCount: 0
