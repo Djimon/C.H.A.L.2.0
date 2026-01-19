@@ -234,18 +234,6 @@ namespace CHAL.Systems.Codex
         }
 
 /// <summary>
-/// Attempts to claim a deed by its ID. Returns a success status and an optional reason for failure.
-/// </summary>
-/// <param name="deedId">The ID of the deed to claim.</param>
-/// <param name="reason">An output parameter that provides the reason for failure, if applicable.</param>
-/// <returns>True if the claim was successful; otherwise, false.</returns>
-/// <summary>
-/// Attempts to claim a deed by its ID. Returns false if the claim fails, along with a reason.
-/// </summary>
-/// <param name="deedId">The ID of the deed to claim.</param>
-/// <param name="reason">An output parameter that provides the reason for failure, if applicable.</param>
-/// <returns>True if the claim is successful; otherwise, false.</returns>
-/// <summary>
 /// Attempts to claim a deed by its ID. Returns false if the deed ID is invalid or unknown.
 /// </summary>
 /// <param name="deedId">The ID of the deed to claim.</param>
