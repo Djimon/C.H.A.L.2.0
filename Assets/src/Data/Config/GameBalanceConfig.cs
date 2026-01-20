@@ -121,6 +121,7 @@ namespace CHAL.Data
             public EnemyScaling scalingIncrfeasedPercent;
         }
 
+        [Header("Wave Settings")]
         public WaveSettings waves;
 
         // ==========================
@@ -156,8 +157,12 @@ namespace CHAL.Data
         public struct HeroSettings
         {
             public HeroGrowthConfig GrowthConfig;
+
+            [Header("Hero Progression")]
+            public HeroXPConfig heroXP;
         }
 
+        [Header("Hero Settings")]
         public HeroSettings heroSettings;
 
         // ==========================
@@ -510,7 +515,6 @@ namespace CHAL.Data
             public SkillModuleCostConfig skillModuleCosts;
         }
 
-
         
         [Header("Skill Settings")]
         public SkillSettings skillSettings;
@@ -578,26 +582,83 @@ namespace CHAL.Data
         [Header("Economy Settings")]
         public EconomySettings economy;
 
-        // ==========================
-        // HERO PROGRESSION
-        // ==========================
-        [Header("Hero Progression")]
-        public HeroXPConfig heroXP;   // zentrale Config für Helden-XP/Levelkurve
-
 
         // ==========================
         // Codex
         // ==========================
 
-        [Header("Codex / Research")]
-        public CodexSettings codexSettings;
+        [System.Serializable]
+        public struct CodexMonsterRankWeight
+        {
+            public EnemyRank rank;
+            public float weight;
+        }
 
+        [System.Serializable]
+        public struct CodexCraftTierWeight
+        {
+            //GearBaseTier or SkillTier
+            public int tier;
+            public float weight;
+        }
+
+        [System.Serializable]
+        public struct CodexMapDifficultyWeight
+        {
+            public MapDifficulty difficulty;
+            public float weight;
+        }
+
+        [System.Serializable]
+        public struct CodexCategoryMultipliers
+        {
+            [Range(0f, 5f)] public float killsMultiplier;
+            [Range(0f, 5f)] public float mapsMultiplier;
+            [Range(0f, 5f)] public float craftsMultiplier;
+            [Range(0f, 5f)] public float refineMultiplier;
+        }
+
+        [System.Serializable]
+        public struct CodexRoundingStep
+        {
+            public int MaxCouponValue;
+            public int stepSize;
+        }
+
+        [System.Serializable]
+        public struct CodexRoundingLadder
+        {
+            public List<CodexRoundingStep> stepsLadder;
+        }
+
+        [System.Serializable]
         public struct CodexSettings
         {
             public int codexInitialFocusSlots;
             public int codexMaxFocusSlots;
 
+            [Header("Reward Balance")]
+            // Category Multipliers
+            public CodexCategoryMultipliers categoryMultipliers;
+            // Difficulty Weights
+            public List<CodexMonsterRankWeight> monsterRankWeights;
+            public List<CodexCraftTierWeight> craftingTierWeights;
+            public List<CodexMapDifficultyWeight> mapDifficultyWeights;         
+
+            [Header("Coupon Balance")]
+            // Reward Conversion
+            [Tooltip("How much difficulty score is required for 1 Coupon.")]
+            public float scorePerCoupon;
+
+            [Tooltip("Optional hard cap for Coupons per Deed claim. Set <= 0 to disable.")]
+            public int couponCap;
+            // Reward Rounding
+            public CodexRoundingLadder roundingLadder;
         }
+
+
+        [Header("Codex / Research")]
+        public CodexSettings codexSettings;
 
 
     }

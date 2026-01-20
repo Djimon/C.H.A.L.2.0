@@ -59,6 +59,7 @@ MonoBehaviour:
       EdgeTarget: 65
       GrowthPattern:
         growthPriority: 0000000001000000010000000200000003000000
+    heroXP: {fileID: 11400000, guid: ba47af8497e1787469d7deea83f6bd72, type: 2}
   enemies:
     budgetPoints:
       spawn: 1
@@ -276,4 +277,50 @@ MonoBehaviour:
       xpPerLevel: 10
       baseLevelUpXp: 1000
       levelCurveFactor: 6
-  heroXP: {fileID: 11400000, guid: ba47af8497e1787469d7deea83f6bd72, type: 2}
+  codexSettings:
+    codexInitialFocusSlots: 1
+    codexMaxFocusSlots: 2
+    categoryMultipliers:
+      killsMultiplier: 1.75
+      mapsMultiplier: 3
+      craftsMultiplier: 1
+      refineMultiplier: 1.5
+    monsterRankWeights:
+    - rank: 1
+      weight: 1
+    - rank: 2
+      weight: 2
+    - rank: 3
+      weight: 5
+    - rank: 4
+      weight: 10
+    - rank: 5
+      weight: 20
+    craftingTierWeights:
+    - tier: 1
+      weight: 1
+    - tier: 2
+      weight: 3
+    - tier: 3
+      weight: 5
+    mapDifficultyWeights:
+    - difficulty: 0
+      weight: 1
+    - difficulty: 1
+      weight: 2
+    - difficulty: 2
+      weight: 4
+    - difficulty: 3
+      weight: 7
+    scorePerCoupon: 30
+    couponCap: 5000
+    roundingLadder:
+      stepsLadder:
+      - MaxCouponValue: 100
+        stepSize: 10
+      - MaxCouponValue: 350
+        stepSize: 25
+      - MaxCouponValue: 1000
+        stepSize: 50
+      - MaxCouponValue: -1
+        stepSize: 100

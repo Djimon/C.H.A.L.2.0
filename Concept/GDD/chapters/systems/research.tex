@@ -21,6 +21,8 @@ while remaining orthogonal to Hero progression, Orbit progression, and moment-to
 		\hline
 		Combat System & Enemy kills (rank / tags) & Deed Requirements & Progress increment \\
 		\hline
+		Crafting System & Crafts / Refines & Deed Requirements & Progress increment \\
+		\hline
 		Map System & Map and Wave completions & Deed Requirements & Progress increment \\
 		\hline
 		Difficulty System & Difficulty thresholds & Deed Requirements & Completion gating \\
@@ -133,10 +135,6 @@ and unlock pacing within each Chapter.
 		Unlocks deeper layers of the skill trees. &
 		Opens higher skill tiers (e.g. Tier 2/3 nodes) for existing Heroes, enabling more specialised builds and advanced synergies. \\
 		\hline
-		Orbit Access &
-		Grants access to the Orbit progression interface. &
-		Unlocks the Orbit system for Heroes; further Orbit progression unfolds inherently through Hero advancement. \\
-		\hline
 		Crown Sockets &
 		Prepares Heroes for the endgame Crown system. &
 		Unlocks Crown sockets on Heroes or their skill trees, allowing equipping powerful endgame Crown boosts once available. \\
@@ -173,9 +171,11 @@ This initial Deed serves purely as an onboarding element, demonstrating the Code
 		\hline
 		\textbf{Deed Type} & \textbf{Requirement Signal} & \textbf{Aggregation} & \textbf{Typical Unlock} \\
 		\hline
-		Combat Deed & Enemy kills & Weighted by rank & Crafting tier access \\
+		Combat Deed & Enemy kills & Weighted by rank & Crafting feature access \\
 		\hline
 		Exploration Deed & Map completions & Per difficulty & World tier unlock \\
+		\hline
+		Crafting Deed & Craftings \& reifnements & per Tier (output) & Crafting tier \& recipes access \\
 		\hline
 		Challenge Deed & Elite / Boss kills & Absolute count & System feature unlock \\
 		\hline
@@ -197,8 +197,22 @@ Each slot may hold exactly one Deed.
 	\item Additional slots are unlocked through Codex progression.
 	\item Each slot tracks progress independently.
 \end{itemize}
-
 Multiple Deeds may be completed in parallel if sufficient slots are available.
+
+\subsubsection{Repeatable Deeds}
+Certain deeds may be marked as repeatable to support endgame progression.
+Repeatable deeds:
+\begin{itemize}
+	\item Reset their progress after being claimed
+	\item Continue to grant rewards on subsequent completions
+\end{itemize}
+Repeatability is balanced through scaling requirements rather than reward reduction.
+Each repetition increases requirement thresholds slightly (e.g. +5\% per completion), ensuring:
+\begin{itemize}
+	\item Sustained progression without infinite farming
+	\item No abrupt or unintuitive reward drops
+\end{itemize}
+This approach preserves reward consistency while naturally increasing challenge over time.
 
 \subsection{Progress Tracking}
 
@@ -233,6 +247,22 @@ Unlocks are declarative and are registered centrally in the Unlock Registry.
 Other systems query unlock states directly and do not maintain duplicated progression logic.
 The Codex itself does not apply gameplay effects beyond signaling completed unlocks.
 
+\paragraph{Unified Unlock Handling}
+The Codex Unlock system is designed as a generic unlock pipeline and is not limited to deed progression.
+Unlocks are processed in two stages:
+
+\begin{itemize}
+	\item The Unlock Registry records that an unlock condition has been fulfilled (logical state).
+	\item Unlock Consumers apply gameplay effects based on the unlock type (system-side effects).
+\end{itemize}
+This mechanism can be reused for unlocks outside of deeds, such as:
+\begin{itemize}
+	\item Unlocking crafting tiers
+	\item Unlocking skill recipes
+	\item Unlocking system features or UI elements
+\end{itemize}
+Importantly, runtime conditions (e.g. hero level) act as gates and are not treated as unlock events themselves. Unlocks define \emph{what} becomes available; runtime conditions define \emph{when} it can be used.
+
 \subsubsection{Completion and Claiming}
 
 Completion and reward claiming are intentionally separated.
@@ -242,9 +272,24 @@ Completion and reward claiming are intentionally separated.
 	\item Completion immediately registers unlocks in the Unlock Registry.
 	\item Claiming the Deed reward is a conscious player action.
 \end{itemize}
-
 A completed Deed continues to occupy its Active Focus Slot
 until its reward is claimed.
+
+\paragraph{Coupon Rewards via Difficulty Score}
+Deeds grant a single reward currency: Coupons.
+The amount of Coupons is not configured per deed but derived from a centralized reward calculation.
+Each deed has an implicit Difficulty Score, calculated from its requirements using:
+\begin{itemize}
+	\item Requirement-specific weights (enemy rank, item tier, map difficulty)
+	\item Category multipliers (e.g. kills, maps, crafts, modifies)
+\end{itemize}
+Coupons are awarded on claim using a global conversion factor:
+\[
+\text{Coupons} = \frac{\text{Difficulty Score}}{30}
+\] \\
+The final output is normalized using a rounding ladder to produce clean, readable reward values (e.g. 25, 50, 100, 250, 500, 1000).
+An optional global cap (e.g. 2500 Coupons) prevents excessive rewards at the upper end.\\
+All reward tuning is handled centrally, allowing global balance changes without modifying individual deeds.
 
 \subsection{Non-Goals}
 

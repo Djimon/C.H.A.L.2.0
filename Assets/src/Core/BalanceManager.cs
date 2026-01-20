@@ -54,7 +54,7 @@ namespace CHAL.Core
 
         // NEU: zentraler Zugriff auf HeroXPConfig
         public HeroXPConfig HeroXPConfig
-            => Config != null ? Config.heroXP : null;
+            => Config != null ? Config.heroSettings.heroXP : null;
 
         // Optional: statischer Helfer, falls du aus nicht-Mono-Klassen ranwillst
 /// <summary>
