@@ -14,7 +14,7 @@
                             <ui:Label text="Empowerment" class="chip-label"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="tag-chip-2" class="chip">
-                            <ui:Label text="Rewards" class="chip-label"/>
+                            <ui:Label text="Rewards" name="lbl-rewards" class="chip-label"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="reward-icons" class="reward-icons">
                             <ui:Image name="reward-icon-1" class="reward-icon"/>

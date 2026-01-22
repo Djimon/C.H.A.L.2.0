@@ -143,6 +143,21 @@ namespace CHAL.Systems.Codex
             }
         }
 
+        internal int GetDeedCouponsPreview(string deedId)
+        {
+            if (string.IsNullOrWhiteSpace(deedId))
+                return 0;
+
+            DeedRewardPreview p;
+            if (_rewardPreviewByDeedId.TryGetValue(deedId, out p))
+            {
+                return p.coupons;
+            }
+
+            return 0;
+        }
+
+
         public bool TryGetDeedCouponsPreview(string deedId, out int coupons)
         {
             coupons = 0;
@@ -1302,7 +1317,7 @@ namespace CHAL.Systems.Codex
 
             return 1f;
         }
-
+      
     }
 
     public struct DeedRewardPreview

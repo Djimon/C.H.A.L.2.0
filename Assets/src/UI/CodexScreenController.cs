@@ -23,6 +23,7 @@ namespace CHAL.Systems.UI
         // UI refs (from CodexScreen.uxml)
         private Label _headerActiveDeedTitle;
         private Button _btnClaimHeader;
+        private Label _headerRewardsLabel;
 
         private VisualElement _focusSlotsBar;
 
@@ -92,7 +93,9 @@ namespace CHAL.Systems.UI
             // Header
             _headerActiveDeedTitle = root.Q<Label>("active-deed-title");
             _btnClaimHeader = root.Q<Button>("btn-claim-reward");
-            
+            _headerRewardsLabel = root.Q<Label>("lbl-rewards");
+
+
             //Focus-Slot
             _focusSlotsBar = root.Q<VisualElement>("focus-slots-bar");
 
@@ -380,19 +383,42 @@ namespace CHAL.Systems.UI
 
         private void UpdateHeaderActiveDeed()
         {
-            if (_headerActiveDeedTitle == null) return;
-
-            var active0 = _codex.GetActiveDeedId(0);
-            if (string.IsNullOrWhiteSpace(active0))
-            {
-                _headerActiveDeedTitle.text = "None";
+            if (_codex == null)
                 return;
+
+            // Active deed depends on selected slot
+            string activeDeedId = _codex.GetActiveDeedId(_selectedSlotIndex);
+
+            string title = null;
+
+            if (!string.IsNullOrWhiteSpace(activeDeedId))
+            {
+                // NICHT _deedById verwenden (chapter-scoped)!
+                var def = _codex.GetNodeDef(activeDeedId);
+                if (def != null)
+                    title = def.title;
             }
 
-            if (_deedById.TryGetValue(active0, out var d))
-                _headerActiveDeedTitle.text = d.title;
+            if (!string.IsNullOrWhiteSpace(title))
+                _headerActiveDeedTitle.text = $"S{_selectedSlotIndex + 1}: {title}";
             else
-                _headerActiveDeedTitle.text = active0;
+                _headerActiveDeedTitle.text = $"S{_selectedSlotIndex + 1}: —";
+
+            // Empowerment bleibt Platzhalter (unverändert)
+
+            // Rewards: echte Coupons preview
+            if (_headerRewardsLabel != null)
+            {
+                if (!string.IsNullOrWhiteSpace(activeDeedId))
+                {
+                    int coupons = _codex.GetDeedCouponsPreview(activeDeedId);
+                    _headerRewardsLabel.text = $"Rewards: {coupons} Coupons";
+                }
+                else
+                {
+                    _headerRewardsLabel.text = "Rewards: —";
+                }
+            }
         }
 
         private void UpdateDetails()
