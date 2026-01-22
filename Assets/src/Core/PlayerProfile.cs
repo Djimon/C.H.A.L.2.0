@@ -71,9 +71,10 @@ namespace CHAL.Data
 
             var starterId = GameManager.Instance.starterHero != null ? GameManager.Instance.starterHero.HeroId : "TestHero";
             EnsureStarterHeroUnlocked(starterId);
-            
 
-            AddCurrency("gold", 0);
+
+            for (int i = 0; i < GameManager.DefaultCurrencyIds.Length; i++)
+                EnsureCurrencyExists(GameManager.DefaultCurrencyIds[i], 0);
 
 
             SaveSystem.Save(this);
@@ -113,20 +114,58 @@ namespace CHAL.Data
 /// <param name="amount">The amount of currency to add.</param>
         public void AddCurrency(string currencyId, int amount)
         {
-            if (amount <= 0) return;
+            if (amount <= 0)
+                return;
 
+            if (string.IsNullOrWhiteSpace(currencyId))
+                return;
+
+            if (!GameManager.IsValidCurrencyId(currencyId))
+            {
+                DebugManager.Warning($"unknown currencyId '{currencyId}'. Currency will be ignored.", "System");
+                return;
+            }
+
+            if (Currencies == null)
+                Currencies = new Dictionary<string, int>();
+
+            // Key immer sicherstellen (auch wenn amount später <= 0 ist)
             if (!Currencies.ContainsKey(currencyId))
-                Currencies[currencyId] = 0;
+                Currencies[currencyId] = 0;       
 
             Currencies[currencyId] += amount;
         }
 
-/// <summary>
-/// Attempts to spend a specified amount of currency.
-/// </summary>
-/// <param name="currencyId">The ID of the currency to spend.</param>
-/// <param name="amount">The amount of currency to spend.</param>
-/// <returns>True if the currency was successfully spent; otherwise, false.</returns>
+        public void EnsureCurrencyExists(string currencyId, int initialAmount = 0)
+        {
+            if (string.IsNullOrWhiteSpace(currencyId))
+                return;
+
+            if (!GameManager.IsValidCurrencyId(currencyId))
+            {
+                DebugManager.Warning($"unknown currencyId '{currencyId}'. Currency will be ignored.", "System");
+                return;
+            }
+
+            if (Currencies == null)
+                Currencies = new Dictionary<string, int>();
+
+            if (Currencies.ContainsKey(currencyId))
+                return;
+
+            if (!Currencies.ContainsKey(currencyId))
+            {
+                if (initialAmount < 0) initialAmount = 0;
+                Currencies[currencyId] = initialAmount;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to spend a specified amount of currency.
+        /// </summary>
+        /// <param name="currencyId">The ID of the currency to spend.</param>
+        /// <param name="amount">The amount of currency to spend.</param>
+        /// <returns>True if the currency was successfully spent; otherwise, false.</returns>
         public bool SpendCurrency(string currencyId, int amount)
         {
             if (amount <= 0) return false;

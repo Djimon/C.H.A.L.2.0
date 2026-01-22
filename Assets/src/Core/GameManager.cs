@@ -70,6 +70,15 @@ namespace CHAL.Core
         private static string BuildInstanceId(PlayerInventoryType t)
             => "player_" + t.ToString().ToLowerInvariant();
 
+
+        // --- CURRENCIES (single source) ---
+        public static readonly string[] DefaultCurrencyIds =
+        {
+            "gold",
+            "coupons",
+        };
+
+
         // --- Research ---
         [SerializeField] private CodexDef codex;
         [SerializeField] private List<CodexDeedDef> deeds = new();
@@ -120,13 +129,14 @@ namespace CHAL.Core
                 DebugManager.DebugLog("No save found");
                 //Profile = new PlayerProfile(); //erst im Character Creator
             }
-  
+
+            EnsureProfileCurrencies();
 
             var xpplvl = BalanceConfig.economy.xp.xpPerLevel;
             DebugManager.Log($"Xp per level: {xpplvl}");
 
+            //TODO: Durch neuee Variante ersetzen
             inputManager = FindFirstObjectByType<InputManager>();
-
             // Falls keiner in der Szene existiert â†’ automatisch erstellen
             if (inputManager == null)
             {
@@ -168,6 +178,34 @@ namespace CHAL.Core
             Stats.OnWaveCompletedEvent += codexService.OnWaveCompleted;
             Stats.OnMapCompletedEvent += codexService.OnMapCompleted;
             Stats.OnCraftExecutedEvent += codexService.OnCraftExecuted;
+        }
+
+        private void EnsureProfileCurrencies()
+        {
+            if (Profile == null) return;
+
+            if (DefaultCurrencyIds == null || DefaultCurrencyIds.Length == 0)
+                return;
+
+            for (int i = 0; i < DefaultCurrencyIds.Length; i++)
+            {
+                var id = DefaultCurrencyIds[i];
+                Profile.EnsureCurrencyExists(id, 0);
+            }
+        }
+
+        public static bool IsValidCurrencyId(string currencyId)
+        {
+            if (string.IsNullOrWhiteSpace(currencyId))
+                return false;
+
+            for (int i = 0; i < DefaultCurrencyIds.Length; i++)
+            {
+                if (DefaultCurrencyIds[i] == currencyId)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -229,7 +267,9 @@ namespace CHAL.Core
 
         internal void StartNewGame(PlayerProfile profile)
         {
-            Profile = profile;          
+            Profile = profile;
+
+            EnsureProfileCurrencies();
 
             //Inventory
             if (Inventory == null)
@@ -276,6 +316,8 @@ namespace CHAL.Core
                 DebugManager.Warning("No save found to continue", "System");
                 return;
             }
+
+            EnsureProfileCurrencies();
 
             //Inventroy
             BootstrapInventoryDomain();
