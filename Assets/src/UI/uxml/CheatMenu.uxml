@@ -116,6 +116,39 @@
                         <ui:Button text="Reset all Research" name="btn_reset_all_research" class="btn danger"/>
                         <ui:Button text="Unlock all Research" name="btn_unlock_all_research" class="btn"/>
                     </ui:VisualElement>
+                    <ui:VisualElement class="subcard">
+                        <ui:Label text="Codex Event Trigger (DEV)" class="subtitle"/>
+                        <ui:VisualElement class="row">
+                            <ui:Label text="Kill:" class="label"/>
+                            <ui:DropdownField name="dd_codex_kill_rank" label="rank" class="dd small"/>
+                            <ui:IntegerField name="int_codex_kill_count" label="count" value="100" class="int"/>
+                            <ui:Button name="btn_codex_kill" text="Trigger Kill" class="btn primary"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="row">
+                            <ui:Label text="MAPS:" class="label"/>
+                            <ui:IntegerField name="int_codex_map_difficulty" label="difficulty" value="1" class="int"/>
+                            <ui:IntegerField name="int_codex_map_count" label="count" value="10" class="int"/>
+                            <ui:Button name="btn_codex_map_complete" text="Trigger MapComplete" class="btn primary"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="row">
+                            <ui:Label text="WAVES:" class="label"/>
+                            <ui:IntegerField name="int_codex_wave_difficulty" label="difficulty" value="1" class="int"/>
+                            <ui:IntegerField name="int_codex_wave_count" label="count" value="10" class="int"/>
+                            <ui:Button name="btn_codex_wave_complete" text="Trigger WaveComplete" class="btn primary"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="row">
+                            <ui:Label text="gearCraft:" class="label"/>
+                            <ui:IntegerField name="int_codex_gear_tier" label="tier" value="1" class="int"/>
+                            <ui:IntegerField name="int_codex_gear_count" label="count" value="10" class="int"/>
+                            <ui:Button name="btn_codex_gear_craft" text="Trigger GearCraft" class="btn primary"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="row">
+                            <ui:Label text="skillCraft:" class="label"/>
+                            <ui:IntegerField name="int_codex_skill_tier" label="tier" value="1" class="int"/>
+                            <ui:IntegerField name="int_codex_skill_count" label="count" value="10" class="int"/>
+                            <ui:Button name="btn_codex_skill_craft" text="Trigger SkillCraft" class="btn primary"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:Foldout>
         </ui:ScrollView>

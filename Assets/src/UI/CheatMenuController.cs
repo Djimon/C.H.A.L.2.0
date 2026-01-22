@@ -1,5 +1,6 @@
 using CHAL.Core;
 using CHAL.Data;
+using CHAL.Systems.Crafting;
 using CHAL.Systems.Inventory;
 using CHAL.Systems.Items;
 using System;
@@ -184,6 +185,13 @@ namespace CHAL.UI
             // Research
             BindClick("btn_reset_all_research", ResetAllResearch);
             BindClick("btn_unlock_all_research", UnlockAllResearch);
+
+            // Codex Event Trigger (DEV)
+            BindClick("btn_codex_kill", TriggerCodexKill);
+            BindClick("btn_codex_map_complete", TriggerCodexMapComplete);
+            BindClick("btn_codex_wave_complete", TriggerCodexWaveComplete);
+            BindClick("btn_codex_gear_craft", TriggerCodexGearCraft);
+            BindClick("btn_codex_skill_craft", TriggerCodexSkillCraft);
         }
 
         private void AddGold(int amount)
@@ -527,6 +535,11 @@ namespace CHAL.UI
 
             // CoreType dummy for prototype (replace later with your enum values)
             SetDropdownChoicesFromEnum<CoreType>("dd_module_core", CoreType.Kinetic);
+
+            SetDropdownChoicesFromEnum<EnemyRank>("dd_codex_kill_rank", EnemyRank.Normal);
+            SetDropdownChoicesFromEnum<MapDifficulty>("int_codex_map_difficulty", MapDifficulty.Stable);
+            SetDropdownChoicesFromEnum<MapDifficulty>("int_codex_wave_difficulty", MapDifficulty.Stable);
+
 
             var gm = GameManager.Instance;
             var profile = gm != null ? gm.Profile : null;
@@ -1470,6 +1483,143 @@ namespace CHAL.UI
                     list.Add(arr[i]);
             }
             return list;
+        }
+
+        // -------------------------------
+        // Codex Event Trigger (DEV)
+        // -------------------------------
+
+        private void TriggerCodexKill()
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.Stats == null)
+            {
+                DebugManager.Log("CheatMenu: TriggerCodexKill failed (GameManager/Stats missing).",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Error);
+                return;
+            }
+
+            var rankStr = GetDropdownValue("dd_codex_kill_rank");
+            if (!Enum.TryParse(rankStr, ignoreCase: true, out EnemyRank rank))
+                rank = EnemyRank.Normal;
+
+            int count = GetIntValue("int_codex_kill_count", 1);
+            count = Mathf.Clamp(count, 0, 100000);
+
+            for (int i = 0; i < count; i++)
+            {
+                gm.Stats.OnEnemyKilled("cheat_enemy", rank, null, null);
+            }
+
+            DebugManager.Log($"CheatMenu: TriggerCodexKill rank={rank} x{count}",
+                DebugManager.EDebugLevel.Dev, "Cheat", LogType.Log);
+        }
+
+        private void TriggerCodexMapComplete()
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.Stats == null)
+            {
+                DebugManager.Log("CheatMenu: TriggerCodexMapComplete failed (GameManager/Stats missing).",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Error);
+                return;
+            }
+
+            string diffStr = GetDropdownValue("int_codex_map_difficulty");
+            MapDifficulty diff;
+
+            if (!Enum.TryParse(diffStr, out diff))
+                diff = MapDifficulty.Stable;
+
+            int count = GetIntValue("int_codex_map_count", 1);
+            count = Mathf.Clamp(count, 0, 100000);
+
+            for (int i = 0; i < count; i++)
+            {
+                gm.Stats.OnMapCompleted(mapId: 0, difficultyId: diff);
+            }
+
+            DebugManager.Log($"CheatMenu: TriggerCodexMapComplete diff={diff} x{count}",
+                DebugManager.EDebugLevel.Dev, "Cheat", LogType.Log);
+        }
+
+        private void TriggerCodexWaveComplete()
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.Stats == null)
+            {
+                DebugManager.Log("CheatMenu: TriggerCodexWaveComplete failed (GameManager/Stats missing).",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Error);
+                return;
+            }
+
+            string diffStr = GetDropdownValue("int_codex_wave_difficulty");
+            MapDifficulty diff;
+
+            if (!Enum.TryParse(diffStr, out diff))
+                diff = MapDifficulty.Stable;
+
+            int count = GetIntValue("int_codex_map_count", 1);
+            count = Mathf.Clamp(count, 0, 100000);
+
+            // StatisticService signature: OnWaveCompleted(int mapId, int waveIndex, MapDifficulty difficulty)
+            for (int i = 0; i < count; i++)
+            {
+                gm.Stats.OnWaveCompleted(mapId: 0, waveIndex: i + 1, difficulty: diff);
+            }
+
+            DebugManager.Log($"CheatMenu: TriggerCodexWaveComplete diff={diff} x{count}",
+                DebugManager.EDebugLevel.Dev, "Cheat", LogType.Log);
+        }
+
+        private void TriggerCodexGearCraft()
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.codexService == null)
+            {
+                DebugManager.Log("CheatMenu: TriggerCodexGearCraft failed (GameManager/Codex missing).",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Error);
+                return;
+            }
+
+            int tier = GetIntValue("int_codex_gear_tier", 1);
+            int count = GetIntValue("int_codex_gear_count", 1);
+
+            tier = Mathf.Clamp(tier, 1, 3);
+            count = Mathf.Clamp(count, 0, 100000);
+
+            for (int i = 0; i < count; i++)
+            {
+                GameManager.Instance.Stats.OnCraftExecuted(CraftType.Gear, "cheat:gear", tier);
+            }
+
+            DebugManager.Log($"CheatMenu: TriggerCodexGearCraft tier={tier} x{count}",
+                DebugManager.EDebugLevel.Dev, "Cheat", LogType.Log);
+        }
+
+        private void TriggerCodexSkillCraft()
+        {
+            var gm = GameManager.Instance;
+            if (gm == null || gm.codexService == null)
+            {
+                DebugManager.Log("CheatMenu: TriggerCodexSkillCraft failed (GameManager/Codex missing).",
+                    DebugManager.EDebugLevel.Dev, "Cheat", LogType.Error);
+                return;
+            }
+
+            int tier = GetIntValue("int_codex_skill_tier", 1);
+            int count = GetIntValue("int_codex_skill_count", 1);
+
+            tier = Mathf.Clamp(tier, 1, 5);
+            count = Mathf.Clamp(count, 0, 100000);
+
+            for (int i = 0; i < count; i++)
+            {
+                GameManager.Instance.Stats.OnCraftExecuted(CraftType.Skill, "cheat:gear", tier);
+            }
+
+            DebugManager.Log($"CheatMenu: TriggerCodexSkillCraft tier={tier} x{count}",
+                DebugManager.EDebugLevel.Dev, "Cheat", LogType.Log);
         }
 
 
