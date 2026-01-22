@@ -17,6 +17,9 @@ namespace CHAL.Systems.Codex
         private CodexState _state;
 
         private Dictionary<string, List<string>> _compiledParents;
+
+        private Dictionary<string, DeedRewardPreview> _rewardPreviewByDeedId = new Dictionary<string, DeedRewardPreview>(StringComparer.Ordinal);
+
         private CodexGateEngine _gate;
 
         private readonly Dictionary<EnemyRank, int> _rankWeights = new Dictionary<EnemyRank, int>
@@ -33,11 +36,14 @@ namespace CHAL.Systems.Codex
         private static bool IsBoss(EnemyRank r) => r == EnemyRank.Boss || r == EnemyRank.Champion;
         private static bool IsChamp(EnemyRank r) => r == EnemyRank.Champion;
 
+        
+
 
         //EVENTS
         public event Action<string, IReadOnlyList<CodexUnlock>> OnNodeCompleted;
         public event Action<IReadOnlyList<string>> OnAlwaysUnlockedReady;
         public event Action OnCodexChanged;
+        public event Action<string, int> OnDeedClaimed;
 
 /// <summary>
 /// Initializes the object using the provided Codex definition and state.
@@ -75,6 +81,9 @@ namespace CHAL.Systems.Codex
                 EnsureProgress(id);
 
             _compiledParents = compiled.parentsById;
+
+            //calculate rewards
+            RebuildRewardPreviewCache();
 
             // Gate engine
             _gate = new CodexGateEngine(_treeDef, _state, new CodexGateEngine.Config(
@@ -131,6 +140,65 @@ namespace CHAL.Systems.Codex
                     deedId = null,
                     locked = false
                 });
+            }
+        }
+
+        public bool TryGetDeedCouponsPreview(string deedId, out int coupons)
+        {
+            coupons = 0;
+
+            if (string.IsNullOrWhiteSpace(deedId))
+                return false;
+
+            if (_rewardPreviewByDeedId == null)
+                return false;
+
+            DeedRewardPreview p;
+            if (_rewardPreviewByDeedId.TryGetValue(deedId, out p))
+            {
+                coupons = p.coupons;
+                return true;
+            }
+
+            return false;
+        }
+
+        public float GetDeedDifficultyScorePreview(string deedId)
+        {
+            if (string.IsNullOrWhiteSpace(deedId))
+                return 0f;
+
+            DeedRewardPreview p;
+            if (_rewardPreviewByDeedId != null && _rewardPreviewByDeedId.TryGetValue(deedId, out p))
+                return p.score;
+
+            return 0f;
+        }
+
+        private void RebuildRewardPreviewCache()
+        {
+            if (_rewardPreviewByDeedId == null)
+                _rewardPreviewByDeedId = new Dictionary<string, DeedRewardPreview>(StringComparer.Ordinal);
+            else
+                _rewardPreviewByDeedId.Clear();
+
+            if (_nodesById == null)
+                return;
+
+            foreach (var kv in _nodesById)
+            {
+                var deedId = kv.Key;
+                var def = kv.Value;
+                if (def == null) continue;
+
+                float score = ComputeDifficultyScore(def);
+                int coupons = ComputeCouponsFromScore(score);
+
+                DeedRewardPreview p;
+                p.score = score;
+                p.coupons = coupons;
+
+                _rewardPreviewByDeedId[deedId] = p;
             }
         }
 
@@ -295,10 +363,38 @@ namespace CHAL.Systems.Codex
             if (def.unlocks != null && def.unlocks.Count > 0)
                 OnNodeCompleted?.Invoke(deedId, def.unlocks);
 
+            PayRewards(deedId);
+
             RaiseCodexChanged();
 
             DebugManager.Log($"Codex: Claimed deed={deedId} (slot={slotIndex})", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
             return true;
+        }
+
+        public void PayRewards(string deedId)
+        {
+            int coupons;
+            bool hasPreview = TryGetDeedCouponsPreview(deedId, out coupons);
+
+            if (!hasPreview)
+            {
+                CodexDeedDef def;
+                if (_nodesById != null && _nodesById.TryGetValue(deedId, out def) && def != null)
+                {
+                    float score = ComputeDifficultyScore(def);
+                    coupons = ComputeCouponsFromScore(score);
+                }
+                else
+                {
+                    coupons = 0;
+                }
+            }
+
+            if (coupons > 0)
+            {
+                if (OnDeedClaimed != null)
+                    OnDeedClaimed(deedId, coupons);
+            }
         }
 
         public bool TryUnlockNextFocusSlot( out string reason)
@@ -987,5 +1083,231 @@ namespace CHAL.Systems.Codex
             OnCodexChanged?.Invoke();
         }
 
+        // Coupons Coputaiton
+
+        private float ComputeDifficultyScore(CodexDeedDef deed)
+        {
+            if (deed == null) return 0f;
+
+            var settings = GameManager.Instance.BalanceConfig.codexSettings;
+            var mult = settings.categoryMultipliers;
+
+            DeedRequirement r = deed.requirements;
+            if (r == null) return 0f;
+
+            float scoreKills = 0f;
+            float scoreMaps = 0f;
+            float scoreCrafts = 0f;
+
+            // --------------------
+            // KILLS
+            // --------------------
+            // killsGeneral als "Normal"
+            if (r.killsGeneral > 0)
+            {
+                float w = GetMonsterRankWeight(settings, EnemyRank.Normal);
+                scoreKills += r.killsGeneral * w;
+            }
+
+            if (r.eliteCount > 0)
+            {
+                float w = GetMonsterRankWeight(settings, EnemyRank.Elite);
+                scoreKills += r.eliteCount * w;
+            }
+
+            if (r.bossCount > 0)
+            {
+                float w = GetMonsterRankWeight(settings, EnemyRank.Boss);
+                scoreKills += r.bossCount * w;
+            }
+
+            if (r.championCount > 0)
+            {
+                float w = GetMonsterRankWeight(settings, EnemyRank.Champion);
+                scoreKills += r.championCount * w;
+            }
+
+            scoreKills *= mult.killsMultiplier;
+
+            // --------------------
+            // MAPS
+            // --------------------
+            // bevorzugt mapRequirements (weil Difficulty relevant)
+            if (r.mapRequirements != null && r.mapRequirements.Count > 0)
+            {
+                for (int i = 0; i < r.mapRequirements.Count; i++)
+                {
+                    var mr = r.mapRequirements[i];
+                    if (mr.amount <= 0) continue;
+
+                    float w = GetMapDifficultyWeight(settings, mr.difficulty);
+                    scoreMaps += mr.amount * w;
+                }
+            }
+            else
+            {
+                // falls nur "maps" gesetzt ist: verwende Default-Weight (erste definierte) oder 1
+                if (r.maps > 0)
+                {
+                    float w = GetDefaultMapDifficultyWeight(settings);
+                    scoreMaps += r.maps * w;
+                }
+            }
+
+            scoreMaps *= mult.mapsMultiplier;
+
+            // --------------------
+            // CRAFTS
+            // --------------------
+            // Gear crafts by tier
+            if (r.gearCraftsByTier != null && r.gearCraftsByTier.Count > 0)
+            {
+                for (int i = 0; i < r.gearCraftsByTier.Count; i++)
+                {
+                    var cr = r.gearCraftsByTier[i];
+                    if (cr.count <= 0) continue;
+
+                    float w = GetCraftTierWeight(settings, cr.tier);
+                    scoreCrafts += cr.count * w;
+                }
+            }
+
+            // Skill/Module crafts by tier
+            if (r.skillCraftsByTier != null && r.skillCraftsByTier.Count > 0)
+            {
+                for (int i = 0; i < r.skillCraftsByTier.Count; i++)
+                {
+                    var cr = r.skillCraftsByTier[i];
+                    if (cr.count <= 0) continue;
+
+                    float w = GetCraftTierWeight(settings, cr.tier);
+                    scoreCrafts += cr.count * w;
+                }
+            }
+
+            scoreCrafts *= mult.craftsMultiplier;
+
+            // Modifies existieren noch nicht -> 0 (refineMultiplier bleibt aktuell ungenutzt)
+            float total = scoreKills + scoreMaps + scoreCrafts;
+            if (total < 0f) total = 0f;
+            return total;
+        }
+
+        private int ComputeCouponsFromScore(float difficultyScore)
+        {
+            var settings = GameManager.Instance.BalanceConfig.codexSettings;
+
+            float scorePerCoupon = settings.scorePerCoupon;
+            if (scorePerCoupon <= 0.0001f)
+                scorePerCoupon = 30f; // fallback
+
+            float raw = difficultyScore / scorePerCoupon;
+            if (raw < 0f) raw = 0f;
+
+            // rounding ladder
+            int rounded = ApplyRoundingLadder(raw, settings.roundingLadder);
+
+            // optional cap
+            if (settings.couponCap > 0 && rounded > settings.couponCap)
+                rounded = settings.couponCap;
+
+            return rounded;
+        }
+
+        private int ApplyRoundingLadder(float couponsRaw, GameBalanceConfig.CodexRoundingLadder ladder)
+        {
+            // Wenn keine Ladder definiert -> normal runden
+            if (ladder.stepsLadder == null || ladder.stepsLadder.Count == 0)
+                return Mathf.RoundToInt(couponsRaw);
+
+            int rawInt = Mathf.RoundToInt(couponsRaw);
+            if (rawInt <= 0) return 0;
+
+            // Ladder: nimm erstes Step-Element dessen MaxCouponValue >= rawInt
+            // und runde AUF (Ceil) auf stepSize.
+            // (Ceil ist “spielerfreundlich” und verhindert, dass man knapp unter einer Stufe verliert.)
+            for (int i = 0; i < ladder.stepsLadder.Count; i++)
+            {
+                var s = ladder.stepsLadder[i];
+                if (s.stepSize <= 0) continue;
+
+                if (rawInt <= s.MaxCouponValue)
+                {
+                    int step = s.stepSize;
+                    // CEIL
+                    //int rounded = ((rawInt + step - 1) / step) * step;
+                    // Nearest
+                    int rounded = Mathf.RoundToInt((float)rawInt / step) * step;
+
+                    return rounded;
+                }
+            }
+
+            // wenn rawInt über allen MaxCouponValue liegt: nutze letztes StepSize
+            var last = ladder.stepsLadder[ladder.stepsLadder.Count - 1];
+            if (last.stepSize <= 0)
+                return rawInt;
+
+            int stepLast = last.stepSize;
+            int roundedLast = ((rawInt + stepLast - 1) / stepLast) * stepLast;
+            return roundedLast;
+        }
+
+        private float GetMonsterRankWeight(GameBalanceConfig.CodexSettings settings, EnemyRank rank)
+        {
+            if (settings.monsterRankWeights != null)
+            {
+                for (int i = 0; i < settings.monsterRankWeights.Count; i++)
+                {
+                    var e = settings.monsterRankWeights[i];
+                    if (e.rank == rank)
+                        return e.weight;
+                }
+            }
+            return 1f;
+        }
+
+        private float GetCraftTierWeight(GameBalanceConfig.CodexSettings settings, int tier)
+        {
+            if (settings.craftingTierWeights != null)
+            {
+                for (int i = 0; i < settings.craftingTierWeights.Count; i++)
+                {
+                    var e = settings.craftingTierWeights[i];
+                    if (e.tier == tier)
+                        return e.weight;
+                }
+            }
+            return 1f;
+        }
+
+        private float GetMapDifficultyWeight(GameBalanceConfig.CodexSettings settings, MapDifficulty diff)
+        {
+            if (settings.mapDifficultyWeights != null)
+            {
+                for (int i = 0; i < settings.mapDifficultyWeights.Count; i++)
+                {
+                    var e = settings.mapDifficultyWeights[i];
+                    if (e.difficulty == diff)
+                        return e.weight;
+                }
+            }
+            return 1f;
+        }
+
+        private float GetDefaultMapDifficultyWeight(GameBalanceConfig.CodexSettings settings)
+        {
+            if (settings.mapDifficultyWeights != null && settings.mapDifficultyWeights.Count > 0)
+                return settings.mapDifficultyWeights[0].weight;
+
+            return 1f;
+        }
+
+    }
+
+    public struct DeedRewardPreview
+    {
+        public float score;
+        public int coupons;
     }
 }

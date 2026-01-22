@@ -178,6 +178,8 @@ namespace CHAL.Core
             Stats.OnWaveCompletedEvent += codexService.OnWaveCompleted;
             Stats.OnMapCompletedEvent += codexService.OnMapCompleted;
             Stats.OnCraftExecutedEvent += codexService.OnCraftExecuted;
+
+            codexService.OnDeedClaimed += OnCodexDeedClaimed;
         }
 
         private void EnsureProfileCurrencies()
@@ -1388,6 +1390,17 @@ namespace CHAL.Core
                         DebugManager.EDebugLevel.Dev, "Inventory", LogType.Warning);
                 }
             }
+        }
+
+
+        private void OnCodexDeedClaimed(string deedId, int coupons)
+        {
+            if (Profile == null) return;
+            if (coupons <= 0) return;
+
+            Profile.AddCurrency("coupons", coupons);
+
+            SaveGame();
         }
 
     }

@@ -26,6 +26,8 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="header-right" class="header-right">
+                <ui:VisualElement name="focus-slots-bar" class="focus-slots-bar"/>
+                <ui:Button name="btn-unlock-slot" text="+ SLOT" class="btn btn-slot"/>
                 <ui:Button name="btn-claim-reward" text="CLAIM REWARD" class="btn btn-claim"/>
             </ui:VisualElement>
         </ui:VisualElement>

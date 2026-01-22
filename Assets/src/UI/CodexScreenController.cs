@@ -24,6 +24,9 @@ namespace CHAL.Systems.UI
         private Label _headerActiveDeedTitle;
         private Button _btnClaimHeader;
 
+        private VisualElement _focusSlotsBar;
+        private Button _btnUnlockSlot;
+
         private VisualElement _chaptersContainer;
         private VisualElement _stageGroupsContainer;
 
@@ -40,6 +43,7 @@ namespace CHAL.Systems.UI
         // UI state
         private string _selectedChapterId;
         private string _selectedDeedId;
+        private int _selectedSlotIndex = 0;
 
         // Cache for lookups (rebuilt on refresh)
         private readonly Dictionary<string, DeedVM> _deedById = new Dictionary<string, DeedVM>(StringComparer.Ordinal);
@@ -89,6 +93,10 @@ namespace CHAL.Systems.UI
             // Header
             _headerActiveDeedTitle = root.Q<Label>("active-deed-title");
             _btnClaimHeader = root.Q<Button>("btn-claim-reward");
+            
+            //Focus-Slot
+            _focusSlotsBar = root.Q<VisualElement>("focus-slots-bar");
+            _btnUnlockSlot = root.Q<Button>("btn-unlock-slot");
 
             // Lists
             _chaptersContainer = root.Q<VisualElement>("chapters-container");
@@ -111,6 +119,9 @@ namespace CHAL.Systems.UI
             _codex.OnCodexChanged -= OnCodexChanged;
             _codex.OnCodexChanged += OnCodexChanged;
 
+            _btnUnlockSlot.clicked -= OnUnlockSlotClicked;
+            _btnUnlockSlot.clicked += OnUnlockSlotClicked;
+
             if (_btnActivate != null)
             {
                 _btnActivate.clicked -= OnActivateClicked;
@@ -126,6 +137,92 @@ namespace CHAL.Systems.UI
 
         private void OnCodexChanged()
         {
+            RefreshAll();
+        }
+
+        private void OnUnlockSlotClicked()
+        {
+            if (_codex == null) return;
+
+            if (!_codex.TryUnlockNextFocusSlot(out var reason))
+            {
+                if (!string.IsNullOrWhiteSpace(reason))
+                    DebugManager.Log($"Codex unlock slot failed: {reason}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
+                return;
+            }
+
+            RefreshAll();
+        }
+
+        private void BuildFocusSlotsBar()
+        {
+            if (_focusSlotsBar == null || _codex == null)
+                return;
+
+            _focusSlotsBar.Clear();
+
+            int count = _codex.GetFocusSlotCount();
+            if (count <= 0) count = 1;
+
+            if (_selectedSlotIndex < 0) _selectedSlotIndex = 0;
+            if (_selectedSlotIndex >= count) _selectedSlotIndex = count - 1;
+
+            for (int i = 0; i < count; i++)
+            {
+                var btn = new Button();
+                btn.AddToClassList("slot-btn");
+
+                string deedId = _codex.GetActiveDeedId(i);
+                bool locked = _codex.IsSlotLocked(i);
+
+                string txt = $"S{i + 1}";
+                if (!string.IsNullOrWhiteSpace(deedId) && _deedById.TryGetValue(deedId, out var dvm))
+                {
+                    int pct = Mathf.RoundToInt(Mathf.Clamp01(dvm.progress01) * 100f);
+                    txt = locked ? $"S{i + 1} ({pct}%) !" : $"S{i + 1} ({pct}%)";
+                }
+                else if (locked)
+                {
+                    txt = $"S{i + 1} !";
+                }
+
+                btn.text = txt;
+
+                if (i == _selectedSlotIndex)
+                    btn.AddToClassList("selected");
+
+                btn.userData = i;
+                btn.RegisterCallback<ClickEvent>(OnFocusSlotClicked);
+
+                _focusSlotsBar.Add(btn);
+            }
+
+            // Optional: unlock button sichtbar nur wenn nicht am cap
+            if (_btnUnlockSlot != null)
+            {
+                // Du hast maxSlots in BalanceConfig; Controller greift nicht direkt drauf,
+                // also lassen wir den Button erstmal immer sichtbar, aber disabled wenn TryUnlockNextFocusSlot später failt.
+                _btnUnlockSlot.SetEnabled(true);
+            }
+        }
+
+        private void OnFocusSlotClicked(ClickEvent evt)
+        {
+            var btn = evt.currentTarget as Button;
+            if (btn == null) return;
+            if (btn.userData == null) return;
+
+            int idx;
+            try { idx = (int)btn.userData; }
+            catch { return; }
+
+            _selectedSlotIndex = idx;
+
+            // Optional: wenn Slot ein Deed hat, selektieren wir es direkt
+            var deedId = _codex.GetActiveDeedId(_selectedSlotIndex);
+            if (!string.IsNullOrWhiteSpace(deedId))
+                _selectedDeedId = deedId;
+
             RefreshAll();
         }
 
@@ -148,6 +245,8 @@ namespace CHAL.Systems.UI
                 : null;
 
             BuildGroupsAndDeeds(chapterVm);
+
+            BuildFocusSlotsBar();
 
             // Update selection validity
             if (!string.IsNullOrWhiteSpace(_selectedDeedId) && !_deedById.ContainsKey(_selectedDeedId))
@@ -356,7 +455,7 @@ namespace CHAL.Systems.UI
             SetProgress(d.progress01, $"{pct}%");
 
             // Requirements/Rewards are not part of VM yet -> placeholder clear
-            ClearContainers();
+            BuildRequirementsAndRewards(d.deedId);
 
             UpdateDetailsButtons(d);
         }
@@ -370,7 +469,7 @@ namespace CHAL.Systems.UI
 
                 // Slot lock rule: if slot0 currently locked (claimable), you must claim before switching.
                 // We keep it simple: always activate to slot0 for now.
-                if (canActivate && _codex.IsSlotLocked(0))
+                if (canActivate && _codex.IsSlotLocked(_selectedSlotIndex))
                     canActivate = false;
 
                 _btnActivate.SetEnabled(canActivate);
@@ -385,6 +484,113 @@ namespace CHAL.Systems.UI
                 _btnClaimHeader.SetEnabled(claimable && isActive);
             }
         }
+
+        private void BuildRequirementsAndRewards(string deedId)
+        {
+            ClearContainers();
+
+            if (string.IsNullOrWhiteSpace(deedId))
+                return;
+
+            var def = _codex.GetNodeDef(deedId);
+            if (def == null || def.requirements == null)
+                return;
+
+            var prog = _codex.GetNodeProgress(deedId); // counters
+            if (prog == null)
+                return;
+
+            // --- Rewards (Coupons preview) ---
+            if (_rewardsContainer != null)
+            {
+                int coupons;
+                bool has = _codex.TryGetDeedCouponsPreview(deedId, out coupons);
+
+                var lbl = new Label();
+                lbl.AddToClassList("chip");
+
+                if (has)
+                    lbl.text = $"Coupons: {coupons}";
+                else
+                    lbl.text = "Coupons: -";
+
+                _rewardsContainer.Add(lbl);
+            }
+
+            // --- Requirements ---
+            var r = def.requirements;
+
+            AddReq("Waves", prog.waves, r.waves);
+            AddReq("Maps", prog.mapsTotal, r.maps);
+
+            if (r.mapRequirements != null && prog.mapsByDifficulty != null)
+            {
+                for (int i = 0; i < r.mapRequirements.Count; i++)
+                {
+                    var mr = r.mapRequirements[i];
+                    if (mr.amount <= 0) continue;
+
+                    int cur = 0;
+                    prog.mapsByDifficulty.TryGetValue(mr.difficulty, out cur);
+
+                    AddReq($"Maps {mr.difficulty}", cur, mr.amount);
+                }
+            }
+
+            AddReq("Kills", prog.killsGeneralWeighted, r.killsGeneral);
+            AddReq("Elite", prog.eliteCount, r.eliteCount);
+            AddReq("Boss", prog.bossCount, r.bossCount);
+            AddReq("Champion", prog.champCount, r.championCount);
+
+            if (r.gearCraftsByTier != null && prog.gearCraftsByTierTotal != null)
+            {
+                for (int i = 0; i < r.gearCraftsByTier.Count; i++)
+                {
+                    var cr = r.gearCraftsByTier[i];
+                    if ( cr.count <= 0) continue;
+
+                    int cur = 0;
+                    prog.gearCraftsByTierTotal.TryGetValue(cr.tier, out cur);
+
+                    AddReq($"Craft Gear T{cr.tier}", cur, cr.count);
+                }
+            }
+
+            if (r.skillCraftsByTier != null && prog.skillCraftsByTierTotal != null)
+            {
+                for (int i = 0; i < r.skillCraftsByTier.Count; i++)
+                {
+                    var cr = r.skillCraftsByTier[i];
+                    if (cr.count <= 0) continue;
+
+                    int cur = 0;
+                    prog.skillCraftsByTierTotal.TryGetValue(cr.tier, out cur);
+
+                    AddReq($"Craft Skill T{cr.tier}", cur, cr.count);
+                }
+            }
+        }
+
+        private void AddReq(string title, int have, int need)
+        {
+            if (_requirementsContainer == null) return;
+            if (need <= 0) return;
+
+            var row = new VisualElement();
+            row.AddToClassList("req-row");
+
+            var left = new Label(title);
+            left.AddToClassList("req-title");
+
+            var right = new Label($"{Mathf.Clamp(have, 0, need)}/{need}");
+            right.AddToClassList("req-value");
+
+            row.Add(left);
+            row.Add(right);
+
+            _requirementsContainer.Add(row);
+        }
+
 
         private void SetProgress(float progress01, string text)
         {
@@ -427,7 +633,7 @@ namespace CHAL.Systems.UI
                 return;
 
             // For now: always slot 0 (UI has no slot picker yet)
-            if (!_codex.TrySetActiveFocus(0, _selectedDeedId, out var reason))
+            if (!_codex.TrySetActiveFocus(_selectedSlotIndex, _selectedDeedId, out var reason))
             {
                 if (!string.IsNullOrWhiteSpace(reason))
                     DebugManager.Log($"Codex Activate failed: {reason}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
@@ -439,9 +645,9 @@ namespace CHAL.Systems.UI
 
         private void OnClaimClicked()
         {
-            // Prefer selected deed (if active+claimable), otherwise active slot0
             string toClaim = null;
 
+            // 1) Wenn selected deed aktiv+claimable -> claim it
             if (!string.IsNullOrWhiteSpace(_selectedDeedId) &&
                 _deedById.TryGetValue(_selectedDeedId, out var selected) &&
                 selected.isActive &&
@@ -451,9 +657,10 @@ namespace CHAL.Systems.UI
             }
             else
             {
-                var active0 = _codex.GetActiveDeedId(0);
-                if (!string.IsNullOrWhiteSpace(active0) && _codex.IsClaimable(active0))
-                    toClaim = active0;
+                // 2) sonst: claim deed im selected slot, falls claimable
+                var active = _codex.GetActiveDeedId(_selectedSlotIndex);
+                if (!string.IsNullOrWhiteSpace(active) && _codex.IsClaimable(active))
+                    toClaim = active;
             }
 
             if (string.IsNullOrWhiteSpace(toClaim))
