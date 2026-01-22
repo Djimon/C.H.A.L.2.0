@@ -25,7 +25,6 @@ namespace CHAL.Systems.UI
         private Button _btnClaimHeader;
 
         private VisualElement _focusSlotsBar;
-        private Button _btnUnlockSlot;
 
         private VisualElement _chaptersContainer;
         private VisualElement _stageGroupsContainer;
@@ -96,7 +95,6 @@ namespace CHAL.Systems.UI
             
             //Focus-Slot
             _focusSlotsBar = root.Q<VisualElement>("focus-slots-bar");
-            _btnUnlockSlot = root.Q<Button>("btn-unlock-slot");
 
             // Lists
             _chaptersContainer = root.Q<VisualElement>("chapters-container");
@@ -119,9 +117,6 @@ namespace CHAL.Systems.UI
             _codex.OnCodexChanged -= OnCodexChanged;
             _codex.OnCodexChanged += OnCodexChanged;
 
-            _btnUnlockSlot.clicked -= OnUnlockSlotClicked;
-            _btnUnlockSlot.clicked += OnUnlockSlotClicked;
-
             if (_btnActivate != null)
             {
                 _btnActivate.clicked -= OnActivateClicked;
@@ -137,20 +132,6 @@ namespace CHAL.Systems.UI
 
         private void OnCodexChanged()
         {
-            RefreshAll();
-        }
-
-        private void OnUnlockSlotClicked()
-        {
-            if (_codex == null) return;
-
-            if (!_codex.TryUnlockNextFocusSlot(out var reason))
-            {
-                if (!string.IsNullOrWhiteSpace(reason))
-                    DebugManager.Log($"Codex unlock slot failed: {reason}", DebugManager.EDebugLevel.Dev, "Research", LogType.Log);
-                return;
-            }
-
             RefreshAll();
         }
 
@@ -197,13 +178,6 @@ namespace CHAL.Systems.UI
                 _focusSlotsBar.Add(btn);
             }
 
-            // Optional: unlock button sichtbar nur wenn nicht am cap
-            if (_btnUnlockSlot != null)
-            {
-                // Du hast maxSlots in BalanceConfig; Controller greift nicht direkt drauf,
-                // also lassen wir den Button erstmal immer sichtbar, aber disabled wenn TryUnlockNextFocusSlot später failt.
-                _btnUnlockSlot.SetEnabled(true);
-            }
         }
 
         private void OnFocusSlotClicked(ClickEvent evt)
@@ -576,19 +550,12 @@ namespace CHAL.Systems.UI
             if (_requirementsContainer == null) return;
             if (need <= 0) return;
 
-            var row = new VisualElement();
-            row.AddToClassList("req-row");
+            int clamped = Mathf.Clamp(have, 0, need);
 
-            var left = new Label(title);
-            left.AddToClassList("req-title");
+            var lbl = new Label($"{title}: {clamped}/{need}");
+            lbl.AddToClassList("req-line");
 
-            var right = new Label($"{Mathf.Clamp(have, 0, need)}/{need}");
-            right.AddToClassList("req-value");
-
-            row.Add(left);
-            row.Add(right);
-
-            _requirementsContainer.Add(row);
+            _requirementsContainer.Add(lbl);
         }
 
 
