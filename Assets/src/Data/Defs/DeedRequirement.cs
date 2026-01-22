@@ -24,6 +24,9 @@ namespace CHAL.Systems.Codex
 
         public List<KillTagCount> killsByTag = new List<KillTagCount>();
 
+        public List<GearCraftTierCount> gearCraftsByTier = new List<GearCraftTierCount>();
+        public List<SkillCraftTierCount> skillCraftsByTier = new List<SkillCraftTierCount>();
+
         [Min(0)] public int eliteCount;
         [Min(0)] public int bossCount;
         [Min(0)] public int championCount;
@@ -50,6 +53,31 @@ namespace CHAL.Systems.Codex
                         warn?.Invoke($"{ctx}: killsByTag[{i}] hat negativen Count.");
                 }
             }
+
+            if (gearCraftsByTier != null)
+            {
+                for (int i = 0; i < gearCraftsByTier.Count; i++)
+                {
+                    var t = gearCraftsByTier[i];
+                    if (t.tier <= 0)
+                        warn?.Invoke($"{ctx}: killsByTag[{i}] hat leeren Tag.");
+                    if (t.count < 0)
+                        warn?.Invoke($"{ctx}: killsByTag[{i}] hat negativen Count.");
+                }
+            }
+
+            if (skillCraftsByTier != null)
+            {
+                for (int i = 0; i < skillCraftsByTier.Count; i++)
+                {
+                    var t = skillCraftsByTier[i];
+                    if (t.tier <= 0)
+                        warn?.Invoke($"{ctx}: killsByTag[{i}] hat leeren Tag.");
+                    if (t.count < 0)
+                        warn?.Invoke($"{ctx}: killsByTag[{i}] hat negativen Count.");
+                }
+            }
+
         }
 
 /// <summary>
@@ -65,6 +93,14 @@ namespace CHAL.Systems.Codex
                 foreach (var t in killsByTag)
                     if (t != null && t.count > 0) return false;
 
+            if (gearCraftsByTier != null)
+                foreach (var c in gearCraftsByTier)
+                    if (c.count > 0) return false;
+
+            if (skillCraftsByTier != null)
+                foreach (var c in skillCraftsByTier)
+                    if (c.count > 0) return false;
+
             return true;
         }
     }
@@ -73,6 +109,20 @@ namespace CHAL.Systems.Codex
     public sealed class KillTagCount
     {
         public string enemyTag;
+        public int count;
+    }
+
+    [Serializable]
+    public struct GearCraftTierCount
+    {
+        public int tier;
+        public int count;
+    }
+
+    [Serializable]
+    public struct SkillCraftTierCount
+    {
+        public int tier;
         public int count;
     }
 

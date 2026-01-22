@@ -247,6 +247,15 @@ namespace CHAL.Systems.Crafting
             var isGear = outType == ItemType.Gear;
             var isModule = outType == ItemType.Module;
 
+            var craftType = CraftType.unkown;
+
+            if (outType == ItemType.Gear)
+                craftType = CraftType.Gear;
+
+            if (outType == ItemType.Module)
+                craftType = CraftType.Skill;
+   
+
             if (isGear && recipe.outputCount != 1)
             {
                 failReason = "Gear output must be unstackable (outputCount must be 1).";
@@ -360,11 +369,15 @@ namespace CHAL.Systems.Crafting
             //    return false;
             //}
 
+
+            int intTier = 0;
+
             // 3) Output
             if (isGear)
             {
                 // Create concrete gear instance
                 var baseTier = recipe.tier <= 1 ? GearBaseTier.T1 : (recipe.tier == 2 ? GearBaseTier.T2 : GearBaseTier.T3);
+                intTier = (int)baseTier;
 
                 var gear = GearInstance.CreateNew(recipe.outputItemId, baseTier);
 
@@ -430,7 +443,8 @@ namespace CHAL.Systems.Crafting
                 }
             }
 
-            GameManager.Instance.Stats.OnCraftExecuted(recipe.Id);
+
+            GameManager.Instance.Stats.OnCraftExecuted(craftType, recipe.Id, intTier);
 
             return true;
         }
@@ -730,8 +744,7 @@ namespace CHAL.Systems.Crafting
                 return false;
             }
 
-            // Stats (synthetischer "RecipeId"-Key)
-            gm.Stats.OnCraftExecuted($"skillModule:{moduleItemId}:tier{frameTier}:core{selectedCore}");
+            GameManager.Instance.Stats.OnCraftExecuted(CraftType.Skill, $"skill_{moduleItemId}:core{selectedCore}",frameTier);
 
             return true;
         }
@@ -826,5 +839,14 @@ namespace CHAL.Systems.Crafting
         NotEnoughCurrency,    // Gold (oder andere Currency) reicht nicht
         InvalidRefinement,    // Slider/Material ungÃ¼ltig (nur wenn Feature aktiv)
         UnknownError          // Fallback
+    }
+
+    public enum CraftType
+    { 
+        unkown = -1,
+
+        Gear = 1,
+        Skill = 2
+
     }
 }

@@ -16,6 +16,10 @@ namespace CHAL.Systems.Codex
         public int killsGeneralWeighted;
         public Dictionary<string, int> killsByTagWeighted = new Dictionary<string, int>(StringComparer.Ordinal);
 
+        //Crafts
+        public Dictionary<int, int> gearCraftsByTierTotal = new Dictionary<int, int>();
+        public Dictionary<int, int> skillCraftsByTierTotal = new Dictionary<int, int>();
+
         // Rarities (ungewichtet, reine Stückzahlen)
         public int eliteCount;
         public int bossCount;

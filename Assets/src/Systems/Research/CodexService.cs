@@ -1,5 +1,6 @@
 using CHAL.Core;
 using CHAL.Data;
+using CHAL.Systems.Crafting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -504,13 +505,100 @@ namespace CHAL.Systems.Codex
                 return true;
             });
 
-/// <summary>
-/// Executes the crafting process for the specified object.
-/// </summary>
-/// <param name="obj">The identifier of the object being crafted.</param>
-        public void OnCraftExecuted(string obj)
+
+        public void OnCraftExecuted(CraftType type, string recipe, int tier)
         {
-            // später, falls es DeedRequirements für crafting gibt
+            if (_state == null) return;
+            if (_state.activeFocusSlots == null || _state.activeFocusSlots.Count == 0) return;
+
+            bool anyChanged = false;
+
+            for (int slotIndex = 0; slotIndex < _state.activeFocusSlots.Count; slotIndex++)
+            {
+                var slot = _state.activeFocusSlots[slotIndex];
+                var deedId = slot.deedId;
+
+                if (string.IsNullOrWhiteSpace(deedId))
+                    continue;
+
+                // Slot lock = claimable => MUSS erst claimen, daher kein weiteres Progress
+                if (IsSlotLocked(slotIndex))
+                    continue;
+
+                // Existence
+                CodexDeedDef def;
+                if (!_nodesById.TryGetValue(deedId, out def) || def == null)
+                    continue;
+
+                EnsureProgressSafe(deedId);
+
+                // claimed => fertig
+                if (IsClaimed(deedId))
+                    continue;
+
+                // Gate: Progress zählt nur wenn Deed available (und natürlich active)
+                if (_gate != null)
+                {
+                    var gate = _gate.ComputeDeedGate(deedId);
+                    if (!gate.isAvailable)
+                        continue;
+                }
+
+                var progressState = _state.deedProgress[deedId];
+                var counters = progressState.counters;
+                if (counters == null)
+                    continue;
+
+                bool mutated = false;
+
+       
+
+                if (type == CraftType.Gear)
+                {
+                    if (counters.gearCraftsByTierTotal == null)
+                        counters.gearCraftsByTierTotal = new Dictionary<int, int>();
+
+                    int cur;
+                    if (!counters.gearCraftsByTierTotal.TryGetValue(tier, out cur))
+                        cur = 0;
+
+                    counters.gearCraftsByTierTotal[tier] = cur + 1;
+                    mutated = true;
+                }
+                else if (type == CraftType.Skill)
+                {
+                    if (counters.skillCraftsByTierTotal == null)
+                        counters.skillCraftsByTierTotal = new Dictionary<int, int>();
+
+                    int cur;
+                    if (!counters.skillCraftsByTierTotal.TryGetValue(tier, out cur))
+                        cur = 0;
+
+                    counters.skillCraftsByTierTotal[tier] = cur + 1;
+                    mutated = true;
+                }
+                else
+                {
+                    // unbekannter craft-type => ignorieren (keine Mutation)
+                    mutated = false;
+                }
+
+                if (!mutated)
+                    continue;
+
+                anyChanged = true;
+
+                // Recompute progress01 / completed
+                RecomputeAndStoreProgress(deedId);
+
+                // Slot lock sync (kann jetzt claimable geworden sein)
+                SyncSlotLock(slotIndex);
+            }
+
+            if (anyChanged)
+                RaiseCodexChanged();
+
+
         }
 
         private delegate bool MutateProgressFn(string deedId, CodexDeedDef def, DeedProgress progress);
@@ -635,6 +723,46 @@ namespace CHAL.Systems.Codex
 
                     need += kc.count;
                     have += Mathf.Clamp(cur, 0, kc.count);
+                }
+            }
+
+            if (r.gearCraftsByTier != null)
+            {
+                for (int i = 0; i < r.gearCraftsByTier.Count; i++)
+                {
+                    var req = r.gearCraftsByTier[i];
+                    if (req.count <= 0) continue;
+
+                    int cur = 0;
+                    if (p.gearCraftsByTierTotal != null)
+                    {
+                        int v;
+                        if (p.gearCraftsByTierTotal.TryGetValue(req.tier, out v))
+                            cur = v;
+                    }
+
+                    need += req.count;
+                    have += Mathf.Clamp(cur, 0, req.count);
+                }
+            }
+
+            if (r.skillCraftsByTier != null)
+            {
+                for (int i = 0; i < r.skillCraftsByTier.Count; i++)
+                {
+                    var req = r.skillCraftsByTier[i];
+                    if (req.count <= 0) continue;
+
+                    int cur = 0;
+                    if (p.skillCraftsByTierTotal != null)
+                    {
+                        int v;
+                        if (p.skillCraftsByTierTotal.TryGetValue(req.tier, out v))
+                            cur = v;
+                    }
+
+                    need += req.count;
+                    have += Mathf.Clamp(cur, 0, req.count);
                 }
             }
 

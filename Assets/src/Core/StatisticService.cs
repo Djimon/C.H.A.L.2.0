@@ -1,4 +1,5 @@
 using CHAL.Data;
+using CHAL.Systems.Crafting;
 using System;
 using System.Collections.Generic;
 
@@ -21,7 +22,7 @@ namespace CHAL.Systems.Stats
         public event Action<string, EnemyRank, List<string>, List<string>> OnEnemyKilledEvent;
         public event Action<int, int, MapDifficulty> OnWaveCompletedEvent;
         public event Action<int, MapDifficulty> OnMapCompletedEvent;
-        public event Action<string> OnCraftExecutedEvent;
+        public event Action<CraftType, string, int> OnCraftExecutedEvent;
 
 
         public StatisticsService()
@@ -132,12 +133,14 @@ namespace CHAL.Systems.Stats
 /// Executes the crafting process for a given recipe.
 /// </summary>
 /// <param name="recipeId">The identifier of the recipe being crafted.</param>
-        public void OnCraftExecuted(string recipeId)
+        public void OnCraftExecuted(CraftType type, string recipeId, int tier)
         {
+            string typ = type.ToString();
             Increment("crafts.total");
             Increment($"crafts.recipe.{recipeId}");
+            Increment($"crafts.{typ}.T{tier}");
 
-            OnCraftExecutedEvent?.Invoke(recipeId);
+            OnCraftExecutedEvent?.Invoke(type, recipeId, tier);
         }
 
 
