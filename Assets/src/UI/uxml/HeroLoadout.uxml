@@ -1,0 +1,113 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/src/UI/uss/HeroLoadout.uss?fileID=7433441132597879392&amp;guid=1783fe27b4aff0b42a8534f8794e243d&amp;type=3#HeroLoadout"/>
+    <ui:VisualElement name="hero-loadout-root" class="hero-loadout-root">
+        <ui:VisualElement name="hero-header" class="hero-header">
+            <ui:Button name="btn-hero-prev" text="&lt;" class="nav-btn nav-btn-left"/>
+            <ui:VisualElement name="hero-carousel" class="hero-carousel">
+                <ui:VisualElement name="hero-avatar-strip" class="hero-avatar-strip"/>
+                <ui:Label name="hero-name" text="Marksman" class="hero-name"/>
+            </ui:VisualElement>
+            <ui:Button name="btn-hero-next" text="&gt;" class="nav-btn nav-btn-right"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="main" class="main">
+            <ui:VisualElement name="hero-display-panel" class="panel hero-display-panel">
+                <ui:VisualElement name="hero-portrait-frame" class="hero-portrait-frame">
+                    <ui:Image name="hero-portrait" class="hero-portrait"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="hero-mini-stats" class="hero-mini-stats">
+                    <ui:Label name="lbl-hero-level" text="Lv. 1" class="mini-stat"/>
+                    <ui:Label name="lbl-hero-archetype" text="Marksman" class="mini-stat"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="loadout-panel" class="panel loadout-panel">
+                <ui:VisualElement name="tab-bar" class="tab-bar">
+                    <ui:Button name="tab-gear" text="Gear" class="tab tab-selected"/>
+                    <ui:Button name="tab-skills" text="Skills" class="tab"/>
+                    <ui:Button name="tab-info" text="Info" class="tab"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="tab-content-gear" enabled="true" class="tab-content tab-content-gear">
+                    <ui:VisualElement name="gear-slots" class="gear-slots">
+                        <ui:VisualElement name="gear-slot-head" class="slot-row">
+                            <ui:VisualElement name="slot-head-drop" class="slot-drop"/>
+                            <ui:Label text="helmet" class="slot-label"/>
+                            <ui:Label name="slot-head-item" text="" class="slot-item-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="gear-slot-chest" class="slot-row">
+                            <ui:VisualElement name="slot-chest-drop" class="slot-drop"/>
+                            <ui:Label text="body armor" class="slot-label"/>
+                            <ui:Label name="slot-chest-item" text="" class="slot-item-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="gear-slot-gloves" class="slot-row">
+                            <ui:VisualElement name="slot-gloves-drop" class="slot-drop"/>
+                            <ui:Label text="gloves" class="slot-label"/>
+                            <ui:Label name="slot-gloves-item" text="" class="slot-item-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="gear-slot-legs" class="slot-row">
+                            <ui:VisualElement name="slot-legs-drop" class="slot-drop"/>
+                            <ui:Label text="legs" class="slot-label"/>
+                            <ui:Label name="slot-legs-item" text="" class="slot-item-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="gear-slot-boots" class="slot-row">
+                            <ui:VisualElement name="slot-boots-drop" class="slot-drop"/>
+                            <ui:Label text="boots" class="slot-label"/>
+                            <ui:Label name="slot-boots-item" text="" class="slot-item-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="gear-slot-amulet" class="slot-row slot-row-amulet">
+                            <ui:Label text="Amulet" class="slot-label slot-label-amulet"/>
+                            <ui:VisualElement name="slot-amulet-drop" class="slot-drop slot-drop-amulet"/>
+                            <ui:Label name="slot-amulet-item" text="" class="slot-item-label"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="tab-content-skills" class="tab-content tab-content-skills" style="display: none;">
+                    <ui:VisualElement name="skill-sockets" class="skill-sockets">
+                        <ui:VisualElement name="skill-socket-0" class="skill-socket">
+                            <ui:VisualElement name="skill-socket-0-drop" class="slot-drop slot-drop-skill"/>
+                            <ui:Label name="skill-socket-0-name" text="Sandstorm" class="socket-item-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="skill-socket-1" class="skill-socket">
+                            <ui:VisualElement name="skill-socket-1-drop" class="slot-drop slot-drop-skill"/>
+                            <ui:Label name="skill-socket-1-name" text="Fireball" class="socket-item-label"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="skill-socket-2" class="skill-socket locked">
+                            <ui:VisualElement name="skill-socket-2-drop" class="slot-drop slot-drop-skill"/>
+                            <ui:Label name="skill-socket-2-name" text="" class="socket-item-label"/>
+                            <ui:VisualElement name="skill-socket-2-lock" class="lock-overlay"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="skill-socket-3" class="skill-socket locked">
+                            <ui:VisualElement name="skill-socket-3-drop" class="slot-drop slot-drop-skill"/>
+                            <ui:Label name="skill-socket-3-name" text="" class="socket-item-label"/>
+                            <ui:VisualElement name="skill-socket-3-lock" class="lock-overlay"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="skills-hint" text="Socketed skills can only be overwritten (destroyed), not moved back to inventory." class="hint-text"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="tab-content-info" class="tab-content tab-content-info" style="display: none;">
+                    <ui:Label name="lbl-lore-title" text="Lore" class="section-title"/>
+                    <ui:Label name="lbl-lore" text="some detail text about lore and characteristics" class="paragraph"/>
+                    <ui:VisualElement class="divider"/>
+                    <ui:Label name="lbl-passive-title" text="Signature Passive" class="section-title"/>
+                    <ui:Label name="lbl-passive-name" text="Genkidama" class="passive-name"/>
+                    <ui:Label name="lbl-passive-desc" text="short text how “Genkidama” works" class="paragraph"/>
+                    <ui:VisualElement class="divider"/>
+                    <ui:Label name="lbl-hero-stats-title" text="Hero Stats" class="section-title"/>
+                    <ui:ScrollView name="hero-stats-scroll" class="hero-stats-scroll">
+                        <ui:VisualElement name="hero-stats-container" class="list-container"/>
+                    </ui:ScrollView>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="bottom-panel" class="panel bottom-panel">
+            <ui:VisualElement name="bottom-header" class="bottom-header">
+                <ui:Label name="bottom-title" text="Player Inventory (Filtered: Gear)" class="panel-title"/>
+                <ui:VisualElement name="bottom-actions" class="bottom-actions">
+                    <ui:Button name="btn-sort" text="Sort" class="btn btn-small"/>
+                    <ui:Button name="btn-filter" text="Filter" class="btn btn-small"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:ScrollView name="inventory-scroll" class="inventory-scroll">
+                <ui:VisualElement name="inventory-container" class="list-container"/>
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
