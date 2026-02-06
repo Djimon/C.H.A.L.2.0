@@ -1,0 +1,52 @@
+# Glossary
+
+- GameManager: Global singleton that owns game state, profile, inventory domain, stats, and codex wiring. `Core/GameManager.cs` (API: [GameManager](../CHAL/Core/GameManager.md)).
+- BalanceManager: Early singleton that exposes GameBalanceConfig and helper math. `Core/BalanceManager.cs` (API: [BalanceManager](../CHAL/Core/BalanceManager.md)).
+- PlayerProfile: Persistent player data (currencies, heroes, map progress, inventory snapshot). `Core/PlayerProfile.cs` (API: [PlayerProfile](../CHAL/Data/PlayerProfile.md)).
+- InventoryDomain: Runtime inventory model with instances and slots. `Systems/Inventory/InventoryDomain.cs` (API: [InventoryDomain](../CHAL/Systems/Inventory/InventoryDomain.md)).
+- InventoryInstance: Concrete inventory with slots, created from InventoryDef. `Systems/Inventory/InventoryInstance.cs` (API: [InventoryInstance](../CHAL/Systems/Inventory/InventoryInstance.md)).
+- InventorySnapshot: Persisted snapshot used by SaveSystem and GameManager mapping. `Core/PlayerProfile.cs` (API: [PlayerProfile](../CHAL/Data/PlayerProfile.md)).
+- ItemStackRef: Immutable stack reference with optional instanceId for instanced items. `Systems/Inventory/ItemStackRef.cs` (API: [ItemStackRef](../CHAL/Systems/Inventory/ItemStackRef.md)).
+- GearInstance: Unique gear item instance with GUID instanceId and rolled mods. `Systems/Items/Gear/GearInstance.cs` (API: [GearInstance](../CHAL/Systems/Items/GearInstance.md)).
+- SkillModuleInstance: Deterministic variant instance (stackable by instanceId). `Systems/Items/SkillModules/SkillModuleInstance.cs` (API: [SkillModuleInstance](../CHAL/Systems/Items/SkillModuleInstance.md)).
+- ItemId prefix: Item type encoded in id prefix (remains, part, rune, module, core, gear). `Systems/Items/ItemType.cs` (API: [ItemType](../CHAL/Systems/Items/ItemType.md)).
+- Inventory routing: GameManager maps item prefix to PlayerInventoryType and instanceId. `Core/GameManager.cs` (API: [GameManager](../CHAL/Core/GameManager.md)), `Core/GameManager.cs` (API: [GameManager](../CHAL/Core/GameManager.md)).
+- Wave: Subset of a map encounter managed by WaveManager. `Systems/Map/Waves/WaveManager.cs` (API: [WaveManager](../CHAL/Systems/Wave/WaveManager.md)).
+- WaveRewards: Accumulator for items, currency, and XP per wave. `Systems/Map/Waves/WaveManager.cs` (API: [WaveManager](../CHAL/Systems/Wave/WaveManager.md)).
+- LootRule: JSON-driven rules per monster tag. `Systems/Loot/Models/LootModel.cs` (API: [LootModel](../CHAL/Systems/Loot/Models/LootModel.md)).
+- UnluckyProtection: Dry streak multipliers per rarity. `Systems/Loot/UnluckyProtection.cs` (API: [UnluckyProtection](../CHAL/Systems/Loot/UnluckyProtection.md)).
+- Codex: Research and unlock system using deeds and focus slots. `Systems/Research/CodexService.cs` (API: [CodexService](../CHAL/Systems/Research/CodexService.md)).
+- Deed: A codex node with requirements and unlocks. `Data/Defs/CodexDeedDef.cs` (API: [CodexDeedDef](../CHAL/Data/CodexDeedDef.md)).
+- Focus Slot: Active deed slot that gates progress and claims. `Systems/Research/CodexService.cs` (API: [CodexService](../CHAL/Systems/Research/CodexService.md)).
+- Stats Counters: Named counters for kills, waves, maps, crafts. `Core/StatisticService.cs` (API: [StatisticService](../CHAL/Systems/Stats/StatisticService.md)).
+- ActiveStatusEffect: Runtime status effect instance with duration, source/target, and stacking metadata. `Systems/Skills/ActiveStatusEffect.cs` (API: [ActiveStatusEffect](../CHAL/Systems/Skill/ActiveStatusEffect.md)).
+- BuffStatusEffect: Status effect that applies buffs via configured settings. `Systems/Skills/BuffStatusEffect.cs` (API: [BuffStatusEffect](../CHAL/Systems/Skill/BuffStatusEffect.md)).
+- DebuffStatusEffect: Runtime debuff effect that applies negative modifiers. `Systems/Skills/DebuffStatusEffect.cs` (API: [DebuffStatusEffect](../CHAL/Systems/Skill/DebuffStatusEffect.md)).
+- DoTStatusEffect: Damage-over-time effect with stacking behavior. `Systems/Skills/DoTStatusEffect.cs` (API: [DoTStatusEffect](../CHAL/Systems/Skill/DoTStatusEffect.md)).
+- CombatCalculator: Static combat resolver that builds hit results and damage packets. `Systems/Skills/CombatCalculator.cs` (API: [CombatCalculator](../CHAL/Systems/Skill/CombatCalculator.md)).
+- DamagePacket: Container for per-hit damage values and types. `Systems/Skills/DamagePacket.cs` (API: [DamagePacket](../CHAL/Systems/Skill/DamagePacket.md)).
+- EffectReceiver: Base receiver for damage and status effects on units. `Systems/Unit/EffectReceiver.cs` (API: [EffectReceiver](../CHAL/Systems/Unit/EffectReceiver.md)).
+- HitContext: Input data for hit resolution. `Systems/Skills/HitContext.cs` (API: [HitContext](../CHAL/Systems/Skill/HitContext.md)).
+- HitResult: Output of hit resolution (defined alongside HitContext). `Systems/Skills/HitContext.cs` (API: [HitContext](../CHAL/Systems/Skill/HitContext.md)).
+- ModifierStack: Collection of modifiers applied to skills/effects. `Systems/Skills/SkillModifierStack.cs` (API: [SkillModifierStack](../CHAL/Systems/Skill/SkillModifierStack.md)).
+- ProjectileController: Projectile behavior that applies on-hit effects on collision. `Systems/Skills/ProjectileController.cs` (API: [ProjectileController](../CHAL/Systems/Skill/ProjectileController.md)).
+- SkillExecutor: Static executor for skill casts and hit application. `Systems/Skills/SkillExecuter.cs` (API: [SkillExecuter](../CHAL/Systems/Skill/SkillExecuter.md)).
+- SkillInstance: Runtime skill instance with computed stats and effects. `Systems/Skills/SkillInstance.cs` (API: [SkillInstance](../CHAL/Systems/Skill/SkillInstance.md)).
+- CodexGateEngine: Deterministic gate system for codex group/deed visibility. `Systems/Research/CodexGateEngine.cs` (API: [CodexGateEngine](../CHAL/Systems/Codex/CodexGateEngine.md)).
+- CodexService: Service managing codex research nodes and progress. `Systems/Research/CodexService.cs` (API: [CodexService](../CHAL/Systems/Research/CodexService.md)).
+- CodexSnapshot: Serializable save data for codex progress and focus slots. `Systems/Research/CodexSnapshot.cs` (API: [CodexSnapshot](../CHAL/Systems/Research/CodexSnapshot.md)).
+- CodexUnlockRegistry: Registry of unlockable codex elements. `Systems/Research/CodexUnlockRegistry.cs` (API: [CodexUnlockRegistry](../CHAL/Systems/Research/CodexUnlockRegistry.md)).
+- CraftingCatalog: Recipe catalog ScriptableObject for crafting. `Systems/Crafting/CraftingCatalog.cs` (API: [CraftingCatalog](../CHAL/Systems/Crafting/CraftingCatalog.md)).
+- CraftingController: MonoBehaviour that coordinates crafting UI and flow. `Systems/Crafting/CraftingController.cs` (API: [CraftingController](../CHAL/Systems/Crafting/CraftingController.md)).
+- CraftingService: Static crafting operations and validations. `Systems/Crafting/CraftingService.cs` (API: [CraftingService](../CHAL/Systems/Crafting/CraftingService.md)).
+- InventoryDef: ScriptableObject defining an inventory layout/config. `Systems/Inventory/core/InventoryDef.cs` (API: [InventoryDef](../CHAL/Systems/Inventory/InventoryDef.md)).
+- InventoryView: Inventory UI view (dockable). `UI/InventoryView.cs` (API: [InventoryView](../CHAL/UI/InventoryView.md)).
+- IDockableView: Dockable UI view interface. `UI/misc/IDockableView.cs` (API: [IDockableView](../CHAL/UI/IDockableView.md)).
+- UIDockingManager: Manager for dockable UI layout. `UI/misc/UIDockingManager.cs` (API: [UIDockingManager](../CHAL/UI/UIDockingManager.md)).
+- IngameUI: Base class for in-game UI elements. `UI/misc/InGameUI.cs` (API: [InGameUI](../CHAL/UI/InGameUI.md)).
+- LootCube: World object representing a loot container. `Systems/Loot/LootCube.cs` (API: [LootCube](../CHAL/Systems/Loot/LootCube.md)).
+- LootRoller: Rolls loot, gold, and XP from loot rules. `Systems/Loot/LootRoller.cs` (API: [LootRoller](../CHAL/Systems/Loot/LootRoller.md)).
+- LootRulesService: Loads and serves loot rules and secret drops. `Systems/Loot/LootRulesService.cs` (API: [LootRulesService](../CHAL/Systems/Loot/LootRulesService.md)).
+- MapManager: Manages map lifecycle, heroes, and wave flow. `Systems/Map/MapManager.cs` (API: [MapManager](../CHAL/Systems/Map/MapManager.md)).
+- WaveComposition: Struct describing wave contents and difficulty. `Data/Structs/WaveComposition.cs` (API: [WaveComposition](../CHAL/Data/WaveComposition.md)).
+- WaveManager: Spawns enemy waves and handles wave rewards. `Systems/Map/Waves/WaveManager.cs` (API: [WaveManager](../CHAL/Systems/Wave/WaveManager.md)).

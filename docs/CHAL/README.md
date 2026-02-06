@@ -58,3 +58,6 @@ Docs
 - Save/Load + Migration + Crypto: `Docs/SaveSystem.md`
 - ItemRegistry reports (CSV): `Docs/Validation.md`
 - UI flows & docking: `Docs/UI-Flow.md`
+
+## Manual Docs
+- Handbook entry: `docs/handbook/README.md`
