@@ -1,10 +1,15 @@
 ﻿# C.H.A.L.2
 
-![Status](https://img.shields.io/badge/Status-Prototype-F5C542) ![Engine](https://img.shields.io/badge/Unity-Engine-000?logo=unity&logoColor=white) ![Language](https://img.shields.io/badge/C%23-Project-239120?logo=csharp&logoColor=white) [![Docs](https://img.shields.io/badge/Docs-Handbook-2B90D9)](docs/handbook/README.md) ![License](https://img.shields.io/badge/License-All%20rights%20reserved-lightgrey)
+![Status](https://img.shields.io/badge/Status-Prototype-F5C542) ![Engine](https://img.shields.io/badge/Engine-Unity-000?logo=unity&logoColor=white) ![Language](https://img.shields.io/badge/C%23-Project-239120?logo=csharp&logoColor=white) [![Docs](https://img.shields.io/badge/Docs-Handbook-2B90D9)](docs/handbook/README.md) ![License](https://img.shields.io/badge/License-All%20rights%20reserved-red)
 
 > Auto-battler / team-builder where you play as a team architect and build alchemist.
 
 C.H.A.L.2 (Customized Hero Arena Looter - **working title**) is a systems-driven auto-battler prototype focused on data-first design. You plan builds, craft gear, and set up hero loadouts in the hub, then watch fully automated wave battles. Progress is long-term and permanent, driven by deterministic crafting and research-based unlocks instead of pure loot lottery.
+
+## Looking For Contributors
+We are currently looking for a 3D artist/developer with Unity experience who can integrate assets properly (prefabs, materials, animator, VFX, setup).
+
+Reach out via GitHub Discussions.
 
 ## What Makes It Different
 - Build-first, no APM: combat is fully automated; skill expression is in planning and team composition.
