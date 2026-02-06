@@ -121,3 +121,4 @@ stub
 *.qvw
 /Assets/Resources/data/Items/core/missing.meta
 /*.slnx
+/Assets/src/_notes
