@@ -21,12 +21,12 @@ namespace CHAL.Core
             {
                 if (config == null)
                 {
-                    // Fallback: versucht, aus Resources/Config/GameBalanceConfig zu laden
-                    config = Resources.Load<GameBalanceConfig>("Config/GameBalanceConfig");
+                    // Fallback: versucht, aus Resources/config/GameBalanceConfig zu laden
+                    config = Resources.Load<GameBalanceConfig>("config/GameBalanceConfig");
                     if (config == null)
                     {
                         DebugManager.Error("[BalanceManager] No GameBalanceConfig found." +
-                                        "Bitte im Inspector zuweisen oder unter Resources/Config/GameBalanceConfig ablegen.");
+                                        "Bitte im Inspector zuweisen oder unter Resources/config/GameBalanceConfig ablegen.");
                     }
                 }
                 return config;

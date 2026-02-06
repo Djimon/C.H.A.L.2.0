@@ -20,7 +20,7 @@ namespace CHAL.Core
             get
             {
                 if (_cfg == null)
-                    _cfg = Resources.Load<GameSaveConfig>("Config/GameSaveConfig");
+                    _cfg = Resources.Load<GameSaveConfig>("config/GameSaveConfig");
                 return _cfg;
             }
         }
@@ -29,7 +29,7 @@ namespace CHAL.Core
         {
             if (Cfg == null)
             {
-                DebugManager.Log("SaveSystem: GameSaveConfig not found at Resources/Config/GameSaveConfig", DebugManager.EDebugLevel.Dev, "Save", LogType.Error);
+                DebugManager.Log("SaveSystem: GameSaveConfig not found at Resources/config/GameSaveConfig", DebugManager.EDebugLevel.Dev, "Save", LogType.Error);
                 return;
             }
             SaveGame.Encode = Cfg.ShouldEncodeRuntime();

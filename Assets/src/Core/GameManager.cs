@@ -102,7 +102,7 @@ namespace CHAL.Core
             {
                 if (config == null)
                 {
-                    config = Resources.Load<GameBalanceConfig>("Config/GameBalanceConfig");
+                    config = Resources.Load<GameBalanceConfig>("config/GameBalanceConfig");
                 }
                 return config;
             }

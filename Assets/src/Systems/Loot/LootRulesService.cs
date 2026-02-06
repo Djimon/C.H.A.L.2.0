@@ -147,6 +147,13 @@ namespace CHAL.Systems.Loot
 
                 // 3) MapDef.allowedModifiers
                 var maps = Resources.LoadAll<MapDef>("data/Maps");
+                if (maps == null || maps.Length == 0)
+                {
+                    DebugManager.Warning(
+                        "[LootRules] Resources.LoadAll<MapDef>(\"data/Maps\") returned 0. " +
+                        "Check Resources/data/Map path (folder name mismatch).",
+                        "System");
+                }
                 foreach (var m in maps)
                 {
                     if (m == null || m.allowedMonsterTags == null) continue;
