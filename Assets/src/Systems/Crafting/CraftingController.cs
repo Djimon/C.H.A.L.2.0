@@ -143,16 +143,15 @@ namespace CHAL.Systems.Crafting
 
                 if (unlocks == null)
                     DebugManager.Warning("No UnlockRegistry!", "Crafting");
-
-                DebugManager.Log($"{r.Id} unlokced? {unlocks.IsUnlockedRecipe(r.Id)}", DebugManager.EDebugLevel.Debug, "Crafting");
-                // Research-Gate: nur freigeschaltete Rezepte anzeigen
-                if (unlocks != null && !unlocks.IsUnlockedRecipe(r.Id))
-                {   
-                    continue;
+                else
+                {
+                    DebugManager.Log($"{r.Id} unlokced? {unlocks.IsUnlockedRecipe(r.Id)}", DebugManager.EDebugLevel.Debug, "Crafting");
+                    // Research-Gate: nur freigeschaltete Rezepte anzeigen
+                    if (!unlocks.IsUnlockedRecipe(r.Id))
+                    {
+                        continue;
+                    }
                 }
-
-                
-
 
                 _visibleRecipes.Add(r);
             }

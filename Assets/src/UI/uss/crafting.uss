@@ -107,6 +107,10 @@
     color: rgb(255, 255, 255);
 }
 
+.implicits-tooltip {
+    display: none;
+}
+
 .tooltip-title {
     margin-bottom: 4px;
 }

@@ -537,8 +537,9 @@ namespace CHAL.UI
             SetDropdownChoicesFromEnum<CoreType>("dd_module_core", CoreType.Kinetic);
 
             SetDropdownChoicesFromEnum<EnemyRank>("dd_codex_kill_rank", EnemyRank.Normal);
-            SetDropdownChoicesFromEnum<MapDifficulty>("int_codex_map_difficulty", MapDifficulty.Stable);
-            SetDropdownChoicesFromEnum<MapDifficulty>("int_codex_wave_difficulty", MapDifficulty.Stable);
+            //TODO analysieren wieos fehl? hinweis: -> ist kein Doirpdoiwn sondern einfacher input
+            //SetDropdownChoicesFromEnum<MapDifficulty>("int_codex_map_difficulty", MapDifficulty.Stable);
+            //SetDropdownChoicesFromEnum<MapDifficulty>("int_codex_wave_difficulty", MapDifficulty.Stable);
 
 
             var gm = GameManager.Instance;

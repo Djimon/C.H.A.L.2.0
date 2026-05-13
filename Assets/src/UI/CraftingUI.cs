@@ -19,7 +19,13 @@ namespace CHAL.UI
 
             _btnExit = root.Q<Button>("exit"); // optionaler Close-Button in deiner UXML
             if (_btnExit != null)
-                _btnExit.clicked += () => Show(false);
+                _btnExit.clicked += () =>
+                {
+                    Show(false);
+                }; 
+            else
+                DebugManager.Warning($"CraftingUI exit button not Found on {gameObject.name}","UI");
+
         }
     }
 }

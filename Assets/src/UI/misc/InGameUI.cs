@@ -22,6 +22,7 @@ namespace CHAL.UI
 /// <param name="show">True to show the element; false to hide it.</param>
         public virtual void Show(bool show)
         {
+            DebugManager.DebugLog($"Show UI :{gameObject.name} = {show.ToString()}", "UI");
             root.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
