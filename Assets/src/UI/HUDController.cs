@@ -43,6 +43,8 @@ namespace CHAL.Systems.UI
                 return;
             }
 
+            root.pickingMode = PickingMode.Ignore; //Root blockiert nicht andere UIs
+
             BindHudUI();
             ResolveCodexDocument();
             HookEvents();
@@ -64,6 +66,8 @@ namespace CHAL.Systems.UI
 
             if (_btnCodex == null)
                 DebugManager.Error("[HudCodexController] Missing Button with name 'btn-codex' in HUD UXML.");
+            else
+                _btnCodex.pickingMode = PickingMode.Position; //nur echte Buttons sind klickbar
         }
 
         private void ResolveCodexDocument()

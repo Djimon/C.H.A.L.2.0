@@ -1,5 +1,5 @@
 level,domain,kind,value,context
-warn,unused_item,gear:medium_helmet,no_known_system_reference
+warn,unused_item,module:bladestorm,no_known_system_reference
 warn,unused_item,module:fireball,no_known_system_reference
 warn,unused_item,module:ice_bomb,no_known_system_reference
 warn,unused_item,part:none,no_known_system_reference

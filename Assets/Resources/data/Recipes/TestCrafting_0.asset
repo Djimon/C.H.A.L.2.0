@@ -24,6 +24,6 @@ MonoBehaviour:
   currencyCosts:
   - currencyId: gold
     amount: 2000
-  outputRef: {fileID: 11400000, guid: d6445fdb0cfc28642a6c279c4a7ec761, type: 2}
-  outputItemId: module:piercing_fang
+  outputRef: {fileID: 11400000, guid: a6ceb193648985642923cb86ca2bbe8d, type: 2}
+  outputItemId: gear:medium_helmet
   outputCount: 1

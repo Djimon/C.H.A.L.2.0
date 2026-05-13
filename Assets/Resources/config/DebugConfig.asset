@@ -22,10 +22,10 @@ MonoBehaviour:
     active: 1
     color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   - name: Info
-    active: 1
+    active: 0
     color: {r: 0.7311321, g: 0.8089208, b: 1, a: 1}
   - name: Debug
-    active: 1
+    active: 0
     color: {r: 1, g: 1, b: 1, a: 1}
   - name: Warning
     active: 1
@@ -46,10 +46,10 @@ MonoBehaviour:
     active: 0
     color: {r: 0.53333336, g: 0.19607843, b: 0.8117647, a: 1}
   - name: UI
-    active: 1
+    active: 0
     color: {r: 0.7935584, g: 1, b: 0.25, a: 1}
   - name: Input
-    active: 1
+    active: 0
     color: {r: 0.79607844, g: 1, b: 0.2509804, a: 1}
   - name: Player
     active: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     active: 0
     color: {r: 0.8962264, g: 0.3430213, b: 0.18178178, a: 1}
   - name: Crafting
-    active: 0
+    active: 1
     color: {r: 0.1745283, g: 1, b: 0.35171455, a: 1}
   - name: Stats
     active: 0
@@ -91,9 +91,9 @@ MonoBehaviour:
     active: 0
     color: {r: 0.3915094, g: 1, b: 0.6107486, a: 1}
   - name: Cheat
-    active: 1
+    active: 0
     color: {r: 0.63907933, g: 0, b: 0.7830189, a: 1}
   - name: Codex
-    active: 1
+    active: 0
     color: {r: 0.3508811, g: 0.44348192, b: 0.7830189, a: 1}
   _seeded: 1

@@ -18,7 +18,8 @@ MonoBehaviour:
   laneBaseX: 2c010000bc0200004c040000dc050000
   topMarginY: 120
   defaultGateGlyph: {fileID: 0}
-  alwaysUnlockedIds: []
+  alwaysUnlockedIds:
+  - crafting_basic_crafting
   codexChapters:
   - chapterId: world
     groups: []
