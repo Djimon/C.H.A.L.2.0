@@ -1,0 +1,42 @@
+nutze middelware: z.B. https://www.fmod.com/
+
+- Mehrere Themes mit verschiedenen Abschnitten (Exploration. Combat, etc.)
+	- vieles geloopt und vorbereitet transitions zu den verschiednen Atmos
+	- innerhalb von Loops gibts mehrer layer (tracks/Stems) die dynamisch je nach game-intensität dzau- und abgeschaltet werden
+	- BPM-Wechsel laufen über Bridge, Stinger, Fill, Break oder Phrasenende
+- Nach längerer zeit im selben Atmosphäre/situationen (z.b. >3 Min Epxloration), darf acuh echter Songwechsel stattfinden (aber direkt ins passende Atmso springen und nciht stumpf "von vorne) 
+
+Theme_X
+├── Exploration Container
+│   ├── Base Ambience Loop          16 Takte @ 68 BPM
+│   ├── Exploration Melody          16 Takte @ 68 BPM
+│   └── Light Pulse                 16 Takte @ 68 BPM
+│
+├── Tension Container
+│   ├── Tension Ambience            16 Takte @ 82 BPM
+│   ├── Tension Texture             16 Takte @ 82 BPM
+│   └── Nervous Percussion          16 Takte @ 82 BPM
+│
+├── Combat Container
+│   ├── Combat Harmonic Bed         16 Takte @ 108 BPM
+│   ├── Combat Percussion           16 Takte @ 108 BPM
+│   ├── Combat Bass                 16 Takte @ 108 BPM
+│   └── Combat Lead                 16 Takte @ 108 BPM
+│
+├── Boss Container
+│   ├── Boss Harmonic Bed           16 Takte @ 128 BPM
+│   ├── Boss Percussion             16 Takte @ 128 BPM
+│   ├── Boss Choir                  16 Takte @ 128 BPM
+│   └── Boss Motif                  16 Takte @ 128 BPM
+│
+├── Transition Bridges
+│   ├── Exploration → Tension       2–4 Takte
+│   ├── Tension → Combat            2–4 Takte
+│   ├── Combat → Boss               4–8 Takte
+│   └── Combat → Exploration        4–8 Takte
+│
+└── Stingers
+    ├── Danger                      1 Takt
+    ├── Elite                       1–2 Takte
+    ├── Victory                     2–4 Takte
+    └── Defeat                      2–4 Takte
